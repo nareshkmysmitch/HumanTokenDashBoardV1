@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.healthanalytics.android.presentation.components.BottomNavigationBar
+import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
@@ -41,7 +41,7 @@ fun HealthAnalyticsApp() {
                         // Handle chat click
                     })
             }, bottomBar = {
-                BottomNavigationBar(
+                BottomNavBar(
                     currentScreen = currentScreen, onScreenSelected = { screen ->
                         currentScreen = screen
                     })

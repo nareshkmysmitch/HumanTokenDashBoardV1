@@ -1,8 +1,8 @@
 package com.healthanalytics.android.presentation.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material.icons.filled.Menu
+//import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
@@ -23,16 +23,16 @@ fun TopAppBar(
         },
         actions = {
             IconButton(onClick = onChatClick) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Chat"
-                )
+//                Icon(
+//                    imageVector = Icons.Default.Menu,
+//                    contentDescription = "Chat"
+//                )
             }
             IconButton(onClick = onProfileClick) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile"
-                )
+//                Icon(
+//                    imageVector = Icons.Default.Person,
+//                    contentDescription = "Profile"
+//                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
