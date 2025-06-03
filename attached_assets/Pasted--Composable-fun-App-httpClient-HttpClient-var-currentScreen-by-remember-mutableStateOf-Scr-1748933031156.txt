@@ -1,0 +1,70 @@
+@Composable
+fun App(httpClient: HttpClient) {
+    var currentScreen by remember { mutableStateOf(Screen.MAIN) }
+    val authViewModel = remember { AuthViewModel() }
+    val onboardingViewModel = remember { OnboardingViewModel(httpClient) }
+    val profileViewModel = remember { ProfileViewModel(httpClient) }
+    MaterialTheme {
+        when (currentScreen) {
+            Screen.ONBOARDING -> {
+                OnboardingScreen(
+                    viewModel = onboardingViewModel,
+                    onCompleted = { currentScreen = Screen.LOGIN })
+            }
+
+            Screen.LOGIN -> {
+                LoginScreen(
+                    authViewModel = authViewModel,
+                    onLoginSuccess = { currentScreen = Screen.CREATE_ACCOUNT })
+            }
+
+            Screen.CREATE_ACCOUNT -> {
+                CreateAccountScreen(
+                    authViewModel = authViewModel,
+                    onNavigateToHealthProfile = { currentScreen = Screen.HEALTH_PROFILE },
+                )
+            }
+
+            Screen.HEALTH_PROFILE -> {
+                HealthProfileScreen(
+                    authViewModel = authViewModel,
+                    onNavigateToSampleCollection = { currentScreen = Screen.SAMPLE_COLLECTION })
+            }
+
+            Screen.SAMPLE_COLLECTION -> {
+                SampleCollectionScreen(
+                    authViewModel = authViewModel,
+                    onNavigateToScheduleBloodTest = {
+                        currentScreen = Screen.SCHEDULE_BLOOD_TEST
+                    },
+                )
+            }
+
+            Screen.SCHEDULE_BLOOD_TEST -> {
+                ScheduleBloodTestScreen(onClick = {
+                    onboardingViewModel.getRecommendation()
+                    // currentScreen = Screen.PAYMENT
+                })
+            }
+
+            Screen.PAYMENT -> {
+                PaymentScreenLauncher(onClick = {
+                    currentScreen = Screen.MAIN
+                })
+            }
+
+            Screen.MAIN -> {
+                MainScreen(onNavigateToProfile = {
+                    currentScreen = Screen.PROFILE
+                })
+            }
+
+            Screen.PROFILE -> {
+                ProfileScreen(
+                    onNavigateBack = { currentScreen = Screen.MAIN },
+                    profileViewModel = profileViewModel
+                )
+            }
+        }
+    }
+}

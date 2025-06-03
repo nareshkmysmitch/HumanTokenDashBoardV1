@@ -1,37 +1,46 @@
 package com.healthanalytics.android.presentation.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.getNavigationItems
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 enum class Screen {
-    DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE
+    DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE, PROFILE, CHAT
 }
 
-data class NavigationItem(
-    val screen: Screen, val label: String, val icon: ImageVector
-)
-
-val navigationItems = listOf(
-    NavigationItem(Screen.DASHBOARD, "Dashboard", Icons.Default.Home),
-    NavigationItem(Screen.BIOMARKERS, "BioMarkers", Icons.Default.Info),
-    NavigationItem(Screen.RECOMMENDATIONS, "Recommendations", Icons.Default.Settings),
-    NavigationItem(Screen.MARKETPLACE, "Market Place", Icons.Default.ShoppingCart)
-)
-
 @Composable
-fun BottomNavigationBar(
-    currentScreen: Screen, onScreenSelected: (Screen) -> Unit
+fun BottomNavBar(
+    currentScreen: Screen,
+    onScreenSelected: (Screen) -> Unit
 ) {
+    val items = getNavigationItems()
+
     NavigationBar {
-        navigationItems.forEach { item ->
+        items.forEach { item ->
             NavigationBarItem(
-                icon = { Icon(item.icon, contentDescription = item.label) },
-                label = { Text(item.label) },
                 selected = currentScreen == item.screen,
-                onClick = { onScreenSelected(item.screen) })
+                onClick = { onScreenSelected(item.screen) },
+                icon = {
+                    when (val icon = item.icon) {
+                        is ImageVector -> Icon(imageVector = icon, contentDescription = item.label)
+                        else -> {
+                            Image(
+                                painter = painterResource(icon as DrawableResource),
+                                contentDescription = item.label,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                },
+                label = { Text(item.label) }
+            )
         }
     }
 }
