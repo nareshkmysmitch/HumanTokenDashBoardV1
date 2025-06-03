@@ -54,10 +54,12 @@ fun HealthAnalyticsApp() {
                         // Handle chat click
                     })
             }, bottomBar = {
-                BottomNavBar(
-                    currentScreen = currentScreen, onScreenSelected = { screen ->
-                        navigateTo(screen)
-                    })
+                if (currentScreen != Screen.PROFILE) {
+                    BottomNavBar(
+                        currentScreen = currentScreen, onScreenSelected = { screen ->
+                            navigateTo(screen)
+                        })
+                }
             }) { paddingValues ->
                 Box(
                     modifier = Modifier.fillMaxSize().padding(paddingValues)
