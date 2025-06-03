@@ -387,8 +387,4 @@ private fun ProfileMenuItem(
     }
 }
 
-@Composable
-expect fun BackHandler(enabled: Boolean = true, onBack: () -> Unit)
-
-
 //@OptIn(ExperimentalMaterial3Api::class)
