@@ -9,14 +9,12 @@ import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
-import com.healthanalytics.android.presentation.dashboard.MarketPlaceScreen
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
-import com.healthanalytics.android.presentation.screens.DashboardScreen
+import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
 import com.healthanalytics.android.presentation.screens.LoginScreen
-import com.healthanalytics.android.presentation.screens.MarketplaceScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
-import com.healthanalytics.android.presentation.theme.HealthAnalyticsTheme
 
 private val koin = initKoin()
 

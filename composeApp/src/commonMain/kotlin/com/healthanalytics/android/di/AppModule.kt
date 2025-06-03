@@ -3,7 +3,7 @@ package com.healthanalytics.android.di
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.ApiServiceImpl
 import com.healthanalytics.android.data.network.NetworkConfig
-import com.healthanalytics.android.presentation.dashboard.MarketPlaceViewModel
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
