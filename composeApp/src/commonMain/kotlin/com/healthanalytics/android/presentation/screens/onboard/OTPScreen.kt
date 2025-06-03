@@ -170,16 +170,15 @@ fun OTPScreen(
                         onValueChange = { newValue ->
                             val newOtpValues = otpValues.toMutableList()
                             
-                            // Find the first empty field index
-                            val firstEmptyIndex = newOtpValues.indexOfFirst { it.isEmpty() }
-                            // Find the last filled field index
-                            val lastFilledIndex = newOtpValues.indexOfLast { it.isNotEmpty() }
-                            
-                            // Allow input for new value
                             if (newValue.isNotEmpty()) {
-                                // Allow input if this is the first empty field OR all previous fields are filled
-                                val allPreviousFilled = (0 until index).all { newOtpValues[it].isNotEmpty() }
-                                if (index == firstEmptyIndex || firstEmptyIndex == -1 || allPreviousFilled) {
+                                // Check if all previous fields are filled (sequential entry)
+                                val canEnterValue = if (index == 0) {
+                                    true // First field can always be filled
+                                } else {
+                                    (0 until index).all { newOtpValues[it].isNotEmpty() }
+                                }
+                                
+                                if (canEnterValue) {
                                     newOtpValues[index] = newValue
                                     otpValues = newOtpValues
                                     
@@ -188,18 +187,19 @@ fun OTPScreen(
                                         focusRequesters[index + 1].requestFocus()
                                     }
                                 }
-                            }
-                            // Allow removal for empty value
-                            else if (newValue.isEmpty()) {
-                                // Clear current field and all fields after it
-                                for (i in index until newOtpValues.size) {
-                                    newOtpValues[i] = ""
-                                }
-                                otpValues = newOtpValues
-                                
-                                // Focus previous field when removing value, but stay on current if it's first
-                                if (index > 0 && newOtpValues[index - 1].isNotEmpty()) {
-                                    focusRequesters[index - 1].requestFocus()
+                            } else {
+                                // For deletion, only allow if this field currently has a value
+                                if (newOtpValues[index].isNotEmpty()) {
+                                    // Clear current field and all fields after it
+                                    for (i in index until newOtpValues.size) {
+                                        newOtpValues[i] = ""
+                                    }
+                                    otpValues = newOtpValues
+                                    
+                                    // Focus previous field when removing value, but stay on current if it's first
+                                    if (index > 0) {
+                                        focusRequesters[index - 1].requestFocus()
+                                    }
                                 }
                             }
                         },
