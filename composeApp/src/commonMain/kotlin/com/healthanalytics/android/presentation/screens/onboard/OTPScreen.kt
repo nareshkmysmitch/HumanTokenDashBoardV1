@@ -262,10 +262,12 @@ private fun OTPInputField(
                         text = value,
                         style = AppTextStyles.headingSmall.copy(
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
                         ),
                         color = AppColors.textPrimary,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
                 innerTextField()
