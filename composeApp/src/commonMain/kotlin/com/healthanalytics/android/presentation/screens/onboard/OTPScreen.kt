@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -265,14 +266,18 @@ private fun OTPInputField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier
                 .focusRequester(focusRequester)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .wrapContentHeight(Alignment.CenterVertically),
             textStyle = AppTextStyles.headingSmall.copy(
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = AppColors.primary,
                 textAlign = TextAlign.Center
             ),
-            singleLine = true
+            singleLine = true,
+            cursorBrush = androidx.compose.foundation.text.selection.LocalTextSelectionColors.current.let {
+                androidx.compose.ui.graphics.SolidColor(AppColors.primary)
+            }
         )
         
         if (value.isEmpty()) {
