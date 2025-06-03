@@ -18,7 +18,18 @@ import com.healthanalytics.android.presentation.theme.HealthAnalyticsTheme
 fun HealthAnalyticsApp() {
     HealthAnalyticsTheme {
         var accessToken by remember { mutableStateOf<String?>(null) }
-        var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
+        var navigationStack by remember { mutableStateOf(listOf(Screen.DASHBOARD)) }
+        val currentScreen = navigationStack.last()
+        
+        fun navigateTo(screen: Screen) {
+            navigationStack = navigationStack + screen
+        }
+        
+        fun navigateBack() {
+            if (navigationStack.size > 1) {
+                navigationStack = navigationStack.dropLast(1)
+            }
+        }
 
         accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E"
 
@@ -43,7 +54,7 @@ fun HealthAnalyticsApp() {
             }, bottomBar = {
                 BottomNavBar(
                     currentScreen = currentScreen, onScreenSelected = { screen ->
-                        currentScreen = screen
+                        navigateTo(screen)
                     })
             }) { paddingValues ->
                 Box(
