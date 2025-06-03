@@ -154,12 +154,17 @@ fun OTPScreen(
                         value = value,
                         onValueChange = { newValue ->
                             val newOtpValues = otpValues.toMutableList()
+                            val oldValue = newOtpValues[index]
                             newOtpValues[index] = newValue
                             otpValues = newOtpValues
                             
-                            // Auto-focus next field
+                            // Auto-focus next field when entering a value
                             if (newValue.isNotEmpty() && index < 5) {
                                 focusRequesters[index + 1].requestFocus()
+                            }
+                            // Focus previous field when removing value from current field
+                            else if (newValue.isEmpty() && oldValue.isNotEmpty() && index > 0) {
+                                focusRequesters[index - 1].requestFocus()
                             }
                         },
                         focusRequester = focusRequesters[index],
@@ -243,7 +248,7 @@ private fun OTPInputField(
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         cursorBrush = SolidColor(
-            value = AppColors.textPrimary
+            value = AppColors.primary
         ),
         modifier = modifier
             .focusRequester(focusRequester)
