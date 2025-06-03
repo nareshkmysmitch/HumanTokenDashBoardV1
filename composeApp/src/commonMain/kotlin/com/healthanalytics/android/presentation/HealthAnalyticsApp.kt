@@ -18,13 +18,13 @@ import com.healthanalytics.android.presentation.theme.HealthAnalyticsTheme
 
 @Composable
 fun HealthAnalyticsApp() {
-    var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
-    var lastMainScreen by remember { mutableStateOf(Screen.DASHBOARD) }
+    var currentScreen by remember { mutableStateOf(Screen.HOME) }
+    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
     var accessToken by remember { mutableStateOf<String?>(null) }
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen in listOf(Screen.DASHBOARD, Screen.BIOMARKERS, Screen.RECOMMENDATIONS, Screen.MARKETPLACE)) {
+        if (currentScreen in listOf(Screen.CHAT, Screen.PROFILE, Screen.HOME)) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
