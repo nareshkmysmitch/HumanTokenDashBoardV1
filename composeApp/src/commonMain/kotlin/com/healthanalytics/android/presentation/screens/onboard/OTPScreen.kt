@@ -286,6 +286,12 @@ private fun OTPInputField(
         cursorBrush = SolidColor(
             value = AppColors.primary
         ),
+        textStyle = AppTextStyles.headingSmall.copy(
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = AppColors.textPrimary
+        ),
         modifier = modifier
             .focusRequester(focusRequester)
             .background(
