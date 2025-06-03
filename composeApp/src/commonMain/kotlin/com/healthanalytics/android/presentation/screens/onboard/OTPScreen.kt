@@ -4,12 +4,17 @@ package com.healthanalytics.android.presentation.screens.onboard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.composed
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -27,6 +32,16 @@ import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
+
+// Extension function for clickable without ripple effect
+private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
+    clickable(
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() }
+    ) {
+        onClick()
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -160,23 +175,30 @@ fun OTPScreen(
                             // Find the last filled field index
                             val lastFilledIndex = newOtpValues.indexOfLast { it.isNotEmpty() }
                             
-                            // Only allow input if this is the first empty field
-                            if (newValue.isNotEmpty() && (index == firstEmptyIndex || firstEmptyIndex == -1)) {
-                                newOtpValues[index] = newValue
-                                otpValues = newOtpValues
-                                
-                                // Auto-focus next field when entering a value
-                                if (index < 5) {
-                                    focusRequesters[index + 1].requestFocus()
+                            // Allow input for new value
+                            if (newValue.isNotEmpty()) {
+                                // Allow input if this is the first empty field OR all previous fields are filled
+                                val allPreviousFilled = (0 until index).all { newOtpValues[it].isNotEmpty() }
+                                if (index == firstEmptyIndex || firstEmptyIndex == -1 || allPreviousFilled) {
+                                    newOtpValues[index] = newValue
+                                    otpValues = newOtpValues
+                                    
+                                    // Auto-focus next field when entering a value
+                                    if (index < 5) {
+                                        focusRequesters[index + 1].requestFocus()
+                                    }
                                 }
                             }
-                            // Only allow removal if this is the last filled field
-                            else if (newValue.isEmpty() && index == lastFilledIndex) {
-                                newOtpValues[index] = newValue
+                            // Allow removal for empty value
+                            else if (newValue.isEmpty()) {
+                                // Clear current field and all fields after it
+                                for (i in index until newOtpValues.size) {
+                                    newOtpValues[i] = ""
+                                }
                                 otpValues = newOtpValues
                                 
-                                // Focus previous field when removing value from last field
-                                if (index > 0) {
+                                // Focus previous field when removing value, but stay on current if it's first
+                                if (index > 0 && newOtpValues[index - 1].isNotEmpty()) {
                                     focusRequesters[index - 1].requestFocus()
                                 }
                             }
@@ -277,19 +299,30 @@ private fun OTPInputField(
             ),
         decorationBox = { innerTextField ->
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        // Add click handling to request focus when field is tapped
+                        Modifier.noRippleClickable {
+                            focusRequester.requestFocus()
+                        }
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = value,
-                    style = AppTextStyles.headingSmall.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
+                if (value.isEmpty()) {
+                    innerTextField()
+                } else {
+                    Text(
+                        text = value,
+                        style = AppTextStyles.headingSmall.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        ),
+                        color = AppColors.textPrimary,
                         textAlign = TextAlign.Center
-                    ),
-                    color = if (value.isNotEmpty()) AppColors.textPrimary else Color.Transparent,
-                    textAlign = TextAlign.Center
-                )
+                    )
+                }
             }
         }
     )
