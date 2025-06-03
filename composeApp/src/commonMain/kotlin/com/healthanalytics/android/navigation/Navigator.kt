@@ -1,4 +1,6 @@
 
+package com.healthanalytics.android.navigation
+
 import com.healthanalytics.android.presentation.components.Screen
 
 expect class PlatformNavigator() {
