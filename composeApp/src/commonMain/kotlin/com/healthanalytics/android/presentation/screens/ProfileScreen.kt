@@ -67,7 +67,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_calendar_icon),
                             contentDescription = "back arrow",
