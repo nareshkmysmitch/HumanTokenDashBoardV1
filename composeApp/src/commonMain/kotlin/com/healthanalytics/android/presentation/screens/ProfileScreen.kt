@@ -63,8 +63,22 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
     var showAlertDialog by remember { mutableStateOf(false) }
 
-    BackHandler {
-        onNavigateBack()
+    // Use LaunchedEffect with LocalOnBackPressedDispatcherOwner for more reliable back handling
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    val lifecycleOwner = LocalLifecycleOwner.current
+    
+    DisposableEffect(lifecycleOwner, backDispatcher) {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onNavigateBack()
+            }
+        }
+        
+        backDispatcher?.addCallback(lifecycleOwner, callback)
+        
+        onDispose {
+            callback.remove()
+        }
     }
 
     Scaffold(
@@ -230,36 +244,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
     }
 }
 
-@SuppressWarnings("MissingJvmstatic")
-@Composable
-public fun BackHandler(enabled: Boolean = true, onBack: () -> Unit) {
-    // Safely update the current `onBack` lambda when a new one is provided
-    val currentOnBack by rememberUpdatedState(onBack)
-    // Remember in Composition a back callback that calls the `onBack` lambda
-    val backCallback = remember {
-        object : OnBackPressedCallback(enabled) {
-            override fun handleOnBackPressed() {
-                currentOnBack()
-            }
-        }
-    }
-    // On every successful composition, update the callback with the `enabled` value
-    SideEffect {
-        backCallback.isEnabled = enabled
-    }
-    val backDispatcher = checkNotNull(LocalOnBackPressedDispatcherOwner.current) {
-        "No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner"
-    }.onBackPressedDispatcher
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner, backDispatcher) {
-        // Add callback to the backDispatcher
-        backDispatcher.addCallback(lifecycleOwner, backCallback)
-        // When the effect leaves the Composition, remove the callback
-        onDispose {
-            backCallback.remove()
-        }
-    }
-}
+
 
 
 //@OptIn(ExperimentalMaterial3Api::class)
