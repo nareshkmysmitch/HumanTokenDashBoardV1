@@ -23,23 +23,37 @@ fun BottomNavBar(
     val items = getNavigationItems()
 
     NavigationBar {
-        items.forEach { item ->
+        val navigationItems = listOf(
+            NavigationItem(Screen.DASHBOARD.route, "Dashboard"),
+            NavigationItem(Screen.BIOMARKERS.route, "BioMarkers"),
+            NavigationItem(Screen.RECOMMENDATIONS.route, "Recommendations"),
+            NavigationItem(Screen.MARKETPLACE.route, "Market Place")
+        )
+
+        navigationItems.forEach { item ->
             NavigationBarItem(
-                selected = currentScreen == item.screen,
-                onClick = { onScreenSelected(item.screen) },
                 icon = {
-                    when (val icon = item.icon) {
-                        is ImageVector -> Icon(imageVector = icon, contentDescription = item.label)
-                        else -> {
-                            Image(
-                                painter = painterResource(icon as DrawableResource),
-                                contentDescription = item.label,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                    when (item.icon) {
+                        is ImageVector -> Icon(
+                            imageVector = item.icon,
+                            contentDescription = item.label,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        is DrawableResource -> Image(
+                            painter = painterResource(item.icon),
+                            contentDescription = item.label,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 },
-                label = { Text(item.label) }
+                label = { Text(item.label) },
+                selected = currentRoute == item.route,
+                onClick = {
+                    navController.navigate(item.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                }
             )
         }
     }
