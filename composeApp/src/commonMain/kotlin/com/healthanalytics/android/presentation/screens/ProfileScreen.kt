@@ -76,9 +76,6 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
             )
         },
         containerColor = Color.Transparent
