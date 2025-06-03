@@ -163,27 +163,27 @@ fun LoginScreen(
                     )
                 )
             }
-        }
-        
-        // Continue Button at bottom
-        Button(
-            onClick = { onContinueClick(phoneNumber) },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(Dimensions.buttonHeight)
-                .padding(bottom = 32.dp),
-            shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.buttonBackground,
-                contentColor = AppColors.buttonText
-            ),
-            enabled = phoneNumber.isNotBlank()
-        ) {
-            Text(
-                text = AppStrings.continueButton,
-                style = AppTextStyles.buttonText
-            )
+            
+            Spacer(modifier = Modifier.height(Dimensions.spacingXLarge))
+            
+            // Continue Button below phone input
+            Button(
+                onClick = { onContinueClick(phoneNumber) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(Dimensions.buttonHeight),
+                shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.buttonBackground,
+                    contentColor = AppColors.buttonText
+                ),
+                enabled = phoneNumber.isNotBlank()
+            ) {
+                Text(
+                    text = AppStrings.continueButton,
+                    style = AppTextStyles.buttonText
+                )
+            }
         }
     }
 }
