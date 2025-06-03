@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
 object NetworkConfig {
 
     private const val BASE_URL = "https://api.stg.dh.deepholistics.com/"
-    private const val CLIENT_ID = "6tVjHMtvhLEKtcx0XDgzmKH5TY9YeC1Waroq"
+    private const val CLIENT_ID = "JmEfoQ2sP18APIiX9z0nY3vlDAKHIp8nKuyV"
     private const val USER_TIMEZONE = "Asia/Calcutta"
 
     fun createHttpClient(accessToken: String? = null): HttpClient {
@@ -34,7 +34,6 @@ object NetworkConfig {
                 contentType(ContentType.Application.Json)
                 header("client_id", CLIENT_ID)
                 header("user_timezone", USER_TIMEZONE)
-              //  accessToken?.let { header("access_token", it) }
             }
         }
     }
