@@ -12,13 +12,17 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 enum class Screen {
-    DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE, PROFILE, CHAT
+    HOME, PROFILE, CHAT
+}
+
+enum class MainScreen {
+    DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE
 }
 
 @Composable
 fun BottomNavBar(
-    currentScreen: Screen,
-    onScreenSelected: (Screen) -> Unit
+    currentScreen: MainScreen,
+    onScreenSelected: (MainScreen) -> Unit
 ) {
     val items = getNavigationItems()
 
