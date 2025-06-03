@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,8 +18,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -29,7 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.*
 import kotlinx.coroutines.delay
-import androidx.compose.ui.platform.LocalContext
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,9 +74,10 @@ fun OTPScreen(
                     modifier = Modifier.size(40.dp)
                 ) {
                     Image(
-                        imageVector = Icons.Default.ArrowBack,
+                        painter = painterResource(Res.drawable.ic_calendar_icon),
                         contentDescription = "Back",
-                        colorFilter = ColorFilter.tint(AppColors.textPrimary)
+                        colorFilter = ColorFilter.tint(AppColors.textPrimary),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
 
