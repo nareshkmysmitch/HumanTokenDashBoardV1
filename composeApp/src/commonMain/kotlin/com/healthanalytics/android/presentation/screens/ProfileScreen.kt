@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.ui.ShowAlertDialog
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
@@ -198,26 +199,14 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
         }
     }
     if (showAlertDialog) {
-        AlertDialog(
-            onDismissRequest = { showAlertDialog = false },
-            title = { Text("Confirm Logout") },
-            text = { Text("Are you sure you want to log out?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showAlertDialog = false
-                        // Handle logout logic here
-                    }
-                ) {
-                    Text("Logout")
-                }
+        ShowAlertDialog(
+            modifier = Modifier,
+            title = "Log out",
+            message = "You will be logged out of your Deep Holistics account. However this doesn\\’t affect your logged data. Do you want to still logout?",
+            onDismiss = {
+                showAlertDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { showAlertDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+            onLogout = {showAlertDialog = false })
     }
 }
 
