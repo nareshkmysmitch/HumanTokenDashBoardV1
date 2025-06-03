@@ -274,8 +274,9 @@ private fun OTPInputField(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxSize()
                     )
+                } else {
+                    innerTextField()
                 }
-                innerTextField()
             }
         }
     )
