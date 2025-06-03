@@ -1,10 +1,15 @@
 package com.healthanalytics.android.presentation.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.healthanalytics.android.NavigationItem
+import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.getNavigationItems
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 enum class Screen {
     DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE
@@ -23,9 +28,15 @@ fun BottomNavBar(
                 selected = currentScreen == item.screen,
                 onClick = { onScreenSelected(item.screen) },
                 icon = {
-                    val icon = item.icon
-                    if (icon is ImageVector) {
-                        Icon(imageVector = icon, contentDescription = item.label)
+                    when (val icon = item.icon) {
+                        is ImageVector -> Icon(imageVector = icon, contentDescription = item.label)
+                        else -> {
+                            Image(
+                                painter = painterResource(icon as DrawableResource),
+                                contentDescription = item.label,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 },
                 label = { Text(item.label) }

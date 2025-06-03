@@ -5,3 +5,7 @@ class WasmPlatform: Platform {
 }
 
 actual fun getPlatform(): Platform = WasmPlatform()
+
+actual fun getNavigationItems(): List<NavigationItem> {
+    TODO("Not yet implemented")
+}
