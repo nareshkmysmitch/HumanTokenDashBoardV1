@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+importandroidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -60,9 +60,10 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
     var showAlertDialog by remember { mutableStateOf(false) }
 
-//    BackHandler {
-//        onNavigateBack()
-//    }
+    // Disable system back button - intercept and do nothing
+    BackHandler(enabled = true) {
+        // Do nothing - this prevents the system back button from working
+    }
 
     Scaffold(
         topBar = {
@@ -392,3 +393,9 @@ private fun ProfileMenuItem(
         )
     }
 }
+
+@Composable
+expect fun BackHandler(enabled: Boolean = true, onBack: () -> Unit)
+
+
+//@OptIn(ExperimentalMaterial3Api::class)
