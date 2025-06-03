@@ -243,12 +243,12 @@ private fun OTPInputField(
     Box(
         modifier = modifier
             .background(
-                color = AppColors.surfaceVariant,
+                color = AppColors.primary,
                 shape = RoundedCornerShape(8.dp)
             )
             .border(
                 width = 1.dp,
-                color = if (value.isNotEmpty()) AppColors.primary else AppColors.outline,
+                color = if (value.isNotEmpty()) AppColors.primary else AppColors.secondary,
                 shape = RoundedCornerShape(8.dp)
             )
             .noRippleClickable {
