@@ -38,5 +38,9 @@ object AppColors {
     val TextGrey = Color(0XFFCBCFD5)
 
     val alertDialogColor = Color(0XFFE6F1FF)
+    
+    // Additional surface and UI colors
+    val surfaceVariant = Color(0xFF3A3A4E)
+    val outline = Color(0xFF4A4A5E)
 
 }
