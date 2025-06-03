@@ -7,14 +7,20 @@ import com.healthanalytics.android.data.models.Biomarker
 import com.healthanalytics.android.data.models.CartItem
 import com.healthanalytics.android.data.models.OtpVerifyRequest
 import com.healthanalytics.android.data.models.Product
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class ApiClient {
@@ -40,13 +46,13 @@ class ApiClient {
 
     suspend fun sendOtp(phone: String): AuthResponse {
         return client.post("$BASE_URL/v4/human-token/lead/send-otp") {
-            setBody(AuthRequest(phone))
+            setBody(AuthRequest(phone).toEncryptedRequestBody())
         }.body()
     }
 
     suspend fun verifyOtp(phone: String, otp: String): AuthResponse {
         return client.post("$BASE_URL/v4/human-token/lead/verify-otp") {
-            setBody(OtpVerifyRequest(phone, otp))
+            setBody(OtpVerifyRequest(phone, otp).toEncryptedRequestBody())
         }.body()
     }
 

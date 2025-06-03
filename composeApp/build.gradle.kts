@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -84,6 +85,16 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
+
+
+            implementation(libs.koin.core)
+//            implementation(libs.koin.android)
+            implementation(libs.koin.compose)
+
+            implementation("io.github.qdsfdhvh:image-loader:1.10.0")
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
+
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
