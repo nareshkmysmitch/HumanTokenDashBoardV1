@@ -36,11 +36,10 @@ fun LoginScreenPreview() {
 @Composable
 fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
+    onNavigateToOTP: (String) -> Unit = {},
     repository: HealthRepository = HealthRepository()
 ) {
     var phoneNumber by remember { mutableStateOf("") }
-    var otp by remember { mutableStateOf("") }
-    var showOtpField by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     
@@ -74,21 +73,8 @@ fun LoginScreen(
             onValueChange = { phoneNumber = it },
             label = { Text("Phone Number") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !showOtpField
+            modifier = Modifier.fillMaxWidth()
         )
-        
-        if (showOtpField) {
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            OutlinedTextField(
-                value = otp,
-                onValueChange = { otp = it },
-                label = { Text("Enter OTP") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
         
         if (errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -107,41 +93,25 @@ fun LoginScreen(
                     isLoading = true
                     errorMessage = ""
                     
-                    if (!showOtpField) {
-                        // Send OTP
-                        repository.sendOtp(phoneNumber).fold(
-                            onSuccess = { response ->
-                                if (response.status == "success") {
-                                    showOtpField = true
-                                } else {
-                                    errorMessage = response.message
-                                }
-                            },
-                            onFailure = { error ->
-                                errorMessage = error.message ?: "Failed to send OTP"
+                    // Send OTP
+                    repository.sendOtp(phoneNumber).fold(
+                        onSuccess = { response ->
+                            if (response.status == "success") {
+                                onNavigateToOTP(phoneNumber)
+                            } else {
+                                errorMessage = response.message
                             }
-                        )
-                    } else {
-                        // Verify OTP
-                        repository.verifyOtp(phoneNumber, otp).fold(
-                            onSuccess = { response ->
-                                if (response.status == "success" && response.data?.access_token != null) {
-                                    onLoginSuccess(response.data.access_token)
-                                } else {
-                                    errorMessage = response.message
-                                }
-                            },
-                            onFailure = { error ->
-                                errorMessage = error.message ?: "Failed to verify OTP"
-                            }
-                        )
-                    }
+                        },
+                        onFailure = { error ->
+                            errorMessage = error.message ?: "Failed to send OTP"
+                        }
+                    )
                     
                     isLoading = false
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading && phoneNumber.isNotEmpty() && (!showOtpField || otp.isNotEmpty())
+            enabled = !isLoading && phoneNumber.isNotEmpty()
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
@@ -149,21 +119,10 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(if (showOtpField) "Verify OTP" else "Send OTP")
+                Text("Continue")
             }
         }
         
-        if (showOtpField) {
-            Spacer(modifier = Modifier.height(16.dp))
-            TextButton(
-                onClick = {
-                    showOtpField = false
-                    otp = ""
-                    errorMessage = ""
-                }
-            ) {
-                Text("Change Phone Number")
-            }
-        }
+        
     }
 }
