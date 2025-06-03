@@ -262,21 +262,16 @@ private fun OTPInputField(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                if (value.isNotEmpty()) {
-                    Text(
-                        text = value,
-                        style = AppTextStyles.headingSmall.copy(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        ),
-                        color = AppColors.textPrimary,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    innerTextField()
-                }
+                Text(
+                    text = value,
+                    style = AppTextStyles.headingSmall.copy(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = if (value.isNotEmpty()) AppColors.textPrimary else Color.Transparent,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     )
