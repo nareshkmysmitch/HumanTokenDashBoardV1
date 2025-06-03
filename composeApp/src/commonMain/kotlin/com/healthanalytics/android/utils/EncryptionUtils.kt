@@ -1,6 +1,6 @@
 package com.healthanalytics.android.utils
 
-import com.deepholistics.android.data.model.apiresult.ApiResult
+import com.healthanalytics.android.data.models.ApiResult
 import com.healthanalytics.android.data.network.decrypt
 import com.healthanalytics.android.data.network.encrypt
 import kotlinx.serialization.json.Json
@@ -36,7 +36,7 @@ object EncryptionUtils {
      * Handles encrypted API responses generically
      * Takes raw API response and returns decrypted data if needed
      */
-    inline fun <reified T> handleEncryptedResponse(
+    inline fun <reified T> handleDecryptionResponse(
         responseBody: String,
     ): T? {
         return try {
