@@ -45,3 +45,11 @@ data class ApiResponse<T>(
     val message: String,
     val data: T? = null
 )
+
+
+@Serializable
+data class ApiResult(
+    val status: String,
+    val message: String,
+    val data: String? = null
+)
