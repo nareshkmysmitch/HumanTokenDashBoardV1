@@ -14,12 +14,12 @@ class AndroidPlatform : Platform {
 
 actual fun getPlatform(): Platform = AndroidPlatform()
 
-val navigationItems = listOf(
-    NavigationItem(Screen.DASHBOARD, "Dashboard", Icons.Default.Home),
-    NavigationItem(Screen.BIOMARKERS, "BioMarkers", Icons.Default.Info),
-    NavigationItem(Screen.RECOMMENDATIONS, "Recommendations", Icons.Default.Settings),
-    NavigationItem(Screen.MARKETPLACE, "Market Place", Icons.Default.ShoppingCart)
-)
+//val navigationItems = listOf(
+//    NavigationItem(Screen.DASHBOARD, "Dashboard", Icons.Default.Home),
+//    NavigationItem(Screen.BIOMARKERS, "BioMarkers", Icons.Default.Info),
+//    NavigationItem(Screen.RECOMMENDATIONS, "Recommendations", Icons.Default.Settings),
+//    NavigationItem(Screen.MARKETPLACE, "Market Place", Icons.Default.ShoppingCart)
+//)
 
 actual fun getNavigationItems(): List<NavigationItem> = listOf(
     NavigationItem(Screen.DASHBOARD, "Dashboard", Icons.Default.Home),
