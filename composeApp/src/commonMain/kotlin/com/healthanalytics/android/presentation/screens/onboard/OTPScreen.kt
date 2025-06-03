@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +39,13 @@ fun OTPScreen(
     var resendTimer by remember { mutableStateOf(45) }
     var isTimerActive by remember { mutableStateOf(true) }
     val focusRequesters = remember { List(6) { FocusRequester() } }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    
+    // Focus first field and show keyboard on screen load
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequesters[0].requestFocus()
+    }
     
     // Timer countdown
     LaunchedEffect(resendTimer, isTimerActive) {
@@ -46,6 +54,13 @@ fun OTPScreen(
             resendTimer--
         } else if (resendTimer == 0) {
             isTimerActive = false
+        }
+    }
+    
+    // Close keyboard when all fields are filled
+    LaunchedEffect(otpValues) {
+        if (otpValues.all { it.isNotEmpty() }) {
+            keyboardController?.hide()
         }
     }
     
@@ -168,6 +183,8 @@ fun OTPScreen(
                         onResendClick()
                         resendTimer = 45
                         isTimerActive = true
+                        otpValues = List(6) { "" }
+                        focusRequesters[0].requestFocus()
                     }
                 ) {
                     Text(
@@ -192,8 +209,10 @@ fun OTPScreen(
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (otpValues.all { it.isNotEmpty() }) 
-                        AppColors.primary else AppColors.primary.copy(alpha = 0.3f),
-                    contentColor = Color.White
+                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                 ),
                 shape = RoundedCornerShape(28.dp)
             ) {
@@ -238,16 +257,7 @@ private fun OTPInputField(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                if (value.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = AppColors.textSecondary.copy(alpha = 0.3f),
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                    )
-                } else {
+                if (value.isNotEmpty()) {
                     Text(
                         text = value,
                         style = AppTextStyles.headingSmall.copy(
