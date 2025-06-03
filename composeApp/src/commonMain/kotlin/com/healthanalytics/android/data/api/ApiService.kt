@@ -17,7 +17,7 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
         }
         val responseBody = response.bodyAsText()
         println("responseBody --> Raw ${responseBody}")
-        val productsList = EncryptionUtils.handleEncryptedResponse<ProductData>(responseBody)
+        val productsList = EncryptionUtils.handleDecryptionResponse<ProductData>(responseBody)
         println("responseBody --> ProductsList ${productsList}")
         return productsList?.products
     }

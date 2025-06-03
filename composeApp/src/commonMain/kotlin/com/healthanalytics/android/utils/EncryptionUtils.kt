@@ -36,7 +36,7 @@ object EncryptionUtils {
      * Handles encrypted API responses generically
      * Takes raw API response and returns decrypted data if needed
      */
-    inline fun <reified T> handleEncryptedResponse(
+    inline fun <reified T> handleDecryptionResponse(
         responseBody: String,
     ): T? {
         return try {
