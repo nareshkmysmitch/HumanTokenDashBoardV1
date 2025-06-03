@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.foundation.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.*
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,10 +70,10 @@ fun OTPScreen(
                     onClick = onBackClick,
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                    Image(
+                        painter = painterResource(Res.drawable.ic_calendar_icon),
                         contentDescription = "Back",
-                        tint = AppColors.textPrimary
+                        modifier = Modifier.size(20.dp)
                     )
                 }
                 
