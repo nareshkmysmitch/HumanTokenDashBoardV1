@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens
 
 import androidx.compose.foundation.Image
@@ -24,6 +23,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,33 +33,70 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.presentation.theme.AppColors
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(onNavigateBack: () -> Unit) {
-    var showLogoutDialog by remember { mutableStateOf(false) }
-    
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
+
+    var showAlertDialog by remember { mutableStateOf(false) }
+
+//    BackHandler {
+//        onNavigateBack()
+//    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Your Profile",
+                        color = AppColors.primary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onNavigateBack() }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_calendar_icon),
+                            contentDescription = "back arrow",
+                            tint = AppColors.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
+            )
+        },
+        containerColor = Color.Transparent
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Account Information Section
@@ -69,7 +106,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
             ) {
                 UserProfileCard(
                     name = "John Doe",
-                    email = "john.doe@healthanalytics.com"
+                    email = "john.doe@example.com"
                 )
 
                 ProfileMenuItem(
@@ -80,27 +117,6 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 ProfileMenuItem(
                     title = "Change Password",
                     onClick = { /* Handle change password */ }
-                )
-            }
-
-            // Health Data Section
-            ProfileSection(
-                title = "Health Data",
-                subtitle = "Manage your health information"
-            ) {
-                ProfileMenuItem(
-                    title = "Data Export",
-                    onClick = { /* Handle data export */ }
-                )
-
-                ProfileMenuItem(
-                    title = "Privacy Settings",
-                    onClick = { /* Handle privacy settings */ }
-                )
-
-                ProfileMenuItem(
-                    title = "Data Sharing Preferences",
-                    onClick = { /* Handle data sharing */ }
                 )
             }
 
@@ -134,7 +150,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
             ) {
                 Text(
                     text = "Two-Factor Authentication",
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = AppColors.textPrimary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 4.dp)
@@ -142,7 +158,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
                 Text(
                     text = "Add an extra layer of security to your account",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = AppColors.textPrimary,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
@@ -165,7 +181,9 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
                 ProfileMenuItem(
                     title = "Log Out",
-                    onClick = { showLogoutDialog = true }
+                    onClick = { /* Handle logout */
+                        showAlertDialog = true
+                    }
                 )
             }
 
@@ -184,17 +202,16 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(32.dp))
         }
-    
-    // Logout confirmation dialog
-    if (showLogoutDialog) {
+    }
+    if (showAlertDialog) {
         AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
+            onDismissRequest = { showAlertDialog = false },
             title = { Text("Confirm Logout") },
             text = { Text("Are you sure you want to log out?") },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        showLogoutDialog = false
+                        showAlertDialog = false
                         // Handle logout logic here
                     }
                 ) {
@@ -202,7 +219,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
+                TextButton(onClick = { showAlertDialog = false }) {
                     Text("Cancel")
                 }
             }
