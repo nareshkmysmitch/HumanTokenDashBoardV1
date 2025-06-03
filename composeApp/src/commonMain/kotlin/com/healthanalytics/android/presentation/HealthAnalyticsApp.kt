@@ -20,6 +20,7 @@ private val koin = initKoin()
 
 @Composable
 fun HealthAnalyticsApp() {
+
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
     var accessToken by remember { mutableStateOf<String?>(null) }

@@ -21,7 +21,7 @@ actual fun getNavigationItems(): List<NavigationItem> = listOf(
     NavigationItem(MainScreen.MARKETPLACE, "Market Place", Res.drawable.ic_calendar_icon)
 )
 
-@Composable
-actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
-    // iOS doesn't have a system back button, so this is a no-op
-}
+//@Composable
+//actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
+//    // iOS doesn't have a system back button, so this is a no-op
+//}
