@@ -11,6 +11,7 @@ import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.DashboardScreen
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.MarketplaceScreen
+import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
 import com.healthanalytics.android.presentation.theme.HealthAnalyticsTheme
 
@@ -47,7 +48,7 @@ fun HealthAnalyticsApp() {
                         Screen.RECOMMENDATIONS -> "Recommendations"
                         Screen.MARKETPLACE -> "Market Place"
                     }, onProfileClick = {
-                        // Handle profile click
+                        navigateTo(Screen.PROFILE)
                     }, onChatClick = {
                         // Handle chat click
                     })
@@ -65,6 +66,7 @@ fun HealthAnalyticsApp() {
                         Screen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
                         Screen.RECOMMENDATIONS -> RecommendationsScreen()
                         Screen.MARKETPLACE -> MarketplaceScreen(token = accessToken.toString())
+                        Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
                     }
                 }
             }

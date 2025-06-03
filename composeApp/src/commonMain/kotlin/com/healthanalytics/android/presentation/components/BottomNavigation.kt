@@ -12,7 +12,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 enum class Screen {
-    DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE
+    DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE, PROFILE
 }
 
 @Composable
