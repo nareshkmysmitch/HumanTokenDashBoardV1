@@ -25,7 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+importandroidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,23 +63,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
     var showAlertDialog by remember { mutableStateOf(false) }
 
-    // Use LaunchedEffect with LocalOnBackPressedDispatcherOwner for more reliable back handling
-    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    val lifecycleOwner = LocalLifecycleOwner.current
-    
-    DisposableEffect(lifecycleOwner, backDispatcher) {
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                onNavigateBack()
-            }
-        }
-        
-        backDispatcher?.addCallback(lifecycleOwner, callback)
-        
-        onDispose {
-            callback.remove()
-        }
-    }
+    // Simple approach - no custom back handler, just use the navigation icon
 
     Scaffold(
         topBar = {
