@@ -1,6 +1,7 @@
 
 package com.healthanalytics.android.presentation.screens.onboard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,7 +18,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.presentation.theme.*
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,12 +50,11 @@ fun LoginScreen(
                 .padding(top = 80.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // App Logo/Name
-            Text(
-                text = "dh ${AppStrings.appName}",
-                style = AppTextStyles.headingMedium,
-                color = AppColors.textPrimary,
-                textAlign = TextAlign.Center
+            // App Logo
+            Image(
+                painter = painterResource(Res.drawable.ic_calendar_icon),
+                contentDescription = AppStrings.appName,
+                modifier = Modifier.size(80.dp)
             )
             
             Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
