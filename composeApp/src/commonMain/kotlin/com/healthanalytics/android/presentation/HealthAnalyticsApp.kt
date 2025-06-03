@@ -13,23 +13,21 @@ import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.MarketplaceScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.ChatScreen
 import com.healthanalytics.android.presentation.theme.HealthAnalyticsTheme
 
 @Composable
 fun HealthAnalyticsApp() {
     HealthAnalyticsTheme {
         var accessToken by remember { mutableStateOf<String?>(null) }
-        var navigationStack by remember { mutableStateOf(listOf(Screen.DASHBOARD)) }
-        val currentScreen = navigationStack.last()
+        var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
         
         fun navigateTo(screen: Screen) {
-            navigationStack = navigationStack + screen
+            currentScreen = screen
         }
         
         fun navigateBack() {
-            if (navigationStack.size > 1) {
-                navigationStack = navigationStack.dropLast(1)
-            }
+            currentScreen = Screen.DASHBOARD
         }
 
         accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E"
@@ -48,13 +46,14 @@ fun HealthAnalyticsApp() {
                         Screen.RECOMMENDATIONS -> "Recommendations"
                         Screen.MARKETPLACE -> "Market Place"
                         Screen.PROFILE -> "Profile"
+                        Screen.CHAT -> "Chat"
                     }, onProfileClick = {
                         navigateTo(Screen.PROFILE)
                     }, onChatClick = {
-                        // Handle chat click
+                        navigateTo(Screen.CHAT)
                     })
             }, bottomBar = {
-                if (currentScreen != Screen.PROFILE) {
+                if (currentScreen != Screen.PROFILE && currentScreen != Screen.CHAT) {
                     BottomNavBar(
                         currentScreen = currentScreen, onScreenSelected = { screen ->
                             navigateTo(screen)
@@ -70,6 +69,7 @@ fun HealthAnalyticsApp() {
                         Screen.RECOMMENDATIONS -> RecommendationsScreen()
                         Screen.MARKETPLACE -> MarketplaceScreen(token = accessToken.toString())
                         Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+                        Screen.CHAT -> ChatScreen(onNavigateBack = { navigateBack() })
                     }
                 }
             }
