@@ -2,6 +2,7 @@
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -28,154 +28,162 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(AppColors.backgroundDark)
-            .padding(Dimensions.screenPadding),
-        contentAlignment = Alignment.Center
+            .padding(Dimensions.screenPadding)
     ) {
-        Card(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Dimensions.spacingMedium),
-            shape = RoundedCornerShape(Dimensions.cornerRadiusXLarge),
-            colors = CardDefaults.cardColors(
-                containerColor = AppColors.surfaceDark
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp
-            )
+                .align(Alignment.TopCenter)
+                .padding(top = 80.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            // App Logo/Name
+            Text(
+                text = "dh ${AppStrings.appName}",
+                style = AppTextStyles.headingMedium,
+                color = AppColors.textPrimary,
+                textAlign = TextAlign.Center
+            )
+            
+            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
+            
+            // Login Title
+            Text(
+                text = AppStrings.loginTitle,
+                style = AppTextStyles.headingSmall,
+                color = AppColors.textPrimary,
+                textAlign = TextAlign.Center
+            )
+            
+            Spacer(modifier = Modifier.height(Dimensions.spacingXSmall))
+            
+            // Login Subtitle
+            Text(
+                text = AppStrings.loginSubtitle,
+                style = AppTextStyles.headingSmall,
+                color = AppColors.textPrimary,
+                textAlign = TextAlign.Center
+            )
+            
+            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
+            
+            // Phone Number Label
+            Text(
+                text = AppStrings.phoneNumberLabel,
+                style = AppTextStyles.labelMedium,
+                color = AppColors.textSecondary,
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            Spacer(modifier = Modifier.height(Dimensions.spacingSmall))
+            
+            // Phone Number Input Container with border
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(Dimensions.cardPadding),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(Dimensions.spacingXLarge))
-                
-                // App Logo/Name
-                Text(
-                    text = "dh ${AppStrings.appName}",
-                    style = AppTextStyles.headingMedium,
-                    color = AppColors.textPrimary,
-                    textAlign = TextAlign.Center
-                )
-                
-                Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
-                
-                // Login Title
-                Text(
-                    text = AppStrings.loginTitle,
-                    style = AppTextStyles.headingSmall,
-                    color = AppColors.textPrimary,
-                    textAlign = TextAlign.Center
-                )
-                
-                Spacer(modifier = Modifier.height(Dimensions.spacingXSmall))
-                
-                // Login Subtitle
-                Text(
-                    text = AppStrings.loginSubtitle,
-                    style = AppTextStyles.headingSmall,
-                    color = AppColors.textPrimary,
-                    textAlign = TextAlign.Center
-                )
-                
-                Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
-                
-                // Phone Number Label
-                Text(
-                    text = AppStrings.phoneNumberLabel,
-                    style = AppTextStyles.labelMedium,
-                    color = AppColors.textSecondary,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(Dimensions.spacingSmall))
-                
-                // Phone Number Input
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Country Code Button
-                    OutlinedButton(
-                        onClick = onCountryCodeClick,
-                        modifier = Modifier
-                            .height(Dimensions.inputFieldHeight),
-                        shape = RoundedCornerShape(
-                            topStart = Dimensions.cornerRadiusMedium,
-                            bottomStart = Dimensions.cornerRadiusMedium
-                        ),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = AppColors.inputBackground,
-                            contentColor = AppColors.textPrimary
-                        ),
-                        border = null
-                    ) {
-                        Text(
-                            text = "${AppStrings.countryCode} ▼",
-                            style = AppTextStyles.bodyMedium,
-                            color = AppColors.textPrimary
-                        )
-                    }
-                    
-                    // Phone Number TextField
-                    OutlinedTextField(
-                        value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
-                        placeholder = {
-                            Text(
-                                text = AppStrings.phoneNumberPlaceholder,
-                                style = AppTextStyles.bodyMedium,
-                                color = AppColors.inputHint
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(Dimensions.inputFieldHeight),
-                        textStyle = AppTextStyles.bodyMedium.copy(
-                            color = AppColors.inputText
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Phone
-                        ),
-                        singleLine = true,
-                        shape = RoundedCornerShape(
-                            topEnd = Dimensions.cornerRadiusMedium,
-                            bottomEnd = Dimensions.cornerRadiusMedium
-                        ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = AppColors.inputBackground,
-                            unfocusedContainerColor = AppColors.inputBackground,
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent,
-                            cursorColor = AppColors.primary
-                        )
+                    .height(Dimensions.inputFieldHeight)
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF4A4A4A),
+                        shape = RoundedCornerShape(Dimensions.cornerRadiusMedium)
                     )
-                }
-                
-                Spacer(modifier = Modifier.height(Dimensions.spacingXLarge))
-                
-                // Continue Button
-                Button(
-                    onClick = { onContinueClick(phoneNumber) },
-                    modifier = Modifier
-                        .width(200.dp)
-                        .height(Dimensions.buttonHeight),
-                    shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.buttonBackground,
-                        contentColor = AppColors.buttonText
+                    .background(
+                        color = AppColors.inputBackground,
+                        shape = RoundedCornerShape(Dimensions.cornerRadiusMedium)
                     ),
-                    enabled = phoneNumber.isNotBlank()
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Country Code Button
+                OutlinedButton(
+                    onClick = onCountryCodeClick,
+                    modifier = Modifier
+                        .height(Dimensions.inputFieldHeight)
+                        .padding(0.dp),
+                    shape = RoundedCornerShape(
+                        topStart = Dimensions.cornerRadiusMedium,
+                        bottomStart = Dimensions.cornerRadiusMedium,
+                        topEnd = 0.dp,
+                        bottomEnd = 0.dp
+                    ),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = AppColors.textPrimary
+                    ),
+                    border = null,
+                    contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
                     Text(
-                        text = AppStrings.continueButton,
-                        style = AppTextStyles.buttonText
+                        text = "${AppStrings.countryCode} ▼",
+                        style = AppTextStyles.bodyMedium,
+                        color = AppColors.textPrimary
                     )
                 }
                 
-                Spacer(modifier = Modifier.height(Dimensions.spacingXLarge))
+                // Vertical divider line
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(32.dp)
+                        .background(Color(0xFF4A4A4A))
+                )
+                
+                // Phone Number TextField
+                OutlinedTextField(
+                    value = phoneNumber,
+                    onValueChange = { phoneNumber = it },
+                    placeholder = {
+                        Text(
+                            text = AppStrings.phoneNumberPlaceholder,
+                            style = AppTextStyles.bodyMedium,
+                            color = AppColors.inputHint
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(Dimensions.inputFieldHeight),
+                    textStyle = AppTextStyles.bodyMedium.copy(
+                        color = AppColors.inputText
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone
+                    ),
+                    singleLine = true,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        bottomStart = 0.dp,
+                        topEnd = Dimensions.cornerRadiusMedium,
+                        bottomEnd = Dimensions.cornerRadiusMedium
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        cursorColor = AppColors.primary
+                    )
+                )
             }
+        }
+        
+        // Continue Button at bottom
+        Button(
+            onClick = { onContinueClick(phoneNumber) },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(Dimensions.buttonHeight)
+                .padding(bottom = 32.dp),
+            shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColors.buttonBackground,
+                contentColor = AppColors.buttonText
+            ),
+            enabled = phoneNumber.isNotBlank()
+        ) {
+            Text(
+                text = AppStrings.continueButton,
+                style = AppTextStyles.buttonText
+            )
         }
     }
 }
