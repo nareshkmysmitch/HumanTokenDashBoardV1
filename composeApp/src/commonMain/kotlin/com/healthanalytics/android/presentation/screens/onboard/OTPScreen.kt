@@ -279,17 +279,6 @@ private fun OTPInputField(
                 androidx.compose.ui.graphics.SolidColor(AppColors.primary)
             }
         )
-        
-        if (value.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .background(
-                        color = AppColors.textSecondary.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-            )
-        }
     }
 }
 
