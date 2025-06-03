@@ -1,7 +1,10 @@
 package com.healthanalytics.android.presentation.screens.onboard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -12,9 +15,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -22,11 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.*
 import kotlinx.coroutines.delay
-import androidx.compose.foundation.clickable
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,10 +75,10 @@ fun OTPScreen(
                     onClick = onBackClick,
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(
+                    Image(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppColors.textPrimary
+                        colorFilter = ColorFilter.tint(AppColors.textPrimary)
                     )
                 }
 
