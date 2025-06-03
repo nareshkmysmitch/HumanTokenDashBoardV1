@@ -1,14 +1,13 @@
 
 package com.healthanalytics.android.presentation.screens.onboard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,7 +21,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.*
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,10 +70,9 @@ fun OTPScreen(
                     onClick = onBackClick,
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                    Image(
+                        painter = painterResource(Res.drawable.ic_calendar_icon),
                         contentDescription = "Back",
-                        tint = AppColors.textPrimary
                     )
                 }
                 
@@ -235,13 +236,13 @@ private fun OTPInputField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = modifier
             .focusRequester(focusRequester)
-            .background(
-                color = AppColors.surfaceVariant,
-                shape = RoundedCornerShape(8.dp)
-            )
+//            .background(
+//                color = AppColors.surfaceVariant,
+//                shape = RoundedCornerShape(8.dp)
+//            )
             .border(
                 width = 1.dp,
-                color = if (value.isNotEmpty()) AppColors.primary else AppColors.outline,
+                color = if (value.isNotEmpty()) AppColors.primary else AppColors.primary,
                 shape = RoundedCornerShape(8.dp)
             ),
         decorationBox = { innerTextField ->
