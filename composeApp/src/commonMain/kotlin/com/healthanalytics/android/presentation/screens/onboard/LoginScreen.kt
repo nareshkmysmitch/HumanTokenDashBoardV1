@@ -33,7 +33,8 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.Center),
+                .align(Alignment.TopCenter)
+                .padding(top = 80.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // App Logo/Name
@@ -169,7 +170,7 @@ fun LoginScreen(
             onClick = { onContinueClick(phoneNumber) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .width(200.dp)
+                .fillMaxWidth()
                 .height(Dimensions.buttonHeight)
                 .padding(bottom = 32.dp),
             shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
