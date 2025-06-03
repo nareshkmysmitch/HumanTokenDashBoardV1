@@ -20,17 +20,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -47,10 +39,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,10 +64,9 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                        Image(
+                            painter = painterResource(Res.drawable.ic_calendar_icon),
                             contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -104,13 +97,11 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Person,
                     title = "Edit Profile",
                     onClick = { /* Handle edit profile */ }
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Lock,
                     title = "Change Password",
                     onClick = { /* Handle change password */ }
                 )
@@ -122,19 +113,16 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 subtitle = "Manage your health information"
             ) {
                 ProfileMenuItem(
-                    icon = Icons.Default.Settings,
                     title = "Data Export",
                     onClick = { /* Handle data export */ }
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Settings,
                     title = "Privacy Settings",
                     onClick = { /* Handle privacy settings */ }
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Settings,
                     title = "Data Sharing Preferences",
                     onClick = { /* Handle data sharing */ }
                 )
@@ -152,13 +140,11 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Settings,
                     title = "Change Plan",
                     onClick = { /* Handle change plan */ }
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Delete,
                     title = "Cancel Subscription",
                     textColor = Color(0xFFFF6B6B),
                     onClick = { /* Handle cancel subscription */ }
@@ -186,7 +172,6 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Lock,
                     title = "Enable 2FA",
                     onClick = { /* Handle enable 2FA */ }
                 )
@@ -198,13 +183,11 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 subtitle = "Manage your active sessions"
             ) {
                 ProfileMenuItem(
-                    icon = Icons.Default.Settings,
                     title = "View Active Sessions",
                     onClick = { /* Handle view sessions */ }
                 )
 
                 ProfileMenuItem(
-                    icon = Icons.Default.Settings,
                     title = "Log Out",
                     onClick = { showLogoutDialog = true }
                 )
@@ -217,7 +200,6 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 titleColor = Color(0xFFFF6B6B)
             ) {
                 ProfileMenuItem(
-                    icon = Icons.Default.Delete,
                     title = "Delete Account",
                     textColor = Color(0xFFFF6B6B),
                     onClick = { /* Handle delete account */ }
@@ -286,11 +268,10 @@ private fun UserProfileCard(
                 .background(MaterialTheme.colorScheme.primary),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Person,
+            Image(
+                painter = painterResource(Res.drawable.ic_calendar_icon),
                 contentDescription = "Profile Picture",
                 modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
 
@@ -362,7 +343,6 @@ private fun SubscriptionCard(
 
 @Composable
 private fun ProfileMenuItem(
-    icon: ImageVector,
     title: String,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit
@@ -374,11 +354,10 @@ private fun ProfileMenuItem(
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
+        Image(
+            painter = painterResource(Res.drawable.ic_calendar_icon),
             contentDescription = title,
             modifier = Modifier.size(20.dp),
-            tint = textColor
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -390,11 +369,10 @@ private fun ProfileMenuItem(
             modifier = Modifier.weight(1f)
         )
 
-        Icon(
-            imageVector = Icons.Default.ChevronRight,
+        Image(
+            painter = painterResource(Res.drawable.ic_calendar_icon),
             contentDescription = "Navigate",
             modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

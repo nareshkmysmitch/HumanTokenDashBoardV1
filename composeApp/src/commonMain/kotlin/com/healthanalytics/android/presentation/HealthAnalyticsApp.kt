@@ -47,6 +47,7 @@ fun HealthAnalyticsApp() {
                         Screen.BIOMARKERS -> "BioMarkers"
                         Screen.RECOMMENDATIONS -> "Recommendations"
                         Screen.MARKETPLACE -> "Market Place"
+                        Screen.PROFILE -> "Profile"
                     }, onProfileClick = {
                         navigateTo(Screen.PROFILE)
                     }, onChatClick = {
