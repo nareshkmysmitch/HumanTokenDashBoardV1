@@ -301,28 +301,12 @@ private fun OTPInputField(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(
-                        // Add click handling to request focus when field is tapped
-                        Modifier.noRippleClickable {
-                            focusRequester.requestFocus()
-                        }
-                    ),
+                    .noRippleClickable {
+                        focusRequester.requestFocus()
+                    },
                 contentAlignment = Alignment.Center
             ) {
-                if (value.isEmpty()) {
-                    innerTextField()
-                } else {
-                    Text(
-                        text = value,
-                        style = AppTextStyles.headingSmall.copy(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        ),
-                        color = AppColors.textPrimary,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                innerTextField()
             }
         }
     )
