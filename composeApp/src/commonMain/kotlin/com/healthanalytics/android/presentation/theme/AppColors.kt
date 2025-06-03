@@ -34,4 +34,9 @@ object AppColors {
     // Error and success
     val error = Color(0xFFEF4444)
     val success = Color(0xFF10B981)
+
+    val TextGrey = Color(0XFFCBCFD5)
+
+    val alertDialogColor = Color(0XFFE6F1FF)
+
 }

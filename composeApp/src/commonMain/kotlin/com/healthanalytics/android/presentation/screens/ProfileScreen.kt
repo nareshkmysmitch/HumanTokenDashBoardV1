@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens
 
 import androidx.compose.foundation.Image
@@ -24,6 +23,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -44,22 +44,53 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.presentation.theme.AppColors
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(onNavigateBack: () -> Unit) {
-    var showLogoutDialog by remember { mutableStateOf(false) }
-    
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
+
+    var showAlertDialog by remember { mutableStateOf(false) }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Your Profile",
+                        color = AppColors.primary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_calendar_icon),
+                            contentDescription = "back arrow",
+                            tint = AppColors.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        },
+        containerColor = Color.Transparent
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Account Information Section
@@ -69,7 +100,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
             ) {
                 UserProfileCard(
                     name = "John Doe",
-                    email = "john.doe@healthanalytics.com"
+                    email = "john.doe@example.com"
                 )
 
                 ProfileMenuItem(
@@ -80,27 +111,6 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 ProfileMenuItem(
                     title = "Change Password",
                     onClick = { /* Handle change password */ }
-                )
-            }
-
-            // Health Data Section
-            ProfileSection(
-                title = "Health Data",
-                subtitle = "Manage your health information"
-            ) {
-                ProfileMenuItem(
-                    title = "Data Export",
-                    onClick = { /* Handle data export */ }
-                )
-
-                ProfileMenuItem(
-                    title = "Privacy Settings",
-                    onClick = { /* Handle privacy settings */ }
-                )
-
-                ProfileMenuItem(
-                    title = "Data Sharing Preferences",
-                    onClick = { /* Handle data sharing */ }
                 )
             }
 
@@ -134,7 +144,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
             ) {
                 Text(
                     text = "Two-Factor Authentication",
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = AppColors.textPrimary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 4.dp)
@@ -142,7 +152,7 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
                 Text(
                     text = "Add an extra layer of security to your account",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = AppColors.textPrimary,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
@@ -165,7 +175,9 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
                 ProfileMenuItem(
                     title = "Log Out",
-                    onClick = { showLogoutDialog = true }
+                    onClick = { /* Handle logout */
+                        showAlertDialog = true
+                    }
                 )
             }
 
@@ -184,17 +196,16 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(32.dp))
         }
-    
-    // Logout confirmation dialog
-    if (showLogoutDialog) {
+    }
+    if (showAlertDialog) {
         AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
+            onDismissRequest = { showAlertDialog = false },
             title = { Text("Confirm Logout") },
             text = { Text("Are you sure you want to log out?") },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        showLogoutDialog = false
+                        showAlertDialog = false
                         // Handle logout logic here
                     }
                 ) {
@@ -202,13 +213,176 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
+                TextButton(onClick = { showAlertDialog = false }) {
                     Text("Cancel")
                 }
             }
         )
     }
 }
+
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun ProfileScreen(onNavigateBack: () -> Unit) {
+//    var showLogoutDialog by remember { mutableStateOf(false) }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(horizontal = 16.dp)
+//            .verticalScroll(rememberScrollState()),
+//        verticalArrangement = Arrangement.spacedBy(20.dp)
+//    ) {
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            // Account Information Section
+//            ProfileSection(
+//                title = "Account Information",
+//                subtitle = "Manage your personal information"
+//            ) {
+//                UserProfileCard(
+//                    name = "John Doe",
+//                    email = "john.doe@healthanalytics.com"
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Edit Profile",
+//                    onClick = { /* Handle edit profile */ }
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Change Password",
+//                    onClick = { /* Handle change password */ }
+//                )
+//            }
+//
+//            // Health Data Section
+//            ProfileSection(
+//                title = "Health Data",
+//                subtitle = "Manage your health information"
+//            ) {
+//                ProfileMenuItem(
+//                    title = "Data Export",
+//                    onClick = { /* Handle data export */ }
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Privacy Settings",
+//                    onClick = { /* Handle privacy settings */ }
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Data Sharing Preferences",
+//                    onClick = { /* Handle data sharing */ }
+//                )
+//            }
+//
+//            // Subscription Section
+//            ProfileSection(
+//                title = "Subscription",
+//                subtitle = "Manage your subscription plan"
+//            ) {
+//                SubscriptionCard(
+//                    planName = "Premium Plan",
+//                    nextBillingDate = "June 15, 2025",
+//                    isActive = true
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Change Plan",
+//                    onClick = { /* Handle change plan */ }
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Cancel Subscription",
+//                    textColor = Color(0xFFFF6B6B),
+//                    onClick = { /* Handle cancel subscription */ }
+//                )
+//            }
+//
+//            // Privacy & Security Section
+//            ProfileSection(
+//                title = "Privacy & Security",
+//                subtitle = "Manage your security preferences"
+//            ) {
+//                Text(
+//                    text = "Two-Factor Authentication",
+//                    color = MaterialTheme.colorScheme.onSurface,
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    modifier = Modifier.padding(bottom = 4.dp)
+//                )
+//
+//                Text(
+//                    text = "Add an extra layer of security to your account",
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                    fontSize = 14.sp,
+//                    modifier = Modifier.padding(bottom = 12.dp)
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Enable 2FA",
+//                    onClick = { /* Handle enable 2FA */ }
+//                )
+//            }
+//
+//            // Sessions Section
+//            ProfileSection(
+//                title = "Sessions",
+//                subtitle = "Manage your active sessions"
+//            ) {
+//                ProfileMenuItem(
+//                    title = "View Active Sessions",
+//                    onClick = { /* Handle view sessions */ }
+//                )
+//
+//                ProfileMenuItem(
+//                    title = "Log Out",
+//                    onClick = { showLogoutDialog = true }
+//                )
+//            }
+//
+//            // Danger Zone Section
+//            ProfileSection(
+//                title = "Danger Zone",
+//                subtitle = "Permanent account actions",
+//                titleColor = Color(0xFFFF6B6B)
+//            ) {
+//                ProfileMenuItem(
+//                    title = "Delete Account",
+//                    textColor = Color(0xFFFF6B6B),
+//                    onClick = { /* Handle delete account */ }
+//                )
+//            }
+//
+//            Spacer(modifier = Modifier.height(32.dp))
+//        }
+//
+//    // Logout confirmation dialog
+//    if (showLogoutDialog) {
+//        AlertDialog(
+//            onDismissRequest = { showLogoutDialog = false },
+//            title = { Text("Confirm Logout") },
+//            text = { Text("Are you sure you want to log out?") },
+//            confirmButton = {
+//                TextButton(
+//                    onClick = {
+//                        showLogoutDialog = false
+//                        // Handle logout logic here
+//                    }
+//                ) {
+//                    Text("Logout")
+//                }
+//            },
+//            dismissButton = {
+//                TextButton(onClick = { showLogoutDialog = false }) {
+//                    Text("Cancel")
+//                }
+//            }
+//        )
+//    }
+//}
 
 @Composable
 private fun ProfileSection(
