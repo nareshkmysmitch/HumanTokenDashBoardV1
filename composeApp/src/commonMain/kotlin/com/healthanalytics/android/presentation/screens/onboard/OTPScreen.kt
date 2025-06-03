@@ -239,16 +239,8 @@ private fun OTPInputField(
     modifier: Modifier = Modifier,
     onFieldClick: () -> Unit = {}
 ) {
-    BasicTextField(
-        value = value,
-        onValueChange = { newValue ->
-            if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
-                onValueChange(newValue)
-            }
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    Box(
         modifier = modifier
-            .focusRequester(focusRequester)
             .background(
                 color = AppColors.surfaceVariant,
                 shape = RoundedCornerShape(8.dp)
@@ -257,40 +249,43 @@ private fun OTPInputField(
                 width = 1.dp,
                 color = if (value.isNotEmpty()) AppColors.primary else AppColors.outline,
                 shape = RoundedCornerShape(8.dp)
+            )
+            .noRippleClickable {
+                onFieldClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        BasicTextField(
+            value = value,
+            onValueChange = { newValue ->
+                if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
+                    onValueChange(newValue)
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .fillMaxSize(),
+            textStyle = AppTextStyles.headingSmall.copy(
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.primary,
+                textAlign = TextAlign.Center
             ),
-        decorationBox = { innerTextField ->
+            singleLine = true
+        )
+        
+        if (value.isEmpty()) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .noRippleClickable {
-                        onFieldClick()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                if (value.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = AppColors.textSecondary.copy(alpha = 0.3f),
-                                shape = RoundedCornerShape(4.dp)
-                            )
+                    .size(8.dp)
+                    .background(
+                        color = AppColors.textSecondary.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(4.dp)
                     )
-                } else {
-                    Text(
-                        text = value,
-                        style = AppTextStyles.headingSmall.copy(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = AppColors.textPrimary,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                innerTextField()
-            }
+            )
         }
-    )
+    }
 }
 
 fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
