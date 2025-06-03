@@ -175,7 +175,9 @@ fun LoginScreen(
                 shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.buttonBackground,
-                    contentColor = AppColors.buttonText
+                    contentColor = AppColors.buttonText,
+                    disabledContainerColor = AppColors.inputBackground,
+                    disabledContentColor = AppColors.textSecondary
                 ),
                 enabled = phoneNumber.isNotBlank()
             ) {
