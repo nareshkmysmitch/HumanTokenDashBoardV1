@@ -136,12 +136,25 @@ fun OTPScreen(
                         value = value,
                         onValueChange = { newValue ->
                             val newOtpValues = otpValues.toMutableList()
-                            newOtpValues[index] = newValue
-                            otpValues = newOtpValues
                             
-                            // Auto-focus next field
-                            if (newValue.isNotEmpty() && index < 5) {
-                                focusRequesters[index + 1].requestFocus()
+                            if (newValue.isNotEmpty()) {
+                                // Allow input in focused field
+                                newOtpValues[index] = newValue
+                                otpValues = newOtpValues
+                                
+                                // Auto-focus next field
+                                if (index < 5) {
+                                    focusRequesters[index + 1].requestFocus()
+                                }
+                            } else {
+                                // Allow removal from focused field
+                                newOtpValues[index] = newValue
+                                otpValues = newOtpValues
+                                
+                                // Focus previous field when removing value
+                                if (index > 0) {
+                                    focusRequesters[index - 1].requestFocus()
+                                }
                             }
                         },
                         focusRequester = focusRequesters[index],
