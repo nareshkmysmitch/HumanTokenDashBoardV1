@@ -10,7 +10,6 @@ import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.DashboardScreen
-import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.MarketplaceScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
@@ -18,42 +17,42 @@ import com.healthanalytics.android.presentation.theme.HealthAnalyticsTheme
 
 @Composable
 fun HealthAnalyticsApp() {
-    var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
-    var lastMainScreen by remember { mutableStateOf(Screen.DASHBOARD) }
-    var accessToken by remember { mutableStateOf<String?>(null) }
-
-    fun navigateTo(screen: Screen) {
-        // Remember the last main screen when navigating away from main screens
-        if (currentScreen in listOf(Screen.DASHBOARD, Screen.BIOMARKERS, Screen.RECOMMENDATIONS, Screen.MARKETPLACE)) {
-            lastMainScreen = currentScreen
-        }
-        currentScreen = screen
-    }
-
-    fun navigateBack() {
-        // Navigate back to the last main screen instead of always going to dashboard
-        currentScreen = lastMainScreen
-    }
-
-    accessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E"
-
-    if (accessToken == null) {
-        LoginScreen(
-            onLoginSuccess = { token ->
-                accessToken = token
-            })
-    } else {
-        when (currentScreen) {
-            Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
-            Screen.CHAT -> ProfileScreen(onNavigateBack = { navigateBack() })
-            Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
-                navigateTo(Screen.PROFILE)
-            }, onChatClick = {
-                navigateTo(Screen.CHAT)
-            })
-        }
-    }
+//    var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
+//    var lastMainScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
+//    var accessToken by remember { mutableStateOf<String?>(null) }
+//
+//    fun navigateTo(screen: Screen) {
+//        // Remember the last main screen when navigating away from main screens
+//        if (currentScreen in listOf(MainScreen.DASHBOARD, MainScreen.BIOMARKERS, MainScreen.RECOMMENDATIONS, MainScreen.MARKETPLACE)) {
+//            lastMainScreen = currentScreen
+//        }
+////        currentScreen = screen
+//    }
+//
+//    fun navigateBack() {
+//        // Navigate back to the last main screen instead of always going to dashboard
+//        currentScreen = lastMainScreen
+//    }
+//
+//    accessToken =
+//        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E"
+//
+//    if (accessToken == null) {
+//        LoginScreen(
+//            onLoginSuccess = { token ->
+//                accessToken = token
+//            })
+//    } else {
+//        when (currentScreen) {
+//            Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+//            Screen.CHAT -> ProfileScreen(onNavigateBack = { navigateBack() })
+//            Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
+//                navigateTo(Screen.PROFILE)
+//            }, onChatClick = {
+//                navigateTo(Screen.CHAT)
+//            })
+//        }
+//    }
 }
 
 
