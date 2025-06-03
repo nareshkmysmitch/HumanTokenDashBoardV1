@@ -15,7 +15,7 @@ sealed class ProductsUiState {
     data class Error(val message: String) : ProductsUiState()
 }
 
-class DashboardViewModel(
+class MarketPlaceViewModel(
     private val apiService: ApiService
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ProductsUiState>(ProductsUiState.Loading)

@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Preview
@@ -23,11 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.Product
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.math.roundToInt
 
 @Composable
-fun DashboardScreen(
-    modifier: Modifier = Modifier, viewModel: DashboardViewModel = koinViewModel()
+fun MarketPlaceScreen(
+    modifier: Modifier = Modifier, viewModel: MarketPlaceViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
