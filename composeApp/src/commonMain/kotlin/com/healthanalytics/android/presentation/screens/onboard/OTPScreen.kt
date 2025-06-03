@@ -154,17 +154,31 @@ fun OTPScreen(
                         value = value,
                         onValueChange = { newValue ->
                             val newOtpValues = otpValues.toMutableList()
-                            val oldValue = newOtpValues[index]
-                            newOtpValues[index] = newValue
-                            otpValues = newOtpValues
                             
-                            // Auto-focus next field when entering a value
-                            if (newValue.isNotEmpty() && index < 5) {
-                                focusRequesters[index + 1].requestFocus()
+                            // Find the first empty field index
+                            val firstEmptyIndex = newOtpValues.indexOfFirst { it.isEmpty() }
+                            // Find the last filled field index
+                            val lastFilledIndex = newOtpValues.indexOfLast { it.isNotEmpty() }
+                            
+                            // Only allow input if this is the first empty field
+                            if (newValue.isNotEmpty() && (index == firstEmptyIndex || firstEmptyIndex == -1)) {
+                                newOtpValues[index] = newValue
+                                otpValues = newOtpValues
+                                
+                                // Auto-focus next field when entering a value
+                                if (index < 5) {
+                                    focusRequesters[index + 1].requestFocus()
+                                }
                             }
-                            // Focus previous field when removing value from current field
-                            else if (newValue.isEmpty() && oldValue.isNotEmpty() && index > 0) {
-                                focusRequesters[index - 1].requestFocus()
+                            // Only allow removal if this is the last filled field
+                            else if (newValue.isEmpty() && index == lastFilledIndex) {
+                                newOtpValues[index] = newValue
+                                otpValues = newOtpValues
+                                
+                                // Focus previous field when removing value from last field
+                                if (index > 0) {
+                                    focusRequesters[index - 1].requestFocus()
+                                }
                             }
                         },
                         focusRequester = focusRequesters[index],
