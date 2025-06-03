@@ -60,6 +60,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.ktor.client.android)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.navigation.compose)
         }
 
         iosMain.dependencies {
