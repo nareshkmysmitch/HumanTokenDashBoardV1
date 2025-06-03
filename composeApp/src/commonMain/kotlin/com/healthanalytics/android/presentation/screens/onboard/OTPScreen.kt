@@ -243,9 +243,9 @@ private fun OTPInputField(
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        cursorBrush = androidx.compose.foundation.text.selection.LocalTextSelectionColors.current.let {
-            androidx.compose.foundation.SolidColor(MaterialTheme.colorScheme.primary)
-        },
+        cursorBrush = SolidColor(
+            value = AppColors.textPrimary
+        ),
         modifier = modifier
             .focusRequester(focusRequester)
             .background(
