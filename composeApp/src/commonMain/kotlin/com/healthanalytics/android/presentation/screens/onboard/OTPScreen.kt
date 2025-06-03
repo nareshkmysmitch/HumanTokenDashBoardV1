@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.background
@@ -23,6 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.*
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.clickable
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.composed
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +41,7 @@ fun OTPScreen(
     var resendTimer by remember { mutableStateOf(45) }
     var isTimerActive by remember { mutableStateOf(true) }
     val focusRequesters = remember { List(6) { FocusRequester() } }
-    
+
     // Timer countdown
     LaunchedEffect(resendTimer, isTimerActive) {
         if (isTimerActive && resendTimer > 0) {
@@ -46,7 +51,7 @@ fun OTPScreen(
             isTimerActive = false
         }
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -74,9 +79,9 @@ fun OTPScreen(
                         tint = AppColors.textPrimary
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 Text(
                     text = "Deep Holistics",
                     style = AppTextStyles.headingSmall.copy(
@@ -85,15 +90,15 @@ fun OTPScreen(
                     ),
                     color = AppColors.textPrimary
                 )
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 // Empty space to balance the layout
                 Spacer(modifier = Modifier.size(40.dp))
             }
-            
+
             Spacer(modifier = Modifier.height(80.dp))
-            
+
             // Title
             Text(
                 text = "Confirm your Phone",
@@ -104,9 +109,9 @@ fun OTPScreen(
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
-            
+
             // Subtitle with phone number
             Text(
                 text = "We've sent a security code to",
@@ -114,7 +119,7 @@ fun OTPScreen(
                 color = AppColors.textSecondary,
                 textAlign = TextAlign.Center
             )
-            
+
             Text(
                 text = phoneNumber,
                 style = AppTextStyles.bodyMedium.copy(
@@ -123,9 +128,9 @@ fun OTPScreen(
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(60.dp))
-            
+
             // OTP Input Fields
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -136,12 +141,12 @@ fun OTPScreen(
                         value = value,
                         onValueChange = { newValue ->
                             val newOtpValues = otpValues.toMutableList()
-                            
+
                             if (newValue.isNotEmpty()) {
                                 // Allow input in focused field
                                 newOtpValues[index] = newValue
                                 otpValues = newOtpValues
-                                
+
                                 // Auto-focus next field
                                 if (index < 5) {
                                     focusRequesters[index + 1].requestFocus()
@@ -150,7 +155,7 @@ fun OTPScreen(
                                 // Allow removal from focused field
                                 newOtpValues[index] = newValue
                                 otpValues = newOtpValues
-                                
+
                                 // Focus previous field when removing value
                                 if (index > 0) {
                                     focusRequesters[index - 1].requestFocus()
@@ -158,13 +163,20 @@ fun OTPScreen(
                             }
                         },
                         focusRequester = focusRequesters[index],
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(48.dp),
+                        onFieldClick = {
+                            if (otpValues.all { it.isEmpty() }) {
+                                focusRequesters[0].requestFocus()
+                            } else {
+                                focusRequesters[index].requestFocus()
+                            }
+                        }
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(40.dp))
-            
+
             // Resend Timer
             if (isTimerActive) {
                 Text(
@@ -188,9 +200,9 @@ fun OTPScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(60.dp))
-            
+
             // Continue Button
             Button(
                 onClick = {
@@ -202,7 +214,7 @@ fun OTPScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (otpValues.all { it.isNotEmpty() }) 
+                    containerColor = if (otpValues.all { it.isNotEmpty() })
                         AppColors.primary else AppColors.primary.copy(alpha = 0.3f),
                     contentColor = Color.White
                 ),
@@ -223,7 +235,8 @@ private fun OTPInputField(
     value: String,
     onValueChange: (String) -> Unit,
     focusRequester: FocusRequester,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFieldClick: () -> Unit = {}
 ) {
     BasicTextField(
         value = value,
@@ -246,7 +259,11 @@ private fun OTPInputField(
             ),
         decorationBox = { innerTextField ->
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .noRippleClickable {
+                        onFieldClick()
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 if (value.isEmpty()) {
@@ -273,4 +290,13 @@ private fun OTPInputField(
             }
         }
     )
+}
+
+fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
+    clickable(
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() }
+    ) {
+        onClick()
+    }
 }
