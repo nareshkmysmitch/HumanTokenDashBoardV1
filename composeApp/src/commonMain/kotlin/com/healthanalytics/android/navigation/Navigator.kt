@@ -1,4 +1,6 @@
 
+import com.healthanalytics.android.presentation.components.Screen
+
 expect class PlatformNavigator() {
     fun navigate(route: String)
     fun goBack()
