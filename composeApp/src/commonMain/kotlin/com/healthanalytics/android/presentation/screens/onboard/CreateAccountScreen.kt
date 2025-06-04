@@ -195,23 +195,16 @@ fun CreateAccountScreen(
                             ""
                         }
                     },
-                    placeholder = {
-                        Text(
-                            text = "Enter your email address",
-                            color = AppColors.inputHint
-                        )
-                    },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     isError = emailError.isNotEmpty(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = if (emailError.isNotEmpty()) AppColors.error else AppColors.inputBorder,
-                        unfocusedBorderColor = if (emailError.isNotEmpty()) AppColors.error else AppColors.outline,
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
                         focusedTextColor = AppColors.inputText,
                         unfocusedTextColor = AppColors.inputText,
-                        cursorColor = AppColors.inputText,
-                        errorBorderColor = AppColors.error
+                        cursorColor = AppColors.inputText
                     ),
                     shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
