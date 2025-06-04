@@ -143,10 +143,10 @@ fun HealthProfileScreen(
                             )
                         },
                         trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.DateRange,
-                                contentDescription = "Select date",
-                                tint = AppColors.inputHint
+                            Text(
+                                text = "📅",
+                                style = AppTextStyles.bodyMedium,
+                                color = AppColors.inputHint
                             )
                         },
                         colors = OutlinedTextFieldDefaults.colors(
@@ -191,10 +191,10 @@ fun HealthProfileScreen(
                                 )
                             },
                             trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Select gender",
-                                    tint = AppColors.inputHint
+                                Text(
+                                    text = "▼",
+                                    style = AppTextStyles.bodyMedium,
+                                    color = AppColors.inputHint
                                 )
                             },
                             colors = OutlinedTextFieldDefaults.colors(
