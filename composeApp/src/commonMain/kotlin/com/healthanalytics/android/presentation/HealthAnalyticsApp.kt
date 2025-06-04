@@ -15,19 +15,18 @@ import com.healthanalytics.android.di.initKoin
 
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
-import com.healthanalytics.android.di.initKoin
 
 
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 
 
 private val koin = initKoin()
@@ -38,6 +37,7 @@ fun HealthAnalyticsApp() {
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
     var accessToken by remember { mutableStateOf<String?>(null) }
+    var product = Product()
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
@@ -53,7 +53,7 @@ fun HealthAnalyticsApp() {
     }
 
     accessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E"
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMmE5YzRmYTMtY2ZmMi00Mzg3LTlhNTgtMGNjYzg1MmVjMmRiIiwic2Vzc2lvbl9pZCI6IjU3NDlkMjRhLWJhOTktNGI4YS05NDU1LTAyYjllMTcwNGNiMiIsInVzZXJfaW50X2lkIjoiNDM4IiwiaWF0IjoxNzQ5MDE4OTMzLCJleHAiOjE3NDk2MjM3MzN9.N93PEw2D0lfLOBus0XFKxF-bKAyvSw_YSS9k_kfNVls"
 
     if (accessToken == null) {
         LoginScreen(
@@ -71,10 +71,11 @@ fun HealthAnalyticsApp() {
                 navigateTo(Screen.CHAT)
             },
                 onMarketPlaceClick = {
+                    product = it
                     navigateTo(Screen.MARKETPLACE_DETAIL)
                 })
 
-            Screen.MARKETPLACE_DETAIL -> ProductDetailScreen()
+            Screen.MARKETPLACE_DETAIL -> ProductDetailScreen(product)
         }
     }
 }
@@ -97,9 +98,6 @@ fun HomeScreen(
     fun navigateBack() {
         currentScreen = MainScreen.DASHBOARD
     }
-
-
-
 
     Scaffold(topBar = {
         TopAppBar(
@@ -124,12 +122,13 @@ fun HomeScreen(
                 MainScreen.DASHBOARD -> DashboardScreen(token = accessToken.toString())
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
-                MainScreen.MARKETPLACE -> MarketplaceScreen(
-                    token = accessToken.toString(),
-                    onProductClick = {
-                        onMarketPlaceClick
-                    }
-                )
+                MainScreen.MARKETPLACE -> {
+                    MarketPlaceScreen(
+                        onProductClick = {
+                            onMarketPlaceClick(it)
+                        }
+                    )
+                }
             }
         }
     }

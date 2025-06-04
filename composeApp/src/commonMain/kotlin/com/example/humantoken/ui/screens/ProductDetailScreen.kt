@@ -1,7 +1,6 @@
 package com.example.humantoken.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,13 +17,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.data.api.Product
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun ProductDetailScreen() {
+fun ProductDetailScreen(product: Product) {
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }
     var selectedTab by remember { mutableStateOf(3) } // Reviews tab selected by default
