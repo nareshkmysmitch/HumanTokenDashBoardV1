@@ -4,6 +4,7 @@ package com.healthanalytics.android.presentation.screens.onboard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +24,6 @@ import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,179 +35,214 @@ fun CreateAccountScreen(
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("") }
+    
     val firstNameFocusRequester = remember { FocusRequester() }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
+    
+    // Email validation regex
+    val emailRegex = remember { 
+        Regex("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")
+    }
+    
+    // Focus on first name field when screen loads
     LaunchedEffect(Unit) {
-        delay(100) // Small delay to ensure the UI is fully composed
         firstNameFocusRequester.requestFocus()
+        keyboardController?.show()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(AppColors.backgroundDark)
-            .padding(Dimensions.screenPadding)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top Bar with Back Button and Title
+            // Top section with back button and logo
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp),
+                    .padding(top = Dimensions.spacingMedium),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
+                // Back button
+                TextButton(
                     onClick = onBackClick,
-                    modifier = Modifier.size(40.dp)
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = AppColors.textPrimary
+                    )
+                ) {
+                    Text(
+                        text = "← Back",
+                        style = AppTextStyles.bodyMedium,
+                        color = AppColors.textPrimary
+                    )
+                }
+
+                // Logo and title
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Back",
-                        modifier = Modifier.size(20.dp)
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(Dimensions.iconSize)
+                    )
+                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
+                    Text(
+                        text = "Deep Holistics",
+                        style = AppTextStyles.headingSmall,
+                        color = AppColors.textPrimary
                     )
                 }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                Text(
-                    text = "Deep Holistics",
-                    style = AppTextStyles.headingSmall.copy(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = AppColors.textPrimary
-                )
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // Empty space to balance the layout
-                Spacer(modifier = Modifier.size(40.dp))
+
+                // Empty space for balance
+                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
             }
-            
-            Spacer(modifier = Modifier.height(80.dp))
-            
+
+            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge + Dimensions.spacingSmall))
+
             // Title
             Text(
                 text = "Create your account",
-                style = AppTextStyles.headingSmall.copy(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+                style = AppTextStyles.headingLarge.copy(fontSize = 28.sp),
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 48.dp)
+                modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge - Dimensions.spacingSmall)
             )
-            
-            // First Name and Last Name Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+
+            // First Name Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "FIRST NAME",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    
-                    OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(firstNameFocusRequester),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.textSecondary,
-                            unfocusedBorderColor = AppColors.textSecondary.copy(alpha = 0.5f),
-                            focusedTextColor = AppColors.textPrimary,
-                            unfocusedTextColor = AppColors.textPrimary
-                        ),
-                        singleLine = true
-                    )
-                }
-                
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "LAST NAME",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.textSecondary,
-                            unfocusedBorderColor = AppColors.textSecondary.copy(alpha = 0.5f),
-                            focusedTextColor = AppColors.textPrimary,
-                            unfocusedTextColor = AppColors.textPrimary
-                        ),
-                        singleLine = true
-                    )
-                }
+                Text(
+                    text = "FIRST NAME",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(firstNameFocusRequester),
+                    maxLines = 1,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
+            // Last Name Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "LAST NAME",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             // Email Field
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = "EMAIL",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
                 )
-                
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
-                    placeholder = {
-                        Text(
-                            text = "Enter your email address",
-                            color = AppColors.textSecondary.copy(alpha = 0.6f)
-                        )
+                    onValueChange = { newValue ->
+                        email = newValue
+                        // Only validate if email contains @ and appears to be a complete attempt
+                        emailError = if (newValue.isNotEmpty() && newValue.contains("@") && !emailRegex.matches(newValue)) {
+                            "Please enter a valid email address"
+                        } else {
+                            ""
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppColors.textSecondary,
-                        unfocusedBorderColor = AppColors.textSecondary.copy(alpha = 0.5f),
-                        focusedTextColor = AppColors.textPrimary,
-                        unfocusedTextColor = AppColors.textPrimary
-                    ),
+                    maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    singleLine = true
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
+                
+                // Show email error message
+                if (emailError.isNotEmpty()) {
+                    Text(
+                        text = emailError,
+                        style = AppTextStyles.caption,
+                        color = AppColors.error,
+                        modifier = Modifier.padding(top = Dimensions.spacingXSmall)
+                    )
+                }
             }
-            
-            Spacer(modifier = Modifier.height(48.dp))
-            
+
+            Spacer(modifier = Modifier.height(40.dp))
+
             // Continue Button
             Button(
                 onClick = {
-                    if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()) {
+                    if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && emailError.isEmpty()) {
                         onContinueClick(firstName, lastName, email)
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
-                enabled = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty(),
+                    .height(Dimensions.buttonHeight),
+                enabled = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && emailError.isEmpty(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.textSecondary,
-                    contentColor = AppColors.backgroundDark,
-                    disabledContainerColor = AppColors.textSecondary.copy(alpha = 0.3f)
-                )
+                    containerColor = AppColors.buttonBackground,
+                    contentColor = AppColors.buttonText,
+                    disabledContainerColor = AppColors.inputBackground,
+                    disabledContentColor = AppColors.textSecondary
+                ),
+                shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
             ) {
                 Text(
                     text = "Continue",
-                    style = AppTextStyles.buttonText,
-                    fontWeight = FontWeight.Medium
+                    style = AppTextStyles.buttonText
                 )
             }
         }
