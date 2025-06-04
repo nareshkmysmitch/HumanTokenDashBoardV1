@@ -14,8 +14,9 @@ import androidx.compose.ui.Modifier
 import com.healthanalytics.android.di.initKoin
  
 import com.example.humantoken.ui.screens.ProductDetailScreen
- 
- 
+import com.healthanalytics.android.data.api.Product
+
+
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
