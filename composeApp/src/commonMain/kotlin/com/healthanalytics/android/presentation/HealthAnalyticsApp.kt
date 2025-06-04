@@ -73,6 +73,9 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit, onChatClick: ()
         currentScreen = MainScreen.DASHBOARD
     }
 
+
+
+
     Scaffold(topBar = {
         TopAppBar(
             title = when (currentScreen) {
