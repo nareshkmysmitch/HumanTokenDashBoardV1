@@ -4,6 +4,7 @@ import com.healthanalytics.android.utils.EncryptionUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
 
 interface ApiService {
@@ -12,7 +13,7 @@ interface ApiService {
 
 class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
     override suspend fun getProducts(accessToken: String): List<Product?>? {
-        val response = httpClient.get("v4/human-token/market-place/products") {
+        val response = httpClient.post("v4/human-token/market-place/products") {
             header("access_token", accessToken)
         }
         val responseBody = response.bodyAsText()

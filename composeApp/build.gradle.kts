@@ -92,8 +92,7 @@ kotlin {
             implementation(libs.koin.compose)
 
             implementation("io.github.qdsfdhvh:image-loader:1.10.0")
-            implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
-
+//            implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
 
         }
         commonTest.dependencies {
