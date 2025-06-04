@@ -1,7 +1,7 @@
 package com.example.humantoken.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,11 +19,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
@@ -37,6 +36,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
@@ -296,59 +298,176 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Tabs
-            ScrollableTabRow(
-                selectedTabIndex = selectedTab,
-                edgePadding = 0.dp
-            ) {
-                listOf(
-                    "Product Details",
-                    "Ingredients",
-                    "Directions",
-                    "Reviews"
-                ).forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = { Text(title) }
-                    )
+            // Tabs Section
+            Column(modifier = Modifier.fillMaxWidth()) {
+                ScrollableTabRow(
+                    selectedTabIndex = selectedTab,
+                    edgePadding = 16.dp,
+//                    containerColor = Color(0xFF1C1B1F),
+//                    contentColor = Color.Black,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.Indicator(
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                            height = 2.dp,
+                            color = Color.Black
+                        )
+                    }
+                ) {
+                    listOf(
+                        "Product Details",
+                        "Ingredients",
+                        "Directions",
+                        "Reviews"
+                    ).forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTab == index,
+                            onClick = { selectedTab = index },
+                            text = {
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = if (selectedTab == index) {
+                                            FontWeight.SemiBold
+                                        } else {
+                                            FontWeight.Normal
+                                        }
+                                    ),
+                                    color = if (selectedTab == index) {
+                                        Color.Black
+                                    } else {
+                                        Color.Black.copy(alpha = 0.6f)
+                                    }
+                                )
+                            }
+                        )
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // Reviews Section
-            Text(
-                text = "Customer Reviews",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                repeat(5) {
-                    Icon(
-                        imageVector = Icons.Default.StarBorder,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                // Tab Content
+                when (selectedTab) {
+                    0 -> {
+                        // Product Details Tab
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text(
+                                text = "Product Information",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ProductInfoRow("SKU:", product.sku ?: "")
+                            ProductInfoRow("Category:", product.category?.firstOrNull() ?: "")
+                            ProductInfoRow("Stock:", "${product.stock ?: 0} available")
+                        }
+                    }
+                    1 -> {
+                        // Ingredients Tab
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text(
+                                text = "Product ingredients information will be available soon.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Black.copy(alpha = 0.8f)
+                            )
+                        }
+                    }
+                    2 -> {
+                        // Directions Tab
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text(
+                                text = "Usage directions will be available soon.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Black.copy(alpha = 0.8f)
+                            )
+                        }
+                    }
+                    3 -> {
+                        // Reviews Tab
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Customer Reviews",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.Black
+                                )
+                                OutlinedButton(
+                                    onClick = { },
+                                    border = BorderStroke(1.dp, Color.Black),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = "Write a Review",
+                                        color = Color.Black
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                repeat(5) {
+                                    Icon(
+                                        imageVector = Icons.Default.StarBorder,
+                                        contentDescription = null,
+                                        tint = Color.Black,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                Text(
+                                    text = " Based on 0 reviews",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black.copy(alpha = 0.8f)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(32.dp))
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Message,
+                                        contentDescription = null,
+                                        tint = Color.Black.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(48.dp)
+                                    )
+                                    Text(
+                                        text = "No reviews yet. Be the first to review this product.",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = Color.Black.copy(alpha = 0.6f),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-
-            Text(
-                text = "Based on ${product.n_rating} reviews",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedButton(
-                onClick = { },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Write a Review")
             }
         }
     }
@@ -369,6 +488,27 @@ private fun InfoRow(icon: ImageVector, text: String) {
             text = text,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun ProductInfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Black.copy(alpha = 0.6f)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Black
         )
     }
 } 
