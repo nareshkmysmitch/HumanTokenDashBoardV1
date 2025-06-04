@@ -54,19 +54,25 @@ fun OTPScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().background(AppColors.backgroundDark)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.backgroundDark)
             .padding(Dimensions.screenPadding)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top Bar with Back Button
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 40.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = onBackClick, modifier = Modifier.size(40.dp)
+                    onClick = onBackClick,
+                    modifier = Modifier.size(40.dp)
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_calendar_icon),
@@ -79,9 +85,12 @@ fun OTPScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = "Deep Holistics", style = AppTextStyles.headingSmall.copy(
-                        fontSize = 18.sp, fontWeight = FontWeight.Bold
-                    ), color = AppColors.textPrimary
+                    text = "Deep Holistics",
+                    style = AppTextStyles.headingSmall.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = AppColors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -94,9 +103,13 @@ fun OTPScreen(
 
             // Title
             Text(
-                text = "Confirm your Phone", style = AppTextStyles.headingSmall.copy(
-                    fontSize = 24.sp, fontWeight = FontWeight.Bold
-                ), color = AppColors.textPrimary, textAlign = TextAlign.Center
+                text = "Confirm your Phone",
+                style = AppTextStyles.headingSmall.copy(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = AppColors.textPrimary,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
@@ -110,9 +123,12 @@ fun OTPScreen(
             )
 
             Text(
-                text = phoneNumber, style = AppTextStyles.bodyMedium.copy(
+                text = phoneNumber,
+                style = AppTextStyles.bodyMedium.copy(
                     fontWeight = FontWeight.Medium
-                ), color = AppColors.textPrimary, textAlign = TextAlign.Center
+                ),
+                color = AppColors.textPrimary,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(60.dp))
@@ -156,7 +172,8 @@ fun OTPScreen(
                             } else {
                                 focusRequesters[index].requestFocus()
                             }
-                        })
+                        }
+                    )
                 }
             }
 
@@ -165,9 +182,7 @@ fun OTPScreen(
             // Resend Timer
             if (isTimerActive) {
                 Text(
-                    text = "You can resend the code in 0:${
-                        resendTimer.toString().padStart(2, '0')
-                    }",
+                    text = "You can resend the code in 0:${resendTimer.toString().padStart(2, '0')}",
                     style = AppTextStyles.bodyMedium,
                     color = AppColors.textSecondary,
                     textAlign = TextAlign.Center
@@ -178,7 +193,8 @@ fun OTPScreen(
                         onResendClick()
                         resendTimer = 45
                         isTimerActive = true
-                    }) {
+                    }
+                ) {
                     Text(
                         text = "Resend Code",
                         style = AppTextStyles.bodyMedium,
@@ -192,20 +208,24 @@ fun OTPScreen(
             // Continue Button
             Button(
                 onClick = {
-                val otp = otpValues.joinToString("")
-                onContinueClick(otp)
-            },
+                    val otp = otpValues.joinToString("")
+                    onContinueClick(otp)
+                },
                 enabled = otpValues.all { it.isNotEmpty() },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (otpValues.all { it.isNotEmpty() }) AppColors.primary else AppColors.primary.copy(
-                        alpha = 0.3f
-                    ), contentColor = Color.White
+                    containerColor = if (otpValues.all { it.isNotEmpty() })
+                        AppColors.primary else AppColors.primary.copy(alpha = 0.3f),
+                    contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(28.dp)
             ) {
                 Text(
-                    text = "Continue", style = AppTextStyles.buttonText, fontSize = 16.sp
+                    text = "Continue",
+                    style = AppTextStyles.buttonText,
+                    fontSize = 16.sp
                 )
             }
         }
@@ -221,15 +241,20 @@ private fun OTPInputField(
     onFieldClick: () -> Unit = {}
 ) {
     Box(
-        modifier = modifier.background(
-            color = AppColors.primary, shape = RoundedCornerShape(8.dp)
-        ).border(
-            width = 1.dp,
-            color = if (value.isNotEmpty()) AppColors.primary else AppColors.backgroundDark,
-            shape = RoundedCornerShape(8.dp)
-        ).noRippleClickable {
-            onFieldClick()
-        }, contentAlignment = Alignment.Center
+        modifier = modifier
+            .background(
+                color = AppColors.primary,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .border(
+                width = 1.dp,
+                color = if (value.isNotEmpty()) AppColors.primary else AppColors.secondary,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .noRippleClickable {
+                onFieldClick()
+            },
+        contentAlignment = Alignment.Center
     ) {
         BasicTextField(
             value = value,
@@ -239,7 +264,9 @@ private fun OTPInputField(
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.focusRequester(focusRequester).fillMaxSize()
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .fillMaxSize()
                 .wrapContentHeight(Alignment.CenterVertically),
             textStyle = AppTextStyles.headingSmall.copy(
                 fontSize = 20.sp,
@@ -250,13 +277,16 @@ private fun OTPInputField(
             singleLine = true,
             cursorBrush = androidx.compose.foundation.text.selection.LocalTextSelectionColors.current.let {
                 androidx.compose.ui.graphics.SolidColor(AppColors.primary)
-            })
+            }
+        )
     }
 }
 
 fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     clickable(
-        indication = null, interactionSource = remember { MutableInteractionSource() }) {
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() }
+    ) {
         onClick()
     }
 }

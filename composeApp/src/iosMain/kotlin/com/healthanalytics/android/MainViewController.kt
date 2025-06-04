@@ -1,7 +1,22 @@
 package com.healthanalytics.android
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.window.ComposeUIViewController
 import com.healthanalytics.android.presentation.HealthAnalyticsApp
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+import io.ktor.client.engine.darwin.Darwin
 
-fun MainViewController() = ComposeUIViewController { HealthAnalyticsApp() }
+val LocalNativeViewFactory = staticCompositionLocalOf<NativeViewFactory> {
+    error("No view factory")
+}
+
+
+
+fun MainViewController(
+    nativeViewFactory: NativeViewFactory,
+) = ComposeUIViewController {
+    CompositionLocalProvider(LocalNativeViewFactory provides nativeViewFactory) {
+        HealthAnalyticsApp()
+    }
+}

@@ -38,5 +38,10 @@ object AppColors {
     val TextGrey = Color(0XFFCBCFD5)
 
     val alertDialogColor = Color(0XFFE6F1FF)
+    val PurpleBackground = Color(76767633)
+    val PurpleCardBackground = Color(0xFF2E2332)
+    val PurpleIconBackground = Color(0XFF393442)
+    val PurpleButtonBackground = Color(0XFF54414E)
+    val Transparent = Color.Transparent
 
 }

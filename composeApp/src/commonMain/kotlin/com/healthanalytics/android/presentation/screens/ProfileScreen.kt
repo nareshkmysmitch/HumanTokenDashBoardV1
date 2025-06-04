@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.ui.ShowAlertDialog
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
@@ -80,10 +81,14 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                     }
                 },
             )
-        }, containerColor = Color.Transparent
+        },
+        containerColor = Color.Transparent
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
@@ -91,39 +96,52 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
             // Account Information Section
             ProfileSection(
-                title = "Account Information", subtitle = "Manage your personal information"
+                title = "Account Information",
+                subtitle = "Manage your personal information"
             ) {
                 UserProfileCard(
-                    name = "John Doe", email = "john.doe@example.com"
+                    name = "John Doe",
+                    email = "john.doe@example.com"
                 )
 
                 ProfileMenuItem(
-                    title = "Edit Profile", onClick = { /* Handle edit profile */ })
+                    title = "Edit Profile",
+                    onClick = { /* Handle edit profile */ }
+                )
 
                 ProfileMenuItem(
-                    title = "Change Password", onClick = { /* Handle change password */ })
+                    title = "Change Password",
+                    onClick = { /* Handle change password */ }
+                )
             }
 
             // Subscription Section
             ProfileSection(
-                title = "Subscription", subtitle = "Manage your subscription plan"
+                title = "Subscription",
+                subtitle = "Manage your subscription plan"
             ) {
                 SubscriptionCard(
-                    planName = "Premium Plan", nextBillingDate = "June 15, 2025", isActive = true
+                    planName = "Premium Plan",
+                    nextBillingDate = "June 15, 2025",
+                    isActive = true
                 )
 
                 ProfileMenuItem(
-                    title = "Change Plan", onClick = { /* Handle change plan */ })
+                    title = "Change Plan",
+                    onClick = { /* Handle change plan */ }
+                )
 
                 ProfileMenuItem(
                     title = "Cancel Subscription",
                     textColor = Color(0xFFFF6B6B),
-                    onClick = { /* Handle cancel subscription */ })
+                    onClick = { /* Handle cancel subscription */ }
+                )
             }
 
             // Privacy & Security Section
             ProfileSection(
-                title = "Privacy & Security", subtitle = "Manage your security preferences"
+                title = "Privacy & Security",
+                subtitle = "Manage your security preferences"
             ) {
                 Text(
                     text = "Two-Factor Authentication",
@@ -141,20 +159,27 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 )
 
                 ProfileMenuItem(
-                    title = "Enable 2FA", onClick = { /* Handle enable 2FA */ })
+                    title = "Enable 2FA",
+                    onClick = { /* Handle enable 2FA */ }
+                )
             }
 
             // Sessions Section
             ProfileSection(
-                title = "Sessions", subtitle = "Manage your active sessions"
+                title = "Sessions",
+                subtitle = "Manage your active sessions"
             ) {
                 ProfileMenuItem(
-                    title = "View Active Sessions", onClick = { /* Handle view sessions */ })
+                    title = "View Active Sessions",
+                    onClick = { /* Handle view sessions */ }
+                )
 
                 ProfileMenuItem(
-                    title = "Log Out", onClick = { /* Handle logout */
+                    title = "Log Out",
+                    onClick = { /* Handle logout */
                         showAlertDialog = true
-                    })
+                    }
+                )
             }
 
             // Danger Zone Section
@@ -166,31 +191,22 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
                 ProfileMenuItem(
                     title = "Delete Account",
                     textColor = Color(0xFFFF6B6B),
-                    onClick = { /* Handle delete account */ })
+                    onClick = { /* Handle delete account */ }
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
     if (showAlertDialog) {
-        AlertDialog(
-            onDismissRequest = { showAlertDialog = false },
-            title = { Text("Confirm Logout") },
-            text = { Text("Are you sure you want to log out?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showAlertDialog = false
-                        // Handle logout logic here
-                    }) {
-                    Text("Logout")
-                }
+        ShowAlertDialog(
+            modifier = Modifier,
+            title = "Log out",
+            message = "You will be logged out of your Deep Holistics account. However this doesn\\’t affect your logged data. Do you want to still logout?",
+            onDismiss = {
+                showAlertDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { showAlertDialog = false }) {
-                    Text("Cancel")
-                }
-            })
+            onLogout = {showAlertDialog = false })
     }
 }
 
@@ -219,9 +235,11 @@ private fun ProfileSection(
         )
 
         Card(
-            modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ), shape = RoundedCornerShape(12.dp)
+            ),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -234,15 +252,21 @@ private fun ProfileSection(
 
 @Composable
 private fun UserProfileCard(
-    name: String, email: String
+    name: String,
+    email: String
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.size(48.dp).clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary), contentAlignment = Alignment.Center
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(Res.drawable.ic_calendar_icon),
@@ -261,7 +285,9 @@ private fun UserProfileCard(
                 fontWeight = FontWeight.Medium
             )
             Text(
-                text = email, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp
+                text = email,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 14.sp
             )
         }
     }
@@ -269,10 +295,14 @@ private fun UserProfileCard(
 
 @Composable
 private fun SubscriptionCard(
-    planName: String, nextBillingDate: String, isActive: Boolean
+    planName: String,
+    nextBillingDate: String,
+    isActive: Boolean
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -288,7 +318,8 @@ private fun SubscriptionCard(
 
             if (isActive) {
                 Surface(
-                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(12.dp)
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         text = "Active",
@@ -312,10 +343,15 @@ private fun SubscriptionCard(
 
 @Composable
 private fun ProfileMenuItem(
-    title: String, textColor: Color = MaterialTheme.colorScheme.onSurface, onClick: () -> Unit
+    title: String,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() }.padding(vertical = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -327,7 +363,10 @@ private fun ProfileMenuItem(
         Spacer(modifier = Modifier.width(16.dp))
 
         Text(
-            text = title, color = textColor, fontSize = 16.sp, modifier = Modifier.weight(1f)
+            text = title,
+            color = textColor,
+            fontSize = 16.sp,
+            modifier = Modifier.weight(1f)
         )
 
         Image(
