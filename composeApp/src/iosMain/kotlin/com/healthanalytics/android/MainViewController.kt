@@ -1,7 +1,11 @@
 package com.healthanalytics.android
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
-import com.healthanalytics.android.presentation.HealthAnalyticsApp
-import com.healthanalytics.android.presentation.dashboard.DashboardScreen
+import createDataStore
 
-fun MainViewController() = ComposeUIViewController { DashboardScreen() }
+fun MainViewController() = ComposeUIViewController {
+    App(
+        remember { createDataStore() }
+    )
+}
