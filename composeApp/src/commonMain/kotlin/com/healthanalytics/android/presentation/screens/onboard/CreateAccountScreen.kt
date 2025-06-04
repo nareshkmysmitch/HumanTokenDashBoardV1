@@ -100,58 +100,56 @@ fun CreateAccountScreen(
                 modifier = Modifier.padding(bottom = 40.dp)
             )
 
-            // First Name and Last Name Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            // First Name Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "FIRST NAME",
-                        style = AppTextStyles.bodySmall,
-                        color = Color.White.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.White.copy(alpha = 0.5f),
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                }
+                Text(
+                    text = "FIRST NAME",
+                    style = AppTextStyles.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.White.copy(alpha = 0.5f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                )
+            }
 
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "LAST NAME",
-                        style = AppTextStyles.bodySmall,
-                        color = Color.White.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.White.copy(alpha = 0.5f),
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Last Name Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "LAST NAME",
+                    style = AppTextStyles.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.White.copy(alpha = 0.5f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
