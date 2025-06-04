@@ -142,7 +142,8 @@ fun SampleCollectionAddressScreen(
             // City, State, Zip Code Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.Bottom
             ) {
                 // City Field
                 Column(
