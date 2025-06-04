@@ -188,8 +188,8 @@ fun CreateAccountScreen(
                     value = email,
                     onValueChange = { newValue ->
                         email = newValue
-                        // Validate email if not empty
-                        emailError = if (newValue.isNotEmpty() && !emailRegex.matches(newValue)) {
+                        // Only validate if email contains @ and appears to be a complete attempt
+                        emailError = if (newValue.isNotEmpty() && newValue.contains("@") && !emailRegex.matches(newValue)) {
                             "Please enter a valid email address"
                         } else {
                             ""
