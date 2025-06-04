@@ -10,7 +10,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +35,21 @@ fun CreateAccountScreen(
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("") }
+    
+    val firstNameFocusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    
+    // Email validation regex
+    val emailRegex = remember { 
+        Regex("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")
+    }
+    
+    // Focus on first name field when screen loads
+    LaunchedEffect(Unit) {
+        firstNameFocusRequester.requestFocus()
+        keyboardController?.show()
+    }
 
     Box(
         modifier = Modifier
@@ -110,8 +128,12 @@ fun CreateAccountScreen(
                 )
                 OutlinedTextField(
                     value = firstName,
-                    onValueChange = { firstName = it },
-                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { 
+                        if (it.length <= 1) firstName = it 
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(firstNameFocusRequester),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = AppColors.inputBorder,
                         unfocusedBorderColor = AppColors.outline,
@@ -137,7 +159,9 @@ fun CreateAccountScreen(
                 )
                 OutlinedTextField(
                     value = lastName,
-                    onValueChange = { lastName = it },
+                    onValueChange = { 
+                        if (it.length <= 1) lastName = it 
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = AppColors.inputBorder,
@@ -164,7 +188,17 @@ fun CreateAccountScreen(
                 )
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { newValue ->
+                        if (newValue.length <= 1) {
+                            email = newValue
+                            // Validate email if not empty
+                            emailError = if (newValue.isNotEmpty() && !emailRegex.matches(newValue)) {
+                                "Please enter a valid email address"
+                            } else {
+                                ""
+                            }
+                        }
+                    },
                     placeholder = {
                         Text(
                             text = "Enter your email address",
@@ -173,15 +207,27 @@ fun CreateAccountScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    isError = emailError.isNotEmpty(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppColors.inputBorder,
-                        unfocusedBorderColor = AppColors.outline,
+                        focusedBorderColor = if (emailError.isNotEmpty()) AppColors.error else AppColors.inputBorder,
+                        unfocusedBorderColor = if (emailError.isNotEmpty()) AppColors.error else AppColors.outline,
                         focusedTextColor = AppColors.inputText,
                         unfocusedTextColor = AppColors.inputText,
-                        cursorColor = AppColors.inputText
+                        cursorColor = AppColors.inputText,
+                        errorBorderColor = AppColors.error
                     ),
                     shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
+                
+                // Show email error message
+                if (emailError.isNotEmpty()) {
+                    Text(
+                        text = emailError,
+                        style = AppTextStyles.caption,
+                        color = AppColors.error,
+                        modifier = Modifier.padding(top = Dimensions.spacingXSmall)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -189,12 +235,12 @@ fun CreateAccountScreen(
             // Continue Button
             Button(
                 onClick = {
-                    if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()) {
+                    if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && emailError.isEmpty()) {
                         onContinueClick(firstName, lastName, email)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty(),
+                enabled = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && emailError.isEmpty(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.secondary,
                     disabledContainerColor = AppColors.secondary.copy(alpha = 0.5f)
