@@ -1,9 +1,13 @@
 package com.healthanalytics.android.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.ApiServiceImpl
 import com.healthanalytics.android.data.network.NetworkConfig
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.health.HealthDataViewModel
+import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -15,9 +19,12 @@ val appModule = module {
     // API Service
     single<ApiService> { ApiServiceImpl(get()) }
 
+    single { PreferencesRepository(get()) }
+
     // ViewModels
     factoryOf(::HealthDataViewModel)
     factoryOf(::MarketPlaceViewModel)
+    factoryOf(::PreferencesViewModel)
 }
 
 fun initKoin() = org.koin.core.context.startKoin {
