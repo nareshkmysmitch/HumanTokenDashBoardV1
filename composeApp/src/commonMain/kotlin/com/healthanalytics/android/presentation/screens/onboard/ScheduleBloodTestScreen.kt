@@ -28,6 +28,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 
+private val timeSlots = listOf(
+    "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM",
+    "09:30 AM", "10:00 AM", "10:30 AM"
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleBloodTestScreen(
