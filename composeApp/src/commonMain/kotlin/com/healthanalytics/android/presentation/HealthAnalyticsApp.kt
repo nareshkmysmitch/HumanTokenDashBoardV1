@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation
 
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,26 +11,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
- 
-import com.healthanalytics.android.di.initKoin
- 
 import com.example.humantoken.ui.screens.ProductDetailScreen
- 
- 
+import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.di.initKoin
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
-import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
- 
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 
-private val koin = initKoin()
- 
 
 @Composable
 fun HealthAnalyticsApp() {
@@ -65,10 +60,10 @@ fun HealthAnalyticsApp() {
             Screen.CHAT -> ProfileScreen(onNavigateBack = { navigateBack() })
             Screen.HOME -> HomeScreen(
                 accessToken, onProfileClick = {
-                navigateTo(Screen.PROFILE)
-            }, onChatClick = {
-                navigateTo(Screen.CHAT)
-            },
+                    navigateTo(Screen.PROFILE)
+                }, onChatClick = {
+                    navigateTo(Screen.CHAT)
+                },
                 onMarketPlaceClick = {
                     navigateTo(Screen.MARKETPLACE_DETAIL)
                 })
@@ -84,7 +79,7 @@ fun HomeScreen(
     accessToken: String?,
     onProfileClick: () -> Unit,
     onChatClick: () -> Unit,
-    onMarketPlaceClick: (Product) -> Unit
+    onMarketPlaceClick: (Product) -> Unit,
 ) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
@@ -120,12 +115,12 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             when (currentScreen) {
-                MainScreen.DASHBOARD -> DashboardScreen(token = accessToken.toString())
+                MainScreen.DASHBOARD -> HealthDataScreen()
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
- 
+
                 MainScreen.MARKETPLACE -> MarketPlaceScreen()
- 
+
             }
         }
     }
