@@ -223,12 +223,12 @@ private fun OTPInputField(
         modifier = modifier
             .focusRequester(focusRequester)
             .background(
-                color = AppColors.surfaceVariant,
+                color = AppColors.textPrimary,
                 shape = RoundedCornerShape(8.dp)
             )
             .border(
                 width = 1.dp,
-                color = if (value.isNotEmpty()) AppColors.primary else AppColors.outline,
+                color = if (value.isNotEmpty()) AppColors.primary else AppColors.primary,
                 shape = RoundedCornerShape(8.dp)
             ),
         decorationBox = { innerTextField ->

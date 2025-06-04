@@ -93,8 +93,9 @@ kotlin {
 
             implementation("io.github.qdsfdhvh:image-loader:1.10.0")
             implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
-            api("androidx.datastore:datastore-preferences:1.1.7")
-            api("androidx.datastore:datastore-preferences-core:1.1.7")
+
+            api(libs.androidx.datastore.preferences)
+            api(libs.androidx.datastore.preferences.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
