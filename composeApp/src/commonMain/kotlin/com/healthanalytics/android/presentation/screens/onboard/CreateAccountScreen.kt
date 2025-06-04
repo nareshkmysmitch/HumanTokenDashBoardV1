@@ -36,19 +36,19 @@ fun CreateAccountScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2D2A3E))
+            .background(AppColors.backgroundDark)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top section with back button and logo
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(top = Dimensions.spacingMedium),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -56,13 +56,13 @@ fun CreateAccountScreen(
                 TextButton(
                     onClick = onBackClick,
                     colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color.White
+                        contentColor = AppColors.textPrimary
                     )
                 ) {
                     Text(
                         text = "← Back",
                         style = AppTextStyles.bodyMedium,
-                        color = Color.White
+                        color = AppColors.textPrimary
                     )
                 }
 
@@ -73,31 +73,29 @@ fun CreateAccountScreen(
                     Image(
                         painter = painterResource(Res.drawable.ic_calendar_icon),
                         contentDescription = "Logo",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(Dimensions.iconSize)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
                     Text(
                         text = "Deep Holistics",
-                        style = AppTextStyles.titleMedium,
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium
+                        style = AppTextStyles.headingSmall,
+                        color = AppColors.textPrimary
                     )
                 }
 
                 // Empty space for balance
-                Spacer(modifier = Modifier.width(48.dp))
+                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
             }
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge + Dimensions.spacingSmall))
 
             // Title
             Text(
                 text = "Create your account",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+                style = AppTextStyles.headingLarge.copy(fontSize = 28.sp),
+                color = AppColors.textPrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 40.dp)
+                modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge - Dimensions.spacingSmall)
             )
 
             // First Name Field
@@ -106,22 +104,22 @@ fun CreateAccountScreen(
             ) {
                 Text(
                     text = "FIRST NAME",
-                    style = AppTextStyles.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
                 )
                 OutlinedTextField(
                     value = firstName,
                     onValueChange = { firstName = it },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
             }
 
@@ -133,22 +131,22 @@ fun CreateAccountScreen(
             ) {
                 Text(
                     text = "LAST NAME",
-                    style = AppTextStyles.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
                 )
                 OutlinedTextField(
                     value = lastName,
                     onValueChange = { lastName = it },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
             }
 
@@ -160,9 +158,9 @@ fun CreateAccountScreen(
             ) {
                 Text(
                     text = "EMAIL",
-                    style = AppTextStyles.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
                 )
                 OutlinedTextField(
                     value = email,
@@ -170,19 +168,19 @@ fun CreateAccountScreen(
                     placeholder = {
                         Text(
                             text = "Enter your email address",
-                            color = Color.White.copy(alpha = 0.5f)
+                            color = AppColors.inputHint
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
             }
 
@@ -198,16 +196,16 @@ fun CreateAccountScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8B7CF6),
-                    disabledContainerColor = Color(0xFF8B7CF6).copy(alpha = 0.5f)
+                    containerColor = AppColors.secondary,
+                    disabledContainerColor = AppColors.secondary.copy(alpha = 0.5f)
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
             ) {
                 Text(
                     text = "Continue",
-                    color = Color.White,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    style = AppTextStyles.buttonText,
+                    color = AppColors.buttonText,
+                    modifier = Modifier.padding(vertical = Dimensions.spacingXSmall)
                 )
             }
         }
