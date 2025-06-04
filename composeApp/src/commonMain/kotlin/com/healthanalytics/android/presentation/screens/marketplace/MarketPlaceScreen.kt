@@ -215,7 +215,10 @@ private fun ProductCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clickable {
+            onProductClick(product)
+            println("product -> mps1$product")
+        },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -274,11 +277,7 @@ private fun ProductCard(
 
             // Product Details
             Column(
-                modifier = Modifier.padding(8.dp)
-                    .clickable {
-                        onProductClick(product)
-                        println("product -> mps1$product")
-                    },
+                modifier = Modifier.padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 product.name?.let {
