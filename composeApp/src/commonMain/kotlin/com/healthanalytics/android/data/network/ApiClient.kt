@@ -2,11 +2,11 @@ package com.healthanalytics.android.data.network
 
 import com.healthanalytics.android.data.models.ApiResponse
 import com.healthanalytics.android.data.models.AuthRequest
-import com.healthanalytics.android.data.models.AuthResponse
 import com.healthanalytics.android.data.models.Biomarker
 import com.healthanalytics.android.data.models.CartItem
 import com.healthanalytics.android.data.models.OtpVerifyRequest
 import com.healthanalytics.android.data.models.Product
+import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

@@ -1,9 +1,9 @@
 package com.healthanalytics.android.data.repositories
 
-import com.healthanalytics.android.data.models.AuthResponse
 import com.healthanalytics.android.data.models.Biomarker
 import com.healthanalytics.android.data.models.CartItem
 import com.healthanalytics.android.data.models.Product
+import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.data.network.ApiClient
 
 class HealthRepository {
