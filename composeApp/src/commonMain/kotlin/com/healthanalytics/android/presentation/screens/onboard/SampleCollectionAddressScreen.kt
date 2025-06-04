@@ -139,108 +139,105 @@ fun SampleCollectionAddressScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // City, State, Zip Code Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.Bottom
+            // City Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // City Field
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "CITY",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
-                    )
-                    OutlinedTextField(
-                        value = city,
-                        onValueChange = { city = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                text = "City",
-                                color = AppColors.inputHint,
-                                style = AppTextStyles.bodyMedium
-                            )
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
+                Text(
+                    text = "CITY",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                OutlinedTextField(
+                    value = city,
+                    onValueChange = { city = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            text = "City",
+                            color = AppColors.inputHint,
+                            style = AppTextStyles.bodyMedium
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
+            }
 
-                // State Field
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "STATE",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
-                    )
-                    OutlinedTextField(
-                        value = state,
-                        onValueChange = { state = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                text = "State",
-                                color = AppColors.inputHint,
-                                style = AppTextStyles.bodyMedium
-                            )
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
+            Spacer(modifier = Modifier.height(24.dp))
 
-                // Zip Code Field
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "ZIP CODE",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
-                    )
-                    OutlinedTextField(
-                        value = zipCode,
-                        onValueChange = { zipCode = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                text = "Zip code",
-                                color = AppColors.inputHint,
-                                style = AppTextStyles.bodyMedium
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
+            // State Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "STATE",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                OutlinedTextField(
+                    value = state,
+                    onValueChange = { state = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            text = "State",
+                            color = AppColors.inputHint,
+                            style = AppTextStyles.bodyMedium
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Zip Code Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "ZIP CODE",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                OutlinedTextField(
+                    value = zipCode,
+                    onValueChange = { zipCode = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            text = "Zip code",
+                            color = AppColors.inputHint,
+                            style = AppTextStyles.bodyMedium
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
             }
 
             Spacer(modifier = Modifier.height(40.dp))
