@@ -57,6 +57,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.viewmodel.koinViewModel

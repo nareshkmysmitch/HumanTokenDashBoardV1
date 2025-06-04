@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation
 
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,22 +11,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-
-import com.healthanalytics.android.di.initKoin
-
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
-
-
+import com.healthanalytics.android.di.initKoin
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
-import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 
 
@@ -66,20 +63,21 @@ fun HealthAnalyticsApp() {
             Screen.CHAT -> ProfileScreen(onNavigateBack = { navigateBack() })
             Screen.HOME -> HomeScreen(
                 accessToken, onProfileClick = {
-                navigateTo(Screen.PROFILE)
-            }, onChatClick = {
-                navigateTo(Screen.CHAT)
-            },
+                    navigateTo(Screen.PROFILE)
+                }, onChatClick = {
+                    navigateTo(Screen.CHAT)
+                },
                 onMarketPlaceClick = {
                     product = it
                     navigateTo(Screen.MARKETPLACE_DETAIL)
                 })
 
-            Screen.MARKETPLACE_DETAIL -> ProductDetailScreen(product)
+            Screen.MARKETPLACE_DETAIL -> ProductDetailScreen(product, onNavigateBack = {
+                navigateBack()
+            })
         }
     }
 }
-
 
 @Composable
 fun HomeScreen(
@@ -93,10 +91,6 @@ fun HomeScreen(
 
     fun navigateTo(screen: MainScreen) {
         currentScreen = screen
-    }
-
-    fun navigateBack() {
-        currentScreen = MainScreen.DASHBOARD
     }
 
     Scaffold(topBar = {
@@ -123,11 +117,7 @@ fun HomeScreen(
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
                 MainScreen.MARKETPLACE -> {
-                    MarketPlaceScreen(
-                        onProductClick = {
-                            onMarketPlaceClick(it)
-                        }
-                    )
+                    MarketPlaceScreen(onProductClick = { onMarketPlaceClick(it) })
                 }
             }
         }

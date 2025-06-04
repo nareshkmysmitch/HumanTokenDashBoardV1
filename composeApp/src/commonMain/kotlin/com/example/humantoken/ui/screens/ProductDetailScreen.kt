@@ -17,17 +17,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun ProductDetailScreen(product: Product) {
+fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }
     var selectedTab by remember { mutableStateOf(3) } // Reviews tab selected by default
 
+    BackHandler(enabled = true, onBack = onNavigateBack)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
