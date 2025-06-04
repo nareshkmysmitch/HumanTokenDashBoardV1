@@ -7,6 +7,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
+data class HealthDataUiState(
+    val metrics: List<BloodData?> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val selectedFilter: String? = null,
+    val searchQuery: String = "",
+    val lastUpdated: BloodData? = null,
+)
 
 class HealthDataViewModel(
     private val apiService: ApiService,
@@ -14,6 +25,7 @@ class HealthDataViewModel(
     private val _uiState = MutableStateFlow(HealthDataUiState())
     val uiState: StateFlow<HealthDataUiState> = _uiState.asStateFlow()
 
+    @OptIn(ExperimentalTime::class)
     suspend fun loadHealthMetrics(accessToken: String) {
         try {
             _uiState.update { it.copy(isLoading = true) }
@@ -22,7 +34,9 @@ class HealthDataViewModel(
                 it.copy(
                     metrics = metrics ?: emptyList(),
                     isLoading = false,
-                    lastUpdated = ""
+                    lastUpdated = metrics?.maxByOrNull { bloodData ->
+                        Instant.parse(bloodData?.createdAt.toString())
+                    }
                 )
             }
         } catch (e: Exception) {
@@ -39,20 +53,26 @@ class HealthDataViewModel(
         _uiState.update { it.copy(selectedFilter = filter) }
     }
 
+    fun updateSearchQuery(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+    }
+
     fun getFilteredMetrics(): List<BloodData?> {
         val currentFilter = _uiState.value.selectedFilter
-        return if (currentFilter == null) {
-            _uiState.value.metrics
-        } else {
-            _uiState.value.metrics.filter { it?.displayRating == currentFilter }
+        val searchQuery = _uiState.value.searchQuery
+
+        return _uiState.value.metrics.filter { metric ->
+            val matchesFilter =
+                currentFilter == null || currentFilter == "All" || metric?.displayRating == currentFilter
+            val matchesSearch =
+                searchQuery.isEmpty() || metric?.displayName?.startsWith(searchQuery) == true
+            matchesFilter && matchesSearch
         }
     }
-}
 
-data class HealthDataUiState(
-    val metrics: List<BloodData?> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val selectedFilter: String? = null,
-    val lastUpdated: String = "",
-) 
+    fun getAvailableFilters(): List<String?> {
+        return listOf("All") + _uiState.value.metrics
+            .map { it?.displayRating }
+            .distinct()
+    }
+} 
