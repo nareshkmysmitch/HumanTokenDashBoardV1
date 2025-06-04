@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.Image
@@ -24,7 +23,15 @@ import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
+
+private val timeSlots = listOf(
+    "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM",
+    "09:30 AM", "10:00 AM", "10:30 AM"
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,12 +40,19 @@ fun ScheduleBloodTestScreen(
     onContinueClick: (String) -> Unit = {}
 ) {
     var selectedTimeSlot by remember { mutableStateOf<String?>(null) }
-    
-    // Sample time slots - you can modify these as needed
-    val timeSlots = listOf(
-        "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM",
-        "09:30 AM", "10:00 AM", "10:30 AM"
+    var showDatePicker by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date) }
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDate.toEpochDays().toLong() * 24 * 60 * 60 * 1000
     )
+
+    // Format selected date for display
+    val formattedDate = remember(selectedDate) {
+        val dayOfWeek = selectedDate.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }
+        val month = selectedDate.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+        "$dayOfWeek, ${selectedDate.dayOfMonth} $month, ${selectedDate.year}"
+    }
 
     Box(
         modifier = Modifier
@@ -133,7 +147,7 @@ fun ScheduleBloodTestScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Thursday, 5 Jun, 2025",
+                            text = formattedDate,
                             style = AppTextStyles.headingMedium.copy(
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold
@@ -146,7 +160,7 @@ fun ScheduleBloodTestScreen(
                             color = AppColors.textSecondary
                         )
                     }
-                    
+
                     // Calendar icon
                     Icon(
                         painter = painterResource(Res.drawable.ic_calendar_icon),
@@ -154,7 +168,7 @@ fun ScheduleBloodTestScreen(
                         tint = AppColors.textSecondary,
                         modifier = Modifier
                             .size(32.dp)
-                            .clickable { /* Handle date picker */ }
+                            .clickable { showDatePicker = true }
                     )
                 }
 
@@ -201,6 +215,31 @@ fun ScheduleBloodTestScreen(
             }
 
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDatePicker = false
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        selectedDate = kotlinx.datetime.Instant.fromEpochMilliseconds(millis).toLocalDateTime(
+                            TimeZone.currentSystemDefault()
+                        ).date
+                    }
+                }) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }
