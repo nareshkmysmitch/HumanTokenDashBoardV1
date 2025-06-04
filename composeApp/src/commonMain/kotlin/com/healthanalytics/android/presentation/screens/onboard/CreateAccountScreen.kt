@@ -228,19 +228,21 @@ fun CreateAccountScreen(
                         onContinueClick(firstName, lastName, email)
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(Dimensions.buttonHeight),
                 enabled = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && emailError.isEmpty(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.secondary,
-                    disabledContainerColor = AppColors.secondary.copy(alpha = 0.5f)
+                    containerColor = AppColors.buttonBackground,
+                    contentColor = AppColors.buttonText,
+                    disabledContainerColor = AppColors.inputBackground,
+                    disabledContentColor = AppColors.textSecondary
                 ),
-                shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
             ) {
                 Text(
                     text = "Continue",
-                    style = AppTextStyles.buttonText,
-                    color = AppColors.buttonText,
-                    modifier = Modifier.padding(vertical = Dimensions.spacingXSmall)
+                    style = AppTextStyles.buttonText
                 )
             }
         }
