@@ -136,21 +136,12 @@ fun MetricCard(metric: BloodData?) {
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Range: ${metric?.range}",
+                    text = "Blood",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = metric?.displayDescription ?: "",
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "Last updated: ${formatDate(metric?.updatedAt ?: "")}",
