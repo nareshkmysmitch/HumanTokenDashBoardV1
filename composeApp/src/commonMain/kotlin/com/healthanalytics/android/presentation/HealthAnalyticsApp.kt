@@ -10,9 +10,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+
+import com.healthanalytics.android.di.initKoin
+
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.di.initKoin
+
+
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
@@ -23,6 +28,7 @@ import com.healthanalytics.android.presentation.screens.dashboard.DashboardScree
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+
 
 private val koin = initKoin()
 
@@ -92,6 +98,9 @@ fun HomeScreen(
         currentScreen = MainScreen.DASHBOARD
     }
 
+
+
+
     Scaffold(topBar = {
         TopAppBar(
             title = when (currentScreen) {
@@ -121,7 +130,6 @@ fun HomeScreen(
                         onMarketPlaceClick
                     }
                 )
-                MainScreen.MARKETPLACE -> MarketPlaceScreen()
             }
         }
     }
