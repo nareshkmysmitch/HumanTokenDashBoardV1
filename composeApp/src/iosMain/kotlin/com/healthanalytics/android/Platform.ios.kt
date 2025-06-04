@@ -25,3 +25,7 @@ actual fun getNavigationItems(): List<NavigationItem> = listOf(
 //actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
 //    // iOS doesn't have a system back button, so this is a no-op
 //}
+
+@Composable
+actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
+}
