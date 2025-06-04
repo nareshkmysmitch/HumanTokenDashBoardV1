@@ -18,6 +18,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.datetime.*
+import kotlinx.datetime.TimeZone
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
@@ -31,7 +33,7 @@ fun HealthProfileScreen(
     onBackClick: () -> Unit = {},
     onContinueClick: (String, String, String, String) -> Unit = { _, _, _, _ -> }
 ) {
-    var selectedDate by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf(null as LocalDate?) }
     var selectedGender by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
@@ -41,7 +43,7 @@ fun HealthProfileScreen(
     val weightFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     
-    val genderOptions = listOf("Male", "Female", "Other", "Prefer not to say")
+    val genderOptions = listOf("Male", "Female")
 
     Box(
         modifier = Modifier
@@ -108,23 +110,51 @@ fun HealthProfileScreen(
                 modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
             )
 
-            // First row: Date of Birth and Gender
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            // Date of Birth Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Date of Birth Field
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "DATE OF BIRTH",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                Text(
+                    text = "DATE OF BIRTH",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                
+                if (showDatePicker) {
+                    val datePickerState = rememberDatePickerState()
+                    
+                    DatePicker(
+                        state = datePickerState,
+                        colors = DatePickerDefaults.colors(
+                            containerColor = AppColors.inputBackground,
+                            titleContentColor = AppColors.textPrimary,
+                            headlineContentColor = AppColors.textPrimary,
+                            weekdayContentColor = AppColors.textSecondary,
+                            subheadContentColor = AppColors.textSecondary,
+                            yearContentColor = AppColors.textPrimary,
+                            currentYearContentColor = AppColors.textPrimary,
+                            selectedYearContentColor = AppColors.buttonText,
+                            selectedYearContainerColor = AppColors.buttonBackground,
+                            dayContentColor = AppColors.textPrimary,
+                            selectedDayContentColor = AppColors.buttonText,
+                            selectedDayContainerColor = AppColors.buttonBackground,
+                            todayContentColor = AppColors.buttonBackground,
+                            todayDateBorderColor = AppColors.buttonBackground
+                        )
                     )
+                    
+                    LaunchedEffect(datePickerState.selectedDateMillis) {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val instant = Instant.fromEpochMilliseconds(millis)
+                            val localDateTime = instant.toLocalDateTime(TimeZone.UTC)
+                            selectedDate = localDateTime.date
+                            showDatePicker = false
+                        }
+                    }
+                } else {
                     OutlinedTextField(
-                        value = selectedDate,
+                        value = selectedDate?.toString() ?: "",
                         onValueChange = { },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -156,71 +186,73 @@ fun HealthProfileScreen(
                         shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                     )
                 }
+            }
 
-                // Gender Field
-                Column(
-                    modifier = Modifier.weight(1f)
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Gender Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "GENDER",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                ExposedDropdownMenuBox(
+                    expanded = showGenderDropdown,
+                    onExpandedChange = { showGenderDropdown = !showGenderDropdown }
                 ) {
-                    Text(
-                        text = "GENDER",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    OutlinedTextField(
+                        value = selectedGender,
+                        onValueChange = { },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        readOnly = true,
+                        placeholder = {
+                            Text(
+                                text = "Select gender",
+                                color = AppColors.inputHint,
+                                style = AppTextStyles.bodyMedium
+                            )
+                        },
+                        trailingIcon = {
+                            Text(
+                                text = "▼",
+                                style = AppTextStyles.bodyMedium,
+                                color = AppColors.inputHint
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AppColors.inputBorder,
+                            unfocusedBorderColor = AppColors.outline,
+                            focusedTextColor = AppColors.inputText,
+                            unfocusedTextColor = AppColors.inputText,
+                            cursorColor = AppColors.inputText
+                        ),
+                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                     )
-                    ExposedDropdownMenuBox(
+                    
+                    ExposedDropdownMenu(
                         expanded = showGenderDropdown,
-                        onExpandedChange = { showGenderDropdown = !showGenderDropdown }
+                        onDismissRequest = { showGenderDropdown = false },
+                        modifier = Modifier.background(AppColors.inputBackground)
                     ) {
-                        OutlinedTextField(
-                            value = selectedGender,
-                            onValueChange = { },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(),
-                            readOnly = true,
-                            placeholder = {
-                                Text(
-                                    text = "Select gender",
-                                    color = AppColors.inputHint,
-                                    style = AppTextStyles.bodyMedium
-                                )
-                            },
-                            trailingIcon = {
-                                Text(
-                                    text = "▼",
-                                    style = AppTextStyles.bodyMedium,
-                                    color = AppColors.inputHint
-                                )
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = AppColors.inputBorder,
-                                unfocusedBorderColor = AppColors.outline,
-                                focusedTextColor = AppColors.inputText,
-                                unfocusedTextColor = AppColors.inputText,
-                                cursorColor = AppColors.inputText
-                            ),
-                            shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                        )
-                        
-                        ExposedDropdownMenu(
-                            expanded = showGenderDropdown,
-                            onDismissRequest = { showGenderDropdown = false },
-                            modifier = Modifier.background(AppColors.inputBackground)
-                        ) {
-                            genderOptions.forEach { option ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = option,
-                                            color = AppColors.inputText
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedGender = option
-                                        showGenderDropdown = false
-                                    }
-                                )
-                            }
+                        genderOptions.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = option,
+                                        color = AppColors.inputText
+                                    )
+                                },
+                                onClick = {
+                                    selectedGender = option
+                                    showGenderDropdown = false
+                                }
+                            )
                         }
                     }
                 }
@@ -228,80 +260,76 @@ fun HealthProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Second row: Weight and Height
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            // Weight Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Weight Field
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "WEIGHT (KG)",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
-                    )
-                    OutlinedTextField(
-                        value = weight,
-                        onValueChange = { weight = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(weightFocusRequester),
-                        maxLines = 1,
-                        placeholder = {
-                            Text(
-                                text = "Enter weight",
-                                color = AppColors.inputHint,
-                                style = AppTextStyles.bodyMedium
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
+                Text(
+                    text = "WEIGHT (KG)",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                OutlinedTextField(
+                    value = weight,
+                    onValueChange = { weight = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(weightFocusRequester),
+                    maxLines = 1,
+                    placeholder = {
+                        Text(
+                            text = "Enter weight",
+                            color = AppColors.inputHint,
+                            style = AppTextStyles.bodyMedium
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
+            }
 
-                // Height Field
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "HEIGHT (CM)",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
-                        modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
-                    )
-                    OutlinedTextField(
-                        value = height,
-                        onValueChange = { height = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 1,
-                        placeholder = {
-                            Text(
-                                text = "Enter height",
-                                color = AppColors.inputHint,
-                                style = AppTextStyles.bodyMedium
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Height Field
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "HEIGHT (CM)",
+                    style = AppTextStyles.labelMedium,
+                    color = AppColors.textSecondary,
+                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                )
+                OutlinedTextField(
+                    value = height,
+                    onValueChange = { height = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1,
+                    placeholder = {
+                        Text(
+                            text = "Enter height",
+                            color = AppColors.inputHint,
+                            style = AppTextStyles.bodyMedium
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -309,15 +337,15 @@ fun HealthProfileScreen(
             // Continue Button
             Button(
                 onClick = {
-                    if (selectedDate.isNotEmpty() && selectedGender.isNotEmpty() && 
+                    if (selectedDate != null && selectedGender.isNotEmpty() && 
                         weight.isNotEmpty() && height.isNotEmpty()) {
-                        onContinueClick(selectedDate, selectedGender, weight, height)
+                        onContinueClick(selectedDate.toString(), selectedGender, weight, height)
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Dimensions.buttonHeight),
-                enabled = selectedDate.isNotEmpty() && selectedGender.isNotEmpty() && 
+                enabled = selectedDate != null && selectedGender.isNotEmpty() && 
                          weight.isNotEmpty() && height.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.buttonBackground,
@@ -333,5 +361,6 @@ fun HealthProfileScreen(
                 )
             }
         }
-    }
+
+        }
 }
