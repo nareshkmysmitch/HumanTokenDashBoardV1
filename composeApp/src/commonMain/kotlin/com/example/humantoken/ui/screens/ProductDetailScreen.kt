@@ -1,7 +1,11 @@
 package com.example.humantoken.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -195,23 +199,52 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
 
             // Quantity Selector
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF1C1B1F),
+                        shape = RoundedCornerShape(
+                            12.dp
+                        )
+                    )
+                    .clip(RoundedCornerShape(12.dp)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = { if (quantity > 1) quantity-- }
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
+                        .clickable(onClick = { if (quantity > 1) quantity-- })
+                        .padding(8.dp)
                 ) {
-                    Icon(Icons.Default.Remove, contentDescription = "Decrease quantity")
+                    Text(
+                        text = "−",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
                 }
-                Text(
-                    text = quantity.toString(),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                IconButton(
-                    onClick = { product.stock?.let { if (quantity < it) quantity++ } }
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Increase quantity")
+                    Text(
+                        text = quantity.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.Black
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                        .clickable(onClick = { product.stock?.let { if (quantity < it) quantity++ } })
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = "+",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
                 }
             }
 
