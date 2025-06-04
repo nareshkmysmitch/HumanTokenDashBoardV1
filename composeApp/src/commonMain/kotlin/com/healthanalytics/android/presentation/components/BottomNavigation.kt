@@ -12,7 +12,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 enum class Screen {
-    HOME, PROFILE, CHAT
+    HOME, PROFILE, CHAT, MARKETPLACE_DETAIL
 }
 
 enum class MainScreen {
