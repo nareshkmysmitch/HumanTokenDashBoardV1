@@ -128,12 +128,11 @@ fun CreateAccountScreen(
                 )
                 OutlinedTextField(
                     value = firstName,
-                    onValueChange = { 
-                        if (it.length <= 1) firstName = it 
-                    },
+                    onValueChange = { firstName = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(firstNameFocusRequester),
+                    maxLines = 1,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = AppColors.inputBorder,
                         unfocusedBorderColor = AppColors.outline,
@@ -159,10 +158,9 @@ fun CreateAccountScreen(
                 )
                 OutlinedTextField(
                     value = lastName,
-                    onValueChange = { 
-                        if (it.length <= 1) lastName = it 
-                    },
+                    onValueChange = { lastName = it },
                     modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = AppColors.inputBorder,
                         unfocusedBorderColor = AppColors.outline,
@@ -189,14 +187,12 @@ fun CreateAccountScreen(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { newValue ->
-                        if (newValue.length <= 1) {
-                            email = newValue
-                            // Validate email if not empty
-                            emailError = if (newValue.isNotEmpty() && !emailRegex.matches(newValue)) {
-                                "Please enter a valid email address"
-                            } else {
-                                ""
-                            }
+                        email = newValue
+                        // Validate email if not empty
+                        emailError = if (newValue.isNotEmpty() && !emailRegex.matches(newValue)) {
+                            "Please enter a valid email address"
+                        } else {
+                            ""
                         }
                     },
                     placeholder = {
@@ -206,6 +202,7 @@ fun CreateAccountScreen(
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     isError = emailError.isNotEmpty(),
                     colors = OutlinedTextFieldDefaults.colors(
