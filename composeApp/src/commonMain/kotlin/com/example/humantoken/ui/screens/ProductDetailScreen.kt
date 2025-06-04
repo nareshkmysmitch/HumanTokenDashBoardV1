@@ -19,12 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
-import org.jetbrains.compose.resources.painterResource
+import com.seiko.imageloader.rememberImagePainter
 
 @Composable
 fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
+    println("product -> $product")
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }
     var selectedTab by remember { mutableStateOf(3) } // Reviews tab selected by default
@@ -41,35 +40,48 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
                 .padding(16.dp)
         ) {
             // Product Image
-            Image(
-                painter = painterResource(Res.drawable.ic_calendar_icon),
-                contentDescription = "Yellow watering can",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            )
+            if (product.img_urls?.isNotEmpty() == true && product.img_urls.firstOrNull() != null) {
+                product.img_urls.firstOrNull()?.let {
+                    Image(
+                        painter = rememberImagePainter(it),
+                        contentDescription = product.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Product Info Section
-            Text(
-                text = "Yellow watering can",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
+            product.name?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            Text(
-                text = "Vintage vibrant watering can",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            product.description?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val price = if (product.price != null) {
+                "₹${product.price}"
+            } else {
+                "--"
+            }
             Text(
-                text = "₹40.99",
+                text = price,
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -86,8 +98,19 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
+                val rating = if (product.rating != null) {
+                    product.rating.toString()
+                } else {
+                    "0"
+                }
+                val nRating = if (product.n_rating != null) {
+                    product.n_rating.toString()
+                } else {
+                    "0"
+                }
+                val ratingText = " ($rating) · $nRating reviews"
                 Text(
-                    text = " (0.0) · 0 reviews",
+                    text = ratingText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -99,10 +122,10 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                listOf("Bathroom", "Seasonal", "Living-Room").forEach { tag ->
+                product.tags?.forEach { tag ->
                     SuggestionChip(
                         onClick = { },
-                        label = { Text(tag) }
+                        label = { tag?.replaceFirstChar { it.uppercase() }?.let { Text(it) } }
                     )
                 }
             }
@@ -125,7 +148,7 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
                     style = MaterialTheme.typography.titleLarge
                 )
                 IconButton(
-                    onClick = { quantity++ }
+                    onClick = { product.stock?.let { if (quantity < it) quantity++ } }
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Increase quantity")
                 }
@@ -161,16 +184,20 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Stock Indicator
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = Color.Green
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Only 10 left")
+            product.stock?.let {
+                if (it > 0) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Color.Green
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Only ${product.stock} left")
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -211,7 +238,7 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
             }
 
             Text(
-                text = "Based on 0 reviews",
+                text = "Based on ${product.n_rating} reviews",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

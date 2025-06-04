@@ -34,7 +34,7 @@ fun HealthAnalyticsApp() {
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
     var accessToken by remember { mutableStateOf<String?>(null) }
-    var product = Product()
+    var product by remember { mutableStateOf(Product()) }
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
@@ -69,6 +69,7 @@ fun HealthAnalyticsApp() {
                 },
                 onMarketPlaceClick = {
                     product = it
+                    println("product -> Ha2$it")
                     navigateTo(Screen.MARKETPLACE_DETAIL)
                 })
 
@@ -117,7 +118,10 @@ fun HomeScreen(
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
                 MainScreen.MARKETPLACE -> {
-                    MarketPlaceScreen(onProductClick = { onMarketPlaceClick(it) })
+                    MarketPlaceScreen(onProductClick = {
+                        onMarketPlaceClick(it)
+                        println("product -> Ha1$it")
+                    })
                 }
             }
         }

@@ -57,7 +57,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.viewmodel.koinViewModel
@@ -188,7 +187,10 @@ fun MarketPlaceScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(filteredProducts) { product ->
-                                ProductCard(product = product, onProductClick = onProductClick)
+                                ProductCard(product = product, onProductClick = {
+                                    onProductClick(product)
+                                    println("product -> mps2$product")
+                                })
                             }
                         }
                     }
@@ -273,7 +275,10 @@ private fun ProductCard(
             // Product Details
             Column(
                 modifier = Modifier.padding(8.dp)
-                    .clickable { onProductClick(product) },
+                    .clickable {
+                        onProductClick(product)
+                        println("product -> mps1$product")
+                    },
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 product.name?.let {
