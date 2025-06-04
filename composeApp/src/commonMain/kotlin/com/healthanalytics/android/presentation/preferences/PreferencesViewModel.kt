@@ -2,9 +2,13 @@ package com.healthanalytics.android.presentation.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.data.api.PreferencesUiState
-import kotlinx.coroutines.flow.*
+import com.healthanalytics.android.data.repositories.PreferencesRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
