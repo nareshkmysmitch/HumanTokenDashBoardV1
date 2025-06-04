@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.healthanalytics.android.di.initKoin
 import com.healthanalytics.android.presentation.dashboard.DashboardScreen
+import com.healthanalytics.android.presentation.health.HealthDataScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Initialize Koin when the app starts
@@ -15,6 +16,6 @@ private val koin = initKoin()
 @Preview
 fun App(prefs: DataStore<Preferences>) {
     MaterialTheme {
-        DashboardScreen()
+        HealthDataScreen()
     }
 }

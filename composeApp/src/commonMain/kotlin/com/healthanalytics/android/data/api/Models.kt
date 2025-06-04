@@ -80,3 +80,27 @@ data class Product(
 data class Vendor(
     val name: String? = null
 )
+
+@Serializable
+data class HealthMetric(
+    val id: String,
+    @SerialName("user_id") val userId: String,
+    @SerialName("metric_id") val metricId: String,
+    @SerialName("display_name") val displayName: String,
+    val value: Double,
+    val range: String,
+    val unit: String,
+    @SerialName("display_description") val displayDescription: String,
+    val identifier: String,
+    @SerialName("released_at") val releasedAt: String,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("updated_at") val updatedAt: String,
+    @SerialName("display_rating") val displayRating: String
+)
+
+@Serializable
+data class HealthMetricsResponse(
+    val data: List<HealthMetric>,
+    val message: String,
+    val status: String
+)
