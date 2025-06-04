@@ -121,70 +121,93 @@ fun HealthProfileScreen(
                     modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
                 )
                 
+                OutlinedTextField(
+                    value = selectedDate?.toString() ?: "",
+                    onValueChange = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker = true },
+                    enabled = false,
+                    placeholder = {
+                        Text(
+                            text = "Select date",
+                            color = AppColors.inputHint,
+                            style = AppTextStyles.bodyMedium
+                        )
+                    },
+                    trailingIcon = {
+                        Text(
+                            text = "📅",
+                            style = AppTextStyles.bodyMedium,
+                            color = AppColors.inputHint
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppColors.inputBorder,
+                        unfocusedBorderColor = AppColors.outline,
+                        disabledBorderColor = AppColors.outline,
+                        focusedTextColor = AppColors.inputText,
+                        unfocusedTextColor = AppColors.inputText,
+                        disabledTextColor = AppColors.inputText,
+                        cursorColor = AppColors.inputText
+                    ),
+                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                )
+                
+                // Date Picker Dialog
                 if (showDatePicker) {
                     val datePickerState = rememberDatePickerState()
                     
-                    DatePicker(
-                        state = datePickerState,
-                        colors = DatePickerDefaults.colors(
-                            containerColor = AppColors.inputBackground,
-                            titleContentColor = AppColors.textPrimary,
-                            headlineContentColor = AppColors.textPrimary,
-                            weekdayContentColor = AppColors.textSecondary,
-                            subheadContentColor = AppColors.textSecondary,
-                            yearContentColor = AppColors.textPrimary,
-                            currentYearContentColor = AppColors.textPrimary,
-                            selectedYearContentColor = AppColors.buttonText,
-                            selectedYearContainerColor = AppColors.buttonBackground,
-                            dayContentColor = AppColors.textPrimary,
-                            selectedDayContentColor = AppColors.buttonText,
-                            selectedDayContainerColor = AppColors.buttonBackground,
-                            todayContentColor = AppColors.buttonBackground,
-                            todayDateBorderColor = AppColors.buttonBackground
-                        )
-                    )
-                    
-                    LaunchedEffect(datePickerState.selectedDateMillis) {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            val instant = Instant.fromEpochMilliseconds(millis)
-                            val localDateTime = instant.toLocalDateTime(TimeZone.UTC)
-                            selectedDate = localDateTime.date
-                            showDatePicker = false
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    datePickerState.selectedDateMillis?.let { millis ->
+                                        val instant = Instant.fromEpochMilliseconds(millis)
+                                        val localDateTime = instant.toLocalDateTime(TimeZone.UTC)
+                                        selectedDate = localDateTime.date
+                                    }
+                                    showDatePicker = false
+                                }
+                            ) {
+                                Text(
+                                    text = "OK",
+                                    color = AppColors.buttonBackground
+                                )
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showDatePicker = false }
+                            ) {
+                                Text(
+                                    text = "Cancel",
+                                    color = AppColors.textSecondary
+                                )
+                            }
                         }
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            colors = DatePickerDefaults.colors(
+                                containerColor = AppColors.inputBackground,
+                                titleContentColor = AppColors.textPrimary,
+                                headlineContentColor = AppColors.textPrimary,
+                                weekdayContentColor = AppColors.textSecondary,
+                                subheadContentColor = AppColors.textSecondary,
+                                yearContentColor = AppColors.textPrimary,
+                                currentYearContentColor = AppColors.textPrimary,
+                                selectedYearContentColor = AppColors.buttonText,
+                                selectedYearContainerColor = AppColors.buttonBackground,
+                                dayContentColor = AppColors.textPrimary,
+                                selectedDayContentColor = AppColors.buttonText,
+                                selectedDayContainerColor = AppColors.buttonBackground,
+                                todayContentColor = AppColors.buttonBackground,
+                                todayDateBorderColor = AppColors.buttonBackground
+                            )
+                        )
                     }
-                } else {
-                    OutlinedTextField(
-                        value = selectedDate?.toString() ?: "",
-                        onValueChange = { },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showDatePicker = true },
-                        enabled = false,
-                        placeholder = {
-                            Text(
-                                text = "Select date",
-                                color = AppColors.inputHint,
-                                style = AppTextStyles.bodyMedium
-                            )
-                        },
-                        trailingIcon = {
-                            Text(
-                                text = "📅",
-                                style = AppTextStyles.bodyMedium,
-                                color = AppColors.inputHint
-                            )
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            disabledBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            disabledTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
                 }
             }
 
