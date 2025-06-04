@@ -2,7 +2,7 @@ package com.healthanalytics.android.presentation.health
 
 import androidx.lifecycle.ViewModel
 import com.healthanalytics.android.data.api.ApiService
-import com.healthanalytics.android.data.api.HealthMetric
+import com.healthanalytics.android.data.api.BloodData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,7 @@ class HealthDataViewModel(
                 it.copy(
                     metrics = metrics ?: emptyList(),
                     isLoading = false,
-                    lastUpdated = metrics?.maxOfOrNull { metric -> metric.updatedAt } ?: ""
+                    lastUpdated = ""
                 )
             }
         } catch (e: Exception) {
@@ -39,18 +39,18 @@ class HealthDataViewModel(
         _uiState.update { it.copy(selectedFilter = filter) }
     }
 
-    fun getFilteredMetrics(): List<HealthMetric> {
+    fun getFilteredMetrics(): List<BloodData?> {
         val currentFilter = _uiState.value.selectedFilter
         return if (currentFilter == null) {
             _uiState.value.metrics
         } else {
-            _uiState.value.metrics.filter { it.displayRating == currentFilter }
+            _uiState.value.metrics.filter { it?.displayRating == currentFilter }
         }
     }
 }
 
 data class HealthDataUiState(
-    val metrics: List<HealthMetric> = emptyList(),
+    val metrics: List<BloodData?> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val selectedFilter: String? = null,

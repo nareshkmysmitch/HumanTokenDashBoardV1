@@ -28,7 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.data.api.HealthMetric
+import com.healthanalytics.android.data.api.BloodData
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -38,7 +38,7 @@ fun HealthDataScreen(
     val uiState by viewModel.uiState.collectAsState()
     val filteredMetrics = viewModel.getFilteredMetrics()
     val dummyAccessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E"
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjIzN2RkOTAyLWZmZjYtNDJjNS1iYzlmLTkxY2Q2N2NhOGNmMSIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MDE3MTA2LCJleHAiOjE3NDk2MjE5MDZ9.5w7MbKkogQDfE-nv49P1BzWNa-7pPNLq5DoFK9rnCIc"
 
     LaunchedEffect(Unit) {
         viewModel.loadHealthMetrics(dummyAccessToken)
@@ -102,7 +102,7 @@ fun HealthDataScreen(
 }
 
 @Composable
-fun MetricCard(metric: HealthMetric) {
+fun MetricCard(metric: BloodData?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -118,10 +118,10 @@ fun MetricCard(metric: HealthMetric) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = metric.displayName,
+                    text = metric?.displayName ?: "",
                     style = MaterialTheme.typography.titleMedium
                 )
-                StatusChip(status = metric.displayRating)
+                StatusChip(status = metric?.displayRating ?: "")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -132,11 +132,11 @@ fun MetricCard(metric: HealthMetric) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${metric.value} ${metric.unit}",
+                    text = "${metric?.value} ${metric?.unit}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Range: ${metric.range}",
+                    text = "Range: ${metric?.range}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -144,7 +144,7 @@ fun MetricCard(metric: HealthMetric) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = metric.displayDescription,
+                text = metric?.displayDescription ?: "",
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -153,7 +153,7 @@ fun MetricCard(metric: HealthMetric) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Last updated: ${formatDate(metric.updatedAt)}",
+                text = "Last updated: ${formatDate(metric?.updatedAt ?: "")}",
                 style = MaterialTheme.typography.bodySmall
             )
         }
