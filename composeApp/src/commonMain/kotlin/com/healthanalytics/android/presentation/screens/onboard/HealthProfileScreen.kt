@@ -145,8 +145,9 @@ fun HealthProfileScreen(
                     
                     LaunchedEffect(datePickerState.selectedDateMillis) {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            val instant = Instant.fromEpochMilliseconds(millis)
-                            selectedDate = instant.toLocalDateTime(TimeZone.UTC).date
+                            selectedDate = Instant.fromEpochMilliseconds(millis)
+                                .toLocalDateTime(TimeZone.UTC)
+                                .date
                             showDatePicker = false
                         }
                     }
