@@ -198,7 +198,6 @@ fun CreateAccountScreen(
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    isError = emailError.isNotEmpty(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = AppColors.inputBorder,
                         unfocusedBorderColor = AppColors.outline,
