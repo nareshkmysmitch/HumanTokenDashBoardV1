@@ -4,13 +4,13 @@ package com.healthanalytics.android.presentation.screens.onboard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +21,6 @@ import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,158 +32,164 @@ fun CreateAccountScreen(
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    val firstNameFocusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        delay(100) // Small delay to ensure the UI is fully composed
-        firstNameFocusRequester.requestFocus()
-    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.backgroundDark)
-            .padding(Dimensions.screenPadding)
+            .background(Color(0xFF2D2A3E))
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top Bar with Back Button and Title
+            // Top section with back button and logo
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp),
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
+                // Back button
+                TextButton(
                     onClick = onBackClick,
-                    modifier = Modifier.size(40.dp)
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = "← Back",
+                        style = AppTextStyles.bodyMedium,
+                        color = Color.White
+                    )
+                }
+
+                // Logo and title
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Back",
-                        modifier = Modifier.size(20.dp)
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Deep Holistics",
+                        style = AppTextStyles.titleMedium,
+                        color = Color.White,
+                        fontWeight = FontWeight.Medium
                     )
                 }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                Text(
-                    text = "Deep Holistics",
-                    style = AppTextStyles.headingSmall.copy(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = AppColors.textPrimary
-                )
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // Empty space to balance the layout
-                Spacer(modifier = Modifier.size(40.dp))
+
+                // Empty space for balance
+                Spacer(modifier = Modifier.width(48.dp))
             }
-            
-            Spacer(modifier = Modifier.height(80.dp))
-            
+
+            Spacer(modifier = Modifier.height(60.dp))
+
             // Title
             Text(
                 text = "Create your account",
-                style = AppTextStyles.headingSmall.copy(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                color = AppColors.textPrimary,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 48.dp)
+                modifier = Modifier.padding(bottom = 40.dp)
             )
-            
+
             // First Name and Last Name Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text = "FIRST NAME",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
+                        style = AppTextStyles.bodySmall,
+                        color = Color.White.copy(alpha = 0.7f),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
                     OutlinedTextField(
                         value = firstName,
                         onValueChange = { firstName = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(firstNameFocusRequester),
+                        modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.textSecondary,
-                            unfocusedBorderColor = AppColors.textSecondary.copy(alpha = 0.5f),
-                            focusedTextColor = AppColors.textPrimary,
-                            unfocusedTextColor = AppColors.textPrimary
+                            focusedBorderColor = Color.White.copy(alpha = 0.5f),
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color.White
                         ),
-                        singleLine = true
+                        shape = RoundedCornerShape(8.dp)
                     )
                 }
-                
-                Column(modifier = Modifier.weight(1f)) {
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text = "LAST NAME",
-                        style = AppTextStyles.labelMedium,
-                        color = AppColors.textSecondary,
+                        style = AppTextStyles.bodySmall,
+                        color = Color.White.copy(alpha = 0.7f),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
                     OutlinedTextField(
                         value = lastName,
                         onValueChange = { lastName = it },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.textSecondary,
-                            unfocusedBorderColor = AppColors.textSecondary.copy(alpha = 0.5f),
-                            focusedTextColor = AppColors.textPrimary,
-                            unfocusedTextColor = AppColors.textPrimary
+                            focusedBorderColor = Color.White.copy(alpha = 0.5f),
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color.White
                         ),
-                        singleLine = true
+                        shape = RoundedCornerShape(8.dp)
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             // Email Field
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = "EMAIL",
-                    style = AppTextStyles.labelMedium,
-                    color = AppColors.textSecondary,
+                    style = AppTextStyles.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
                     placeholder = {
                         Text(
                             text = "Enter your email address",
-                            color = AppColors.textSecondary.copy(alpha = 0.6f)
+                            color = Color.White.copy(alpha = 0.5f)
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppColors.textSecondary,
-                        unfocusedBorderColor = AppColors.textSecondary.copy(alpha = 0.5f),
-                        focusedTextColor = AppColors.textPrimary,
-                        unfocusedTextColor = AppColors.textPrimary
-                    ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    singleLine = true
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.White.copy(alpha = 0.5f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 )
             }
-            
-            Spacer(modifier = Modifier.height(48.dp))
-            
+
+            Spacer(modifier = Modifier.height(40.dp))
+
             // Continue Button
             Button(
                 onClick = {
@@ -192,20 +197,19 @@ fun CreateAccountScreen(
                         onContinueClick(firstName, lastName, email)
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                modifier = Modifier.fillMaxWidth(),
                 enabled = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.textSecondary,
-                    contentColor = AppColors.backgroundDark,
-                    disabledContainerColor = AppColors.textSecondary.copy(alpha = 0.3f)
-                )
+                    containerColor = Color(0xFF8B7CF6),
+                    disabledContainerColor = Color(0xFF8B7CF6).copy(alpha = 0.5f)
+                ),
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
                     text = "Continue",
-                    style = AppTextStyles.buttonText,
-                    fontWeight = FontWeight.Medium
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
         }
