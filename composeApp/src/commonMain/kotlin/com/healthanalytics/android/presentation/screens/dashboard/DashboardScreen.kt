@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.screens
+package com.healthanalytics.android.presentation.screens.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

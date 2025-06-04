@@ -5,6 +5,7 @@ import com.healthanalytics.android.data.api.ApiServiceImpl
 import com.healthanalytics.android.data.network.NetworkConfig
 import com.healthanalytics.android.presentation.dashboard.DashboardViewModel
 import com.healthanalytics.android.presentation.health.HealthDataViewModel
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -18,6 +19,7 @@ val appModule = module {
     // ViewModels
     factoryOf(::DashboardViewModel)
     factoryOf(::HealthDataViewModel)
+    factoryOf(::MarketPlaceViewModel)
 }
 
 fun initKoin() = org.koin.core.context.startKoin {

@@ -1,21 +1,24 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.*
 import kotlinx.coroutines.delay
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +42,7 @@ fun OTPScreen(
     var resendTimer by remember { mutableStateOf(45) }
     var isTimerActive by remember { mutableStateOf(true) }
     val focusRequesters = remember { List(6) { FocusRequester() } }
-    
+
     // Timer countdown
     LaunchedEffect(resendTimer, isTimerActive) {
         if (isTimerActive && resendTimer > 0) {
@@ -46,7 +52,7 @@ fun OTPScreen(
             isTimerActive = false
         }
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -68,15 +74,16 @@ fun OTPScreen(
                     onClick = onBackClick,
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                    Image(
+                        painter = painterResource(Res.drawable.ic_calendar_icon),
                         contentDescription = "Back",
-                        tint = AppColors.textPrimary
+                        colorFilter = ColorFilter.tint(AppColors.textPrimary),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 Text(
                     text = "Deep Holistics",
                     style = AppTextStyles.headingSmall.copy(
@@ -85,15 +92,15 @@ fun OTPScreen(
                     ),
                     color = AppColors.textPrimary
                 )
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 // Empty space to balance the layout
                 Spacer(modifier = Modifier.size(40.dp))
             }
-            
+
             Spacer(modifier = Modifier.height(80.dp))
-            
+
             // Title
             Text(
                 text = "Confirm your Phone",
@@ -104,9 +111,9 @@ fun OTPScreen(
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
-            
+
             // Subtitle with phone number
             Text(
                 text = "We've sent a security code to",
@@ -114,7 +121,7 @@ fun OTPScreen(
                 color = AppColors.textSecondary,
                 textAlign = TextAlign.Center
             )
-            
+
             Text(
                 text = phoneNumber,
                 style = AppTextStyles.bodyMedium.copy(
@@ -123,9 +130,9 @@ fun OTPScreen(
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(60.dp))
-            
+
             // OTP Input Fields
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -136,22 +143,42 @@ fun OTPScreen(
                         value = value,
                         onValueChange = { newValue ->
                             val newOtpValues = otpValues.toMutableList()
-                            newOtpValues[index] = newValue
-                            otpValues = newOtpValues
-                            
-                            // Auto-focus next field
-                            if (newValue.isNotEmpty() && index < 5) {
-                                focusRequesters[index + 1].requestFocus()
+
+                            if (newValue.isNotEmpty()) {
+                                // Allow input in focused field
+                                newOtpValues[index] = newValue
+                                otpValues = newOtpValues
+
+                                // Auto-focus next field
+                                if (index < 5) {
+                                    focusRequesters[index + 1].requestFocus()
+                                }
+                            } else {
+                                // Allow removal from focused field
+                                newOtpValues[index] = newValue
+                                otpValues = newOtpValues
+
+                                // Focus previous field when removing value
+                                if (index > 0) {
+                                    focusRequesters[index - 1].requestFocus()
+                                }
                             }
                         },
                         focusRequester = focusRequesters[index],
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(48.dp),
+                        onFieldClick = {
+                            if (otpValues.all { it.isEmpty() }) {
+                                focusRequesters[0].requestFocus()
+                            } else {
+                                focusRequesters[index].requestFocus()
+                            }
+                        }
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(40.dp))
-            
+
             // Resend Timer
             if (isTimerActive) {
                 Text(
@@ -175,9 +202,9 @@ fun OTPScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(60.dp))
-            
+
             // Continue Button
             Button(
                 onClick = {
@@ -189,7 +216,7 @@ fun OTPScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (otpValues.all { it.isNotEmpty() }) 
+                    containerColor = if (otpValues.all { it.isNotEmpty() })
                         AppColors.primary else AppColors.primary.copy(alpha = 0.3f),
                     contentColor = Color.White
                 ),
@@ -210,54 +237,56 @@ private fun OTPInputField(
     value: String,
     onValueChange: (String) -> Unit,
     focusRequester: FocusRequester,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFieldClick: () -> Unit = {}
 ) {
-    BasicTextField(
-        value = value,
-        onValueChange = { newValue ->
-            if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
-                onValueChange(newValue)
-            }
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    Box(
         modifier = modifier
-            .focusRequester(focusRequester)
             .background(
-                color = AppColors.textPrimary,
+                color = AppColors.primary,
                 shape = RoundedCornerShape(8.dp)
             )
             .border(
                 width = 1.dp,
-                color = if (value.isNotEmpty()) AppColors.primary else AppColors.primary,
+                color = if (value.isNotEmpty()) AppColors.primary else AppColors.secondary,
                 shape = RoundedCornerShape(8.dp)
-            ),
-        decorationBox = { innerTextField ->
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                if (value.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = AppColors.textSecondary.copy(alpha = 0.3f),
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                    )
-                } else {
-                    Text(
-                        text = value,
-                        style = AppTextStyles.headingSmall.copy(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = AppColors.textPrimary,
-                        textAlign = TextAlign.Center
-                    )
+            )
+            .noRippleClickable {
+                onFieldClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        BasicTextField(
+            value = value,
+            onValueChange = { newValue ->
+                if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
+                    onValueChange(newValue)
                 }
-                innerTextField()
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .fillMaxSize()
+                .wrapContentHeight(Alignment.CenterVertically),
+            textStyle = AppTextStyles.headingSmall.copy(
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.primary,
+                textAlign = TextAlign.Center
+            ),
+            singleLine = true,
+            cursorBrush = androidx.compose.foundation.text.selection.LocalTextSelectionColors.current.let {
+                androidx.compose.ui.graphics.SolidColor(AppColors.primary)
             }
-        }
-    )
+        )
+    }
+}
+
+fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
+    clickable(
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() }
+    ) {
+        onClick()
+    }
 }

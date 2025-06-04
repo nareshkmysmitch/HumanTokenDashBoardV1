@@ -31,24 +31,21 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.ui.ShowAlertDialog
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
@@ -60,10 +57,8 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
 
     var showAlertDialog by remember { mutableStateOf(false) }
 
-//    BackHandler {
-//        onNavigateBack()
-//    }
-
+    // Disable system back button - intercept and do nothing
+    BackHandler(enabled = true, onBack = onNavigateBack)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -204,26 +199,14 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
         }
     }
     if (showAlertDialog) {
-        AlertDialog(
-            onDismissRequest = { showAlertDialog = false },
-            title = { Text("Confirm Logout") },
-            text = { Text("Are you sure you want to log out?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showAlertDialog = false
-                        // Handle logout logic here
-                    }
-                ) {
-                    Text("Logout")
-                }
+        ShowAlertDialog(
+            modifier = Modifier,
+            title = "Log out",
+            message = "You will be logged out of your Deep Holistics account. However this doesn\\’t affect your logged data. Do you want to still logout?",
+            onDismiss = {
+                showAlertDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { showAlertDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+            onLogout = {showAlertDialog = false })
     }
 }
 
@@ -234,6 +217,7 @@ private fun ProfileSection(
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
     content: @Composable ColumnScope.() -> Unit
 ) {
+
     Column {
         Text(
             text = title,
@@ -392,3 +376,5 @@ private fun ProfileMenuItem(
         )
     }
 }
+
+//@OptIn(ExperimentalMaterial3Api::class)

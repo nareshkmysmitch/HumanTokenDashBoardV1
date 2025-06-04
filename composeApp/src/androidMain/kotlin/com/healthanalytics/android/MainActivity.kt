@@ -12,7 +12,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             App(prefs = remember { createDataStore(applicationContext) })
-//            HealthAnalyticsApp()
         }
     }
 }
