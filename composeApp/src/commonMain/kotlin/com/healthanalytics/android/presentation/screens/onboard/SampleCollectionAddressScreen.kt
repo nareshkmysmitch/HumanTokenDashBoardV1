@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.Image
@@ -34,7 +33,7 @@ fun SampleCollectionAddressScreen(
     var city by remember { mutableStateOf("") }
     var state by remember { mutableStateOf("") }
     var zipCode by remember { mutableStateOf("") }
-    
+
     val streetAddressFocusRequester = remember { FocusRequester() }
     val cityFocusRequester = remember { FocusRequester() }
     val stateFocusRequester = remember { FocusRequester() }
@@ -119,10 +118,7 @@ fun SampleCollectionAddressScreen(
                 OutlinedTextField(
                     value = streetAddress,
                     onValueChange = { streetAddress = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(streetAddressFocusRequester),
-                    maxLines = 2,
+                    modifier = Modifier.fillMaxWidth(),
                     placeholder = {
                         Text(
                             text = "Enter your full street address",
@@ -146,7 +142,7 @@ fun SampleCollectionAddressScreen(
             // City, State, Zip Code Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // City Field
                 Column(
@@ -161,10 +157,7 @@ fun SampleCollectionAddressScreen(
                     OutlinedTextField(
                         value = city,
                         onValueChange = { city = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(cityFocusRequester),
-                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth(),
                         placeholder = {
                             Text(
                                 text = "City",
@@ -196,10 +189,7 @@ fun SampleCollectionAddressScreen(
                     OutlinedTextField(
                         value = state,
                         onValueChange = { state = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(stateFocusRequester),
-                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth(),
                         placeholder = {
                             Text(
                                 text = "State",
@@ -231,10 +221,7 @@ fun SampleCollectionAddressScreen(
                     OutlinedTextField(
                         value = zipCode,
                         onValueChange = { zipCode = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(zipCodeFocusRequester),
-                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth(),
                         placeholder = {
                             Text(
                                 text = "Zip code",
@@ -254,6 +241,8 @@ fun SampleCollectionAddressScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(40.dp))
 
             Spacer(modifier = Modifier.weight(1f))
 
