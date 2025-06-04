@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.datetime.*
+import kotlinx.datetime.TimeZone
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
@@ -32,7 +33,7 @@ fun HealthProfileScreen(
     onBackClick: () -> Unit = {},
     onContinueClick: (String, String, String, String) -> Unit = { _, _, _, _ -> }
 ) {
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    var selectedDate by remember { mutableStateOf(null as LocalDate?) }
     var selectedGender by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
