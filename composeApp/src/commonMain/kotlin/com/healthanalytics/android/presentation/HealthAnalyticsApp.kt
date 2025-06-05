@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
-import com.healthanalytics.android.di.initKoin
-import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
@@ -27,13 +25,9 @@ import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
-import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
-
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import kotlinx.coroutines.launch
 
-private val koin = initKoin()
 
 @Composable
 fun HealthAnalyticsApp(repository: PreferencesRepository) {
