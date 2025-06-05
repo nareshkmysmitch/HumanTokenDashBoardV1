@@ -52,7 +52,7 @@ class ApiServiceImpl(
             
             // Use handleDecryptionResponse to decrypt the data array
             val cartList = EncryptionUtils.handleDecryptionResponse<List<Cart>>(
-                """{"status":"success","message":"Successfully fetched cart items","data":"${encryptedResponse.data}"}"""
+                """{"status":"${encryptedResponse.status}","message":"${encryptedResponse.message}","data":"${encryptedResponse.data}"}"""
             )
             
             println("Cart response --> Decrypted ${cartList}")
