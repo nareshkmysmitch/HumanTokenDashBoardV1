@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.healthanalytics.android.data.api.PreferencesUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -20,14 +21,25 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
      * Flow of access token value.
      * Emits null if no token is stored.
      */
-    val accessToken: Flow<String?> = dataStore.data
+    val accessToken: Flow<PreferencesUiState<String>> = dataStore.data
         .map { preferences ->
-            preferences[ACCESS_TOKEN_KEY]
+            val token = preferences[ACCESS_TOKEN_KEY]
+            PreferencesUiState(
+                data = token,
+                isLoading = false,
+                error = null
+            )
         }
         .catch { e ->
-            // Log error or handle it appropriately
-            throw e
+            emit(
+                PreferencesUiState(
+                    data = null,
+                    isLoading = false,
+                    error = e.message ?: "Unknown error"
+                )
+            )
         }
+
 
     /**
      * Save the access token to DataStore.

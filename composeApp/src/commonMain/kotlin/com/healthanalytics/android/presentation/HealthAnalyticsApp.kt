@@ -40,7 +40,8 @@ fun HealthAnalyticsApp(repository: PreferencesRepository) {
     var accessToken by remember { mutableStateOf<String?>(null) }
     //val preferencesViewModel: PreferencesViewModel = koinViewModel()
 
-    println("accessToken : ${tempAccess.value}")
+    println("accessToken : ${tempAccess.value?.data}")
+
     scope.launch {
         repository.saveAccessToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E")
     }

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 class PreferencesViewModel(
     private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(PreferencesUiState())
+ /*   private val _uiState = MutableStateFlow(PreferencesUiState())
     val uiState: StateFlow<PreferencesUiState> = _uiState.asStateFlow()
 
     init {
@@ -62,5 +62,5 @@ class PreferencesViewModel(
                 }
             }
         }
-    }
+    }*/
 }
