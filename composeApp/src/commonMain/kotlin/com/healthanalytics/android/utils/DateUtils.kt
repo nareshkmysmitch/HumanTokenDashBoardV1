@@ -180,8 +180,8 @@ object DateUtils {
      * @return Current date as ISO formatted string
      */
     fun getCurrentDateIso(): String {
-        val now = Clock.System.now()
-        return now.toString().replace("Z", ".000Z")
+        val currentUtc = getCurrentUtcTime()
+        return getIso(currentUtc)
     }
     
     /**
