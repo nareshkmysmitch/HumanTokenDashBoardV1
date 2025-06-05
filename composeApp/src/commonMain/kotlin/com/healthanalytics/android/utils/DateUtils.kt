@@ -69,13 +69,24 @@ object DateUtils {
     }
     
     /**
-     * Convert LocalDateTime to ISO format string
+     * Convert LocalDateTime to ISO format string using SERVER_FORMAT
      * @param dateTime The LocalDateTime to convert
-     * @return ISO formatted string in SERVER_FORMAT
+     * @return ISO formatted string in SERVER_FORMAT (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')
      */
     fun toIsoFormat(dateTime: LocalDateTime): String {
         val instant = dateTime.toInstant(TimeZone.UTC)
-        return instant.toString().replace("Z", ".000Z")
+        val isoString = instant.toString()
+        
+        // Ensure the format matches SERVER_FORMAT exactly: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+        return if (isoString.contains('.')) {
+            // If already has milliseconds, ensure it's 3 digits
+            val parts = isoString.split('.')
+            val millisPart = parts[1].replace("Z", "").padEnd(3, '0').take(3)
+            "${parts[0]}.${millisPart}Z"
+        } else {
+            // If no milliseconds, add .000
+            isoString.replace("Z", ".000Z")
+        }
     }
     
     /**
