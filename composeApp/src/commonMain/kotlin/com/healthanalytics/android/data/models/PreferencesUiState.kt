@@ -1,4 +1,4 @@
-package com.healthanalytics.android.data.api
+package com.healthanalytics.android.data.models
 
 data class PreferencesUiState<T>(
     val data: T? = null,

@@ -96,13 +96,7 @@ fun HomeScreen(
 
     Scaffold(topBar = {
         TopAppBar(
-            title = when (currentScreen) {
-                MainScreen.DASHBOARD -> "Health Analytics"
-                MainScreen.BIOMARKERS -> "BioMarkers"
-                MainScreen.RECOMMENDATIONS -> "Recommendations"
-                MainScreen.MARKETPLACE -> "Market Place"
-                else -> ""
-            }, onProfileClick = onProfileClick, onChatClick = onChatClick
+            title = "Human Token", onProfileClick = onProfileClick, onChatClick = onChatClick
         )
     }, bottomBar = {
         BottomNavBar(
