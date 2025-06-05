@@ -1,13 +1,9 @@
 package com.healthanalytics.android
 
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.window.ComposeUIViewController
-import createDataStore
-import com.healthanalytics.android.presentation.HealthAnalyticsApp
-import io.ktor.client.engine.darwin.Darwin
+import com.healthanalytics.android.di.initKoin
 
 val LocalNativeViewFactory = staticCompositionLocalOf<NativeViewFactory> {
     error("No view factory")
@@ -16,10 +12,10 @@ val LocalNativeViewFactory = staticCompositionLocalOf<NativeViewFactory> {
 
 fun MainViewController(
     nativeViewFactory: NativeViewFactory,
-) = ComposeUIViewController {
+) = ComposeUIViewController(configure = {
+    initKoin()
+}) {
     CompositionLocalProvider(LocalNativeViewFactory provides nativeViewFactory) {
-        App(
-            remember { createDataStore() }
-        )
+        App()
     }
 }

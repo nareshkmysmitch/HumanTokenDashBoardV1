@@ -1,6 +1,7 @@
+package com.healthanalytics.android.localstorage
+
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.healthanalytics.android.localstorage.DATA_STORE_FILE_NAME
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -8,7 +9,7 @@ import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
 fun createDataStore(): DataStore<Preferences> {
-    return com.healthanalytics.android.localstorage.createDataStore {
+    return createDataStore {
         val directory = NSFileManager.defaultManager.URLForDirectory(
             directory = NSDocumentDirectory,
             inDomain = NSUserDomainMask,
