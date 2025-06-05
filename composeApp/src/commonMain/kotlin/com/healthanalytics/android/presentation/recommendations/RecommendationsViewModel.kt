@@ -14,7 +14,7 @@ data class RecommendationsUiState(
     val recommendations: List<Recommendation> = emptyList(),
     val selectedCategory: String? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )
 
 class RecommendationsViewModel(private val apiService: ApiService) : ViewModel() {
@@ -27,21 +27,23 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
 
     fun getFilteredRecommendations(): List<Recommendation> {
         return _uiState.value.recommendations.filter { recommendation ->
-            _uiState.value.selectedCategory == null || 
-            recommendation.category.equals(_uiState.value.selectedCategory, ignoreCase = true)
+            _uiState.value.selectedCategory == null ||
+                    recommendation.category.equals(
+                        _uiState.value.selectedCategory,
+                        ignoreCase = true
+                    )
         }
     }
 
     fun getAvailableCategories(): List<String> {
         return _uiState.value.recommendations
-            .map { it.category }
+            .map { it.category ?: "" }
             .distinct()
-            .sorted()
     }
 
     fun getCategoryCount(category: String): Int {
-        return _uiState.value.recommendations.count { 
-            it.category.equals(category, ignoreCase = true) 
+        return _uiState.value.recommendations.count {
+            it.category.equals(category, ignoreCase = true)
         }
     }
 
@@ -50,7 +52,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
             try {
                 _uiState.update { it.copy(isLoading = true) }
                 val recommendations = apiService.getRecommendations(accessToken)
-                _uiState.update { 
+                _uiState.update {
                     it.copy(
                         recommendations = recommendations ?: emptyList(),
                         isLoading = false

@@ -1,12 +1,12 @@
 package com.healthanalytics.android.data.api
 
 import com.healthanalytics.android.data.models.Recommendation
+import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.utils.EncryptionUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpHeaders
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
@@ -31,13 +31,18 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
             header("access_token", accessToken)
         }
         val responseBody = response.bodyAsText()
-        val healthMetricsResponse = EncryptionUtils.handleDecryptionResponse<HealthMetrics>(responseBody)
+        val healthMetricsResponse =
+            EncryptionUtils.handleDecryptionResponse<HealthMetrics>(responseBody)
         return healthMetricsResponse?.blood?.data
     }
 
     override suspend fun getRecommendations(accessToken: String): List<Recommendation>? {
-        return httpClient.get("v4/human-token/recommendations") {
+        val response = httpClient.get("v4/human-token/recommendation") {
             header("access_token", accessToken)
-        }.body()
+        }
+        val responseBody = response.bodyAsText()
+        val recommendationsList =
+            EncryptionUtils.handleDecryptionResponse<Recommendations>(responseBody)
+        return recommendationsList?.recommendations
     }
 } 
