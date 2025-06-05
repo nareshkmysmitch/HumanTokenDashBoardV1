@@ -34,3 +34,17 @@ data class AuthData(
     val access_token: String,
     val user: User
 )
+
+@Serializable
+data class UpdateProfileRequest(
+    val name: String,
+    val email: String,
+    val phone: String
+)
+
+@Serializable
+data class UpdateProfileResponse(
+    val status: String,
+    val message: String,
+    val data: User? = null
+)

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.data.models.UpdateProfileRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -106,6 +107,23 @@ class MarketPlaceViewModel(
                 _uiState.value = MarketPlaceUiState.Success(products ?: emptyList())
             } catch (e: Exception) {
                 _uiState.value = MarketPlaceUiState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun updateProfile(name: String, email: String, phone: String, callback: (Boolean, String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val request = UpdateProfileRequest(name, email, phone)
+                val response = apiService.updateProfile(dummyAccessToken, request)
+                
+                if (response?.status == "success") {
+                    callback(true, "Profile updated successfully")
+                } else {
+                    callback(false, response?.message ?: "Failed to update profile")
+                }
+            } catch (e: Exception) {
+                callback(false, e.message ?: "An error occurred")
             }
         }
     }
