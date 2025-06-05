@@ -1,10 +1,22 @@
 package com.healthanalytics.android.presentation
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+
 import com.healthanalytics.android.di.initKoin
+
+import com.example.humantoken.ui.screens.ProductDetailScreen
+import com.healthanalytics.android.data.models.Product
+
+
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
@@ -15,10 +27,13 @@ import com.healthanalytics.android.presentation.screens.dashboard.DashboardScree
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
 
+
 private val koin = initKoin()
+
 
 @Composable
 fun HealthAnalyticsApp() {
@@ -56,14 +71,23 @@ fun HealthAnalyticsApp() {
                 navigateTo(Screen.PROFILE)
             }, onChatClick = {
                 navigateTo(Screen.CHAT)
+            }, onMarketPlaceClick = {
+                navigateTo(Screen.MARKETPLACE_DETAIL)
             })
+
+            Screen.MARKETPLACE_DETAIL -> ProductDetailScreen()
         }
     }
 }
 
 
 @Composable
-fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit, onChatClick: () -> Unit) {
+fun HomeScreen(
+    accessToken: String?,
+    onProfileClick: () -> Unit,
+    onChatClick: () -> Unit,
+    onMarketPlaceClick: (Product) -> Unit
+) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
 
@@ -97,6 +121,7 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit, onChatClick: ()
             when (currentScreen) {
                 MainScreen.DASHBOARD -> DashboardScreen(token = accessToken.toString())
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
+
                 MainScreen.RECOMMENDATIONS -> ConversationListScreen(onNavigateToChat = { conversationId ->
                     ChatScreen(
                         conversationId,
@@ -104,7 +129,9 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit, onChatClick: ()
 
                         )
                 })  //   RecommendationsScreen()
+
                 MainScreen.MARKETPLACE -> MarketPlaceScreen()
+
             }
         }
     }

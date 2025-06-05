@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MarketplaceScreen(
     token: String,
-    repository: HealthRepository = HealthRepository()
+    repository: HealthRepository = HealthRepository(),
+    onProductClick: (Product) -> Unit
 ) {
     var products by remember { mutableStateOf<List<Product>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
@@ -96,6 +98,9 @@ fun MarketplaceScreen(
                             product = product,
                             onAddToCart = {
                                 // Handle add to cart
+                            },
+                            onProductClick = {
+                                onProductClick
                             }
                         )
                     }
@@ -108,14 +113,17 @@ fun MarketplaceScreen(
 @Composable
 fun ProductCard(
     product: Product,
-    onAddToCart: () -> Unit
+    onAddToCart: () -> Unit,
+    onProductClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp).clickable {
+                onProductClick()
+            }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
