@@ -20,8 +20,10 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun TopAppBar(
     title: String,
-    onProfileClick: () -> Unit,
-    onChatClick: () -> Unit
+    isEndIconVisible: Boolean = true,
+    isChatVisible: Boolean = true,
+    onEndIconClick: () -> Unit = {},
+    onChatClick: () -> Unit = {}
 ) {
     TopAppBar(
         title = {
@@ -31,19 +33,23 @@ fun TopAppBar(
             )
         },
         actions = {
-            IconButton(onClick = onChatClick) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_calendar_icon),
-                    contentDescription = "chat",
-                    modifier = Modifier.size(24.dp)
-                )
+            if (isChatVisible) {
+                IconButton(onClick = onChatClick) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                        contentDescription = "chat",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
-            IconButton(onClick = onProfileClick) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_calendar_icon),
-                    contentDescription = "Profile",
-                    modifier = Modifier.size(24.dp)
-                )
+            if (isEndIconVisible) {
+                IconButton(onClick = onEndIconClick) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                        contentDescription = "Profile",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
