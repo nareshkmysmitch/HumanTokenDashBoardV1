@@ -25,9 +25,8 @@ import com.healthanalytics.android.presentation.screens.MarketplaceScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
-import com.healthanalytics.android.presentation.screens.onboard.LoginScreen
+import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
-import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreen
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
@@ -130,18 +129,14 @@ private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel
 @Composable
 fun OnboardContainer(isLoggedIn:() -> Unit) {
     val navController = rememberNavController()
-    val onboardViewModel: OnboardViewModel = koinViewModel()
+//    val onboardViewModel: OnboardViewModel = koinViewModel()
 
     NavHost(
         navController = navController,
         startDestination = OnboardRoute.Login
     ) {
         composable<OnboardRoute.Login> {
-            LoginScreen(
-                loginState = onboardViewModel.loginState,
-                onContinueClick = {
-                    onboardViewModel.sendOTP(it)
-                },
+            LoginScreenContainer(
                 navigateToOtpVerification = {
                     navController.navigate(OnboardRoute.OTPVerification)
                 }
@@ -150,7 +145,6 @@ fun OnboardContainer(isLoggedIn:() -> Unit) {
 
         composable<OnboardRoute.OTPVerification> {
             OTPContainer(
-                onboardViewModel = onboardViewModel,
                 onBackClick = {
                     navController.navigateUp()
                 },
@@ -162,7 +156,6 @@ fun OnboardContainer(isLoggedIn:() -> Unit) {
 
         composable<OnboardRoute.CreateAccount> {
             CreateAccountContainer(
-                onboardViewModel = onboardViewModel,
                 onBackClick = {
                     navController.navigateUp()
                 },
@@ -174,7 +167,6 @@ fun OnboardContainer(isLoggedIn:() -> Unit) {
 
         composable<OnboardRoute.HealthProfile> {
             HealthProfileContainer(
-                onboardViewModel = onboardViewModel,
                 onBackClick = {
                     navController.navigateUp()
                 },
@@ -186,7 +178,6 @@ fun OnboardContainer(isLoggedIn:() -> Unit) {
 
         composable<OnboardRoute.SampleCollectionAddress> {
             SampleCollectionAddressContainer(
-                onboardViewModel = onboardViewModel,
                 onBackClick = {
                     navController.navigateUp()
                 },
@@ -198,7 +189,6 @@ fun OnboardContainer(isLoggedIn:() -> Unit) {
 
         composable<OnboardRoute.ScheduleBloodTest> {
             ScheduleBloodTestContainer(
-                onboardViewModel = onboardViewModel,
                 onBackClick = {
                     navController.navigateUp()
                 },
@@ -241,7 +231,6 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit={}, onChatClick:
                 MainScreen.BIOMARKERS -> "BioMarkers"
                 MainScreen.RECOMMENDATIONS -> "Recommendations"
                 MainScreen.MARKETPLACE -> "Market Place"
-                else -> ""
             }, onProfileClick = onProfileClick, onChatClick = onChatClick
         )
     }, bottomBar = {

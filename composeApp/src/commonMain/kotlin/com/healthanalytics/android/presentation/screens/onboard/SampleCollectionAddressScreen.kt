@@ -26,10 +26,11 @@ import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SampleCollectionAddressContainer(
-    onboardViewModel: OnboardViewModel,
+    onboardViewModel: OnboardViewModel = koinViewModel(),
     onBackClick: () -> Unit,
     navigateToBloodTest: () -> Unit,
 ) {
