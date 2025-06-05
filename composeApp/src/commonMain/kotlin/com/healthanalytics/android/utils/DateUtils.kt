@@ -116,6 +116,30 @@ object DateUtils {
     }
     
     /**
+     * Convert LocalDateTime to ISO format using system timezone conversion
+     * Equivalent to Java ZonedDateTime approach
+     * @param localDateTime The LocalDateTime to convert (assumed to be in system timezone)
+     * @return ISO formatted string in SERVER_FORMAT
+     */
+    fun getIso(localDateTime: LocalDateTime): String {
+        // Convert LocalDateTime from system timezone to UTC (equivalent to ZonedDateTime.of + withZoneSameInstant)
+        val systemTimeZone = TimeZone.currentSystemDefault()
+        val instantInSystemTz = localDateTime.toInstant(systemTimeZone)
+        val utcDateTime = instantInSystemTz.toLocalDateTime(TimeZone.UTC)
+        
+        // Format using SERVER_FORMAT pattern
+        val year = utcDateTime.year.toString().padStart(4, '0')
+        val month = utcDateTime.monthNumber.toString().padStart(2, '0')
+        val day = utcDateTime.dayOfMonth.toString().padStart(2, '0')
+        val hour = utcDateTime.hour.toString().padStart(2, '0')
+        val minute = utcDateTime.minute.toString().padStart(2, '0')
+        val second = utcDateTime.second.toString().padStart(2, '0')
+        val millis = (utcDateTime.nanosecond / 1_000_000).toString().padStart(3, '0')
+        
+        return "${year}-${month}-${day}T${hour}:${minute}:${second}.${millis}Z"
+    }
+
+    /**
      * Get current date in ISO format
      * @return Current date as ISO formatted string
      */
