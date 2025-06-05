@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.di.DataStoreProvider
 import com.healthanalytics.android.di.initKoin
 import com.healthanalytics.android.presentation.HealthAnalyticsApp
@@ -22,7 +23,8 @@ fun App(prefs: DataStore<Preferences>) {
         }
     }
 
+    val repository = PreferencesRepository(prefs)
     MaterialTheme {
-        HealthAnalyticsApp()
+        HealthAnalyticsApp(repository)
     }
 }
