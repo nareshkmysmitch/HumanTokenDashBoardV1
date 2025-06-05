@@ -1,14 +1,39 @@
 package com.healthanalytics.android.presentation.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,262 +69,292 @@ fun ProfileScreen(
     var pincode by remember { mutableStateOf("201204") }
     var country by remember { mutableStateOf("india") }
 
-    BackHandler(enabled = true, onBack = onNavigateBack)
-
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.Black
-    ) {
+    BackHandler(enabled = true, onBack = {
         if (!isEditing) {
-            // Profile View Screen
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Your Profile",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1C1C1E)
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Account Information",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Manage your personal information",
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-                        Row(
-                            modifier = Modifier.padding(bottom = 24.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF8B5CF6)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.ic_calendar_icon),
-                                    contentDescription = "Profile",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    text = name,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = email,
-                                    fontSize = 14.sp,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-
-                        ProfileInfoItem("Phone Number", phone)
-                        ProfileInfoItem("Date of Birth", dateOfBirth)
-                        
-                        Text(
-                            text = "Address",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                        Text(text = address1, color = Color.Gray)
-                        if (address2.isNotEmpty()) Text(text = address2, color = Color.Gray)
-                        Text(text = "$city, $state $pincode", color = Color.Gray)
-                        Text(text = country, color = Color.Gray)
-
-                        Button(
-                            onClick = { isEditing = true },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 24.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF8B5CF6)
-                            )
-                        ) {
-                            Text("Edit Profile")
-                        }
-                    }
-                }
-
-                Button(
-                    onClick = { showAlertDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.White
-                    ),
-                    border = ButtonDefaults.outlinedButtonBorder
-                ) {
-                    Text("Log Out")
-                }
-            }
+            onNavigateBack()
         } else {
-            // Edit Profile Screen
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(
-                    text = "Account Information",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Text(
-                    text = "Manage your personal information",
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
-
-                ProfileTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = "Full Name"
-                )
-                ProfileTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = "Email"
-                )
-                ProfileTextField(
-                    value = phone,
-                    onValueChange = { phone = it },
-                    label = "Phone Number",
-                    enabled = false
-                )
-                ProfileTextField(
-                    value = dateOfBirth,
-                    onValueChange = { dateOfBirth = it },
-                    label = "Date of Birth"
-                )
-
-                Text(
-                    text = "Address",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-
-                ProfileTextField(
-                    value = address1,
-                    onValueChange = { address1 = it },
-                    label = "Address Line 1"
-                )
-                ProfileTextField(
-                    value = address2,
-                    onValueChange = { address2 = it },
-                    label = "Address Line 2 (optional)"
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ProfileTextField(
-                        value = city,
-                        onValueChange = { city = it },
-                        label = "City",
-                        modifier = Modifier.weight(1f)
+            isEditing = false
+        }
+    })
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = if (isEditing) "Edit Profile" else "Your Profile",
+                        color = AppColors.primary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                    ProfileTextField(
-                        value = state,
-                        onValueChange = { state = it },
-                        label = "State",
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                ProfileTextField(
-                    value = pincode,
-                    onValueChange = { pincode = it },
-                    label = "Pincode"
-                )
-                ProfileTextField(
-                    value = country,
-                    onValueChange = { country = it },
-                    label = "Country"
-                )
-
-                Row(
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        if (!isEditing) {
+                            onNavigateBack()
+                        } else {
+                            isEditing = false
+                        }
+                    }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_calendar_icon),
+                            contentDescription = "back arrow",
+                            tint = AppColors.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
+            )
+        },
+        containerColor = Color.Black
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            color = Color.Black
+        ) {
+            if (!isEditing) {
+                // Profile View Screen
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .fillMaxSize()
+                        .padding(16.dp)
                 ) {
-                    Button(
-                        onClick = {
-                            // Save profile changes
-                            viewModel.updateProfile(name, email, phone) { success, message ->
-                                if (success) {
-                                    isEditing = false
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF1C1C1E)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Account Information",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Manage your personal information",
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+
+                            Row(
+                                modifier = Modifier.padding(bottom = 24.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(64.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFF8B5CF6)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                                        contentDescription = "Profile",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        text = name,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = email,
+                                        fontSize = 14.sp,
+                                        color = Color.Gray
+                                    )
                                 }
                             }
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF8B5CF6)
-                        )
-                    ) {
-                        Text("Save")
+
+                            ProfileInfoItem("Phone Number", phone)
+                            ProfileInfoItem("Date of Birth", dateOfBirth)
+
+                            Text(
+                                text = "Address",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                            Text(text = address1, color = Color.Gray)
+                            if (address2.isNotEmpty()) Text(text = address2, color = Color.Gray)
+                            Text(text = "$city, $state $pincode", color = Color.Gray)
+                            Text(text = country, color = Color.Gray)
+
+                            Button(
+                                onClick = { isEditing = true },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 24.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF8B5CF6)
+                                )
+                            ) {
+                                Text("Edit Profile")
+                            }
+                        }
                     }
+
                     Button(
-                        onClick = { isEditing = false },
-                        modifier = Modifier.weight(1f),
+                        onClick = { showAlertDialog = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
                             contentColor = Color.White
                         ),
                         border = ButtonDefaults.outlinedButtonBorder
                     ) {
-                        Text("Cancel")
+                        Text("Log Out")
+                    }
+                }
+            } else {
+                // Edit Profile Screen
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = "Account Information",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Text(
+                        text = "Manage your personal information",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
+
+                    ProfileTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = "Full Name"
+                    )
+                    ProfileTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = "Email"
+                    )
+                    ProfileTextField(
+                        value = phone,
+                        onValueChange = { phone = it },
+                        label = "Phone Number",
+                        enabled = false
+                    )
+                    ProfileTextField(
+                        value = dateOfBirth,
+                        onValueChange = { dateOfBirth = it },
+                        label = "Date of Birth"
+                    )
+
+                    Text(
+                        text = "Address",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+
+                    ProfileTextField(
+                        value = address1,
+                        onValueChange = { address1 = it },
+                        label = "Address Line 1"
+                    )
+                    ProfileTextField(
+                        value = address2,
+                        onValueChange = { address2 = it },
+                        label = "Address Line 2 (optional)"
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ProfileTextField(
+                            value = city,
+                            onValueChange = { city = it },
+                            label = "City",
+                            modifier = Modifier.weight(1f)
+                        )
+                        ProfileTextField(
+                            value = state,
+                            onValueChange = { state = it },
+                            label = "State",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    ProfileTextField(
+                        value = pincode,
+                        onValueChange = { pincode = it },
+                        label = "Pincode"
+                    )
+                    ProfileTextField(
+                        value = country,
+                        onValueChange = { country = it },
+                        label = "Country"
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                // Save profile changes
+                                viewModel.updateProfile(name, email, phone) { success, message ->
+                                    if (success) {
+                                        isEditing = false
+                                    }
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF8B5CF6)
+                            )
+                        ) {
+                            Text("Save")
+                        }
+                        Button(
+                            onClick = { isEditing = false },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.White
+                            ),
+                            border = ButtonDefaults.outlinedButtonBorder
+                        ) {
+                            Text("Cancel")
+                        }
                     }
                 }
             }
-        }
 
-        if (showAlertDialog) {
-            ShowAlertDialog(
-                modifier = Modifier,
-                title = "Log out",
-                message = "You will be logged out of your Deep Holistics account. However this doesn't affect your logged data. Do you want to still logout?",
-                onDismiss = { showAlertDialog = false },
-                onLogout = { showAlertDialog = false }
-            )
+            if (showAlertDialog) {
+                ShowAlertDialog(
+                    modifier = Modifier,
+                    title = "Log out",
+                    message = "You will be logged out of your Deep Holistics account. However this doesn't affect your logged data. Do you want to still logout?",
+                    onDismiss = { showAlertDialog = false },
+                    onLogout = { showAlertDialog = false }
+                )
+            }
         }
     }
 }
