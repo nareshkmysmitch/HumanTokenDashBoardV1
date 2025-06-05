@@ -62,6 +62,10 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.navigation.compose)
+
+            //koin
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
 
         iosMain.dependencies {
@@ -86,10 +90,11 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
 
+            //koin
+            api(libs.koin.core)
+            api(libs.koin.compose)
+            api(libs.koin.compose.viewmodel)
 
-            implementation(libs.koin.core)
-//            implementation(libs.koin.android)
-            implementation(libs.koin.compose)
 
             implementation("io.github.qdsfdhvh:image-loader:1.10.0")
             implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
