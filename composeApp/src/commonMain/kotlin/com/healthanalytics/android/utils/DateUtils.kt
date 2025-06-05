@@ -70,12 +70,18 @@ object DateUtils {
     
     /**
      * Convert LocalDateTime to ISO format string using SERVER_FORMAT
-     * @param dateTime The LocalDateTime to convert
+     * Converts from system timezone to UTC before formatting
+     * @param dateTime The LocalDateTime to convert (assumed to be in system timezone)
      * @return ISO formatted string in SERVER_FORMAT (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')
      */
     fun toIsoFormat(dateTime: LocalDateTime): String {
-        val instant = dateTime.toInstant(TimeZone.UTC)
-        val isoString = instant.toString()
+        // Convert LocalDateTime (system timezone) to UTC
+        val systemTimeZone = TimeZone.currentSystemDefault()
+        val instantInSystemTz = dateTime.toInstant(systemTimeZone)
+        val utcDateTime = instantInSystemTz.toLocalDateTime(TimeZone.UTC)
+        
+        // Format as ISO string with milliseconds
+        val isoString = instantInSystemTz.toString()
         
         // Ensure the format matches SERVER_FORMAT exactly: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
         return if (isoString.contains('.')) {
