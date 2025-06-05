@@ -3,6 +3,7 @@ package com.healthanalytics.android.presentation.health
 import androidx.lifecycle.ViewModel
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.data.api.HealthDataUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,14 +11,6 @@ import kotlinx.coroutines.flow.update
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-data class HealthDataUiState(
-    val metrics: List<BloodData?> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val selectedFilter: String? = null,
-    val searchQuery: String = "",
-    val lastUpdated: BloodData? = null,
-)
 
 class HealthDataViewModel(
     private val apiService: ApiService,

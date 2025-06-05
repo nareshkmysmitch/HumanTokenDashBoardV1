@@ -9,11 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
-import com.healthanalytics.android.di.initKoin
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
@@ -24,14 +26,25 @@ import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun HealthAnalyticsApp() {
+fun HealthAnalyticsApp(repository: PreferencesRepository) {
+    val scope = rememberCoroutineScope()
+
+    val tempAccess = repository.accessToken.collectAsStateWithLifecycle(null)
 
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
     var accessToken by remember { mutableStateOf<String?>(null) }
+    //val preferencesViewModel: PreferencesViewModel = koinViewModel()
+
+    println("accessToken : ${tempAccess.value?.data}")
+
+    scope.launch {
+        repository.saveAccessToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E")
+    }
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
