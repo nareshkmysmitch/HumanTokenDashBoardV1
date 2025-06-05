@@ -7,12 +7,17 @@ import com.healthanalytics.android.data.models.Biomarker
 import com.healthanalytics.android.data.models.CartItem
 import com.healthanalytics.android.data.models.OtpVerifyRequest
 import com.healthanalytics.android.data.models.Product
+import com.healthanalytics.android.data.network.NetworkConfig.CLIENT_ID
+import com.healthanalytics.android.data.network.NetworkConfig.USER_TIMEZONE
+
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -32,16 +37,28 @@ class ApiClient {
             })
         }
         install(Logging) {
-            level = LogLevel.INFO
+            logger = object : Logger {
+                override fun log(message: String) {
+                    println(message)
+                }
+            }
+            level = LogLevel.ALL
         }
+
         install(DefaultRequest) {
             contentType(ContentType.Application.Json)
+        }
+
+        defaultRequest {
+            url(NetworkConfig.BASE_URL)
+            contentType(ContentType.Application.Json)
+            header("client_id", CLIENT_ID)
+            header("user_timezone", USER_TIMEZONE)
         }
     }
 
     companion object {
-        private const val BASE_URL =
-            "https://api.stg.dh.deepholistics.com"
+        private const val BASE_URL = "https://api.stg.dh.deepholistics.com"
     }
 
     suspend fun sendOtp(phone: String): AuthResponse {

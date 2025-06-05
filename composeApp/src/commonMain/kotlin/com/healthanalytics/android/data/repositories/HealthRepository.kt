@@ -28,8 +28,6 @@ class HealthRepository {
     }
     
     suspend fun getHealthData(token: String): Result<List<Biomarker>> {
-
-
         return try {
             val response = apiClient.getHealthData(token)
             if (response.status == "success" && response.data != null) {

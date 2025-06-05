@@ -15,6 +15,8 @@ import com.healthanalytics.android.presentation.screens.dashboard.DashboardScree
 import com.healthanalytics.android.presentation.screens.LoginScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.chat.ChatScreen
+import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
 
 private val koin = initKoin()
 
@@ -73,9 +75,6 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit, onChatClick: ()
         currentScreen = MainScreen.DASHBOARD
     }
 
-
-
-
     Scaffold(topBar = {
         TopAppBar(
             title = when (currentScreen) {
@@ -98,7 +97,13 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit, onChatClick: ()
             when (currentScreen) {
                 MainScreen.DASHBOARD -> DashboardScreen(token = accessToken.toString())
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
+                MainScreen.RECOMMENDATIONS -> ConversationListScreen(onNavigateToChat = { conversationId ->
+                    ChatScreen(
+                        conversationId,
+                        onNavigateBack = { },
+
+                        )
+                })  //   RecommendationsScreen()
                 MainScreen.MARKETPLACE -> MarketPlaceScreen()
             }
         }

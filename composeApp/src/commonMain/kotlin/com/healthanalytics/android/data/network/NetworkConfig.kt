@@ -11,9 +11,9 @@ import kotlinx.serialization.json.Json
 
 object NetworkConfig {
 
-    private const val BASE_URL = "https://api.stg.dh.deepholistics.com/"
-    private const val CLIENT_ID = "JmEfoQ2sP18APIiX9z0nY3vlDAKHIp8nKuyV"
-    private const val USER_TIMEZONE = "Asia/Calcutta"
+      const val BASE_URL = "https://api.stg.dh.deepholistics.com/"
+      const val CLIENT_ID = "JmEfoQ2sP18APIiX9z0nY3vlDAKHIp8nKuyV"
+      const val USER_TIMEZONE = "Asia/Calcutta"
 
     fun createHttpClient(accessToken: String? = null): HttpClient {
         return HttpClient {
@@ -26,8 +26,15 @@ object NetworkConfig {
             }
 
             install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        println(message)
+                    }
+                }
                 level = LogLevel.ALL
             }
+
+
 
             defaultRequest {
                 url(BASE_URL)
