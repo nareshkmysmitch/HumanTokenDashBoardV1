@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.data.repositories.PreferencesRepository
@@ -82,11 +84,26 @@ fun HealthAnalyticsApp(repository: PreferencesRepository) {
                     product = it
                     println("product -> Ha2$it")
                     navigateTo(Screen.MARKETPLACE_DETAIL)
-                })
+                },
+                onCartClick = {
+                    navigateTo(Screen.CART)
+                }
+            )
 
             Screen.MARKETPLACE_DETAIL -> ProductDetailScreen(product, onNavigateBack = {
                 navigateBack()
             })
+
+            Screen.CART -> {
+                CartScreen(
+                    onBackClick = {
+                        navigateBack()
+                    },
+                    onCheckoutClick = {
+
+                    },
+                )
+            }
         }
     }
 }
@@ -95,6 +112,7 @@ fun HealthAnalyticsApp(repository: PreferencesRepository) {
 fun HomeScreen(
     accessToken: String?,
     onProfileClick: () -> Unit,
+    onCartClick: () -> Unit,
     onChatClick: () -> Unit,
     onMarketPlaceClick: (Product) -> Unit,
 ) {
@@ -108,7 +126,7 @@ fun HomeScreen(
     Scaffold(topBar = {
         if (currentScreen == MainScreen.MARKETPLACE) {
             TopAppBar(
-                title = "MarketPlace", onEndIconClick = { onProfileClick() }, isChatVisible = false
+                title = "MarketPlace", onEndIconClick = { onCartClick() }, isChatVisible = false
             )
         } else {
             TopAppBar(

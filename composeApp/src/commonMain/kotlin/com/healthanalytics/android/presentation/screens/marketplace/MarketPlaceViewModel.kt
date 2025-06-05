@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
+import com.example.humantoken.ui.screens.Cart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,12 @@ sealed class MarketPlaceUiState {
     data object Loading : MarketPlaceUiState()
     data class Success(val products: List<Product?>) : MarketPlaceUiState()
     data class Error(val message: String) : MarketPlaceUiState()
+}
+
+sealed class CartListState {
+    data object Loading : CartListState()
+    data class Success(val cartList: List<Cart>) : CartListState()
+    data class Error(val message: String) : CartListState()
 }
 
 enum class SortOption(val displayName: String) {
@@ -32,6 +39,9 @@ class MarketPlaceViewModel(
 
     private val _uiState = MutableStateFlow<MarketPlaceUiState>(MarketPlaceUiState.Loading)
     val uiState: StateFlow<MarketPlaceUiState> = _uiState.asStateFlow()
+
+    private val _cartListState = MutableStateFlow<CartListState>(CartListState.Loading)
+    val cartListFlow: StateFlow<CartListState> = _cartListState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
@@ -106,6 +116,22 @@ class MarketPlaceViewModel(
                 _uiState.value = MarketPlaceUiState.Success(products ?: emptyList())
             } catch (e: Exception) {
                 _uiState.value = MarketPlaceUiState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun getCartList() {
+        viewModelScope.launch {
+            _cartListState.value = CartListState.Loading
+            try {
+                val cartList = apiService.getCartList(dummyAccessToken)
+                if (cartList != null) {
+                    _cartListState.value = CartListState.Success(cartList.filterNotNull())
+                } else {
+                    _cartListState.value = CartListState.Error("Failed to fetch cart items")
+                }
+            } catch (e: Exception) {
+                _cartListState.value = CartListState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
