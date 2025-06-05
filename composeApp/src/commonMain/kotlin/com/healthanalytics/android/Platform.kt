@@ -1,5 +1,6 @@
 package com.healthanalytics.android
 
+import androidx.compose.runtime.Composable
 import com.healthanalytics.android.presentation.components.MainScreen
 
 interface Platform {
@@ -14,3 +15,7 @@ data class NavigationItem(
 
 
 expect fun getNavigationItems(): List<NavigationItem>
+
+@Composable
+expect fun BackHandler(enabled: Boolean = true, onBack: () -> Unit)
+

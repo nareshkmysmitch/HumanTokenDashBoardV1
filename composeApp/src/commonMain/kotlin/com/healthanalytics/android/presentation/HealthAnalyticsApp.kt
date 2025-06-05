@@ -9,6 +9,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
@@ -16,12 +26,17 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.humantoken.ui.screens.ProductDetailScreen
+import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.TopAppBar
+import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.DashboardScreen
 import com.healthanalytics.android.presentation.screens.MarketplaceScreen
+import com.healthanalytics.android.presentation.screens.LoginScreen
+import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
@@ -33,6 +48,8 @@ import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTes
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+
 
 @Composable
 fun HealthAnalyticsApp() {
@@ -40,6 +57,7 @@ fun HealthAnalyticsApp() {
 //    var lastMainScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
 //    var accessToken by remember { mutableStateOf<String?>(null) }
 //
+
 //    fun navigateTo(screen: Screen) {
 //        // Remember the last main screen when navigating away from main screens
 //        if (currentScreen in listOf(MainScreen.DASHBOARD, MainScreen.BIOMARKERS, MainScreen.RECOMMENDATIONS, MainScreen.MARKETPLACE)) {
@@ -213,6 +231,12 @@ fun OnboardContainer(isLoggedIn:() -> Unit) {
 
 @Composable
 fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit={}, onChatClick: () -> Unit={}) {
+fun HomeScreen(
+    accessToken: String?,
+    onProfileClick: () -> Unit,
+    onChatClick: () -> Unit,
+    onMarketPlaceClick: (Product) -> Unit,
+) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
 
@@ -224,14 +248,12 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit={}, onChatClick:
         currentScreen = MainScreen.DASHBOARD
     }
 
+
+
+
     Scaffold(topBar = {
         TopAppBar(
-            title = when (currentScreen) {
-                MainScreen.DASHBOARD -> "Health Analytics"
-                MainScreen.BIOMARKERS -> "BioMarkers"
-                MainScreen.RECOMMENDATIONS -> "Recommendations"
-                MainScreen.MARKETPLACE -> "Market Place"
-            }, onProfileClick = onProfileClick, onChatClick = onChatClick
+            title = "Human Token", onProfileClick = onProfileClick, onChatClick = onChatClick
         )
     }, bottomBar = {
         BottomNavBar(
@@ -243,10 +265,12 @@ fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit={}, onChatClick:
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             when (currentScreen) {
-                MainScreen.DASHBOARD -> DashboardScreen(token = accessToken.toString())
+                MainScreen.DASHBOARD -> HealthDataScreen()
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
-                MainScreen.MARKETPLACE -> MarketplaceScreen(token = accessToken.toString())
+
+                MainScreen.MARKETPLACE -> MarketPlaceScreen()
+
             }
         }
     }

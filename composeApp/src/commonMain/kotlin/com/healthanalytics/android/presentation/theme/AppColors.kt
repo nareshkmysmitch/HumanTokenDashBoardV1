@@ -38,9 +38,14 @@ object AppColors {
     val TextGrey = Color(0XFFCBCFD5)
 
     val alertDialogColor = Color(0XFFE6F1FF)
-    
+
     // Additional surface and UI colors
     val surfaceVariant = Color(0xFF2A2A3E)
     val outline = Color(0xFF5A5A6E)
+    val PurpleBackground = Color(76767633)
+    val PurpleCardBackground = Color(0xFF2E2332)
+    val PurpleIconBackground = Color(0XFF393442)
+    val PurpleButtonBackground = Color(0XFF54414E)
+    val Transparent = Color.Transparent
 
 }

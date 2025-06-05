@@ -43,20 +43,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.ui.ShowAlertDialog
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(onNavigateBack: () -> Unit) {
 
     var showAlertDialog by remember { mutableStateOf(false) }
 
-    // Simple approach - no custom back handler, just use the navigation icon
-
+    // Disable system back button - intercept and do nothing
+    BackHandler(enabled = true, onBack = onNavigateBack)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -197,193 +199,16 @@ fun ProfileScreen(onNavigateBack: () -> Unit) {
         }
     }
     if (showAlertDialog) {
-        AlertDialog(
-            onDismissRequest = { showAlertDialog = false },
-            title = { Text("Confirm Logout") },
-            text = { Text("Are you sure you want to log out?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showAlertDialog = false
-                        // Handle logout logic here
-                    }
-                ) {
-                    Text("Logout")
-                }
+        ShowAlertDialog(
+            modifier = Modifier,
+            title = "Log out",
+            message = "You will be logged out of your Deep Holistics account. However this doesn\\’t affect your logged data. Do you want to still logout?",
+            onDismiss = {
+                showAlertDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { showAlertDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+            onLogout = {showAlertDialog = false })
     }
 }
-
-
-
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun ProfileScreen(onNavigateBack: () -> Unit) {
-//    var showLogoutDialog by remember { mutableStateOf(false) }
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(horizontal = 16.dp)
-//            .verticalScroll(rememberScrollState()),
-//        verticalArrangement = Arrangement.spacedBy(20.dp)
-//    ) {
-//            Spacer(modifier = Modifier.height(8.dp))
-//
-//            // Account Information Section
-//            ProfileSection(
-//                title = "Account Information",
-//                subtitle = "Manage your personal information"
-//            ) {
-//                UserProfileCard(
-//                    name = "John Doe",
-//                    email = "john.doe@healthanalytics.com"
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Edit Profile",
-//                    onClick = { /* Handle edit profile */ }
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Change Password",
-//                    onClick = { /* Handle change password */ }
-//                )
-//            }
-//
-//            // Health Data Section
-//            ProfileSection(
-//                title = "Health Data",
-//                subtitle = "Manage your health information"
-//            ) {
-//                ProfileMenuItem(
-//                    title = "Data Export",
-//                    onClick = { /* Handle data export */ }
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Privacy Settings",
-//                    onClick = { /* Handle privacy settings */ }
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Data Sharing Preferences",
-//                    onClick = { /* Handle data sharing */ }
-//                )
-//            }
-//
-//            // Subscription Section
-//            ProfileSection(
-//                title = "Subscription",
-//                subtitle = "Manage your subscription plan"
-//            ) {
-//                SubscriptionCard(
-//                    planName = "Premium Plan",
-//                    nextBillingDate = "June 15, 2025",
-//                    isActive = true
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Change Plan",
-//                    onClick = { /* Handle change plan */ }
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Cancel Subscription",
-//                    textColor = Color(0xFFFF6B6B),
-//                    onClick = { /* Handle cancel subscription */ }
-//                )
-//            }
-//
-//            // Privacy & Security Section
-//            ProfileSection(
-//                title = "Privacy & Security",
-//                subtitle = "Manage your security preferences"
-//            ) {
-//                Text(
-//                    text = "Two-Factor Authentication",
-//                    color = MaterialTheme.colorScheme.onSurface,
-//                    fontSize = 16.sp,
-//                    fontWeight = FontWeight.Medium,
-//                    modifier = Modifier.padding(bottom = 4.dp)
-//                )
-//
-//                Text(
-//                    text = "Add an extra layer of security to your account",
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-//                    fontSize = 14.sp,
-//                    modifier = Modifier.padding(bottom = 12.dp)
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Enable 2FA",
-//                    onClick = { /* Handle enable 2FA */ }
-//                )
-//            }
-//
-//            // Sessions Section
-//            ProfileSection(
-//                title = "Sessions",
-//                subtitle = "Manage your active sessions"
-//            ) {
-//                ProfileMenuItem(
-//                    title = "View Active Sessions",
-//                    onClick = { /* Handle view sessions */ }
-//                )
-//
-//                ProfileMenuItem(
-//                    title = "Log Out",
-//                    onClick = { showLogoutDialog = true }
-//                )
-//            }
-//
-//            // Danger Zone Section
-//            ProfileSection(
-//                title = "Danger Zone",
-//                subtitle = "Permanent account actions",
-//                titleColor = Color(0xFFFF6B6B)
-//            ) {
-//                ProfileMenuItem(
-//                    title = "Delete Account",
-//                    textColor = Color(0xFFFF6B6B),
-//                    onClick = { /* Handle delete account */ }
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.height(32.dp))
-//        }
-//
-//    // Logout confirmation dialog
-//    if (showLogoutDialog) {
-//        AlertDialog(
-//            onDismissRequest = { showLogoutDialog = false },
-//            title = { Text("Confirm Logout") },
-//            text = { Text("Are you sure you want to log out?") },
-//            confirmButton = {
-//                TextButton(
-//                    onClick = {
-//                        showLogoutDialog = false
-//                        // Handle logout logic here
-//                    }
-//                ) {
-//                    Text("Logout")
-//                }
-//            },
-//            dismissButton = {
-//                TextButton(onClick = { showLogoutDialog = false }) {
-//                    Text("Cancel")
-//                }
-//            }
-//        )
-//    }
-//}
 
 @Composable
 private fun ProfileSection(
@@ -392,6 +217,7 @@ private fun ProfileSection(
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
     content: @Composable ColumnScope.() -> Unit
 ) {
+
     Column {
         Text(
             text = title,
@@ -550,3 +376,5 @@ private fun ProfileMenuItem(
         )
     }
 }
+
+//@OptIn(ExperimentalMaterial3Api::class)
