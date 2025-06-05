@@ -15,12 +15,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
 import com.healthanalytics.android.data.models.onboard.CommunicationAddress
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -30,7 +34,9 @@ fun SampleCollectionAddressContainer(
     navigateToBloodTest: () -> Unit,
 ) {
     SampleCollectionAddressScreen(
+        accountCreationState = onboardViewModel.accountCreationState,
         onBackClick = onBackClick,
+        navigateToBloodTest = navigateToBloodTest,
         onScheduleClick = { streetAddress, city, state, zipCode ->
             val communicationAddress = CommunicationAddress(
                 address_line_1 = streetAddress,
@@ -39,7 +45,6 @@ fun SampleCollectionAddressContainer(
                 pincode = zipCode
             )
             onboardViewModel.createAccount(communicationAddress)
-            navigateToBloodTest()
         }
     )
 }
@@ -49,18 +54,14 @@ fun SampleCollectionAddressContainer(
 @Composable
 fun SampleCollectionAddressScreen(
     onBackClick: () -> Unit = {},
-    onScheduleClick: (String, String, String, String) -> Unit = { _, _, _, _ -> }
+    onScheduleClick: (String, String, String, String) -> Unit = { _, _, _, _ -> },
+    accountCreationState: StateFlow<Resource<AccountCreationResponse?>>,
+    navigateToBloodTest: () -> Unit
 ) {
     var streetAddress by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var state by remember { mutableStateOf("") }
     var zipCode by remember { mutableStateOf("") }
-
-    val streetAddressFocusRequester = remember { FocusRequester() }
-    val cityFocusRequester = remember { FocusRequester() }
-    val stateFocusRequester = remember { FocusRequester() }
-    val zipCodeFocusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
@@ -296,10 +297,29 @@ fun SampleCollectionAddressScreen(
 
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
         }
+
+        GetAccountCreationResponse(
+            accountCreationState = accountCreationState,
+            navigateToBloodTest = navigateToBloodTest
+        )
     }
 }
 
 @Composable
-fun GetAccountCreationResponse(){
+fun GetAccountCreationResponse(
+    accountCreationState: StateFlow<Resource<AccountCreationResponse?>>,
+    navigateToBloodTest: () -> Unit
+) {
+    val response by accountCreationState.collectAsStateWithLifecycle()
+    when(response){
+        is Resource.Error<*> ->{}
 
+        is Resource.Loading<*> -> {}
+
+        is Resource.Success<*> -> {
+            LaunchedEffect(response) {
+                navigateToBloodTest()
+            }
+        }
+    }
 }

@@ -25,7 +25,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,14 +47,14 @@ import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    loginState: StateFlow<Resource<AuthResponse?>>,
+    loginState: SharedFlow<Resource<AuthResponse?>>,
     onContinueClick: (String) -> Unit = {},
     onCountryCodeClick: () -> Unit = {},
     navigateToOtpVerification: () -> Unit
@@ -242,26 +241,21 @@ fun LoginScreen(
 
 @Composable
 fun GetOTPResponse(
-    loginState: StateFlow<Resource<AuthResponse?>>,
+    loginState: SharedFlow<Resource<AuthResponse?>>,
     navigateToOtpVerification: () -> Unit
 ) {
-    val response by loginState.collectAsStateWithLifecycle()
+    val response by loginState.collectAsStateWithLifecycle(null)
 
     when (response) {
-        is Resource.Loading -> {
-
-        }
-
+        is Resource.Loading -> {}
+        is Resource.Error -> {}
         is Resource.Success -> {
             LaunchedEffect(response) {
                 println("Resource.Success.....")
                 navigateToOtpVerification()
             }
         }
-
-        is Resource.Error -> {
-
-        }
+        else -> {}
     }
 }
 

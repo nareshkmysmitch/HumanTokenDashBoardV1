@@ -4,13 +4,38 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,10 +43,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.healthanalytics.android.data.models.onboard.SlotRequest
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.data.models.onboard.Slot
+import com.healthanalytics.android.data.models.onboard.SlotsAvailability
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.utils.DateUtils
+import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.datetime.Clock
@@ -30,20 +59,34 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 
-private val timeSlots = listOf(
-    "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM",
-    "09:30 AM", "10:00 AM", "10:30 AM"
-)
 
 @Composable
 fun ScheduleBloodTestContainer(
     onboardViewModel: OnboardViewModel,
     onBackClick: () -> Unit,
+    navigateToPayment: () -> Unit,
 ) {
-    ScheduleBloodTestScreen(
-        onBackClick = onBackClick,
-        onContinueClick = {
+    val slotState by onboardViewModel.slotAvailability.collectAsStateWithLifecycle()
+    val slotUpdateState by onboardViewModel.updateSlot.collectAsStateWithLifecycle(null)
 
+    LaunchedEffect(Unit) {
+        onboardViewModel.getSlotAvailability(
+            selectedDate = DateUtils.getCurrentUtcTime()
+        )
+    }
+
+    ScheduleBloodTestScreen(
+        slotState = slotState,
+        onBackClick = onBackClick,
+        slotUpdateState = slotUpdateState,
+        navigateToPayment = navigateToPayment,
+        onContinueClick = {
+            onboardViewModel.updateSlot(it)
+        },
+        onDateChanged = {
+            onboardViewModel.getSlotAvailability(
+                selectedDate = DateUtils.getIso(it)
+            )
         }
     )
 }
@@ -52,11 +95,13 @@ fun ScheduleBloodTestContainer(
 @Composable
 fun ScheduleBloodTestScreen(
     onBackClick: () -> Unit = {},
-    onContinueClick: (String) -> Unit = {},
+    onContinueClick: (Slot) -> Unit = {},
     onDateChanged: (LocalDate) -> Unit = {},
+    slotState: Resource<SlotsAvailability?>,
+    navigateToPayment: () -> Unit,
+    slotUpdateState: Resource<SlotsAvailability?>?,
 ) {
-
-    var selectedTimeSlot by remember { mutableStateOf<String?>(null) }
+    var selectedTimeSlot by remember { mutableStateOf<Slot?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDate by remember {
         mutableStateOf(
@@ -64,8 +109,10 @@ fun ScheduleBloodTestScreen(
         )
     }
 
-    LaunchedEffect(selectedDate) {
-        onDateChanged(selectedDate)
+    LaunchedEffect(slotState.data?.slots) {
+        if (slotState.data?.slots?.isEmpty() == true) {
+            selectedTimeSlot = null
+        }
     }
 
     val datePickerState = rememberDatePickerState(
@@ -204,11 +251,18 @@ fun ScheduleBloodTestScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
                 ) {
-                    items(timeSlots) { timeSlot ->
+                    items(slotState.data?.slots ?: listOf()) { timeSlot ->
+                        val startLocalDateTime = timeSlot.start_time?.let {
+                            DateUtils.fromIsoFormat(it)
+                        }
+                        val startDateFormat = DateUtils.formatForDisplay(startLocalDateTime)
+
                         TimeSlotCard(
-                            time = timeSlot,
+                            time = startDateFormat,
                             isSelected = selectedTimeSlot == timeSlot,
-                            onClick = { selectedTimeSlot = timeSlot }
+                            onClick = {
+                                selectedTimeSlot = timeSlot
+                            }
                         )
                     }
                 }
@@ -241,6 +295,11 @@ fun ScheduleBloodTestScreen(
 
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
         }
+
+        getSlotUpdatedResponse(
+            slotUpdateState = slotUpdateState,
+            navigateToPayment = navigateToPayment
+        )
     }
 
     if (showDatePicker) {
@@ -254,6 +313,8 @@ fun ScheduleBloodTestScreen(
                             kotlinx.datetime.Instant.fromEpochMilliseconds(millis).toLocalDateTime(
                                 TimeZone.currentSystemDefault()
                             ).date
+
+                        onDateChanged(selectedDate)
                     }
                 }) {
                     Text("Confirm")
@@ -314,5 +375,22 @@ private fun TimeSlotCard(
                 textAlign = TextAlign.Center
             )
         }
+    }
+}
+
+@Composable
+fun getSlotUpdatedResponse(
+    slotUpdateState: Resource<SlotsAvailability?>?,
+    navigateToPayment: () -> Unit
+) {
+    when (slotUpdateState) {
+        is Resource.Loading<*> -> {}
+        is Resource.Error<*> -> {}
+        is Resource.Success<*> -> {
+            LaunchedEffect(slotUpdateState) {
+                navigateToPayment()
+            }
+        }
+        else -> {}
     }
 }

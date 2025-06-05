@@ -11,6 +11,12 @@ data class AccountCreation(
     val gender: String,
     val height: String,
     val weight: String,
+    val country_code: String,
     val communication_address: CommunicationAddress,
+)
+
+@Serializable
+data class AccountCreationResponse(
+    val lead_id: String? = null
 )
 

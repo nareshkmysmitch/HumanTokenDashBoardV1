@@ -60,7 +60,6 @@ fun OTPContainer(
             onboardViewModel.resendOTP()
         },
         onContinueClick = {
-            println("mh...................${onboardViewModel.mh}")
             onboardViewModel.verifyOtp(it)
         }
     )

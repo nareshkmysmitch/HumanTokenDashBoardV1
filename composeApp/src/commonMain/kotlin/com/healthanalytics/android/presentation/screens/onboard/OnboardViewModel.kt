@@ -3,23 +3,29 @@ package com.healthanalytics.android.presentation.screens.onboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.models.onboard.AccountCreation
+import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
 import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.data.models.onboard.CommunicationAddress
 import com.healthanalytics.android.data.models.onboard.OtpResponse
+import com.healthanalytics.android.data.models.onboard.Slot
 import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
+import com.healthanalytics.android.data.models.onboard.UpdateSlot
 import com.healthanalytics.android.data.models.onboard.VerifyOtp
 import com.healthanalytics.android.utils.Resource
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 
 class OnboardViewModel(
     val onboardApiService: OnboardApiService
 ) : ViewModel() {
 
     private var phoneNumber: String = ""
-     var mh: String = ""
+    private var mh: String = ""
     private var firstName: String = ""
     private var lastName: String = ""
     private var email: String = ""
@@ -27,20 +33,28 @@ class OnboardViewModel(
     private var selectedGender: String = ""
     private var weight: String = ""
     private var height: String = ""
+    private var leadId = ""
+//    private var leadId = "49e69e7e-d371-42a9-8ee5-61f00e46e514"
+
     private var communicationAddress: CommunicationAddress? = null
     private var otpVerifiedResponse: OtpResponse? = null
 
-    private val _loginState = MutableStateFlow<Resource<AuthResponse?>>(Resource.Loading())
-    val loginState: StateFlow<Resource<AuthResponse?>> = _loginState
+    private val _loginState = MutableSharedFlow<Resource<AuthResponse?>>()
+    val loginState: SharedFlow<Resource<AuthResponse?>> = _loginState
 
     private val _otpVerifyState = MutableStateFlow<Resource<OtpResponse?>>(Resource.Loading())
     val otpVerifyState: StateFlow<Resource<OtpResponse?>> = _otpVerifyState
 
-    private val _accountCreationState = MutableStateFlow<Resource<OtpResponse?>>(Resource.Loading())
-    val accountCreationState: StateFlow<Resource<OtpResponse?>> = _accountCreationState
+    private val _accountCreationState =
+        MutableStateFlow<Resource<AccountCreationResponse?>>(Resource.Loading())
+    val accountCreationState: StateFlow<Resource<AccountCreationResponse?>> = _accountCreationState
 
-    private val _slotAvailability = MutableStateFlow<Resource<SlotsAvailability?>>(Resource.Loading())
+    private val _slotAvailability =
+        MutableStateFlow<Resource<SlotsAvailability?>>(Resource.Loading())
     val slotAvailability: StateFlow<Resource<SlotsAvailability?>> = _slotAvailability
+
+    private val _updateSlot = MutableSharedFlow<Resource<SlotsAvailability?>>()
+    val updateSlot: SharedFlow<Resource<SlotsAvailability?>> = _updateSlot
 
     fun getPhoneNumber() = phoneNumber
 
@@ -69,14 +83,12 @@ class OnboardViewModel(
                 val response = onboardApiService.sendOTP(phoneNumber)
                 if (response?.mh?.isNotEmpty() == true) {
                     mh = response.mh
-
-                    println("sendOTP..mh...$mh")
-                    _loginState.value = Resource.Success(response)
+                    _loginState.emit(Resource.Success(response))
                 } else {
-                    _loginState.value = Resource.Error(errorMessage = "Something went wrong...")
+                    _loginState.emit(Resource.Error(errorMessage = "Something went wrong..."))
                 }
             } catch (_: Exception) {
-                _loginState.value = Resource.Error(errorMessage = "Something went wrong...")
+                _loginState.emit(Resource.Error(errorMessage = "Something went wrong..."))
             }
         }
     }
@@ -86,7 +98,6 @@ class OnboardViewModel(
             try {
                 onboardApiService.sendOTP(phoneNumber)
             } catch (_: Exception) {
-                _loginState.value = Resource.Error(errorMessage = "Something went wrong...")
             }
         }
     }
@@ -103,7 +114,6 @@ class OnboardViewModel(
                 )
                 if (response?.is_verified == true) {
                     otpVerifiedResponse = response
-                    println("otpVerifiedResponse....$response")
                     _otpVerifyState.value = Resource.Success(response)
                 } else {
                     _otpVerifyState.value = Resource.Error(errorMessage = "Something went wrong...")
@@ -121,33 +131,55 @@ class OnboardViewModel(
             first_name = firstName,
             last_name = lastName,
             email = email,
-            gender = selectedGender,
+            gender = selectedGender.lowercase(),
             height = height,
             weight = weight,
+            country_code = "91",
             communication_address = communicationAddress
         )
 
         viewModelScope.launch {
             try {
                 val response = onboardApiService.createAccount(accountCreation)
-//                if (response?.is_verified == true) {
-//                    _accountCreationState.value = Resource.Success(response)
-//                } else {
-//                    _accountCreationState.value = Resource.Error(errorMessage = "Something went wrong...")
-//                }
+                leadId = response?.lead_id ?: ""
+                _accountCreationState.value = Resource.Success(response)
             } catch (_: Exception) {
-                _accountCreationState.value = Resource.Error(errorMessage = "Something went wrong...")
+                _accountCreationState.value =
+                    Resource.Error(errorMessage = "Something went wrong...")
             }
         }
     }
 
-    fun getSlotAvailability(slotRequest: SlotRequest){
+    fun getSlotAvailability(selectedDate: String) {
+
+        val slotRequest = SlotRequest(
+            date = selectedDate,
+            lead_id = leadId,
+            user_timezone = TimeZone.currentSystemDefault().toString()
+        )
+
         viewModelScope.launch {
             try {
                 val response = onboardApiService.getSlotsAvailability(slotRequest)
                 _slotAvailability.value = Resource.Success(response)
             } catch (_: Exception) {
                 _slotAvailability.value = Resource.Error(errorMessage = "Something went wrong...")
+            }
+        }
+    }
+
+    fun updateSlot(selectedSlot: Slot) {
+        val updateSlot = UpdateSlot(
+            appointment_date = selectedSlot.start_time.toString(),
+            source = "THYROCARE",
+            lead_id = leadId
+        )
+        viewModelScope.launch {
+            try {
+                val response = onboardApiService.updateSlot(updateSlot)
+                _updateSlot.emit(Resource.Success(response))
+            } catch (_: Exception) {
+                _updateSlot.emit(Resource.Error(errorMessage = "Something went wrong..."))
             }
         }
     }
