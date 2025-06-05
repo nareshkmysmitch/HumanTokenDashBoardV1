@@ -140,6 +140,33 @@ object DateUtils {
     }
 
     /**
+     * Convert LocalDate to ISO format using system timezone conversion
+     * Uses start of day (00:00:00.000) for the time component
+     * @param localDate The LocalDate to convert (assumed to be in system timezone)
+     * @return ISO formatted string in SERVER_FORMAT
+     */
+    fun getIso(localDate: LocalDate): String {
+        // Convert LocalDate to LocalDateTime at start of day
+        val localDateTime = localDate.atTime(0, 0, 0, 0)
+        
+        // Convert LocalDateTime from system timezone to UTC
+        val systemTimeZone = TimeZone.currentSystemDefault()
+        val instantInSystemTz = localDateTime.toInstant(systemTimeZone)
+        val utcDateTime = instantInSystemTz.toLocalDateTime(TimeZone.UTC)
+        
+        // Format using SERVER_FORMAT pattern
+        val year = utcDateTime.year.toString().padStart(4, '0')
+        val month = utcDateTime.monthNumber.toString().padStart(2, '0')
+        val day = utcDateTime.dayOfMonth.toString().padStart(2, '0')
+        val hour = utcDateTime.hour.toString().padStart(2, '0')
+        val minute = utcDateTime.minute.toString().padStart(2, '0')
+        val second = utcDateTime.second.toString().padStart(2, '0')
+        val millis = (utcDateTime.nanosecond / 1_000_000).toString().padStart(3, '0')
+        
+        return "${year}-${month}-${day}T${hour}:${minute}:${second}.${millis}Z"
+    }
+
+    /**
      * Get current UTC time as LocalDateTime
      * @return Current UTC time as LocalDateTime
      */
