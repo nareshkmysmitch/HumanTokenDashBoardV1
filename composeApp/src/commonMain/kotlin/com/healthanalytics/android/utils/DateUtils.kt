@@ -140,6 +140,15 @@ object DateUtils {
     }
 
     /**
+     * Get current UTC time as LocalDateTime
+     * @return Current UTC time as LocalDateTime
+     */
+    fun getCurrentUtcTime(): LocalDateTime {
+        val now = Clock.System.now()
+        return now.toLocalDateTime(TimeZone.UTC)
+    }
+
+    /**
      * Get current date in ISO format
      * @return Current date as ISO formatted string
      */
