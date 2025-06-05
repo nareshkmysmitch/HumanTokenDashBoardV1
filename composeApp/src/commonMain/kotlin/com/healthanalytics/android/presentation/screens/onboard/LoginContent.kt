@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppStrings
@@ -217,7 +218,7 @@ fun LoginScreen(
 
             // Continue Button below phone input
             Button(
-                onClick = { onContinueClick(phoneNumber) },
+                onClick = { onContinueClick(phoneNumber.trim()) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Dimensions.buttonHeight),
@@ -244,7 +245,7 @@ fun GetOTPResponse(
     loginState: StateFlow<Resource<AuthResponse?>>,
     navigateToOtpVerification: () -> Unit
 ) {
-    val response by loginState.collectAsState()
+    val response by loginState.collectAsStateWithLifecycle()
 
     when (response) {
         is Resource.Loading -> {
@@ -252,7 +253,8 @@ fun GetOTPResponse(
         }
 
         is Resource.Success -> {
-            LaunchedEffect(Unit) {
+            LaunchedEffect(response) {
+                println("Resource.Success.....")
                 navigateToOtpVerification()
             }
         }

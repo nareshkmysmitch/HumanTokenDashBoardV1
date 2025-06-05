@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.Image
@@ -27,6 +26,27 @@ import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 
+@Composable
+fun HealthProfileContainer(
+    onboardViewModel: OnboardViewModel,
+    onBackClick: () -> Unit,
+    navigateToAddress: () -> Unit,
+) {
+    HealthProfileScreen(
+        onBackClick = onBackClick,
+        onContinueClick = { selectedDate, selectedGender, weight, height ->
+            onboardViewModel.saveProfileDetails(
+                selectedDate = selectedDate,
+                selectedGender = selectedGender,
+                weight = weight,
+                height = height
+            )
+            navigateToAddress()
+        }
+    )
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthProfileScreen(
@@ -39,10 +59,10 @@ fun HealthProfileScreen(
     var height by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var showGenderDropdown by remember { mutableStateOf(false) }
-    
+
     val weightFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    
+
     val genderOptions = listOf("Male", "Female")
 
     Box(
@@ -120,7 +140,7 @@ fun HealthProfileScreen(
                     color = AppColors.textSecondary,
                     modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
                 )
-                
+
                 OutlinedTextField(
                     value = selectedDate?.toString() ?: "",
                     onValueChange = { },
@@ -153,11 +173,11 @@ fun HealthProfileScreen(
                     ),
                     shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
-                
+
                 // Date Picker Dialog
                 if (showDatePicker) {
                     val datePickerState = rememberDatePickerState()
-                    
+
                     DatePickerDialog(
                         onDismissRequest = { showDatePicker = false },
                         confirmButton = {
@@ -232,7 +252,9 @@ fun HealthProfileScreen(
                         onValueChange = { },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(),
+                            .menuAnchor(
+                                type = MenuAnchorType.PrimaryEditable,
+                            ),
                         readOnly = true,
                         placeholder = {
                             Text(
@@ -257,7 +279,7 @@ fun HealthProfileScreen(
                         ),
                         shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                     )
-                    
+
                     ExposedDropdownMenu(
                         expanded = showGenderDropdown,
                         onDismissRequest = { showGenderDropdown = false },
@@ -360,16 +382,17 @@ fun HealthProfileScreen(
             // Continue Button
             Button(
                 onClick = {
-                    if (selectedDate != null && selectedGender.isNotEmpty() && 
-                        weight.isNotEmpty() && height.isNotEmpty()) {
+                    if (selectedDate != null && selectedGender.isNotEmpty() &&
+                        weight.isNotEmpty() && height.isNotEmpty()
+                    ) {
                         onContinueClick(selectedDate.toString(), selectedGender, weight, height)
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Dimensions.buttonHeight),
-                enabled = selectedDate != null && selectedGender.isNotEmpty() && 
-                         weight.isNotEmpty() && height.isNotEmpty(),
+                enabled = selectedDate != null && selectedGender.isNotEmpty() &&
+                        weight.isNotEmpty() && height.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.buttonBackground,
                     contentColor = AppColors.buttonText,
@@ -385,5 +408,5 @@ fun HealthProfileScreen(
             }
         }
 
-        }
+    }
 }

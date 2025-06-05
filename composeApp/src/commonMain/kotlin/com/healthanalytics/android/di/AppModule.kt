@@ -7,8 +7,13 @@ import com.healthanalytics.android.presentation.dashboard.DashboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.OnboardApiService
 import com.healthanalytics.android.presentation.screens.onboard.OnboardApiServiceImpl
 import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
+import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+
 
 val appModule = module {
     // HTTP Client
@@ -23,6 +28,10 @@ val appModule = module {
     factoryOf(::OnboardViewModel)
 }
 
-fun initKoin() = org.koin.core.context.startKoin {
-    modules(appModule)
-} 
+
+fun initKoin(config: KoinAppDeclaration? = null) {
+    startKoin {
+        config?.invoke(this)
+        modules(appModule)
+    }
+}

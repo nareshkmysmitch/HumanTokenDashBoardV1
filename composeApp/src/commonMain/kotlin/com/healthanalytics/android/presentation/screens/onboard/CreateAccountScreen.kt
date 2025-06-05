@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.Image
@@ -26,6 +25,25 @@ import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 
+@Composable
+fun CreateAccountContainer(
+    onBackClick: () -> Unit = {},
+    navigateToHealthProfile: () -> Unit,
+    onboardViewModel: OnboardViewModel
+) {
+    CreateAccountScreen(
+        onBackClick = onBackClick,
+        onContinueClick = { firstName, lastName, email ->
+            onboardViewModel.saveAccountDetails(
+                firstName = firstName,
+                lastName = lastName,
+                email = email
+            )
+            navigateToHealthProfile()
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAccountScreen(
@@ -36,15 +54,15 @@ fun CreateAccountScreen(
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
-    
+
     val firstNameFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    
+
     // Email validation regex
-    val emailRegex = remember { 
+    val emailRegex = remember {
         Regex("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")
     }
-    
+
     // Focus on first name field when screen loads
     LaunchedEffect(Unit) {
         firstNameFocusRequester.requestFocus()
@@ -189,11 +207,15 @@ fun CreateAccountScreen(
                     onValueChange = { newValue ->
                         email = newValue
                         // Only validate if email contains @ and appears to be a complete attempt
-                        emailError = if (newValue.isNotEmpty() && newValue.contains("@") && !emailRegex.matches(newValue)) {
-                            "Please enter a valid email address"
-                        } else {
-                            ""
-                        }
+                        emailError =
+                            if (newValue.isNotEmpty() && newValue.contains("@") && !emailRegex.matches(
+                                    newValue
+                                )
+                            ) {
+                                "Please enter a valid email address"
+                            } else {
+                                ""
+                            }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
@@ -207,7 +229,7 @@ fun CreateAccountScreen(
                     ),
                     shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                 )
-                
+
                 // Show email error message
                 if (emailError.isNotEmpty()) {
                     Text(
@@ -225,7 +247,7 @@ fun CreateAccountScreen(
             Button(
                 onClick = {
                     if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && emailError.isEmpty()) {
-                        onContinueClick(firstName, lastName, email)
+                        onContinueClick(firstName.trim(), lastName.trim(), email.trim())
                     }
                 },
                 modifier = Modifier

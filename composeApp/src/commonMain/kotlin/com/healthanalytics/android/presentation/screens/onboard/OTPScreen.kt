@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.Image
@@ -19,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -27,11 +25,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.data.models.onboard.OtpResponse
 import com.healthanalytics.android.presentation.theme.*
+import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 
 // Extension function for clickable without ripple effect
 private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
@@ -43,26 +45,49 @@ private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed
     }
 }
 
+@Composable
+fun OTPContainer(
+    onboardViewModel: OnboardViewModel,
+    onBackClick: () -> Unit = {},
+    navigateToAccountCreation: () -> Unit
+) {
+    OTPScreen(
+        otpVerifyState = onboardViewModel.otpVerifyState,
+        phoneNumber = onboardViewModel.getPhoneNumber(),
+        onBackClick = onBackClick,
+        otpVerified = navigateToAccountCreation,
+        onResendClick = {
+            onboardViewModel.resendOTP()
+        },
+        onContinueClick = {
+            println("mh...................${onboardViewModel.mh}")
+            onboardViewModel.verifyOtp(it)
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OTPScreen(
     phoneNumber: String,
     onBackClick: () -> Unit = {},
     onContinueClick: (String) -> Unit = {},
-    onResendClick: () -> Unit = {}
+    onResendClick: () -> Unit = {},
+    otpVerified: () -> Unit,
+    otpVerifyState: StateFlow<Resource<OtpResponse?>>
 ) {
     var otpValues by remember { mutableStateOf(List(6) { "" }) }
     var resendTimer by remember { mutableStateOf(45) }
     var isTimerActive by remember { mutableStateOf(true) }
     val focusRequesters = remember { List(6) { FocusRequester() } }
     val keyboardController = LocalSoftwareKeyboardController.current
-    
+
     // Focus first field and show keyboard on screen load
     LaunchedEffect(Unit) {
         delay(100)
         focusRequesters[0].requestFocus()
     }
-    
+
     // Timer countdown
     LaunchedEffect(resendTimer, isTimerActive) {
         if (isTimerActive && resendTimer > 0) {
@@ -72,14 +97,14 @@ fun OTPScreen(
             isTimerActive = false
         }
     }
-    
+
     // Close keyboard when all fields are filled
     LaunchedEffect(otpValues) {
         if (otpValues.all { it.isNotEmpty() }) {
             keyboardController?.hide()
         }
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -107,9 +132,9 @@ fun OTPScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 Text(
                     text = "Deep Holistics",
                     style = AppTextStyles.headingSmall.copy(
@@ -118,15 +143,15 @@ fun OTPScreen(
                     ),
                     color = AppColors.textPrimary
                 )
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 // Empty space to balance the layout
                 Spacer(modifier = Modifier.size(40.dp))
             }
-            
+
             Spacer(modifier = Modifier.height(80.dp))
-            
+
             // Title
             Text(
                 text = "Confirm your Phone",
@@ -137,9 +162,9 @@ fun OTPScreen(
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
-            
+
             // Subtitle with phone number
             Text(
                 text = "We've sent a security code to",
@@ -147,7 +172,7 @@ fun OTPScreen(
                 color = AppColors.textSecondary,
                 textAlign = TextAlign.Center
             )
-            
+
             Text(
                 text = phoneNumber,
                 style = AppTextStyles.bodyMedium.copy(
@@ -156,9 +181,9 @@ fun OTPScreen(
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(60.dp))
-            
+
             // OTP Input Fields
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -169,7 +194,7 @@ fun OTPScreen(
                         value = value,
                         onValueChange = { newValue ->
                             val newOtpValues = otpValues.toMutableList()
-                            
+
                             if (newValue.isNotEmpty()) {
                                 // Check if all previous fields are filled (sequential entry)
                                 val canEnterValue = if (index == 0) {
@@ -177,11 +202,11 @@ fun OTPScreen(
                                 } else {
                                     (0 until index).all { newOtpValues[it].isNotEmpty() }
                                 }
-                                
+
                                 if (canEnterValue) {
                                     newOtpValues[index] = newValue
                                     otpValues = newOtpValues
-                                    
+
                                     // Auto-focus next field when entering a value
                                     if (index < 5) {
                                         focusRequesters[index + 1].requestFocus()
@@ -195,7 +220,7 @@ fun OTPScreen(
                                         newOtpValues[i] = ""
                                     }
                                     otpValues = newOtpValues
-                                    
+
                                     // Focus previous field when removing value, but stay on current if it's first
                                     if (index > 0) {
                                         focusRequesters[index - 1].requestFocus()
@@ -208,13 +233,15 @@ fun OTPScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(40.dp))
-            
+
             // Resend Timer
             if (isTimerActive) {
                 Text(
-                    text = "You can resend the code in 0:${resendTimer.toString().padStart(2, '0')}",
+                    text = "You can resend the code in 0:${
+                        resendTimer.toString().padStart(2, '0')
+                    }",
                     style = AppTextStyles.bodyMedium,
                     color = AppColors.textSecondary,
                     textAlign = TextAlign.Center
@@ -236,9 +263,9 @@ fun OTPScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(60.dp))
-            
+
             // Continue Button
             Button(
                 onClick = {
@@ -250,8 +277,10 @@ fun OTPScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (otpValues.all { it.isNotEmpty() }) 
-                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    containerColor = if (otpValues.all { it.isNotEmpty() })
+                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
+                        alpha = 0.3f
+                    ),
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                     disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
@@ -264,6 +293,34 @@ fun OTPScreen(
                     fontSize = 16.sp
                 )
             }
+        }
+
+        GetVerifyOTPResponse(
+            otpVerifyState = otpVerifyState,
+            otpVerified = otpVerified
+        )
+    }
+}
+
+@Composable
+fun GetVerifyOTPResponse(
+    otpVerifyState: StateFlow<Resource<OtpResponse?>>,
+    otpVerified: () -> Unit
+) {
+    val response by otpVerifyState.collectAsStateWithLifecycle()
+    when (response) {
+        is Resource.Error<*> -> {
+
+        }
+
+        is Resource.Success -> {
+            LaunchedEffect(Unit) {
+                otpVerified()
+            }
+        }
+
+        is Resource.Loading<*> -> {
+
         }
     }
 }

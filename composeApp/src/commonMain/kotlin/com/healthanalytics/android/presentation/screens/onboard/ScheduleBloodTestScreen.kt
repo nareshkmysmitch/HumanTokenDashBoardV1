@@ -18,12 +18,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
@@ -33,15 +35,38 @@ private val timeSlots = listOf(
     "09:30 AM", "10:00 AM", "10:30 AM"
 )
 
+@Composable
+fun ScheduleBloodTestContainer(
+    onboardViewModel: OnboardViewModel,
+    onBackClick: () -> Unit,
+) {
+    ScheduleBloodTestScreen(
+        onBackClick = onBackClick,
+        onContinueClick = {
+
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleBloodTestScreen(
     onBackClick: () -> Unit = {},
-    onContinueClick: (String) -> Unit = {}
+    onContinueClick: (String) -> Unit = {},
+    onDateChanged: (LocalDate) -> Unit = {},
 ) {
+
     var selectedTimeSlot by remember { mutableStateOf<String?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date) }
+    var selectedDate by remember {
+        mutableStateOf(
+            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        )
+    }
+
+    LaunchedEffect(selectedDate) {
+        onDateChanged(selectedDate)
+    }
 
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = selectedDate.toEpochDays().toLong() * 24 * 60 * 60 * 1000
@@ -225,9 +250,10 @@ fun ScheduleBloodTestScreen(
                 TextButton(onClick = {
                     showDatePicker = false
                     datePickerState.selectedDateMillis?.let { millis ->
-                        selectedDate = kotlinx.datetime.Instant.fromEpochMilliseconds(millis).toLocalDateTime(
-                            TimeZone.currentSystemDefault()
-                        ).date
+                        selectedDate =
+                            kotlinx.datetime.Instant.fromEpochMilliseconds(millis).toLocalDateTime(
+                                TimeZone.currentSystemDefault()
+                            ).date
                     }
                 }) {
                     Text("Confirm")
@@ -267,9 +293,9 @@ private fun TimeSlotCard(
                 }
             ),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) 
-                AppColors.buttonBackground.copy(alpha = 0.1f) 
-            else 
+            containerColor = if (isSelected)
+                AppColors.buttonBackground.copy(alpha = 0.1f)
+            else
                 Color(0xFF2A2A2A)
         ),
         shape = RoundedCornerShape(12.dp)

@@ -10,18 +10,40 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.data.models.onboard.CommunicationAddress
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
+
+@Composable
+fun SampleCollectionAddressContainer(
+    onboardViewModel: OnboardViewModel,
+    onBackClick: () -> Unit,
+    navigateToBloodTest: () -> Unit,
+) {
+    SampleCollectionAddressScreen(
+        onBackClick = onBackClick,
+        onScheduleClick = { streetAddress, city, state, zipCode ->
+            val communicationAddress = CommunicationAddress(
+                address_line_1 = streetAddress,
+                address_line_2 = city,
+                city = state,
+                pincode = zipCode
+            )
+            onboardViewModel.createAccount(communicationAddress)
+            navigateToBloodTest()
+        }
+    )
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -247,16 +269,17 @@ fun SampleCollectionAddressScreen(
             // Schedule Button
             Button(
                 onClick = {
-                    if (streetAddress.isNotEmpty() && city.isNotEmpty() && 
-                        state.isNotEmpty() && zipCode.isNotEmpty()) {
-                        onScheduleClick(streetAddress, city, state, zipCode)
+                    if (streetAddress.isNotEmpty() && city.isNotEmpty() &&
+                        state.isNotEmpty() && zipCode.isNotEmpty()
+                    ) {
+                        onScheduleClick(streetAddress.trim(), city.trim(), state.trim(), zipCode.trim())
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Dimensions.buttonHeight),
-                enabled = streetAddress.isNotEmpty() && city.isNotEmpty() && 
-                         state.isNotEmpty() && zipCode.isNotEmpty(),
+                enabled = streetAddress.isNotEmpty() && city.isNotEmpty() &&
+                        state.isNotEmpty() && zipCode.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.buttonBackground,
                     contentColor = AppColors.buttonText,
@@ -274,4 +297,9 @@ fun SampleCollectionAddressScreen(
             Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
         }
     }
+}
+
+@Composable
+fun GetAccountCreationResponse(){
+
 }

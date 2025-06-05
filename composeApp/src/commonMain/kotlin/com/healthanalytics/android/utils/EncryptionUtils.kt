@@ -44,16 +44,11 @@ object EncryptionUtils {
 
             // Parse the encrypted response structure
             val encryptedResponse = json.decodeFromString<ApiResult>(responseBody)
-
-            println("encryptedResponse..$encryptedResponse")
-
             // Decrypt the data field
             val decryptedData = encryptedResponse.data?.let { decryptApiResponse(it) }
 
             println("decryptedData..$decryptedData")
-
             println("decryptedData json..${json.decodeFromString<T>(decryptedData.toString())}")
-
 
             // Parse the decrypted data as the expected type
             if (decryptedData?.isNotEmpty() == true) {
@@ -69,6 +64,8 @@ object EncryptionUtils {
 
     inline fun <reified T> T.toEncryptedRequestBody(): JsonObject {
         val json = Json.encodeToString(this)
+        println("toEncryptedRequestBody..$json")
+
         val encrypted = encrypt(json)
         return buildJsonObject {
             put("data", JsonPrimitive(encrypted))
