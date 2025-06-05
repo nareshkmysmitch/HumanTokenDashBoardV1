@@ -69,7 +69,7 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
     println("product -> $product")
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }
-    var selectedTab by remember { mutableStateOf(3) } // Reviews tab selected by default
+    var selectedTab by remember { mutableStateOf(1) } // Reviews tab selected by default
 
     BackHandler(enabled = true, onBack = onNavigateBack)
     Scaffold(
