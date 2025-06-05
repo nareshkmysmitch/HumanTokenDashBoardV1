@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 sealed class MarketPlaceUiState {
@@ -22,6 +21,12 @@ sealed class CartListState {
     data object Loading : CartListState()
     data class Success(val cartList: List<Cart>) : CartListState()
     data class Error(val message: String) : CartListState()
+}
+
+sealed class CartActionState {
+    data object Loading : CartActionState()
+    data class Success(val message: String) : CartActionState()
+    data class Error(val message: String) : CartActionState()
 }
 
 enum class SortOption(val displayName: String) {
@@ -53,6 +58,9 @@ class MarketPlaceViewModel(
     val sortOption = _sortOption.asStateFlow()
 
     private val _allProducts = MutableStateFlow<List<Product?>>(emptyList())
+
+    private val _cartActionState = MutableStateFlow<CartActionState>(CartActionState.Success(""))
+    val cartActionState: StateFlow<CartActionState> = _cartActionState.asStateFlow()
 
     val filteredProducts = combine(
         _allProducts,
@@ -132,6 +140,42 @@ class MarketPlaceViewModel(
                 }
             } catch (e: Exception) {
                 _cartListState.value = CartListState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun addToCart(productId: String, variantId: String = "0") {
+        viewModelScope.launch {
+            _cartActionState.value = CartActionState.Loading
+            try {
+                val response = apiService.addProduct(dummyAccessToken, productId, variantId)
+                if (response != null) {
+                    _cartActionState.value = CartActionState.Success(response.message ?: "Product added to cart")
+                    // Refresh cart list after adding
+                    getCartList()
+                } else {
+                    _cartActionState.value = CartActionState.Error("Failed to add product to cart")
+                }
+            } catch (e: Exception) {
+                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun updateCartItem(productId: String, quantity: String) {
+        viewModelScope.launch {
+            _cartActionState.value = CartActionState.Loading
+            try {
+                val response = apiService.updateProduct(dummyAccessToken, productId, quantity)
+                if (response != null) {
+                    _cartActionState.value = CartActionState.Success(response.message ?: "Cart updated successfully")
+                    // Refresh cart list after updating
+                    getCartList()
+                } else {
+                    _cartActionState.value = CartActionState.Error("Failed to update cart")
+                }
+            } catch (e: Exception) {
+                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }

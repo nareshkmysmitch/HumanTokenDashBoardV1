@@ -33,7 +33,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,8 +52,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.presentation.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
+import com.healthanalytics.android.presentation.screens.marketplace.CartActionState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.seiko.imageloader.rememberImagePainter
 import kotlinx.coroutines.flow.collectLatest
@@ -132,6 +134,7 @@ fun CartScreen(
     var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.getCartList()
@@ -149,6 +152,25 @@ fun CartScreen(
                 }
                 is CartListState.Loading -> {
                     isLoading = true
+                }
+            }
+        }
+    }
+
+    // Collect cart action state for showing feedback
+    LaunchedEffect(Unit) {
+        viewModel.cartActionState.collectLatest { state ->
+            when (state) {
+                is CartActionState.Success -> {
+                    if (state.message.isNotEmpty()) {
+                        snackbarMessage = state.message
+                    }
+                }
+                is CartActionState.Error -> {
+                    snackbarMessage = state.message
+                }
+                is CartActionState.Loading -> {
+                    // Handle loading if needed
                 }
             }
         }
@@ -173,6 +195,20 @@ fun CartScreen(
                     }
                 }
             )
+        },
+        snackbarHost = {
+            snackbarMessage?.let { message ->
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    action = {
+                        TextButton(onClick = { snackbarMessage = null }) {
+                            Text("Dismiss")
+                        }
+                    }
+                ) {
+                    Text(message)
+                }
+            }
         }
     ) { paddingValues ->
         Box(
@@ -206,9 +242,24 @@ fun CartScreen(
                         items(cartItems) { item ->
                             CartItemCard(
                                 item = item,
-                                onQuantityDecrease = { /* Implement decrease */ },
-                                onQuantityIncrease = { /* Implement increase */ },
-                                onDeleteClick = { /* Implement delete */ }
+                                onQuantityDecrease = {
+                                    item.product?.let { product ->
+                                        val newQuantity = (item.quantity ?: 1) - 1
+                                        if (newQuantity > 0) {
+                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
+                                        }
+                                    }
+                                },
+                                onQuantityIncrease = {
+                                    item.product?.let { product ->
+                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
+                                    }
+                                },
+                                onDeleteClick = {
+                                    item.product?.id?.let { productId ->
+                                        viewModel.updateCartItem(productId, item.quantity?.toString() ?: "0")
+                                    }
+                                }
                             )
                         }
 
