@@ -1,18 +1,26 @@
 package com.healthanalytics.android.data.api
 
+import com.healthanalytics.android.data.models.ApiResult
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.Recommendations
+import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.utils.EncryptionUtils
+import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.Serializable
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
     suspend fun getRecommendations(accessToken: String): List<Recommendation>?
+    suspend fun removeRecommendation(accessToken: String, request: RemoveRecommendationRequest): Boolean
 }
+
 
 class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
     override suspend fun getProducts(accessToken: String): List<Product?>? {
@@ -44,5 +52,15 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
         val recommendationsList =
             EncryptionUtils.handleDecryptionResponse<Recommendations>(responseBody)
         return recommendationsList?.recommendations
+    }
+
+    override suspend fun removeRecommendation(accessToken: String, request: RemoveRecommendationRequest): Boolean {
+        val response = httpClient.post("v1/user/reminder/delete") {
+            header("access_token", accessToken)
+            setBody(request.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val result = EncryptionUtils.handleDecryptionResponse<ApiResult>(responseBody)
+        return result?.status == "success"
     }
 } 

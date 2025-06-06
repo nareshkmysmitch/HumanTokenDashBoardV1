@@ -128,7 +128,7 @@ fun ActionPlanScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(filteredRecommendations) { recommendation ->
-                    ActionPlanCard(recommendation = recommendation)
+                    ActionPlanCard(recommendation = recommendation, viewModel,preferencesState.data)
                 }
             }
         }
@@ -273,7 +273,7 @@ fun EmptyCategoryView(viewModel: ActionPlanViewModel) {
 }
 
 @Composable
-fun ActionPlanCard(recommendation: Recommendation) {
+fun ActionPlanCard(recommendation: Recommendation, viewModel: ActionPlanViewModel, accessToken: String?) {
     val createAt =
         recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
     val formattedDate = formatDate(createAt)
@@ -363,7 +363,7 @@ fun ActionPlanCard(recommendation: Recommendation) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                OutlinedButton(onClick = { /* handle click */ }) {
+                OutlinedButton(onClick = { accessToken?.let { viewModel.removeRecommendation(it,recommendation) } }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Remove",

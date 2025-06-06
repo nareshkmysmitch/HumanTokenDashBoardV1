@@ -4,18 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.models.Recommendation
+import com.healthanalytics.android.data.models.RecommendationsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class RecommendationsUiState(
-    val recommendations: List<Recommendation> = emptyList(),
-    val selectedCategory: String? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null,
-)
 
 class RecommendationsViewModel(private val apiService: ApiService) : ViewModel() {
     private val _uiState = MutableStateFlow(RecommendationsUiState())
@@ -27,7 +22,10 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
 
     fun getFilteredRecommendations(): List<Recommendation> {
         return _uiState.value.recommendations.filter { recommendation ->
-            recommendation.category?.equals(_uiState.value.selectedCategory, ignoreCase = true) == true
+            recommendation.category?.equals(
+                _uiState.value.selectedCategory,
+                ignoreCase = true
+            ) == true
         }
     }
 
@@ -48,7 +46,8 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
             try {
                 _uiState.update { it.copy(isLoading = true) }
                 val recommendations = apiService.getRecommendations(accessToken)
-                val categories = recommendations?.map { it.category ?: "" }?.distinct() ?: emptyList()
+                val categories =
+                    recommendations?.map { it.category ?: "" }?.distinct() ?: emptyList()
                 _uiState.update {
                     it.copy(
                         recommendations = recommendations ?: emptyList(),
