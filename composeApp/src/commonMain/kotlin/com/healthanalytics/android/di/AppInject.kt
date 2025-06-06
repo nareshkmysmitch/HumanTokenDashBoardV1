@@ -9,6 +9,7 @@ import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
+import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.utils.KermitLogger
 import org.koin.core.context.startKoin
@@ -16,7 +17,6 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-
 
 val loggingModule = module {
     single { KermitLogger() }
@@ -33,7 +33,7 @@ val sharedModules = module {
     factoryOf(::MarketPlaceViewModel)
     factoryOf(::PreferencesViewModel)
     factoryOf(::ChatViewModel)
-
+    factoryOf(::RecommendationsViewModel)
 }
 
 expect val platformModules: Module
