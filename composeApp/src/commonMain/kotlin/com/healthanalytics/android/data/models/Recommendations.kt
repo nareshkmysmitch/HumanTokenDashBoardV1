@@ -47,7 +47,7 @@ data class Action(
     val is_generic: Boolean,
     val created_at: String,
     val updated_at: String,
-    val user_recommendation_actions: List<UserRecommendationAction?>?,
+    val user_recommendation_actions: List<UserRecommendationAction?> = listOf(),
 )
 
 @Serializable

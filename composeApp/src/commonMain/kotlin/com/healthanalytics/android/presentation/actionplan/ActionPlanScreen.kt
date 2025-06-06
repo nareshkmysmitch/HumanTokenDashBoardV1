@@ -1,0 +1,354 @@
+package com.healthanalytics.android.presentation.actionplan
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.data.models.Recommendation
+import com.healthanalytics.android.data.models.RecommendationCategory
+import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.utils.capitalizeFirst
+import org.koin.compose.viewModel.koinViewModel
+import java.text.SimpleDateFormat
+import java.util.*
+
+@Composable
+fun ActionPlanScreen(
+    viewModel: ActionPlanViewModel = koinViewModel(),
+    preferencesViewModel: PreferencesViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val preferencesState by preferencesViewModel.uiState.collectAsState()
+    val filteredRecommendations = viewModel.getFilteredRecommendations()
+    val totalItems = viewModel.getTotalItems()
+
+    LaunchedEffect(preferencesState.data) {
+        preferencesState.data?.let { token ->
+            viewModel.loadRecommendations(token)
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Header Section
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Your Action Plan",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Text(
+                text = "$totalItems items",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        // Category Row
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(viewModel.getAvailableCategories()) { category ->
+                CategoryChip(
+                    category = category,
+                    selected = category == uiState.selectedCategory,
+                    onClick = { viewModel.updateSelectedCategory(category) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Content Section
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (totalItems == 0) {
+            EmptyActionPlan()
+        } else if (filteredRecommendations.isEmpty()) {
+            EmptyCategoryView()
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(filteredRecommendations) { recommendation ->
+                    ActionPlanCard(recommendation = recommendation)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryChip(
+    category: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val categoryEnum = RecommendationCategory.fromString(category)
+    
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(categoryEnum.icon)
+                Text(category.capitalizeFirst())
+            }
+        }
+    )
+}
+
+@Composable
+fun EmptyActionPlan() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Surface(
+            modifier = Modifier.size(80.dp),
+            shape = MaterialTheme.shapes.circular,
+            color = MaterialTheme.colorScheme.surfaceVariant
+        ) {
+            Icon(
+                imageVector = Icons.Default.Assignment,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Text(
+            text = "Your Action Plan is Empty",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = "Add recommendations to your action plan to start tracking your health goals",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Button(
+            onClick = { /* TODO: Navigate to recommendations */ }
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Browse Recommendations")
+        }
+    }
+}
+
+@Composable
+fun EmptyCategoryView() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Surface(
+            modifier = Modifier.size(80.dp),
+            shape = MaterialTheme.shapes.circular,
+            color = MaterialTheme.colorScheme.surfaceVariant
+        ) {
+            Icon(
+                imageVector = Icons.Default.FilterList,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Text(
+            text = "No Items in This Category",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = "You don't have any action plan items in the selected category",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Button(
+            onClick = { /* TODO: Show all items */ }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Dashboard,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Show All Items")
+        }
+    }
+}
+
+@Composable
+fun ActionPlanCard(recommendation: Recommendation) {
+    val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    val addedDate = recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
+    val formattedDate = addedDate?.let { dateFormat.format(Date(it)) } ?: ""
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            // Header with icon and title
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = RecommendationCategory.fromString(recommendation.category).icon,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = recommendation.name,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+                
+                IconButton(onClick = { /* TODO: Remove action */ }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Remove",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Potential Impact Section
+            Text(
+                text = "Potential Impact",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Metrics Grid
+            recommendation.metric_recommendations?.let { metrics ->
+                if (metrics.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        metrics.chunked(2).forEach { rowMetrics ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                rowMetrics.forEach { metricRecommendation ->
+                                    MetricChip(
+                                        metric = metricRecommendation.metric.metric,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                if (rowMetrics.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Added Date
+            Text(
+                text = "Added $formattedDate",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun MetricChip(
+    metric: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        shape = MaterialTheme.shapes.small,
+        modifier = modifier
+    ) {
+        Text(
+            text = metric,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    }
+} 

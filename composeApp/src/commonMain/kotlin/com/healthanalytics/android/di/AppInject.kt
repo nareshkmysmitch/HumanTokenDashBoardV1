@@ -4,6 +4,7 @@ import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.ApiServiceImpl
 import com.healthanalytics.android.data.network.NetworkConfig
 import com.healthanalytics.android.data.repositories.PreferencesRepository
+import com.healthanalytics.android.presentation.actionplan.ActionPlanViewModel
 import com.healthanalytics.android.presentation.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
@@ -23,6 +24,7 @@ val sharedModules = module {
     factoryOf(::MarketPlaceViewModel)
     factoryOf(::PreferencesViewModel)
     factoryOf(::RecommendationsViewModel)
+    factoryOf(::ActionPlanViewModel)
 }
 
 expect val platformModules: Module
