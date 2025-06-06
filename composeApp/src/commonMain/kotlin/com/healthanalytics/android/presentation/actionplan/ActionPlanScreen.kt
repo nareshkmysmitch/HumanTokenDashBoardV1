@@ -28,8 +28,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +44,9 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.utils.capitalizeFirst
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -55,7 +58,7 @@ fun ActionPlanScreen(
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filteredRecommendations = viewModel.getFilteredRecommendations()
     val totalItems = viewModel.getTotalItems()
-    val categoryList=viewModel.getAvailableCategories()
+    val categoryList = viewModel.getAvailableCategories()
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -117,11 +120,8 @@ fun ActionPlanScreen(
         } else if (totalItems == 0) {
             EmptyActionPlan()
         } else if (filteredRecommendations.isEmpty()) {
-            EmptyCategoryView()
+            EmptyCategoryView(viewModel)
         } else {
-
-
-
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
@@ -216,7 +216,7 @@ fun EmptyActionPlan() {
 }
 
 @Composable
-fun EmptyCategoryView() {
+fun EmptyCategoryView(viewModel: ActionPlanViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -259,7 +259,7 @@ fun EmptyCategoryView() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /* TODO: Show all items */ }
+            onClick = { viewModel.updateSelectedCategory("All") }
         ) {
             Icon(
                 imageVector = Icons.Default.Dashboard,
@@ -274,10 +274,10 @@ fun EmptyCategoryView() {
 
 @Composable
 fun ActionPlanCard(recommendation: Recommendation) {
-    /*  val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-      val addedDate = recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
-      val formattedDate = addedDate?.let { dateFormat.format(Date(it)) } ?: ""*/
-    val formattedDate = ""
+    val createAt =
+        recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
+    val formattedDate = formatDate(createAt)
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -308,13 +308,7 @@ fun ActionPlanCard(recommendation: Recommendation) {
                     )
                 }
 
-                IconButton(onClick = { /* TODO: Remove action */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -357,12 +351,28 @@ fun ActionPlanCard(recommendation: Recommendation) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Added Date
-            Text(
-                text = "Added $formattedDate",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Added Date
+                Text(
+                    text = "Added $formattedDate",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                OutlinedButton(onClick = { /* handle click */ }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Remove",
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Remove")
+                }
+            }
         }
     }
 }
@@ -384,4 +394,21 @@ fun MetricChip(
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
-} 
+}
+
+
+fun formatDate(isoString: String?): String {
+    return isoString?.let {
+        val instant = Instant.parse(isoString)
+        val systemTz = TimeZone.currentSystemDefault()
+        val localDateTime = instant.toLocalDateTime(systemTz)
+
+        val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
+        val month = localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+        val year = localDateTime.year
+
+
+
+        "$day/$month/$year"
+    } ?: ""
+}
