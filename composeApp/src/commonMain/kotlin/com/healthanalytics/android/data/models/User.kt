@@ -77,6 +77,13 @@ data class UpdateAddressListResponse(
 )
 
 @Serializable
+data class ProfileUpdateResponse(
+    val message: String,
+    val updated_fields: List<String>,
+    val data: String
+)
+
+@Serializable
 data class UpdateProfileRequest(
     val name: String,
     val email: String,

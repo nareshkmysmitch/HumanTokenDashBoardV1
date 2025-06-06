@@ -159,12 +159,13 @@ class MarketPlaceViewModel(
                 )
                 val response = apiService.updateProfile(dummyAccessToken, request)
                 
-                if (response?.status == "success") {
-                    callback(true, "Profile updated successfully")
+                if (response?.message == "Profile updated successfully") {
+                    callback(true, response.message)
                 } else {
                     callback(false, response?.message ?: "Failed to update profile")
                 }
             } catch (e: Exception) {
+                println("Profile update error: ${e.message}")
                 callback(false, e.message ?: "An error occurred")
             }
         }

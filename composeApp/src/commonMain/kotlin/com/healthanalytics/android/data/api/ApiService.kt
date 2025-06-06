@@ -1,6 +1,7 @@
 package com.healthanalytics.android.data.api
 
 import com.healthanalytics.android.data.models.AddressData
+import com.healthanalytics.android.data.models.ProfileUpdateResponse
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.UpdateProfileResponse
@@ -13,11 +14,13 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
-    suspend fun updateProfile(accessToken: String, request: UpdateProfileRequest): UpdateProfileResponse?
+    suspend fun updateProfile(accessToken: String, request: UpdateProfileRequest): ProfileUpdateResponse?
     suspend fun getAddresses(accessToken: String): AddressData?
 }
 
@@ -45,7 +48,7 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
     override suspend fun updateProfile(
         accessToken: String,
         request: UpdateProfileRequest
-    ): UpdateProfileResponse? {
+    ): ProfileUpdateResponse? {
         val response = httpClient.put("v4/human-token/lead/update-profile") {
             header("access_token", accessToken)
             contentType(ContentType.Application.Json)
@@ -53,7 +56,7 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
         }
         val responseBody = response.bodyAsText()
         println("responseBody --> Raw ${responseBody}")
-        return EncryptionUtils.handleDecryptionResponse<UpdateProfileResponse>(responseBody)
+        return Json.decodeFromString<ProfileUpdateResponse>(responseBody)
     }
 
     override suspend fun getAddresses(accessToken: String): AddressData? {

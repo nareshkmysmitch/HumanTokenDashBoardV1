@@ -351,7 +351,7 @@ fun ProfileScreen(
                                     state = state,
                                     pincode = pincode,
                                     country = country,
-                                    di_address_id = addressId // You might want to get this from your user data
+                                    di_address_id = addressId
                                 )
                                 
                                 viewModel.updateProfile(
@@ -362,7 +362,8 @@ fun ProfileScreen(
                                     diAddressId = addressId
                                 ) { success, message ->
                                     if (success) {
-                                        onNavigateBack()
+                                        isEditing = false
+                                        viewModel.loadAddresses() // Reload addresses after successful update
                                     }
                                 }
                             },
