@@ -26,13 +26,8 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
     }
 
     fun getFilteredRecommendations(): List<Recommendation> {
-        println("recommendations--> ${_uiState.value.selectedCategory}")
         return _uiState.value.recommendations.filter { recommendation ->
-            _uiState.value.selectedCategory == null ||
-                    recommendation.category.equals(
-                        _uiState.value.selectedCategory,
-                        ignoreCase = true
-                    )
+            recommendation.category?.equals(_uiState.value.selectedCategory, ignoreCase = true) == true
         }
     }
 
@@ -53,9 +48,11 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
             try {
                 _uiState.update { it.copy(isLoading = true) }
                 val recommendations = apiService.getRecommendations(accessToken)
+                val categories = recommendations?.map { it.category ?: "" }?.distinct() ?: emptyList()
                 _uiState.update {
                     it.copy(
                         recommendations = recommendations ?: emptyList(),
+                        selectedCategory = categories.firstOrNull(),
                         isLoading = false
                     )
                 }
