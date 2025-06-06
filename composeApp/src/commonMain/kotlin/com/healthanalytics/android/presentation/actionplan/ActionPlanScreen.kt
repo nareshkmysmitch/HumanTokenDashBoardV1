@@ -1,13 +1,41 @@
 package com.healthanalytics.android.presentation.actionplan
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -16,19 +44,18 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.utils.capitalizeFirst
-import org.koin.compose.viewModel.koinViewModel
-import java.text.SimpleDateFormat
-import java.util.*
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ActionPlanScreen(
     viewModel: ActionPlanViewModel = koinViewModel(),
-    preferencesViewModel: PreferencesViewModel = koinViewModel()
+    preferencesViewModel: PreferencesViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filteredRecommendations = viewModel.getFilteredRecommendations()
     val totalItems = viewModel.getTotalItems()
+    val categoryList=viewModel.getAvailableCategories()
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -58,6 +85,9 @@ fun ActionPlanScreen(
             )
         }
 
+        println("category--> ${viewModel.getAvailableCategories()}")
+
+
         // Category Row
         LazyRow(
             modifier = Modifier
@@ -65,7 +95,7 @@ fun ActionPlanScreen(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(viewModel.getAvailableCategories()) { category ->
+            items(categoryList) { category ->
                 CategoryChip(
                     category = category,
                     selected = category == uiState.selectedCategory,
@@ -89,6 +119,9 @@ fun ActionPlanScreen(
         } else if (filteredRecommendations.isEmpty()) {
             EmptyCategoryView()
         } else {
+
+
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
@@ -106,10 +139,10 @@ fun ActionPlanScreen(
 fun CategoryChip(
     category: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val categoryEnum = RecommendationCategory.fromString(category)
-    
+
     FilterChip(
         selected = selected,
         onClick = onClick,
@@ -136,7 +169,7 @@ fun EmptyActionPlan() {
     ) {
         Surface(
             modifier = Modifier.size(80.dp),
-            shape = MaterialTheme.shapes.circular,
+            shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Icon(
@@ -148,26 +181,26 @@ fun EmptyActionPlan() {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Text(
             text = "Your Action Plan is Empty",
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Add recommendations to your action plan to start tracking your health goals",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Button(
             onClick = { /* TODO: Navigate to recommendations */ }
         ) {
@@ -193,7 +226,7 @@ fun EmptyCategoryView() {
     ) {
         Surface(
             modifier = Modifier.size(80.dp),
-            shape = MaterialTheme.shapes.circular,
+            shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Icon(
@@ -205,26 +238,26 @@ fun EmptyCategoryView() {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Text(
             text = "No Items in This Category",
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "You don't have any action plan items in the selected category",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Button(
             onClick = { /* TODO: Show all items */ }
         ) {
@@ -241,10 +274,10 @@ fun EmptyCategoryView() {
 
 @Composable
 fun ActionPlanCard(recommendation: Recommendation) {
-    val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-    val addedDate = recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
-    val formattedDate = addedDate?.let { dateFormat.format(Date(it)) } ?: ""
-
+    /*  val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+      val addedDate = recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
+      val formattedDate = addedDate?.let { dateFormat.format(Date(it)) } ?: ""*/
+    val formattedDate = ""
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -274,7 +307,7 @@ fun ActionPlanCard(recommendation: Recommendation) {
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
-                
+
                 IconButton(onClick = { /* TODO: Remove action */ }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -337,7 +370,7 @@ fun ActionPlanCard(recommendation: Recommendation) {
 @Composable
 fun MetricChip(
     metric: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.secondaryContainer,

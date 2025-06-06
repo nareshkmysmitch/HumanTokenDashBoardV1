@@ -36,11 +36,6 @@ class ActionPlanViewModel(private val apiService: ApiService) : ViewModel() {
 
     fun getAvailableCategories(): List<String> {
         return listOf("All") + _uiState.value.recommendations
-            .filter { recommendation ->
-                recommendation.actions?.any { action ->
-                    action.user_recommendation_actions.isNotEmpty()
-                } == true
-            }
             .map { it.category ?: "" }
             .distinct()
     }
