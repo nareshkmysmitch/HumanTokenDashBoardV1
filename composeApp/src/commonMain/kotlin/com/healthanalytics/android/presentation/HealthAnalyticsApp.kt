@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation
 
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,13 +12,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.models.Product
-import com.healthanalytics.android.di.initKoin
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
-import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
@@ -100,8 +97,7 @@ fun HomeScreen(
         TopAppBar(
             title = "Human Token", onProfileClick = onProfileClick, onChatClick = {
                 onChatClick("123")
-            }
-        )
+            })
     }, bottomBar = {
         BottomNavBar(
             currentScreen = currentScreen, onScreenSelected = { screen ->
