@@ -146,18 +146,15 @@ private fun ConversationItem(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = conversation?.title.toString(),
-                    style = MaterialTheme.typography.titleMedium
+                    text = conversation?.id.toString(), style = MaterialTheme.typography.titleMedium
                 )
-                conversation.let { message ->
-                    Text(
-                        text = "Conversation" + message?.title.toString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                Text(
+                    text = "Conversation " + conversation?.id.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -224,6 +221,8 @@ fun formatDateString(dateString: String): String {
             localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }
         } ${localDateTime.dayOfMonth}"
     } catch (e: Exception) {
+
+
         dateString
     }
 }

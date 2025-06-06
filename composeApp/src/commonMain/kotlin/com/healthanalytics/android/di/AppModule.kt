@@ -34,36 +34,6 @@ val appModule = module {
 
     // ViewModels
     factoryOf(::MarketPlaceViewModel)
-
-    single {
-        HttpClient {
-            install(ContentNegotiation) {
-                json(Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                })
-            }
-
-            install(Logging) {
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        println(message)
-                    }
-                }
-                level = LogLevel.ALL
-            }
-
-
-            defaultRequest {
-                header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ...")
-                header("user_timezone", "Asia/Calcutta")
-                header("Accept-Language", "en-US")
-            }
-        }
-    }
-
-
     singleOf(::ChatViewModel)
 }
 

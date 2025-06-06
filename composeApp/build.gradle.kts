@@ -84,18 +84,12 @@ kotlin {
 
 
             implementation(libs.koin.core)
-//            implementation(libs.koin.android)
             implementation(libs.koin.compose)
 
             implementation("io.github.qdsfdhvh:image-loader:1.10.0")
             implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
-//            implementation("moe.tlaster:precompose:1.5.0-beta02")
-//            implementation("moe.tlaster:precompose-navigation:1.5.0-beta02")
-
-//            implementation("com.arkivanov.decompose:decompose:2.2.2")
-//            implementation("com.arkivanov.decompose:extensions-compose-jetbrains:2.2.2")
-
+            implementation("co.touchlab:kermit:2.0.5")
         }
 
         commonTest.dependencies {
@@ -150,3 +144,11 @@ compose.desktop {
         }
     }
 }
+
+
+//            implementation("moe.tlaster:precompose:1.5.0-beta02")
+//            implementation("moe.tlaster:precompose-navigation:1.5.0-beta02")
+
+//            implementation("com.arkivanov.decompose:decompose:2.2.2")
+//            implementation("com.arkivanov.decompose:extensions-compose-jetbrains:2.2.2")
+//            implementation(libs.koin.android)

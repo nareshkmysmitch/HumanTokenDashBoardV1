@@ -17,12 +17,10 @@ sealed class MarketPlaceUiState {
 }
 
 enum class SortOption(val displayName: String) {
-    RATING_LOW_TO_HIGH("Low to High (Ratings)"),
-    RATING_HIGH_TO_LOW("High to Low (Ratings)"),
-    NAME_A_TO_Z("A to Z (Name)"),
-    NAME_Z_TO_A("Z to A (Name)"),
-    PRICE_LOW_TO_HIGH("Low to High (Price)"),
-    PRICE_HIGH_TO_LOW("High to Low (Price)")
+    RATING_LOW_TO_HIGH("Low to High (Ratings)"), RATING_HIGH_TO_LOW("High to Low (Ratings)"), NAME_A_TO_Z(
+        "A to Z (Name)"
+    ),
+    NAME_Z_TO_A("Z to A (Name)"), PRICE_LOW_TO_HIGH("Low to High (Price)"), PRICE_HIGH_TO_LOW("High to Low (Price)")
 }
 
 class MarketPlaceViewModel(
@@ -44,39 +42,47 @@ class MarketPlaceViewModel(
     private val _allProducts = MutableStateFlow<List<Product?>>(emptyList())
 
     val filteredProducts = combine(
-        _allProducts,
-        _searchQuery,
-        _selectedCategories,
-        _sortOption
+        _allProducts, _searchQuery, _selectedCategories, _sortOption
     ) { products, query, categories, sortOption ->
-        var filtered = products.filterNotNull()
-            .filter { product ->
-                val matchesSearch = product.name?.contains(query, ignoreCase = true) ?: false ||
-                        product.tags?.any { it?.contains(query, ignoreCase = true) ?: false } ?: false
-                
-                val matchesCategories = if (categories.isEmpty()) true else {
-                    product.category?.any { it in categories } ?: false
-                }
-                
-                matchesSearch && matchesCategories
+        var filtered = products.filterNotNull().filter { product ->
+            val matchesSearch =
+                product.name?.contains(query, ignoreCase = true) ?: false || product.tags?.any {
+                    it?.contains(query, ignoreCase = true) ?: false
+                } ?: false
+
+            val matchesCategories = if (categories.isEmpty()) true else {
+                product.category?.any { it in categories } ?: false
             }
+
+            matchesSearch && matchesCategories
+        }
 
         // Apply sorting
         filtered = when (sortOption) {
-            SortOption.RATING_LOW_TO_HIGH -> filtered.sortedBy { it.rating?.toDoubleOrNull() ?: 0.0 }
-            SortOption.RATING_HIGH_TO_LOW -> filtered.sortedByDescending { it.rating?.toDoubleOrNull() ?: 0.0 }
+            SortOption.RATING_LOW_TO_HIGH -> filtered.sortedBy {
+                it.rating?.toDoubleOrNull() ?: 0.0
+            }
+
+            SortOption.RATING_HIGH_TO_LOW -> filtered.sortedByDescending {
+                it.rating?.toDoubleOrNull() ?: 0.0
+            }
+
             SortOption.NAME_A_TO_Z -> filtered.sortedBy { it.name ?: "" }
             SortOption.NAME_Z_TO_A -> filtered.sortedByDescending { it.name ?: "" }
             SortOption.PRICE_LOW_TO_HIGH -> filtered.sortedBy { it.price?.toDoubleOrNull() ?: 0.0 }
-            SortOption.PRICE_HIGH_TO_LOW -> filtered.sortedByDescending { it.price?.toDoubleOrNull() ?: 0.0 }
+            SortOption.PRICE_HIGH_TO_LOW -> filtered.sortedByDescending {
+                it.price?.toDoubleOrNull() ?: 0.0
+            }
+
             null -> filtered
         }
-        
+
         filtered
     }
 
     // TODO: In a real app, get this from a secure storage or auth service
-    private val dummyAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjIzN2RkOTAyLWZmZjYtNDJjNS1iYzlmLTkxY2Q2N2NhOGNmMSIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MDE3MTA2LCJleHAiOjE3NDk2MjE5MDZ9.5w7MbKkogQDfE-nv49P1BzWNa-7pPNLq5DoFK9rnCIc"
+    private val dummyAccessToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjI2ZTJhZWMzLWEwMGQtNDU0My05NWExLTNmZjk3YTVkMDQ3OCIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MTg4NTAwLCJleHAiOjE3NDk3OTMzMDB9.5B7JoGbwMuGLpUx6-PIK1rMloOusjtpYK6wxayHEFXo"
 
     init {
         loadProducts()

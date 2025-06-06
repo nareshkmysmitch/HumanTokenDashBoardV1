@@ -24,8 +24,7 @@ import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
-import com.healthanalytics.android.presentation.screens.LoginScreen
-import com.healthanalytics.android.presentation.screens.ProfileScreen
+ import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
 
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
@@ -59,10 +58,10 @@ fun HealthAnalyticsApp() {
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E"
 
     if (accessToken == null) {
-        LoginScreen(
-            onLoginSuccess = { token ->
-                accessToken = token
-            })
+//        LoginScreen(
+//            onLoginSuccess = { token ->
+//                accessToken = token
+//            })
     } else {
         when (currentScreen) {
             Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })

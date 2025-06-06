@@ -29,9 +29,9 @@ class ChatServiceImpl(
         accessToken: String, page: Int, perPage: Int
     ): ConversationResponse {
         return httpClient.get("$baseUrl/conversations") {
+
             parameter("page", page)
             parameter("per_page", perPage)
-            header("access_token", accessToken)
 
         }.body()
     }
@@ -40,9 +40,9 @@ class ChatServiceImpl(
         accessToken: String, conversationId: String, page: Int, perPage: Int
     ): ChatResponse {
         return httpClient.get("$baseUrl/conversations/$conversationId") {
+
             parameter("page", page)
             parameter("per_page", perPage)
-            header("access_token", accessToken)
         }.body()
     }
 
@@ -50,7 +50,7 @@ class ChatServiceImpl(
         accessToken: String, conversationId: String, content: String
     ): ChatResponse {
         return httpClient.post("$baseUrl/conversations/$conversationId/messages") {
-            header("access_token", accessToken)
+
             setBody(mapOf("content" to content))
         }.body()
     }
