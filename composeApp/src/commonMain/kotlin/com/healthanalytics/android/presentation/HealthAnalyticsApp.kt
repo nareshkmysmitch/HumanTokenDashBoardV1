@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
@@ -42,7 +39,14 @@ fun HealthAnalyticsApp() {
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen in listOf(Screen.CONVERSATION_LIST, Screen.MARKETPLACE_DETAIL,Screen.CHAT, Screen.PROFILE, Screen.HOME)) {
+        if (currentScreen in listOf(
+                Screen.CONVERSATION_LIST,
+                Screen.MARKETPLACE_DETAIL,
+                Screen.CHAT,
+                Screen.PROFILE,
+                Screen.HOME
+            )
+        ) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
@@ -75,18 +79,19 @@ fun HealthAnalyticsApp() {
             }
 
             Screen.CHAT -> {
-                ChatScreen(conversationId, onNavigateBack = { navigateBack()})
+                ChatScreen(conversationId, onNavigateBack = { navigateBack() })
             }
 
-            Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
+            Screen.HOME -> HomeScreen(
+                accessToken, onProfileClick = {
                 navigateTo(Screen.PROFILE)
             }, onChatClick = {
                 navigateTo(Screen.CONVERSATION_LIST)
             }, onMarketPlaceClick = {
                 product = it
-                    println("product -> Ha2$it")
-                    navigateTo(Screen.MARKETPLACE_DETAIL)
-                },
+                println("product -> Ha2$it")
+                navigateTo(Screen.MARKETPLACE_DETAIL)
+            },
                 onCartClick = {
                     navigateTo(Screen.CART)
                 }
@@ -130,26 +135,12 @@ fun HomeScreen(
     }
 
     Scaffold(topBar = {
-//        TopAppBar(
-//            title = "Human Token", onEndIconClick = onProfileClick, onChatClick = {
-//                onChatClick()
-//            })
-        if (currentScreen == MainScreen.MARKETPLACE) {
-            TopAppBar(
-                title = "MarketPlace", onEndIconClick = { onCartClick() }, isChatVisible = false
-            )
-        } else {
-            TopAppBar(
-                title = when (currentScreen) {
-                    MainScreen.DASHBOARD -> "Health Analytics"
-                    MainScreen.BIOMARKERS -> "BioMarkers"
-                    MainScreen.RECOMMENDATIONS -> "Recommendations"
-                    else -> ""
-                }, onEndIconClick = onProfileClick, onChatClick = {
-                    onChatClick()
-                }
-            )
-        }
+        TopAppBar(
+            title = "Human Token",
+            onEndIconClick = if(currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
+            onChatClick = onChatClick,
+            isChatVisible = currentScreen != MainScreen.MARKETPLACE,
+        )
     }, bottomBar = {
         BottomNavBar(
             currentScreen = currentScreen, onScreenSelected = { screen ->
