@@ -44,6 +44,7 @@ fun RecommendationsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
 
+    println()
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -63,7 +64,7 @@ fun RecommendationsScreen(
 
 
         // Recommendations List
-        if (uiState.isLoading) {
+        if (uiState.isLoading || preferencesState.data == null) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
