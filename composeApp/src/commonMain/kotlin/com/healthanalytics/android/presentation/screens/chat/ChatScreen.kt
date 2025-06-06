@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Message
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,7 +64,7 @@ fun ChatScreen(
     LaunchedEffect(conversationId) {
         viewModel.loadChat(conversationId)
     }
-
+    BackHandler(enabled = true, onBack = { onNavigateBack() })
     // Scroll to bottom when messages are loaded or updated
     LaunchedEffect(uiState) {
         when (val state = uiState) {
