@@ -47,7 +47,7 @@ data class Action(
     val is_generic: Boolean,
     val created_at: String,
     val updated_at: String,
-    // val user_recommendation_actions: List<Any>?
+    val user_recommendation_actions: List<UserRecommendationAction?>?,
 )
 
 @Serializable
@@ -58,6 +58,19 @@ data class EventConfig(
     val frequency: String,
     val scheduled_time: String,
     val days_of_the_week: List<Int>,
+)
+
+@Serializable
+data class UserRecommendationAction(
+    val action_id: String? = null,
+    val created_at: String? = null,
+    val event_id: String? = null,
+    val id: String? = null,
+    val is_completed: Boolean? = null,
+    val medicine_id: String? = null,
+    val recommendation_id: String? = null,
+    val updated_at: String? = null,
+    val user_id: String? = null,
 )
 
 enum class RecommendationCategory(val icon: String) {
