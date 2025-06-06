@@ -30,6 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
-import com.healthanalytics.android.data.models.Address
+import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
@@ -63,12 +65,36 @@ fun ProfileScreen(
     var email by remember { mutableStateOf("agentnash@yopmail.com") }
     var phone by remember { mutableStateOf("+91 9677004512") }
     var dateOfBirth by remember { mutableStateOf("December 20, 1998") }
-    var address1 by remember { mutableStateOf("IOT") }
-    var address2 by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("CBE") }
-    var state by remember { mutableStateOf("TN") }
-    var pincode by remember { mutableStateOf("201204") }
-    var country by remember { mutableStateOf("india") }
+
+    val selectedAddress by viewModel.selectedAddress.collectAsState()
+
+    // Initialize address fields from selectedAddress
+    var address1 by remember(selectedAddress) {
+        mutableStateOf(selectedAddress?.address?.address_line_1 ?: "")
+    }
+    var address2 by remember(selectedAddress) {
+        mutableStateOf(selectedAddress?.address?.address_line_2 ?: "")
+    }
+    var city by remember(selectedAddress) {
+        mutableStateOf(selectedAddress?.address?.city ?: "")
+    }
+    var state by remember(selectedAddress) {
+        mutableStateOf(selectedAddress?.address?.state ?: "")
+    }
+    var pincode by remember(selectedAddress) {
+        mutableStateOf(selectedAddress?.address?.pincode ?: "")
+    }
+    var country by remember(selectedAddress) {
+        mutableStateOf(selectedAddress?.address?.country ?: "")
+    }
+    var addressId by remember(selectedAddress) {
+        mutableStateOf(selectedAddress?.address_id ?: "")
+    }
+
+    // Load addresses when the screen is first shown
+    LaunchedEffect(Unit) {
+        viewModel.loadAddresses()
+    }
 
     BackHandler(enabled = true, onBack = {
         if (!isEditing) {
@@ -318,21 +344,22 @@ fun ProfileScreen(
                     ) {
                         Button(
                             onClick = {
-                                val addressData = Address(
+                                val addressData = UpdateAddressListResponse(
                                     address_line_1 = address1,
                                     address_line_2 = address2,
                                     city = city,
                                     state = state,
                                     pincode = pincode,
                                     country = country,
-                                    di_address_id = "79" // You might want to get this from your user data
+                                    di_address_id = addressId // You might want to get this from your user data
                                 )
                                 
                                 viewModel.updateProfile(
                                     name = name,
                                     email = email,
                                     phone = phone,
-                                    address = addressData
+                                    address = addressData,
+                                    diAddressId = addressId
                                 ) { success, message ->
                                     if (success) {
                                         onNavigateBack()

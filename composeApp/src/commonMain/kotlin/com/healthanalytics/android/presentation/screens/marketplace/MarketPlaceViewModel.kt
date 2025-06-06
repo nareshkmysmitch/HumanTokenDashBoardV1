@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
-import com.healthanalytics.android.data.models.Address
+import com.healthanalytics.android.data.models.AddressItem
+import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 sealed class MarketPlaceUiState {
@@ -45,6 +45,12 @@ class MarketPlaceViewModel(
     val sortOption = _sortOption.asStateFlow()
 
     private val _allProducts = MutableStateFlow<List<Product?>>(emptyList())
+
+    private val _addressList = MutableStateFlow<List<AddressItem>>(emptyList())
+    val addressList = _addressList.asStateFlow()
+
+    private val _selectedAddress = MutableStateFlow<AddressItem?>(null)
+    val selectedAddress = _selectedAddress.asStateFlow()
 
     val filteredProducts = combine(
         _allProducts,
@@ -83,6 +89,7 @@ class MarketPlaceViewModel(
 
     init {
         loadProducts()
+        loadAddresses()
     }
 
     fun updateSearchQuery(query: String) {
@@ -112,11 +119,33 @@ class MarketPlaceViewModel(
         }
     }
 
+    fun loadAddresses() {
+        viewModelScope.launch {
+            try {
+                val addressData = apiService.getAddresses(dummyAccessToken)
+                if (addressData != null) {
+                    _addressList.value = addressData.address_list
+                    // Select the first address as default if available
+                    if (_addressList.value.isNotEmpty()) {
+                        // Prefer communication address if available, otherwise use the first one
+                        val communicationAddress = _addressList.value.find { 
+                            it.address.address_type == "communication" 
+                        }
+                        _selectedAddress.value = communicationAddress ?: _addressList.value.first()
+                    }
+                }
+            } catch (e: Exception) {
+                println("Error loading addresses: ${e.message}")
+            }
+        }
+    }
+
     fun updateProfile(
         name: String,
         email: String,
         phone: String,
-        address: Address,
+        diAddressId: String,
+        address: UpdateAddressListResponse,
         callback: (Boolean, String) -> Unit
     ) {
         viewModelScope.launch {
@@ -125,7 +154,8 @@ class MarketPlaceViewModel(
                     name = name,
                     email = email,
                     phone = phone,
-                    address = address
+                    address = address,
+                    di_address_id = diAddressId
                 )
                 val response = apiService.updateProfile(dummyAccessToken, request)
                 

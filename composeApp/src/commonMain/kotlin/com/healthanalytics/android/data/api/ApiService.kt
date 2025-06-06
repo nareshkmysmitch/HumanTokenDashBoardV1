@@ -1,5 +1,6 @@
 package com.healthanalytics.android.data.api
 
+import com.healthanalytics.android.data.models.AddressData
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.UpdateProfileResponse
@@ -17,6 +18,7 @@ interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
     suspend fun updateProfile(accessToken: String, request: UpdateProfileRequest): UpdateProfileResponse?
+    suspend fun getAddresses(accessToken: String): AddressData?
 }
 
 class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
@@ -52,5 +54,18 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
         val responseBody = response.bodyAsText()
         println("responseBody --> Raw ${responseBody}")
         return EncryptionUtils.handleDecryptionResponse<UpdateProfileResponse>(responseBody)
+    }
+
+    override suspend fun getAddresses(accessToken: String): AddressData? {
+        val response = httpClient.get("v4/human-token/market-place/address") {
+            header("access_token", accessToken)
+        }
+        val responseBody = response.bodyAsText()
+        println("Address response --> Raw ${responseBody}")
+        val addressListResponse = EncryptionUtils.handleDecryptionResponse<AddressData>(responseBody)
+        if (addressListResponse != null) {
+            return addressListResponse
+        }
+        return null
     }
 } 
