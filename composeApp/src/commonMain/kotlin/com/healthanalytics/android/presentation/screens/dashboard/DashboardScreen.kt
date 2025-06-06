@@ -13,13 +13,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.data.models.Biomarker
-import com.healthanalytics.android.data.repositories.HealthRepository
 import kotlinx.coroutines.launch
 
 @Composable
 fun DashboardScreen(
     token: String,
-    repository: HealthRepository = HealthRepository()
+//    repository: HealthRepository = HealthRepository()
 ) {
     var biomarkers by remember { mutableStateOf<List<Biomarker>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
@@ -29,16 +28,16 @@ fun DashboardScreen(
     
     LaunchedEffect(token) {
         scope.launch {
-            repository.getHealthData(token).fold(
-                onSuccess = { data ->
-                    biomarkers = data
-                    isLoading = false
-                },
-                onFailure = { error ->
-                    errorMessage = error.message ?: "Failed to load health data"
-                    isLoading = false
-                }
-            )
+//            repository.getHealthData(token).fold(
+//                onSuccess = { data ->
+//                    biomarkers = data
+//                    isLoading = false
+//                },
+//                onFailure = { error ->
+//                    errorMessage = error.message ?: "Failed to load health data"
+//                    isLoading = false
+//                }
+//            )
         }
     }
     

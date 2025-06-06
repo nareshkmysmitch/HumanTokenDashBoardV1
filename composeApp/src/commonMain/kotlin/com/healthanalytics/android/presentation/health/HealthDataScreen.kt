@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -53,40 +54,37 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HealthDataScreen(
     viewModel: HealthDataViewModel = koinViewModel(),
+    prefs: PreferencesViewModel = koinViewModel(),
 ) {
+    val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+
     val filteredMetrics = viewModel.getFilteredMetrics()
     val availableFilters = viewModel.getAvailableFilters()
     var isSearchVisible by remember { mutableStateOf(false) }
+
     val dummyAccessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjIzN2RkOTAyLWZmZjYtNDJjNS1iYzlmLTkxY2Q2N2NhOGNmMSIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MDE3MTA2LCJleHAiOjE3NDk2MjE5MDZ9.5w7MbKkogQDfE-nv49P1BzWNa-7pPNLq5DoFK9rnCIc"
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjI2ZTJhZWMzLWEwMGQtNDU0My05NWExLTNmZjk3YTVkMDQ3OCIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MTg4NTAwLCJleHAiOjE3NDk3OTMzMDB9.5B7JoGbwMuGLpUx6-PIK1rMloOusjtpYK6wxayHEFXo"
 
     LaunchedEffect(Unit) {
-        viewModel.loadHealthMetrics(dummyAccessToken)
+        prefs.saveAccessToken(dummyAccessToken)
+    }
+
+    LaunchedEffect(preferencesState.data) {
+        preferencesState.data?.let { token ->
+            viewModel.loadHealthMetrics(token)
+        }
     }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Header with Search Icon
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Health Data",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            IconButton(onClick = { isSearchVisible = !isSearchVisible }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search"
-                )
-            }
-        }
+
+        Text(
+            text = "Health Data",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         // Last Updated
         Text(
@@ -143,8 +141,10 @@ fun HealthDataScreen(
             }
         }
 
+        println("state -->  uiState :: ${uiState.isLoading} || preferencesState ::${preferencesState.isLoading} ")
+        println("state -->  ${filteredMetrics.size} ")
         // Metrics List
-        if (uiState.isLoading) {
+        if (uiState.isLoading || preferencesState.data == null) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center

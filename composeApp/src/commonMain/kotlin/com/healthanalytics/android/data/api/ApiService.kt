@@ -2,11 +2,20 @@ package com.healthanalytics.android.data.api
 
 import com.example.humantoken.ui.screens.Cart
 import com.example.humantoken.ui.screens.EncryptedResponse
+import com.healthanalytics.android.data.models.Recommendation
+import com.healthanalytics.android.data.models.Recommendations
+import com.healthanalytics.android.data.models.AddressData
+import com.healthanalytics.android.data.models.ProfileUpdateResponse
 import com.healthanalytics.android.utils.EncryptionUtils
+import com.healthanalytics.android.data.models.UpdateProfileRequest
+import com.healthanalytics.android.data.models.UpdateProfileResponse
+import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -28,10 +37,17 @@ data class UpdateCartRequest(
     val product_id: String,
     val quantity: String
 )
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
+    suspend fun getRecommendations(accessToken: String): List<Recommendation>?
+    suspend fun updateProfile(accessToken: String, request: UpdateProfileRequest): ProfileUpdateResponse?
+    suspend fun getAddresses(accessToken: String): AddressData?
     suspend fun addProduct(accessToken: String, productId: String, variantId: String): EncryptedResponse?
     suspend fun updateProduct(accessToken: String, productId: String, quantity: String): EncryptedResponse?
     suspend fun getCartList(accessToken: String): List<Cart?>?
@@ -61,6 +77,44 @@ class ApiServiceImpl(
             EncryptionUtils.handleDecryptionResponse<HealthMetrics>(responseBody)
         return healthMetricsResponse?.blood?.data
     }
+
+    override suspend fun updateProfile(
+        accessToken: String,
+        request: UpdateProfileRequest
+    ): ProfileUpdateResponse? {
+        val response = httpClient.put("v4/human-token/lead/update-profile") {
+            header("access_token", accessToken)
+            contentType(ContentType.Application.Json)
+            setBody(request.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        println("responseBody --> Raw ${responseBody}")
+        return Json.decodeFromString<ProfileUpdateResponse>(responseBody)
+    }
+
+    override suspend fun getAddresses(accessToken: String): AddressData? {
+        val response = httpClient.get("v4/human-token/market-place/address") {
+            header("access_token", accessToken)
+        }
+        val responseBody = response.bodyAsText()
+        println("Address response --> Raw ${responseBody}")
+        val addressListResponse = EncryptionUtils.handleDecryptionResponse<AddressData>(responseBody)
+        if (addressListResponse != null) {
+            return addressListResponse
+        }
+        return null
+    }
+
+    override suspend fun getRecommendations(accessToken: String): List<Recommendation>? {
+        val response = httpClient.get("v4/human-token/recommendation") {
+            header("access_token", accessToken)
+        }
+        val responseBody = response.bodyAsText()
+        val recommendationsList =
+            EncryptionUtils.handleDecryptionResponse<Recommendations>(responseBody)
+        return recommendationsList?.recommendations
+    }
+}
 
     override suspend fun addProduct(
         accessToken: String,
@@ -121,4 +175,4 @@ class ApiServiceImpl(
             return null
         }
     }
-} 
+}
