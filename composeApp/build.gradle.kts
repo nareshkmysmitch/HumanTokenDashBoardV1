@@ -99,6 +99,8 @@ kotlin {
             implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
             implementation("co.touchlab:kermit:2.0.5")
+            implementation("io.insert-koin:koin-compose:1.0.3")
+
 
             api(libs.androidx.datastore.preferences)
             api(libs.androidx.datastore.preferences.core)

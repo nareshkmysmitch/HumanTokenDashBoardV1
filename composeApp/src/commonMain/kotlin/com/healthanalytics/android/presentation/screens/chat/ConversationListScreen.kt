@@ -35,7 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import co.touchlab.kermit.Logger
 import com.healthanalytics.android.data.models.Conversation
+import com.healthanalytics.android.utils.KermitLogger
+import io.ktor.websocket.FrameType.Companion.get
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -45,12 +48,14 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationListScreen(
-    onNavigateToChat: @Composable (String) -> Unit,
+    onNavigateToChat: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChatViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.conversationsState.collectAsState()
 
+    Logger.e { "ConversationListScreen" }
+
+    val uiState by viewModel.conversationsState.collectAsState()
     println("conversation list screen $uiState")
 
     Scaffold(
@@ -65,16 +70,12 @@ fun ConversationListScreen(
         ) {
             when (val state = uiState) {
                 is ConversationsUiState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
 
                 is ConversationsUiState.Success -> {
                     if (state.conversations?.isEmpty() == true) {
-                        EmptyState(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        EmptyState(modifier = Modifier.align(Alignment.Center))
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -84,7 +85,9 @@ fun ConversationListScreen(
                             state.conversations?.let { conversationList ->
                                 items(conversationList) { conversation ->
                                     ConversationItem(
-                                        conversation = conversation, onClick = { })
+                                        conversation = conversation, onClick = {
+                                            onNavigateToChat(conversation?.id.toString())
+                                        })
                                 }
                             }
 

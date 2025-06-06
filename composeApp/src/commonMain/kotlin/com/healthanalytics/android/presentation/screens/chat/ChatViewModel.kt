@@ -2,9 +2,10 @@ package com.healthanalytics.android.presentation.screens.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.healthanalytics.android.data.api.ChatService
+import com.healthanalytics.android.data.api.ChatApiService
 import com.healthanalytics.android.data.models.Conversation
 import com.healthanalytics.android.data.models.Message
+import com.healthanalytics.android.utils.KermitLogger
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -32,7 +33,7 @@ sealed class ChatUiState {
 }
 
 class ChatViewModel(
-    private val chatService: ChatService
+    private val chatApiService: ChatApiService, private val log: KermitLogger
 ) : ViewModel() {
 
     private val _conversationsState =
@@ -72,7 +73,7 @@ class ChatViewModel(
                     _conversationsState.value = ConversationsUiState.Loading
                 }
 
-                val response = chatService.getConversations(
+                val response = chatApiService.getConversations(
                     dummyAccessToken, page = if (isLoadingMore) currentConversationsPage + 1 else 1
                 )
 
@@ -111,7 +112,7 @@ class ChatViewModel(
                     _chatState.value = ChatUiState.Loading
                 }
 
-                val chatResponse = chatService.getConversation(
+                val chatResponse = chatApiService.getConversation(
                     dummyAccessToken,
                     conversationId = conversationId,
                     page = if (isLoadingMore) currentChatPage + 1 else 1
@@ -149,7 +150,7 @@ class ChatViewModel(
 
         viewModelScope.launch {
             try {
-                val response = chatService.sendMessage(dummyAccessToken, conversationId, content)
+                val response = chatApiService.sendMessage(dummyAccessToken, conversationId, content)
                 val currentState = _chatState.value as? ChatUiState.Success ?: return@launch
 
                 _chatState.value = currentState.copy(
