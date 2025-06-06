@@ -46,5 +46,12 @@ data class Vendor(
     val name: String? = null,
 )
 
+//    parameter("conversation_id", conversationId)
+//            parameter("message", content)
+
+
+@Serializable
+data class SendMessage(val conversation_id: String, val message: String)
+
 
 

@@ -15,48 +15,44 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class) compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
+        iosX64(), iosArm64(), iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
         }
     }
-    
-    jvm("desktop")
-    
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }
-    
+
+//    jvm("desktop")
+
+//    @OptIn(ExperimentalWasmDsl::class) wasmJs {
+//        moduleName = "composeApp"
+//        browser {
+//            val rootDirPath = project.rootDir.path
+//            val projectDirPath = project.projectDir.path
+//            commonWebpackConfig {
+//                outputFileName = "composeApp.js"
+//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+//                    static = (static ?: mutableListOf()).apply {
+//                        // Serve sources to debug inside browser
+//                        add(rootDirPath)
+//                        add(projectDirPath)
+//                    }
+//                }
+//            }
+//        }
+//        binaries.executable()
+//    }
+
     sourceSets {
-        val desktopMain by getting
-        
+//        val desktopMain by getting
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.ktor.client.android)
@@ -96,19 +92,28 @@ kotlin {
             api(libs.koin.compose.viewmodel)
 
 
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+
             implementation("io.github.qdsfdhvh:image-loader:1.10.0")
             implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
+            implementation("co.touchlab:kermit:2.0.5")
+            implementation("io.insert-koin:koin-compose:1.0.3")
+
+
             api(libs.androidx.datastore.preferences)
             api(libs.androidx.datastore.preferences.core)
+
         }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
-        }
+//        desktopMain.dependencies {
+//            implementation(compose.desktop.currentOs)
+//            implementation(libs.kotlinx.coroutinesSwing)
+//        }
     }
 }
 
@@ -154,3 +159,11 @@ compose.desktop {
         }
     }
 }
+
+
+//            implementation("moe.tlaster:precompose:1.5.0-beta02")
+//            implementation("moe.tlaster:precompose-navigation:1.5.0-beta02")
+
+//            implementation("com.arkivanov.decompose:decompose:2.2.2")
+//            implementation("com.arkivanov.decompose:extensions-compose-jetbrains:2.2.2")
+//            implementation(libs.koin.android)
