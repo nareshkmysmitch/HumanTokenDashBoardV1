@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation
 
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,35 +12,40 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
+
 import com.healthanalytics.android.di.initKoin
 
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.models.Product
 
 
+import com.example.humantoken.ui.screens.ProductDetailScreen
+
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
+
 import com.healthanalytics.android.presentation.screens.dashboard.DashboardScreen
- import com.healthanalytics.android.presentation.screens.ProfileScreen
+import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
 
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
 
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 
 private val koin = initKoin()
 
 
 @Composable
 fun HealthAnalyticsApp() {
-
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
     var accessToken by remember { mutableStateOf<String?>(null) }
+
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
@@ -66,6 +72,7 @@ fun HealthAnalyticsApp() {
         when (currentScreen) {
             Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
             Screen.CHAT -> ProfileScreen(onNavigateBack = { navigateBack() })
+
             Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
                 navigateTo(Screen.PROFILE)
             }, onChatClick = {
@@ -85,7 +92,7 @@ fun HomeScreen(
     accessToken: String?,
     onProfileClick: () -> Unit,
     onChatClick: () -> Unit,
-    onMarketPlaceClick: (Product) -> Unit
+    onMarketPlaceClick: (Product) -> Unit,
 ) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
@@ -100,13 +107,7 @@ fun HomeScreen(
 
     Scaffold(topBar = {
         TopAppBar(
-            title = when (currentScreen) {
-                MainScreen.DASHBOARD -> "Health Analytics"
-                MainScreen.BIOMARKERS -> "BioMarkers"
-                MainScreen.RECOMMENDATIONS -> "Recommendations"
-                MainScreen.MARKETPLACE -> "Market Place"
-                else -> ""
-            }, onProfileClick = onProfileClick, onChatClick = onChatClick
+            title = "Human Token", onProfileClick = onProfileClick, onChatClick = onChatClick
         )
     }, bottomBar = {
         BottomNavBar(
@@ -118,19 +119,12 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             when (currentScreen) {
-                MainScreen.DASHBOARD -> DashboardScreen(token = accessToken.toString())
+                MainScreen.DASHBOARD -> HealthDataScreen()
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
-
                 MainScreen.RECOMMENDATIONS -> ConversationListScreen(onNavigateToChat = { conversationId ->
-                    ChatScreen(
-                        conversationId,
-                        onNavigateBack = { },
-
-                        )
-                })  //   RecommendationsScreen()
+                    ChatScreen(conversationId, onNavigateBack = { },) })
 
                 MainScreen.MARKETPLACE -> MarketPlaceScreen()
-
             }
         }
     }

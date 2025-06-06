@@ -58,6 +58,10 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.navigation.compose)
+
+            //koin
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
 
         iosMain.dependencies {
@@ -82,6 +86,11 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
 
+            //koin
+            api(libs.koin.core)
+            api(libs.koin.compose)
+            api(libs.koin.compose.viewmodel)
+
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
@@ -90,6 +99,10 @@ kotlin {
             implementation("org.jetbrains.compose.material:material-icons-extended:1.5.10")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
             implementation("co.touchlab:kermit:2.0.5")
+
+            api(libs.androidx.datastore.preferences)
+            api(libs.androidx.datastore.preferences.core)
+
         }
 
         commonTest.dependencies {

@@ -18,7 +18,7 @@ object NetworkConfig {
     const val CLIENT_ID = "JmEfoQ2sP18APIiX9z0nY3vlDAKHIp8nKuyV"
     const val USER_TIMEZONE = "Asia/Calcutta"
 
-    fun createHttpClient(accessToken: String? = null): HttpClient {
+    fun createHttpClient(): HttpClient {
         return HttpClient {
             install(ContentNegotiation) {
                 json(Json {
