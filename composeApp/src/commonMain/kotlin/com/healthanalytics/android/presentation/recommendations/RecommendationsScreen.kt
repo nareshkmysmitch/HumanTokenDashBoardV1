@@ -45,9 +45,6 @@ fun RecommendationsScreen(
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filterList = viewModel.getFilteredRecommendations()
 
-    println("selected category--> ${uiState.selectedCategory}")
-    println("selected category--> $filterList")
-
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
             viewModel.loadRecommendations(token)
@@ -64,7 +61,6 @@ fun RecommendationsScreen(
             modifier = Modifier.padding(16.dp)
         )
 
-
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
@@ -72,17 +68,6 @@ fun RecommendationsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
-            }
-        } else if (uiState.error != null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = uiState.error ?: "",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyLarge
-                )
             }
         } else {
             // Subtitle with selected category and count
@@ -189,17 +174,12 @@ fun RecommendationCard(recommendation: Recommendation) {
                 }
             }
 
-            // Description if available
-            recommendation.description?.let { description ->
-                if (description.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Potential Impact",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
