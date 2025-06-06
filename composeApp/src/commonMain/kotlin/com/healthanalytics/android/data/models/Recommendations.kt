@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Recommendations(
-    val recommendations: List<Recommendation>? = null
+    val recommendations: List<Recommendation>? = null,
 )
 
 @Serializable
@@ -17,7 +17,7 @@ data class Recommendation(
     val is_generic: Boolean,
     val created_at: String,
     val updated_at: String,
-    val metric_recommendations: List<MetricRecommendation>?= listOf(),
+    val metric_recommendations: List<MetricRecommendation>? = listOf(),
     //val recommendation_assessments: List<Any>?,
     val actions: List<Action>?,
     //val personalized_recommendations: List<Any>?
@@ -27,13 +27,13 @@ data class Recommendation(
 data class MetricRecommendation(
     val metric_id: String,
     val recommendation_id: String,
-    val metric: Metric
+    val metric: Metric,
 )
 
 @Serializable
 data class Metric(
     val metric_id: String,
-    val metric: String
+    val metric: String,
 )
 
 @Serializable
@@ -47,7 +47,7 @@ data class Action(
     val is_generic: Boolean,
     val created_at: String,
     val updated_at: String,
-   // val user_recommendation_actions: List<Any>?
+    // val user_recommendation_actions: List<Any>?
 )
 
 @Serializable
@@ -57,7 +57,7 @@ data class EventConfig(
     val sub_type: String,
     val frequency: String,
     val scheduled_time: String,
-    val days_of_the_week: List<Int>
+    val days_of_the_week: List<Int>,
 )
 
 enum class RecommendationCategory(val icon: String) {
