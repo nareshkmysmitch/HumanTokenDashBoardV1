@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Message
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -58,30 +59,58 @@ fun ChatScreen(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
+    // Initial load of chat messages
     LaunchedEffect(conversationId) {
         viewModel.loadChat(conversationId)
     }
 
-    Scaffold(modifier = modifier.fillMaxSize(), topBar = {
-        TopAppBar(title = {
-            when (val state = uiState) {
-                is ChatUiState.Success -> Text("Chat")
-                else -> Text("Chat")
-            }
-        }, navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-        })
-    }, bottomBar = {
-        ChatInput(
-            value = messageInput, onValueChange = viewModel::updateMessageInput, onSend = {
-                viewModel.sendMessage(conversationId)
-                coroutineScope.launch {
-                    listState.animateScrollToItem(0)
+    // Scroll to bottom when messages are loaded or updated
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is ChatUiState.Success -> {
+                if (state.messages.isNotEmpty()) {
+                    listState.scrollToItem(state.messages.size - 1)
                 }
-            })
-    }) { paddingValues ->
+            }
+            else -> {}
+        }
+    }
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    when (val state = uiState) {
+                        is ChatUiState.Success -> Text("Chat")
+                        else -> Text("Chat")
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            ChatInput(
+                value = messageInput,
+                onValueChange = viewModel::updateMessageInput,
+                onSend = {
+                    viewModel.sendMessage(conversationId)
+                    // Clear input
+                    viewModel.updateMessageInput("")
+                    // Reload the first page to get the latest messages including bot response
+                    coroutineScope.launch {
+                        // Small delay to ensure the message is processed
+                        delay(500)
+                        viewModel.loadChat(conversationId)
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
@@ -96,8 +125,14 @@ fun ChatScreen(
                     ChatMessages(
                         messages = state.messages,
                         isLoadingMore = state.isLoadingMore,
+                        canLoadMore = state.canLoadMore,
                         listState = listState,
-                        onLoadMore = { viewModel.loadChat(conversationId, isLoadingMore = true) })
+                        onLoadMore = { 
+                            if (state.canLoadMore) {
+                                viewModel.loadChat(conversationId, isLoadingMore = true)
+                            }
+                        }
+                    )
                 }
 
                 is ChatUiState.Error -> {
@@ -116,21 +151,18 @@ fun ChatScreen(
 private fun ChatMessages(
     messages: List<Message>,
     isLoadingMore: Boolean,
+    canLoadMore: Boolean,
     listState: LazyListState,
     onLoadMore: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        reverseLayout = true,
+        reverseLayout = false,
         state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(messages) { message ->
-            ChatMessage(message = message)
-        }
-
         if (isLoadingMore) {
             item {
                 Box(
@@ -142,10 +174,15 @@ private fun ChatMessages(
                 }
             }
         }
+
+        items(messages) { message ->
+            ChatMessage(message = message)
+        }
     }
 
+    // Check for pagination when scrolling up (near the top)
     LaunchedEffect(listState.firstVisibleItemIndex) {
-        if (listState.firstVisibleItemIndex > messages.size - 10) {
+        if (listState.firstVisibleItemIndex < 5 && messages.isNotEmpty() && canLoadMore) {
             onLoadMore()
         }
     }
