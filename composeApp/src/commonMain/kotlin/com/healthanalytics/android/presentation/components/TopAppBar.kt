@@ -1,11 +1,9 @@
 package com.healthanalytics.android.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
-import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,9 +23,7 @@ fun TopAppBar(
     isEndIconVisible: Boolean = true,
     isChatVisible: Boolean = true,
     onEndIconClick: () -> Unit = {},
-    onChatClick: () -> Unit = {}
-    onProfileClick: () -> Unit,
-    onChatClick: () -> Unit,
+    onChatClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -43,34 +36,21 @@ fun TopAppBar(
         actions = {
             if (isChatVisible) {
                 IconButton(onClick = onChatClick) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "chat",
+                    Icon(
+                        imageVector = Icons.Default.Chat,
+                        contentDescription = "Chat",
                         modifier = Modifier.size(24.dp)
                     )
                 }
             }
             if (isEndIconVisible) {
                 IconButton(onClick = onEndIconClick) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
                         contentDescription = "Profile",
                         modifier = Modifier.size(24.dp)
                     )
                 }
-            IconButton(onClick = onProfileClick) {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Profile",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            IconButton(onClick = onChatClick) {
-                Icon(
-                    imageVector = Icons.Default.Chat,
-                    contentDescription = "Chat",
-                    modifier = Modifier.size(24.dp)
-                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

@@ -9,12 +9,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
-import com.healthanalytics.android.data.models.Product
+import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
@@ -38,11 +39,6 @@ fun HealthAnalyticsApp() {
     var product by remember { mutableStateOf(Product()) }
     //val preferencesViewModel: PreferencesViewModel = koinViewModel()
 
-    println("accessToken : ${tempAccess.value?.data}")
-
-    scope.launch {
-        repository.saveAccessToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQkVUQV8wMzcyNGE3Yi0wZjA5LTQ1ODYtYmYyMy1hYTQ1NzA5NzVhYjciLCJzZXNzaW9uX2lkIjoiOGM0MmFlMzAtZmVkMC00NTNjLWIwMzEtYmQyYmFjNzQ5N2Y0IiwidXNlcl9pbnRfaWQiOiI0NzUiLCJpYXQiOjE3NDg0OTkwODgsImV4cCI6MTc0OTEwMzg4OH0.jbbY5r1g-SSzYvII3EkcfzFfdDF2OHZwifx9DFuH20E")
-    }
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
@@ -119,7 +115,7 @@ fun HomeScreen(
     accessToken: String?,
     onProfileClick: () -> Unit,
     onCartClick: () -> Unit,
-    onChatClick: (String) -> Unit,
+    onChatClick: () -> Unit,
     onMarketPlaceClick: (Product) -> Unit,
 ) {
 
@@ -134,10 +130,10 @@ fun HomeScreen(
     }
 
     Scaffold(topBar = {
-        TopAppBar(
-            title = "Human Token", onProfileClick = onProfileClick, onChatClick = {
-                onChatClick("123")
-            })
+//        TopAppBar(
+//            title = "Human Token", onEndIconClick = onProfileClick, onChatClick = {
+//                onChatClick()
+//            })
         if (currentScreen == MainScreen.MARKETPLACE) {
             TopAppBar(
                 title = "MarketPlace", onEndIconClick = { onCartClick() }, isChatVisible = false
@@ -149,7 +145,9 @@ fun HomeScreen(
                     MainScreen.BIOMARKERS -> "BioMarkers"
                     MainScreen.RECOMMENDATIONS -> "Recommendations"
                     else -> ""
-                }, onEndIconClick = onProfileClick, onChatClick = onChatClick
+                }, onEndIconClick = onProfileClick, onChatClick = {
+                    onChatClick()
+                }
             )
         }
     }, bottomBar = {

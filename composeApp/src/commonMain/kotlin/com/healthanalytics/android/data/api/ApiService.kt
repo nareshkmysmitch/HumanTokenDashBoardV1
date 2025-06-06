@@ -16,8 +16,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -37,10 +35,6 @@ data class UpdateCartRequest(
     val product_id: String,
     val quantity: String
 )
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
@@ -114,7 +108,6 @@ class ApiServiceImpl(
             EncryptionUtils.handleDecryptionResponse<Recommendations>(responseBody)
         return recommendationsList?.recommendations
     }
-}
 
     override suspend fun addProduct(
         accessToken: String,
