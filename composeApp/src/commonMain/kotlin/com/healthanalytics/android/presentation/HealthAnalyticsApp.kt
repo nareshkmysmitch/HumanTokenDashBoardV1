@@ -21,6 +21,7 @@ import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
+import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
@@ -44,10 +45,18 @@ import org.koin.core.context.KoinContext
 
 @Composable
 fun HealthAnalyticsApp() {
-//    var currentScreen by remember { mutableStateOf(Screen.HOME) }
-//    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
-//    var accessToken by remember { mutableStateOf<String?>(null) }
-//    var conversationId by remember { mutableStateOf("") }
+    var currentScreen by remember { mutableStateOf(Screen.HOME) }
+    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
+    var accessToken by remember { mutableStateOf<String?>(null) }
+    var conversationId by remember { mutableStateOf("") }
+
+    fun navigateTo(screen: Screen) {
+        // Remember the last main screen when navigating away from main screens
+        if (currentScreen in listOf(Screen.CONVERSATION_LIST, Screen.MARKETPLACE_DETAIL,Screen.CHAT, Screen.PROFILE, Screen.HOME)) {
+            lastMainScreen = currentScreen
+        }
+        currentScreen = screen
+    }
 
 //    fun navigateTo(screen: Screen) {
 //        // Remember the last main screen when navigating away from main screens
@@ -70,32 +79,32 @@ fun HealthAnalyticsApp() {
 //            onLoginSuccess = { token ->
 //                accessToken = token
 //            })
-//    } else {
-//        when (currentScreen) {
-//            Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
-//            Screen.CHAT -> ProfileScreen(onNavigateBack = { navigateBack() })
-//            Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
-//                navigateTo(Screen.PROFILE)
-//            }, onChatClick = {
-//                navigateTo(Screen.CHAT)
-//            })
-//        }
-//    }
+    } else {
+        when (currentScreen) {
+            Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+            Screen.CONVERSATION_LIST -> {
+                ConversationListScreen(
+                    onNavigateToChat = { id ->
+                        conversationId = id
+                        navigateTo(Screen.CHAT)
+                    },
+                    onNavigateBack = { navigateTo(Screen.HOME) }
+                )
+            }
 
-    var isLogin by remember { mutableStateOf(false) }
-
-    if (isLogin){
-        HomeScreen(
-            accessToken = "",
-        )
-    }else{
-        OnboardContainer(
-            isLoggedIn = {
-                isLogin = true
+            Screen.CHAT -> {
+                ChatScreen(conversationId, onNavigateBack = { navigateBack()})
             }
         )
     }
 
+            Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
+                navigateTo(Screen.PROFILE)
+            }, onChatClick = {
+                navigateTo(Screen.CONVERSATION_LIST)
+            }, onMarketPlaceClick = {
+                navigateTo(Screen.MARKETPLACE_DETAIL)
+            })
 }
 
 
@@ -245,9 +254,7 @@ fun HomeScreen(
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
-                MainScreen.RECOMMENDATIONS -> ConversationListScreen(onNavigateToChat = { conversationId ->
-                    onChatClick(conversationId)
-                })
+                MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
 
                 MainScreen.MARKETPLACE -> MarketPlaceScreen()
             }

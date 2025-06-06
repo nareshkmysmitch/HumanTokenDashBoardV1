@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.data.models.AddressItem
+import com.healthanalytics.android.data.models.UpdateAddressListResponse
+import com.healthanalytics.android.data.models.UpdateProfileRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +43,12 @@ class MarketPlaceViewModel(
     val sortOption = _sortOption.asStateFlow()
 
     private val _allProducts = MutableStateFlow<List<Product?>>(emptyList())
+
+    private val _addressList = MutableStateFlow<List<AddressItem>>(emptyList())
+    val addressList = _addressList.asStateFlow()
+
+    private val _selectedAddress = MutableStateFlow<AddressItem?>(null)
+    val selectedAddress = _selectedAddress.asStateFlow()
 
     val filteredProducts = combine(
         _allProducts, _searchQuery, _selectedCategories, _sortOption
@@ -81,11 +90,11 @@ class MarketPlaceViewModel(
     }
 
     // TODO: In a real app, get this from a secure storage or auth service
-    private val dummyAccessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjI2ZTJhZWMzLWEwMGQtNDU0My05NWExLTNmZjk3YTVkMDQ3OCIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MTg4NTAwLCJleHAiOjE3NDk3OTMzMDB9.5B7JoGbwMuGLpUx6-PIK1rMloOusjtpYK6wxayHEFXo"
+    private val dummyAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTkzN2RiNzItNmVlMy00NTEwLTgzYjktM2UwNzI2MmRlNjQ5Iiwic2Vzc2lvbl9pZCI6IjNlNjNkY2U4LWJmY2ItNDY5Yi1hMDE1LWQ1ODRmMTVjNjRmZiIsInVzZXJfaW50X2lkIjoiNTc3IiwiaWF0IjoxNzQ5MTI5MTgyLCJleHAiOjE3NDk3MzM5ODJ9.dXgmh8whbL1IxEJSE_TAE9gxe1da-KFg2M87eWOXPU0"
 
     init {
         loadProducts()
+        loadAddresses()
     }
 
     fun updateSearchQuery(query: String) {
@@ -111,6 +120,58 @@ class MarketPlaceViewModel(
                 _uiState.value = MarketPlaceUiState.Success(products ?: emptyList())
             } catch (e: Exception) {
                 _uiState.value = MarketPlaceUiState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun loadAddresses() {
+        viewModelScope.launch {
+            try {
+                val addressData = apiService.getAddresses(dummyAccessToken)
+                if (addressData != null) {
+                    _addressList.value = addressData.address_list
+                    // Select the first address as default if available
+                    if (_addressList.value.isNotEmpty()) {
+                        // Prefer communication address if available, otherwise use the first one
+                        val communicationAddress = _addressList.value.find {
+                            it.address.address_type == "communication"
+                        }
+                        _selectedAddress.value = communicationAddress ?: _addressList.value.first()
+                    }
+                }
+            } catch (e: Exception) {
+                println("Error loading addresses: ${e.message}")
+            }
+        }
+    }
+
+    fun updateProfile(
+        name: String,
+        email: String,
+        phone: String,
+        diAddressId: String,
+        address: UpdateAddressListResponse,
+        callback: (Boolean, String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val request = UpdateProfileRequest(
+                    name = name,
+                    email = email,
+                    phone = phone,
+                    address = address,
+                    di_address_id = diAddressId
+                )
+                val response = apiService.updateProfile(dummyAccessToken, request)
+
+                if (response?.message == "Profile updated successfully") {
+                    callback(true, response.message)
+                } else {
+                    callback(false, response?.message ?: "Failed to update profile")
+                }
+            } catch (e: Exception) {
+                println("Profile update error: ${e.message}")
+                callback(false, e.message ?: "An error occurred")
             }
         }
     }

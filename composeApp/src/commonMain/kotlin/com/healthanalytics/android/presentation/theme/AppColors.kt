@@ -36,6 +36,7 @@ object AppColors {
     val success = Color(0xFF10B981)
 
     val TextGrey = Color(0XFFCBCFD5)
+    val Pink = Color(0XFFF523A1)
 
     val alertDialogColor = Color(0XFFE6F1FF)
 

@@ -10,6 +10,11 @@ import kotlinx.serialization.json.buildJsonObject
 
 object EncryptionUtils {
 
+    val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true  // Add this to handle null values
+        explicitNulls = false     // Add this to handle missing fields
+    }
 
     /**
      * Generic function to decrypt encrypted API response data
@@ -40,8 +45,6 @@ object EncryptionUtils {
         responseBody: String,
     ): T? {
         return try {
-            val json = Json { ignoreUnknownKeys = true }
-
             // Parse the encrypted response structure
             val encryptedResponse = json.decodeFromString<ApiResult>(responseBody)
             // Decrypt the data field
@@ -63,10 +66,10 @@ object EncryptionUtils {
     }
 
     inline fun <reified T> T.toEncryptedRequestBody(): JsonObject {
-        val json = Json.encodeToString(this)
+        val jsonString = json.encodeToString(this)
         println("toEncryptedRequestBody..$json")
 
-        val encrypted = encrypt(json)
+        val encrypted = encrypt(jsonString)
         return buildJsonObject {
             put("data", JsonPrimitive(encrypted))
         }
