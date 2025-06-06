@@ -18,21 +18,14 @@ data class AuthRequest(
 
 @Serializable
 data class OtpVerifyRequest(
-    val phone: String,
-    val otp: String
+    val phone: String, val otp: String
 )
 
-@Serializable
-data class AuthResponse(
-    val status: String,
-    val message: String,
-    val data: AuthData? = null
-)
+
 
 @Serializable
 data class AuthData(
-    val access_token: String,
-    val user: User
+    val access_token: String, val user: User
 )
 
 @Serializable
