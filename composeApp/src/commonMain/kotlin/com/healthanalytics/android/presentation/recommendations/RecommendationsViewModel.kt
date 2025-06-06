@@ -26,6 +26,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
     }
 
     fun getFilteredRecommendations(): List<Recommendation> {
+        println("recommendations--> ${_uiState.value.selectedCategory}")
         return _uiState.value.recommendations.filter { recommendation ->
             _uiState.value.selectedCategory == null ||
                     recommendation.category.equals(

@@ -3,7 +3,6 @@ package com.healthanalytics.android.presentation.recommendations
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.utils.capitalizeFirst
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -61,6 +61,7 @@ fun RecommendationsScreen(
             modifier = Modifier.padding(16.dp)
         )
 
+
         // Recommendations List
         if (uiState.isLoading) {
             Box(
@@ -81,6 +82,20 @@ fun RecommendationsScreen(
                 )
             }
         } else {
+            // Subtitle with selected category and count
+            Text(
+                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
+                    uiState.selectedCategory?.let {
+                        viewModel.getCategoryCount(
+                            it
+                        )
+                    }
+                })",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
             // Category Selector
             LazyRow(
                 modifier = Modifier
@@ -153,13 +168,22 @@ fun RecommendationCard(recommendation: Recommendation) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = recommendation.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
-                )
+                ) {
+                    Text(
+                        text = RecommendationCategory.fromString(recommendation.category).icon,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = recommendation.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 recommendation.difficulty?.let { difficulty ->
                     DifficultyChip(difficulty = difficulty)
                 }
@@ -182,13 +206,26 @@ fun RecommendationCard(recommendation: Recommendation) {
             // Metrics Grid
             recommendation.metric_recommendations?.let { metrics ->
                 if (metrics.isNotEmpty()) {
-                    FlowRow(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        metrics.forEach { metricRecommendation ->
-                            MetricChip(metric = metricRecommendation.metric.metric)
+                        metrics.chunked(2).forEach { rowMetrics ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                rowMetrics.forEach { metricRecommendation ->
+                                    MetricChip(
+                                        metric = metricRecommendation.metric.metric,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                // Add empty space if odd number of metrics
+                                if (rowMetrics.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -229,10 +266,14 @@ fun DifficultyChip(difficulty: String) {
 }
 
 @Composable
-fun MetricChip(metric: String) {
+fun MetricChip(
+    metric: String,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         color = MaterialTheme.colorScheme.secondaryContainer,
-        shape = MaterialTheme.shapes.small
+        shape = MaterialTheme.shapes.small,
+        modifier = modifier
     ) {
         Text(
             text = metric,
