@@ -282,12 +282,13 @@ fun ProfileScreen(
                         value = phone,
                         onValueChange = { phone = it },
                         label = "Phone Number",
-                        enabled = false
+                        enabled = false,
                     )
                     ProfileTextField(
                         value = dateOfBirth,
                         onValueChange = { dateOfBirth = it },
-                        label = "Date of Birth"
+                        label = "Date of Birth",
+                        enabled = false,
                     )
 
                     Text(

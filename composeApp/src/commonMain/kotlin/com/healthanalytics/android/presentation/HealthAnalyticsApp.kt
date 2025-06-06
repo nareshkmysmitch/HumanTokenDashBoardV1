@@ -17,6 +17,7 @@ import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
+import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
@@ -34,7 +35,7 @@ fun HealthAnalyticsApp() {
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen in listOf(Screen.CHAT, Screen.PROFILE, Screen.HOME)) {
+        if (currentScreen in listOf(Screen.CONVERSATION_LIST, Screen.MARKETPLACE_DETAIL,Screen.CHAT, Screen.PROFILE, Screen.HOME)) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
@@ -56,15 +57,24 @@ fun HealthAnalyticsApp() {
     } else {
         when (currentScreen) {
             Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+            Screen.CONVERSATION_LIST -> {
+                ConversationListScreen(
+                    onNavigateToChat = { id ->
+                        conversationId = id
+                        navigateTo(Screen.CHAT)
+                    },
+                    onNavigateBack = { navigateTo(Screen.HOME) }
+                )
+            }
+
             Screen.CHAT -> {
-                ChatScreen(conversationId, onNavigateBack = { })
+                ChatScreen(conversationId, onNavigateBack = { navigateBack()})
             }
 
             Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
                 navigateTo(Screen.PROFILE)
             }, onChatClick = {
-                conversationId = it
-                navigateTo(Screen.CHAT)
+                navigateTo(Screen.CONVERSATION_LIST)
             }, onMarketPlaceClick = {
                 navigateTo(Screen.MARKETPLACE_DETAIL)
             })
@@ -110,9 +120,7 @@ fun HomeScreen(
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
-                MainScreen.RECOMMENDATIONS -> ConversationListScreen(onNavigateToChat = { conversationId ->
-                    onChatClick(conversationId)
-                })
+                MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
 
                 MainScreen.MARKETPLACE -> MarketPlaceScreen()
             }
