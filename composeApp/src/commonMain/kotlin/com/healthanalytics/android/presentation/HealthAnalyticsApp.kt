@@ -45,18 +45,18 @@ import org.koin.core.context.KoinContext
 
 @Composable
 fun HealthAnalyticsApp() {
-    var currentScreen by remember { mutableStateOf(Screen.HOME) }
-    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
-    var accessToken by remember { mutableStateOf<String?>(null) }
-    var conversationId by remember { mutableStateOf("") }
-
-    fun navigateTo(screen: Screen) {
-        // Remember the last main screen when navigating away from main screens
-        if (currentScreen in listOf(Screen.CONVERSATION_LIST, Screen.MARKETPLACE_DETAIL,Screen.CHAT, Screen.PROFILE, Screen.HOME)) {
-            lastMainScreen = currentScreen
-        }
-        currentScreen = screen
-    }
+//    var currentScreen by remember { mutableStateOf(Screen.HOME) }
+//    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
+//    var accessToken by remember { mutableStateOf<String?>(null) }
+//    var conversationId by remember { mutableStateOf("") }
+//
+//    fun navigateTo(screen: Screen) {
+//        // Remember the last main screen when navigating away from main screens
+//        if (currentScreen in listOf(Screen.CONVERSATION_LIST, Screen.MARKETPLACE_DETAIL,Screen.CHAT, Screen.PROFILE, Screen.HOME)) {
+//            lastMainScreen = currentScreen
+//        }
+//        currentScreen = screen
+//    }
 
 //    fun navigateTo(screen: Screen) {
 //        // Remember the last main screen when navigating away from main screens
@@ -79,32 +79,47 @@ fun HealthAnalyticsApp() {
 //            onLoginSuccess = { token ->
 //                accessToken = token
 //            })
-    } else {
-        when (currentScreen) {
-            Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
-            Screen.CONVERSATION_LIST -> {
-                ConversationListScreen(
-                    onNavigateToChat = { id ->
-                        conversationId = id
-                        navigateTo(Screen.CHAT)
-                    },
-                    onNavigateBack = { navigateTo(Screen.HOME) }
-                )
-            }
+//    } else {
+//        when (currentScreen) {
+//            Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+//            Screen.CONVERSATION_LIST -> {
+//                ConversationListScreen(
+//                    onNavigateToChat = { id ->
+//                        conversationId = id
+//                        navigateTo(Screen.CHAT)
+//                    },
+//                    onNavigateBack = { navigateTo(Screen.HOME) }
+//                )
+//            }
+//
+//            Screen.CHAT -> {
+//                ChatScreen(conversationId, onNavigateBack = { navigateBack()})
+//            }
+//        )
+//    }
+//
+//            Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
+//                navigateTo(Screen.PROFILE)
+//            }, onChatClick = {
+//                navigateTo(Screen.CONVERSATION_LIST)
+//            }, onMarketPlaceClick = {
+//                navigateTo(Screen.MARKETPLACE_DETAIL)
+//            })
 
-            Screen.CHAT -> {
-                ChatScreen(conversationId, onNavigateBack = { navigateBack()})
+
+    var isLogin by remember { mutableStateOf(false) }
+
+    if (isLogin){
+        HomeScreen(
+            accessToken = "",
+        )
+    }else{
+        OnboardContainer(
+            isLoggedIn = {
+                isLogin = true
             }
         )
     }
-
-            Screen.HOME -> HomeScreen(accessToken, onProfileClick = {
-                navigateTo(Screen.PROFILE)
-            }, onChatClick = {
-                navigateTo(Screen.CONVERSATION_LIST)
-            }, onMarketPlaceClick = {
-                navigateTo(Screen.MARKETPLACE_DETAIL)
-            })
 }
 
 
