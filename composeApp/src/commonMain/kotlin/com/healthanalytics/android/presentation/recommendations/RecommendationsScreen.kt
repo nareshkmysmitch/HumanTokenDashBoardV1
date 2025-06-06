@@ -43,8 +43,10 @@ fun RecommendationsScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
+    val filterList = viewModel.getFilteredRecommendations()
 
-    println()
+    println("selected category--> ${uiState.selectedCategory}")
+    println("selected category--> $filterList")
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -120,7 +122,7 @@ fun RecommendationsScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(viewModel.getFilteredRecommendations()) { recommendation ->
+                items(filterList) { recommendation ->
                     RecommendationCard(recommendation = recommendation)
                 }
             }
@@ -184,9 +186,6 @@ fun RecommendationCard(recommendation: Recommendation) {
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                }
-                recommendation.difficulty?.let { difficulty ->
-                    DifficultyChip(difficulty = difficulty)
                 }
             }
 
