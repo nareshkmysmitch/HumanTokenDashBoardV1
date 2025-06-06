@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,13 +22,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.Product
 import com.seiko.imageloader.rememberImagePainter
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarketPlaceScreen(
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinViewModel()
+    viewModel: MarketPlaceViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -64,7 +65,7 @@ fun MarketPlaceScreen(
                         placeholder = { Text("Search products...") },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+//                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         shape = MaterialTheme.shapes.medium
                     )
                     
@@ -74,7 +75,7 @@ fun MarketPlaceScreen(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     ) {
-                        Icon(Icons.Default.Sort, contentDescription = "Sort")
+//                        Icon(Icons.Default.Sort, contentDescription = "Sort")
                     }
                     
                     DropdownMenu(
@@ -89,7 +90,9 @@ fun MarketPlaceScreen(
                                     showSortMenu = false
                                 },
                                 leadingIcon = if (currentSortOption == option) {
-                                    { Icon(Icons.Default.Check, contentDescription = null) }
+                                    {
+//                                        Icon(Icons.Default.Check, contentDescription = null)
+                                    }
                                 } else null
                             )
                         }
@@ -109,7 +112,9 @@ fun MarketPlaceScreen(
                             onClick = { viewModel.toggleCategory(category) },
                             label = { Text(category) },
                             leadingIcon = if (category in selectedCategories) {
-                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                                {
+//                                    Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                                }
                             } else null
                         )
                     }
@@ -206,12 +211,12 @@ private fun ProductCard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color(0xFFFFC107),
-                                modifier = Modifier.size(14.dp)
-                            )
+//                            Icon(
+//                                imageVector = Icons.Default.Star,
+//                                contentDescription = null,
+//                                tint = Color(0xFFFFC107),
+//                                modifier = Modifier.size(14.dp)
+//                            )
                             Text(
                                 text = rating,
                                 style = MaterialTheme.typography.labelSmall,
@@ -297,12 +302,12 @@ private fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            imageVector = Icons.Default.SearchOff,
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+//        Icon(
+//            imageVector = Icons.Default.SearchOff,
+//            contentDescription = null,
+//            modifier = Modifier.size(48.dp),
+//            tint = MaterialTheme.colorScheme.onSurfaceVariant
+//        )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "No products found",
@@ -343,8 +348,8 @@ fun AddToCartFab(
     FloatingActionButton(
         onClick = onClick, modifier = modifier
     ) {
-        Icon(
-            imageVector = Icons.Default.Add, contentDescription = "Add to Cart"
-        )
+//        Icon(
+//            imageVector = Icons.Default.Add, contentDescription = "Add to Cart"
+//        )
     }
 } 

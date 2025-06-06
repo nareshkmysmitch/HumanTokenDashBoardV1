@@ -9,16 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
@@ -26,29 +16,26 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
-import com.healthanalytics.android.presentation.screens.DashboardScreen
-import com.healthanalytics.android.presentation.screens.MarketplaceScreen
-import com.healthanalytics.android.presentation.screens.LoginScreen
-import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
+import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreen
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+import org.koin.core.context.KoinContext
 
 
 @Composable
@@ -146,96 +133,107 @@ private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel
 
 @Composable
 fun OnboardContainer(isLoggedIn:() -> Unit) {
-    val navController = rememberNavController()
-//    val onboardViewModel: OnboardViewModel = koinViewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = OnboardRoute.Login
-    ) {
-        composable<OnboardRoute.Login> {
-            LoginScreenContainer(
-                navigateToOtpVerification = {
-                    navController.navigate(OnboardRoute.OTPVerification)
-                }
-            )
-        }
+    org.koin.compose.KoinContext{
 
-        composable<OnboardRoute.OTPVerification> {
-            OTPContainer(
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                navigateToAccountCreation = {
-                    navController.navigate(OnboardRoute.CreateAccount)
-                }
-            )
-        }
+        val navController = rememberNavController()
+        val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
 
-        composable<OnboardRoute.CreateAccount> {
-            CreateAccountContainer(
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                navigateToHealthProfile = {
-                    navController.navigate(OnboardRoute.HealthProfile)
-                }
-            )
-        }
+        NavHost(
+            navController = navController,
+            startDestination = OnboardRoute.Login
+        ) {
+            composable<OnboardRoute.Login> {
+                LoginScreenContainer(
+                    onboardViewModel = onboardViewModel,
+                    navigateToOtpVerification = {
+                        navController.navigate(OnboardRoute.OTPVerification)
+                    }
+                )
+            }
 
-        composable<OnboardRoute.HealthProfile> {
-            HealthProfileContainer(
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                navigateToAddress = {
-                    navController.navigate(OnboardRoute.SampleCollectionAddress)
-                }
-            )
-        }
+            composable<OnboardRoute.OTPVerification> {
+                OTPContainer(
+                    onboardViewModel =onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToAccountCreation = {
+                        navController.navigate(OnboardRoute.CreateAccount)
+                    }
+                )
+            }
 
-        composable<OnboardRoute.SampleCollectionAddress> {
-            SampleCollectionAddressContainer(
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                navigateToBloodTest = {
-                    navController.navigate(OnboardRoute.ScheduleBloodTest)
-                }
-            )
-        }
+            composable<OnboardRoute.CreateAccount> {
 
-        composable<OnboardRoute.ScheduleBloodTest> {
-            ScheduleBloodTestContainer(
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                navigateToPayment = {
-                    navController.navigate(OnboardRoute.Payment)
-                }
-            )
-        }
+                CreateAccountContainer(
+                    onboardViewModel =onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToHealthProfile = {
+                        navController.navigate(OnboardRoute.HealthProfile)
+                    }
+                )
+            }
 
-        composable<OnboardRoute.Payment> {
-            PaymentScreen(
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                onContinueClick = {
-                    isLoggedIn()
-                }
-            )
+            composable<OnboardRoute.HealthProfile> {
+                HealthProfileContainer(
+                    onboardViewModel =onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToAddress = {
+                        navController.navigate(OnboardRoute.SampleCollectionAddress)
+                    }
+                )
+            }
+
+            composable<OnboardRoute.SampleCollectionAddress> {
+                SampleCollectionAddressContainer(
+                    onboardViewModel =onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToBloodTest = {
+                        navController.navigate(OnboardRoute.ScheduleBloodTest)
+                    }
+                )
+            }
+
+            composable<OnboardRoute.ScheduleBloodTest> {
+                ScheduleBloodTestContainer(
+                    onboardViewModel =onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToPayment = {
+                        navController.navigate(OnboardRoute.Payment)
+                    }
+                )
+            }
+
+            composable<OnboardRoute.Payment> {
+                PaymentScreen(
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    onContinueClick = {
+                        isLoggedIn()
+                    }
+                )
+            }
         }
     }
+
 }
 
 @Composable
-fun HomeScreen(accessToken: String?, onProfileClick: () -> Unit={}, onChatClick: () -> Unit={}) {
 fun HomeScreen(
     accessToken: String?,
-    onProfileClick: () -> Unit,
-    onChatClick: () -> Unit,
-    onMarketPlaceClick: (Product) -> Unit,
+    onProfileClick: () -> Unit = {},
+    onChatClick: () -> Unit = {},
+    onMarketPlaceClick: (Product) -> Unit = {},
 ) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }

@@ -58,12 +58,13 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
 fun ScheduleBloodTestContainer(
-    onboardViewModel: OnboardViewModel = koinViewModel(),
+    onboardViewModel: OnboardViewModel,
     onBackClick: () -> Unit,
     navigateToPayment: () -> Unit,
 ) {

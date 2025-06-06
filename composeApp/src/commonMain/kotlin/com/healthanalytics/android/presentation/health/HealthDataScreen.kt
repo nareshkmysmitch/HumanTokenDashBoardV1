@@ -19,10 +19,10 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material.icons.filled.Clear
+//import androidx.compose.material.icons.filled.Close
+//import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,6 +49,7 @@ import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -106,18 +107,18 @@ fun HealthDataScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 placeholder = { Text("Search health data") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+//                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
                 trailingIcon = {
                     if (uiState.searchQuery.isNotEmpty()) {
                         IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+//                            Icon(Icons.Default.Clear, contentDescription = "Clear")
                         }
                     }
                     IconButton(onClick = {
                         viewModel.updateSearchQuery("")
                         isSearchVisible = false
                     }) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+//                        Icon(Icons.Default.Close, contentDescription = "Close")
                     }
                 },
                 singleLine = true

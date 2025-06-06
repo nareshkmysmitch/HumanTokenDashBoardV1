@@ -21,7 +21,13 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
+            binaryOptions["bundleId"] = "com.healthanalytics.android"
+        }
+    }
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -32,9 +38,9 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm("desktop")
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         outputModuleName = "composeApp"
@@ -54,10 +60,10 @@ kotlin {
         }
         binaries.executable()
     }
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.ktor.client.android)
@@ -74,12 +80,15 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
+//            implementation(libs.lifecycle.viewmodel.compose)
+
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -91,6 +100,10 @@ kotlin {
 
             implementation(libs.image.loader)
             implementation(libs.androidx.navigation.compose)
+
+            api(libs.androidx.datastore.preferences)
+            api(libs.androidx.datastore.preferences.core)
+
         }
 
         nativeMain.dependencies {

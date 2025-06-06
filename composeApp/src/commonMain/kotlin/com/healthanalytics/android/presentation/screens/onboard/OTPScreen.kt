@@ -34,6 +34,7 @@ import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 // Extension function for clickable without ripple effect
@@ -48,7 +49,7 @@ private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed
 
 @Composable
 fun OTPContainer(
-    onboardViewModel: OnboardViewModel = koinViewModel(),
+    onboardViewModel: OnboardViewModel,
     onBackClick: () -> Unit = {},
     navigateToAccountCreation: () -> Unit
 ) {

@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.data.models.onboard.AuthResponse
-import com.healthanalytics.android.presentation.OnboardRoute
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
@@ -50,12 +49,11 @@ import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
 fun LoginScreenContainer(
-    onboardViewModel: OnboardViewModel = koinViewModel(),
+    onboardViewModel: OnboardViewModel,
     navigateToOtpVerification: () -> Unit
 ){
     LoginScreen(

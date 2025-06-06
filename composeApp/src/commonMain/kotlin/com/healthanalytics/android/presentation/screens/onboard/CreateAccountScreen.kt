@@ -24,13 +24,14 @@ import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CreateAccountContainer(
     onBackClick: () -> Unit = {},
     navigateToHealthProfile: () -> Unit,
-    onboardViewModel: OnboardViewModel = koinViewModel()
+    onboardViewModel: OnboardViewModel
 ) {
     CreateAccountScreen(
         onBackClick = onBackClick,
