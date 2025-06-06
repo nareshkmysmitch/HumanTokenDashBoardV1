@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -79,11 +79,11 @@ fun ProductDetailScreen() {
             // Rating Section
             Row(verticalAlignment = Alignment.CenterVertically) {
                 repeat(5) {
-                    Icon(
-                        imageVector = Icons.Default.StarBorder,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+//                    Icon(
+//                        imageVector = Icons.Default.StarBorder,
+//                        contentDescription = null,
+//                        tint = MaterialTheme.colorScheme.primary
+//                    )
                 }
                 Text(
                     text = " (0.0) · 0 reviews",
@@ -117,7 +117,7 @@ fun ProductDetailScreen() {
                 IconButton(
                     onClick = { if (quantity > 1) quantity-- }
                 ) {
-                    Icon(Icons.Default.Remove, contentDescription = "Decrease quantity")
+//                    Icon(Icons.Default.Remove, contentDescription = "Decrease quantity")
                 }
                 Text(
                     text = quantity.toString(),
@@ -126,7 +126,7 @@ fun ProductDetailScreen() {
                 IconButton(
                     onClick = { quantity++ }
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Increase quantity")
+//                    Icon(Icons.Default.Add, contentDescription = "Increase quantity")
                 }
             }
 
@@ -152,9 +152,9 @@ fun ProductDetailScreen() {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                InfoRow(Icons.Default.LocalShipping, "Free shipping over $50")
-                InfoRow(Icons.Default.Verified, "Quality guaranteed")
-                InfoRow(Icons.Default.Assignment, "60-day return policy")
+//                InfoRow(Icons.Default.LocalShipping, "Free shipping over $50")
+//                InfoRow(Icons.Default.Verified, "Quality guaranteed")
+//                InfoRow(Icons.Default.Assignment, "60-day return policy")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -163,11 +163,11 @@ fun ProductDetailScreen() {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = Color.Green
-                )
+//                Icon(
+//                    Icons.Default.CheckCircle,
+//                    contentDescription = null,
+//                    tint = Color.Green
+//                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Only 10 left")
             }
@@ -201,11 +201,11 @@ fun ProductDetailScreen() {
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 repeat(5) {
-                    Icon(
-                        imageVector = Icons.Default.StarBorder,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+//                    Icon(
+//                        imageVector = Icons.Default.StarBorder,
+//                        contentDescription = null,
+//                        tint = MaterialTheme.colorScheme.primary
+//                    )
                 }
             }
 

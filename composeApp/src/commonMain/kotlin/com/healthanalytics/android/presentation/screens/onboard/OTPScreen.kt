@@ -9,26 +9,64 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.composed
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.data.models.onboard.OtpResponse
 import com.healthanalytics.android.presentation.theme.*
-import kotlinx.coroutines.delay
+import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+
+// Extension function for clickable without ripple effect
+private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
+    clickable(
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() }
+    ) {
+        onClick()
+    }
+}
+
+@Composable
+fun OTPContainer(
+    onboardViewModel: OnboardViewModel,
+    onBackClick: () -> Unit = {},
+    navigateToAccountCreation: () -> Unit
+) {
+    OTPScreen(
+        otpVerifyState = onboardViewModel.otpVerifyState,
+        phoneNumber = onboardViewModel.getPhoneNumber(),
+        onBackClick = onBackClick,
+        otpVerified = navigateToAccountCreation,
+        onResendClick = {
+            onboardViewModel.resendOTP()
+        },
+        onContinueClick = {
+            onboardViewModel.verifyOtp(it)
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,12 +74,21 @@ fun OTPScreen(
     phoneNumber: String,
     onBackClick: () -> Unit = {},
     onContinueClick: (String) -> Unit = {},
-    onResendClick: () -> Unit = {}
+    onResendClick: () -> Unit = {},
+    otpVerified: () -> Unit,
+    otpVerifyState: SharedFlow<Resource<OtpResponse?>>
 ) {
     var otpValues by remember { mutableStateOf(List(6) { "" }) }
     var resendTimer by remember { mutableStateOf(45) }
     var isTimerActive by remember { mutableStateOf(true) }
     val focusRequesters = remember { List(6) { FocusRequester() } }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Focus first field and show keyboard on screen load
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequesters[0].requestFocus()
+    }
 
     // Timer countdown
     LaunchedEffect(resendTimer, isTimerActive) {
@@ -50,6 +97,13 @@ fun OTPScreen(
             resendTimer--
         } else if (resendTimer == 0) {
             isTimerActive = false
+        }
+    }
+
+    // Close keyboard when all fields are filled
+    LaunchedEffect(otpValues) {
+        if (otpValues.all { it.isNotEmpty() }) {
+            keyboardController?.hide()
         }
     }
 
@@ -77,8 +131,7 @@ fun OTPScreen(
                     Image(
                         painter = painterResource(Res.drawable.ic_calendar_icon),
                         contentDescription = "Back",
-                        colorFilter = ColorFilter.tint(AppColors.textPrimary),
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
@@ -145,34 +198,40 @@ fun OTPScreen(
                             val newOtpValues = otpValues.toMutableList()
 
                             if (newValue.isNotEmpty()) {
-                                // Allow input in focused field
-                                newOtpValues[index] = newValue
-                                otpValues = newOtpValues
+                                // Check if all previous fields are filled (sequential entry)
+                                val canEnterValue = if (index == 0) {
+                                    true // First field can always be filled
+                                } else {
+                                    (0 until index).all { newOtpValues[it].isNotEmpty() }
+                                }
 
-                                // Auto-focus next field
-                                if (index < 5) {
-                                    focusRequesters[index + 1].requestFocus()
+                                if (canEnterValue) {
+                                    newOtpValues[index] = newValue
+                                    otpValues = newOtpValues
+
+                                    // Auto-focus next field when entering a value
+                                    if (index < 5) {
+                                        focusRequesters[index + 1].requestFocus()
+                                    }
                                 }
                             } else {
-                                // Allow removal from focused field
-                                newOtpValues[index] = newValue
-                                otpValues = newOtpValues
+                                // For deletion, only allow if this field currently has a value
+                                if (newOtpValues[index].isNotEmpty()) {
+                                    // Clear current field and all fields after it
+                                    for (i in index until newOtpValues.size) {
+                                        newOtpValues[i] = ""
+                                    }
+                                    otpValues = newOtpValues
 
-                                // Focus previous field when removing value
-                                if (index > 0) {
-                                    focusRequesters[index - 1].requestFocus()
+                                    // Focus previous field when removing value, but stay on current if it's first
+                                    if (index > 0) {
+                                        focusRequesters[index - 1].requestFocus()
+                                    }
                                 }
                             }
                         },
                         focusRequester = focusRequesters[index],
-                        modifier = Modifier.size(48.dp),
-                        onFieldClick = {
-                            if (otpValues.all { it.isEmpty() }) {
-                                focusRequesters[0].requestFocus()
-                            } else {
-                                focusRequesters[index].requestFocus()
-                            }
-                        }
+                        modifier = Modifier.size(48.dp)
                     )
                 }
             }
@@ -182,7 +241,9 @@ fun OTPScreen(
             // Resend Timer
             if (isTimerActive) {
                 Text(
-                    text = "You can resend the code in 0:${resendTimer.toString().padStart(2, '0')}",
+                    text = "You can resend the code in 0:${
+                        resendTimer.toString().padStart(2, '0')
+                    }",
                     style = AppTextStyles.bodyMedium,
                     color = AppColors.textSecondary,
                     textAlign = TextAlign.Center
@@ -193,6 +254,8 @@ fun OTPScreen(
                         onResendClick()
                         resendTimer = 45
                         isTimerActive = true
+                        otpValues = List(6) { "" }
+                        focusRequesters[0].requestFocus()
                     }
                 ) {
                     Text(
@@ -217,8 +280,12 @@ fun OTPScreen(
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (otpValues.all { it.isNotEmpty() })
-                        AppColors.primary else AppColors.primary.copy(alpha = 0.3f),
-                    contentColor = Color.White
+                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
+                        alpha = 0.3f
+                    ),
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                 ),
                 shape = RoundedCornerShape(28.dp)
             ) {
@@ -229,6 +296,36 @@ fun OTPScreen(
                 )
             }
         }
+
+        GetVerifyOTPResponse(
+            otpVerifyState = otpVerifyState,
+            otpVerified = otpVerified
+        )
+    }
+}
+
+@Composable
+fun GetVerifyOTPResponse(
+    otpVerifyState: SharedFlow<Resource<OtpResponse?>>,
+    otpVerified: () -> Unit
+) {
+    val response by otpVerifyState.collectAsStateWithLifecycle(null)
+    when (response) {
+        is Resource.Error<*> -> {
+
+        }
+
+        is Resource.Success -> {
+            LaunchedEffect(Unit) {
+                otpVerified()
+            }
+        }
+
+        is Resource.Loading<*> -> {
+
+        }
+
+        else -> {}
     }
 }
 
@@ -237,56 +334,47 @@ private fun OTPInputField(
     value: String,
     onValueChange: (String) -> Unit,
     focusRequester: FocusRequester,
-    modifier: Modifier = Modifier,
-    onFieldClick: () -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
-    Box(
+    BasicTextField(
+        value = value,
+        onValueChange = { newValue ->
+            if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
+                onValueChange(newValue)
+            }
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        cursorBrush = SolidColor(
+            value = AppColors.primary
+        ),
+        textStyle = AppTextStyles.headingSmall.copy(
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = AppColors.textPrimary
+        ),
         modifier = modifier
+            .focusRequester(focusRequester)
             .background(
-                color = AppColors.primary,
+                color = AppColors.surfaceVariant,
                 shape = RoundedCornerShape(8.dp)
             )
             .border(
                 width = 1.dp,
-                color = if (value.isNotEmpty()) AppColors.primary else AppColors.secondary,
+                color = if (value.isNotEmpty()) AppColors.primary else AppColors.outline,
                 shape = RoundedCornerShape(8.dp)
-            )
-            .noRippleClickable {
-                onFieldClick()
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        BasicTextField(
-            value = value,
-            onValueChange = { newValue ->
-                if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
-                    onValueChange(newValue)
-                }
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .fillMaxSize()
-                .wrapContentHeight(Alignment.CenterVertically),
-            textStyle = AppTextStyles.headingSmall.copy(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = AppColors.primary,
-                textAlign = TextAlign.Center
             ),
-            singleLine = true,
-            cursorBrush = androidx.compose.foundation.text.selection.LocalTextSelectionColors.current.let {
-                androidx.compose.ui.graphics.SolidColor(AppColors.primary)
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .noRippleClickable {
+                        focusRequester.requestFocus()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                innerTextField()
             }
-        )
-    }
-}
-
-fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
-    clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() }
-    ) {
-        onClick()
-    }
+        }
+    )
 }
