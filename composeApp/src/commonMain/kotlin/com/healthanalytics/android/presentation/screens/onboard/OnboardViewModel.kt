@@ -42,12 +42,12 @@ class OnboardViewModel(
     private val _loginState = MutableSharedFlow<Resource<AuthResponse?>>()
     val loginState: SharedFlow<Resource<AuthResponse?>> = _loginState
 
-    private val _otpVerifyState = MutableStateFlow<Resource<OtpResponse?>>(Resource.Loading())
-    val otpVerifyState: StateFlow<Resource<OtpResponse?>> = _otpVerifyState
+    private val _otpVerifyState = MutableSharedFlow<Resource<OtpResponse?>>()
+    val otpVerifyState: SharedFlow<Resource<OtpResponse?>> = _otpVerifyState
 
     private val _accountCreationState =
-        MutableStateFlow<Resource<AccountCreationResponse?>>(Resource.Loading())
-    val accountCreationState: StateFlow<Resource<AccountCreationResponse?>> = _accountCreationState
+        MutableSharedFlow<Resource<AccountCreationResponse?>>()
+    val accountCreationState: SharedFlow<Resource<AccountCreationResponse?>> = _accountCreationState
 
     private val _slotAvailability =
         MutableStateFlow<Resource<SlotsAvailability?>>(Resource.Loading())
@@ -114,12 +114,12 @@ class OnboardViewModel(
                 )
                 if (response?.is_verified == true) {
                     otpVerifiedResponse = response
-                    _otpVerifyState.value = Resource.Success(response)
+                    _otpVerifyState.emit(Resource.Success(response))
                 } else {
-                    _otpVerifyState.value = Resource.Error(errorMessage = "Something went wrong...")
+                    _otpVerifyState.emit(Resource.Error(errorMessage = "Something went wrong..."))
                 }
             } catch (_: Exception) {
-                _otpVerifyState.value = Resource.Error(errorMessage = "Something went wrong...")
+                _otpVerifyState.emit(Resource.Error(errorMessage = "Something went wrong..."))
             }
         }
     }
@@ -142,10 +142,10 @@ class OnboardViewModel(
             try {
                 val response = onboardApiService.createAccount(accountCreation)
                 leadId = response?.lead_id ?: ""
-                _accountCreationState.value = Resource.Success(response)
+                _accountCreationState.emit(Resource.Success(response))
             } catch (_: Exception) {
-                _accountCreationState.value =
-                    Resource.Error(errorMessage = "Something went wrong...")
+                _accountCreationState.emit(Resource.Error(errorMessage = "Something went wrong..."))
+
             }
         }
     }

@@ -33,6 +33,7 @@ import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -75,7 +76,7 @@ fun OTPScreen(
     onContinueClick: (String) -> Unit = {},
     onResendClick: () -> Unit = {},
     otpVerified: () -> Unit,
-    otpVerifyState: StateFlow<Resource<OtpResponse?>>
+    otpVerifyState: SharedFlow<Resource<OtpResponse?>>
 ) {
     var otpValues by remember { mutableStateOf(List(6) { "" }) }
     var resendTimer by remember { mutableStateOf(45) }
@@ -305,10 +306,10 @@ fun OTPScreen(
 
 @Composable
 fun GetVerifyOTPResponse(
-    otpVerifyState: StateFlow<Resource<OtpResponse?>>,
+    otpVerifyState: SharedFlow<Resource<OtpResponse?>>,
     otpVerified: () -> Unit
 ) {
-    val response by otpVerifyState.collectAsStateWithLifecycle()
+    val response by otpVerifyState.collectAsStateWithLifecycle(null)
     when (response) {
         is Resource.Error<*> -> {
 
@@ -323,6 +324,8 @@ fun GetVerifyOTPResponse(
         is Resource.Loading<*> -> {
 
         }
+
+        else -> {}
     }
 }
 

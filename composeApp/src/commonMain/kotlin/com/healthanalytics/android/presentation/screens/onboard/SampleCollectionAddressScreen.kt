@@ -24,6 +24,7 @@ import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -57,7 +58,7 @@ fun SampleCollectionAddressContainer(
 fun SampleCollectionAddressScreen(
     onBackClick: () -> Unit = {},
     onScheduleClick: (String, String, String, String) -> Unit = { _, _, _, _ -> },
-    accountCreationState: StateFlow<Resource<AccountCreationResponse?>>,
+    accountCreationState: SharedFlow<Resource<AccountCreationResponse?>>,
     navigateToBloodTest: () -> Unit
 ) {
     var streetAddress by remember { mutableStateOf("") }
@@ -309,10 +310,10 @@ fun SampleCollectionAddressScreen(
 
 @Composable
 fun GetAccountCreationResponse(
-    accountCreationState: StateFlow<Resource<AccountCreationResponse?>>,
+    accountCreationState: SharedFlow<Resource<AccountCreationResponse?>>,
     navigateToBloodTest: () -> Unit
 ) {
-    val response by accountCreationState.collectAsStateWithLifecycle()
+    val response by accountCreationState.collectAsStateWithLifecycle(null)
     when(response){
         is Resource.Error<*> ->{}
 
@@ -323,5 +324,6 @@ fun GetAccountCreationResponse(
                 navigateToBloodTest()
             }
         }
+        else -> {}
     }
 }

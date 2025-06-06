@@ -22,7 +22,6 @@ import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
-import com.healthanalytics.android.presentation.screens.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
@@ -31,6 +30,7 @@ import com.healthanalytics.android.presentation.screens.onboard.CreateAccountCon
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
+import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
 import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreen
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
@@ -44,10 +44,10 @@ import org.koin.core.context.KoinContext
 
 @Composable
 fun HealthAnalyticsApp() {
-    var currentScreen by remember { mutableStateOf(Screen.HOME) }
-    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
-    var accessToken by remember { mutableStateOf<String?>(null) }
-    var conversationId by remember { mutableStateOf("") }
+//    var currentScreen by remember { mutableStateOf(Screen.HOME) }
+//    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
+//    var accessToken by remember { mutableStateOf<String?>(null) }
+//    var conversationId by remember { mutableStateOf("") }
 
 //    fun navigateTo(screen: Screen) {
 //        // Remember the last main screen when navigating away from main screens
@@ -98,29 +98,7 @@ fun HealthAnalyticsApp() {
 
 }
 
-sealed class OnboardRoute {
 
-    @Serializable
-    data object Login : OnboardRoute()
-
-    @Serializable
-    data object OTPVerification : OnboardRoute()
-
-    @Serializable
-    data object CreateAccount : OnboardRoute()
-
-    @Serializable
-    data object HealthProfile : OnboardRoute()
-
-    @Serializable
-    data object SampleCollectionAddress : OnboardRoute()
-
-    @Serializable
-    data object ScheduleBloodTest : OnboardRoute()
-
-    @Serializable
-    data object Payment : OnboardRoute()
-}
 
 @Composable
 private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
