@@ -16,13 +16,16 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.data.models.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.ProfileScreen
+import com.healthanalytics.android.presentation.screens.chat.ChatScreen
+import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
@@ -37,13 +40,14 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.context.KoinContext
 
+//private val koin = initKoin()
 
 @Composable
 fun HealthAnalyticsApp() {
-//    var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
-//    var lastMainScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
-//    var accessToken by remember { mutableStateOf<String?>(null) }
-//
+    var currentScreen by remember { mutableStateOf(Screen.HOME) }
+    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
+    var accessToken by remember { mutableStateOf<String?>(null) }
+    var conversationId by remember { mutableStateOf("") }
 
 //    fun navigateTo(screen: Screen) {
 //        // Remember the last main screen when navigating away from main screens
@@ -232,7 +236,7 @@ fun OnboardContainer(isLoggedIn:() -> Unit) {
 fun HomeScreen(
     accessToken: String?,
     onProfileClick: () -> Unit = {},
-    onChatClick: () -> Unit = {},
+    onChatClick: (String) -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
 ) {
 
@@ -246,13 +250,11 @@ fun HomeScreen(
         currentScreen = MainScreen.DASHBOARD
     }
 
-
-
-
     Scaffold(topBar = {
         TopAppBar(
-            title = "Human Token", onProfileClick = onProfileClick, onChatClick = onChatClick
-        )
+            title = "Human Token", onProfileClick = onProfileClick, onChatClick = {
+                onChatClick("123")
+            })
     }, bottomBar = {
         BottomNavBar(
             currentScreen = currentScreen, onScreenSelected = { screen ->
@@ -265,10 +267,11 @@ fun HomeScreen(
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
                 MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
+                MainScreen.RECOMMENDATIONS -> ConversationListScreen(onNavigateToChat = { conversationId ->
+                    onChatClick(conversationId)
+                })
 
                 MainScreen.MARKETPLACE -> MarketPlaceScreen()
-
             }
         }
     }

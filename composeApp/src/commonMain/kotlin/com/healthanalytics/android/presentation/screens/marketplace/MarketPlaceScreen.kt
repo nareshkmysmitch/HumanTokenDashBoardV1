@@ -2,19 +2,55 @@ package com.healthanalytics.android.presentation.screens.marketplace
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
@@ -22,14 +58,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.Product
 import com.seiko.imageloader.rememberImagePainter
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarketPlaceScreen(
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinInject()
+    viewModel: MarketPlaceViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -65,7 +100,7 @@ fun MarketPlaceScreen(
                         placeholder = { Text("Search products...") },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
-//                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         shape = MaterialTheme.shapes.medium
                     )
                     
@@ -75,7 +110,7 @@ fun MarketPlaceScreen(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     ) {
-//                        Icon(Icons.Default.Sort, contentDescription = "Sort")
+                        Icon(Icons.Default.Sort, contentDescription = "Sort")
                     }
                     
                     DropdownMenu(
@@ -90,9 +125,7 @@ fun MarketPlaceScreen(
                                     showSortMenu = false
                                 },
                                 leadingIcon = if (currentSortOption == option) {
-                                    {
-//                                        Icon(Icons.Default.Check, contentDescription = null)
-                                    }
+                                    { Icon(Icons.Default.Check, contentDescription = null) }
                                 } else null
                             )
                         }
@@ -112,9 +145,7 @@ fun MarketPlaceScreen(
                             onClick = { viewModel.toggleCategory(category) },
                             label = { Text(category) },
                             leadingIcon = if (category in selectedCategories) {
-                                {
-//                                    Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
-                                }
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
                             } else null
                         )
                     }
@@ -211,12 +242,12 @@ private fun ProductCard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
-//                            Icon(
-//                                imageVector = Icons.Default.Star,
-//                                contentDescription = null,
-//                                tint = Color(0xFFFFC107),
-//                                modifier = Modifier.size(14.dp)
-//                            )
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = Color(0xFFFFC107),
+                                modifier = Modifier.size(14.dp)
+                            )
                             Text(
                                 text = rating,
                                 style = MaterialTheme.typography.labelSmall,
@@ -302,12 +333,12 @@ private fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-//        Icon(
-//            imageVector = Icons.Default.SearchOff,
-//            contentDescription = null,
-//            modifier = Modifier.size(48.dp),
-//            tint = MaterialTheme.colorScheme.onSurfaceVariant
-//        )
+        Icon(
+            imageVector = Icons.Default.SearchOff,
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "No products found",
@@ -348,8 +379,8 @@ fun AddToCartFab(
     FloatingActionButton(
         onClick = onClick, modifier = modifier
     ) {
-//        Icon(
-//            imageVector = Icons.Default.Add, contentDescription = "Add to Cart"
-//        )
+        Icon(
+            imageVector = Icons.Default.Add, contentDescription = "Add to Cart"
+        )
     }
 } 
