@@ -3,6 +3,7 @@ package com.healthanalytics.android.data.api
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.UpdateProfileResponse
+import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -46,9 +47,10 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
         val response = httpClient.put("v4/human-token/lead/update-profile") {
             header("access_token", accessToken)
             contentType(ContentType.Application.Json)
-            setBody(request)
+            setBody(request.toEncryptedRequestBody())
         }
         val responseBody = response.bodyAsText()
+        println("responseBody --> Raw ${responseBody}")
         return EncryptionUtils.handleDecryptionResponse<UpdateProfileResponse>(responseBody)
     }
 } 

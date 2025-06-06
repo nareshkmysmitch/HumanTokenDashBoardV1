@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
+import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
@@ -317,10 +318,24 @@ fun ProfileScreen(
                     ) {
                         Button(
                             onClick = {
-                                // Save profile changes
-                                viewModel.updateProfile(name, email, phone) { success, message ->
+                                val addressData = Address(
+                                    address_line_1 = address1,
+                                    address_line_2 = address2,
+                                    city = city,
+                                    state = state,
+                                    pincode = pincode,
+                                    country = country,
+                                    di_address_id = "79" // You might want to get this from your user data
+                                )
+                                
+                                viewModel.updateProfile(
+                                    name = name,
+                                    email = email,
+                                    phone = phone,
+                                    address = addressData
+                                ) { success, message ->
                                     if (success) {
-                                        isEditing = false
+                                        onNavigateBack()
                                     }
                                 }
                             },

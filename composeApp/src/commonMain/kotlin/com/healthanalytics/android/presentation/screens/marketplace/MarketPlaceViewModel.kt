@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,7 +79,7 @@ class MarketPlaceViewModel(
     }
 
     // TODO: In a real app, get this from a secure storage or auth service
-    private val dummyAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjIzN2RkOTAyLWZmZjYtNDJjNS1iYzlmLTkxY2Q2N2NhOGNmMSIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MDE3MTA2LCJleHAiOjE3NDk2MjE5MDZ9.5w7MbKkogQDfE-nv49P1BzWNa-7pPNLq5DoFK9rnCIc"
+    private val dummyAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTkzN2RiNzItNmVlMy00NTEwLTgzYjktM2UwNzI2MmRlNjQ5Iiwic2Vzc2lvbl9pZCI6IjNlNjNkY2U4LWJmY2ItNDY5Yi1hMDE1LWQ1ODRmMTVjNjRmZiIsInVzZXJfaW50X2lkIjoiNTc3IiwiaWF0IjoxNzQ5MTI5MTgyLCJleHAiOjE3NDk3MzM5ODJ9.dXgmh8whbL1IxEJSE_TAE9gxe1da-KFg2M87eWOXPU0"
 
     init {
         loadProducts()
@@ -111,10 +112,21 @@ class MarketPlaceViewModel(
         }
     }
 
-    fun updateProfile(name: String, email: String, phone: String, callback: (Boolean, String) -> Unit) {
+    fun updateProfile(
+        name: String,
+        email: String,
+        phone: String,
+        address: Address,
+        callback: (Boolean, String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                val request = UpdateProfileRequest(name, email, phone)
+                val request = UpdateProfileRequest(
+                    name = name,
+                    email = email,
+                    phone = phone,
+                    address = address
+                )
                 val response = apiService.updateProfile(dummyAccessToken, request)
                 
                 if (response?.status == "success") {
