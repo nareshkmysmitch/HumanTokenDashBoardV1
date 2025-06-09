@@ -94,7 +94,7 @@ fun HealthAnalyticsApp() {
                 ChatScreen(conversationId, onNavigateBack = { navigateBack() })
             }
             Screen.MARKETPLACE_DETAIL ->{
-                ProductDetailScreen(product = product, onNavigateBack = { navigateBack() })
+                ProductDetailScreen(product = product, onNavigateBack = { navigateBack() }, variantId = "")
             }
             Screen.CART -> {
                 CartScreen(

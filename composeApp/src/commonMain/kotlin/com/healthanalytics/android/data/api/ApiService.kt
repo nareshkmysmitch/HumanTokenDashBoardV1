@@ -121,7 +121,7 @@ class ApiServiceImpl(
             setBody(AddToCartRequest(
                 product_id = productId,
                 variant_id = if (variantId.toInt() > 0) variantId.toString() else null
-            ))
+            )).toEncryptedRequestBody()
         }
         val responseBody = response.bodyAsText()
         println("Add product response: $responseBody")

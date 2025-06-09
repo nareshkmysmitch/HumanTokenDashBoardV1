@@ -34,13 +34,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,19 +61,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.presentation.screens.marketplace.CartActionState
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
+fun ProductDetailScreen(
+    product: Product,
+    variantId: String,
+    onNavigateBack: () -> Unit,
+    viewModel: MarketPlaceViewModel = koinViewModel()
+) {
     println("product -> $product")
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }
     var selectedTab by remember { mutableStateOf(1) } // Reviews tab selected by default
+    
+    // Collect cart action state
+    val cartActionState by viewModel.cartActionState.collectAsState()
+    var snackbarMessage by remember { mutableStateOf<String?>(null) }
+
+    // Handle cart action state changes
+    LaunchedEffect(cartActionState) {
+        when (cartActionState) {
+            is CartActionState.Success -> {
+                snackbarMessage = (cartActionState as CartActionState.Success).message
+            }
+            is CartActionState.Error -> {
+                snackbarMessage = (cartActionState as CartActionState.Error).message
+            }
+            else -> {}
+        }
+    }
 
     BackHandler(enabled = true, onBack = onNavigateBack)
     Scaffold(
@@ -254,7 +283,12 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
 
             // Add to Cart Button
             Button(
-                onClick = { },
+                onClick = { 
+                    product.product_id?.let { productId ->
+                        viewModel.addToCart(productId, variantId)
+                        snackbarMessage = "Product added to cart"
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFE91E63)
@@ -264,6 +298,20 @@ fun ProductDetailScreen(product: Product, onNavigateBack: () -> Unit) {
                     text = "Add to Cart",
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
+            }
+
+            // Show snackbar if there's a message
+            snackbarMessage?.let { message ->
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    action = {
+                        TextButton(onClick = { snackbarMessage = null }) {
+                            Text("Dismiss")
+                        }
+                    }
+                ) {
+                    Text(message)
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))

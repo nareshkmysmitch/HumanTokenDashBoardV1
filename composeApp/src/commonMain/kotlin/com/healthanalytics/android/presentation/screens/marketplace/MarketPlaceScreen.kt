@@ -199,7 +199,7 @@ fun MarketPlaceScreen(
                         ) {
                             items(filteredProducts) { product ->
                                 ProductCard(product = product, onProductClick = {
-                                    onProductClick(product)
+                                    onProductClick(product, )
                                     println("product -> mps2$product")
                                 })
                             }
