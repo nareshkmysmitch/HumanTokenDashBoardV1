@@ -74,6 +74,7 @@ class MarketPlaceViewModel(
     val cartActionState: StateFlow<CartActionState> = _cartActionState.asStateFlow()
 
     private val _accessToken = MutableStateFlow<String?>(null)
+    val accessToken: StateFlow<String?> = _accessToken.asStateFlow()
 
     private val _addressList = MutableStateFlow<List<AddressItem>>(emptyList())
     val addressList = _addressList.asStateFlow()
@@ -83,6 +84,16 @@ class MarketPlaceViewModel(
 
     private val _productDetailsState = MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
+
+    // User Profile States
+    private val _userName = MutableStateFlow<String?>(null)
+    val userName: StateFlow<String?> = _userName.asStateFlow()
+
+    private val _userEmail = MutableStateFlow<String?>(null)
+    val userEmail: StateFlow<String?> = _userEmail.asStateFlow()
+
+    private val _userPhone = MutableStateFlow<String?>(null)
+    val userPhone: StateFlow<String?> = _userPhone.asStateFlow()
 
     val filteredProducts = combine(
         _allProducts, _searchQuery, _selectedCategories, _sortOption
@@ -126,25 +137,58 @@ class MarketPlaceViewModel(
     init {
         viewModelScope.launch {
             preferencesRepository.accessToken.collect { token ->
+                println("Access Token Updated: $token")
                 _accessToken.value = token
+            }
+        }
+        
+        viewModelScope.launch {
+            preferencesRepository.userName.collect { name ->
+                println("User Name Updated: $name")
+                _userName.value = name
+            }
+        }
+        viewModelScope.launch {
+            preferencesRepository.userEmail.collect { email ->
+                println("User Email Updated: $email")
+                _userEmail.value = email
+            }
+        }
+        viewModelScope.launch {
+            preferencesRepository.userPhone.collect { phone ->
+                println("User Phone Updated: $phone")
+                _userPhone.value = phone
             }
         }
     }
 
-    // New function to initialize marketplace data
     fun initializeMarketplace() {
+        println("Initializing Marketplace")
         viewModelScope.launch {
             try {
-                val token = preferencesRepository.accessToken.first()
+                val token = _accessToken.value
+                println("Current Token: $token")
+                
                 if (token != null) {
-                    _accessToken.value = token
                     loadProducts()
                     loadAddresses()
                     getCartList()
                 } else {
-                    _uiState.value = MarketPlaceUiState.Error("Access token not available")
+                    println("Token not available, waiting for token...")
+                    // Wait for the first token value
+                    preferencesRepository.accessToken.collect { newToken ->
+                        if (newToken != null) {
+                            println("Token received: $newToken")
+                            _accessToken.value = newToken
+                            loadProducts()
+                            loadAddresses()
+                            getCartList()
+                            return@collect // Exit after first valid token
+                        }
+                    }
                 }
             } catch (e: Exception) {
+                println("Marketplace initialization error: ${e.message}")
                 _uiState.value = MarketPlaceUiState.Error(e.message ?: "Failed to initialize marketplace")
             }
         }
@@ -169,6 +213,7 @@ class MarketPlaceViewModel(
             _uiState.value = MarketPlaceUiState.Loading
             try {
                 val token = _accessToken.value
+                println("Loading products with token: $token")
                 if (token != null) {
                     val products = apiService.getProducts(token)
                     _allProducts.value = products ?: emptyList()
@@ -177,6 +222,7 @@ class MarketPlaceViewModel(
                     _uiState.value = MarketPlaceUiState.Error("Access token not available")
                 }
             } catch (e: Exception) {
+                println("Error loading products: ${e.message}")
                 _uiState.value = MarketPlaceUiState.Error(e.message ?: "Unknown error occurred")
             }
         }
@@ -187,6 +233,7 @@ class MarketPlaceViewModel(
             _cartListState.value = CartListState.Loading
             try {
                 val token = _accessToken.value
+                println("Loading cart with token: $token")
                 if (token != null) {
                     val cartList = apiService.getCartList(token)
                     _cartListState.value = CartListState.Success(cartList?.filterNotNull() ?: emptyList())
@@ -194,6 +241,7 @@ class MarketPlaceViewModel(
                     _cartListState.value = CartListState.Error("Access token not available")
                 }
             } catch (e: Exception) {
+                println("Error loading cart: ${e.message}")
                 _cartListState.value = CartListState.Error(e.message ?: "Unknown error occurred")
             }
         }
@@ -247,8 +295,10 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             try {
                 val token = _accessToken.value
+                println("Loading addresses with token: $token")
                 if (token != null) {
                     val addresses = apiService.getAddresses(token)
+                    println("Addresses response: $addresses")
                     _addressList.value = addresses?.address_list ?: emptyList()
                     // Select the first address as default if available
                     if (_addressList.value.isNotEmpty()) {
@@ -258,6 +308,8 @@ class MarketPlaceViewModel(
                         }
                         _selectedAddress.value = communicationAddress ?: _addressList.value.first()
                     }
+                } else {
+                    println("Cannot load addresses: Token is null")
                 }
             } catch (e: Exception) {
                 println("Error loading addresses: ${e.message}")

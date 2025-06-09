@@ -62,9 +62,17 @@ fun ProfileScreen(
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
-    var name by remember { mutableStateOf("Agent Nash") }
-    var email by remember { mutableStateOf("agentnash@yopmail.com") }
-    var phone by remember { mutableStateOf("+91 9677004512") }
+    
+    // Get values from ViewModel states
+    val userName by viewModel.userName.collectAsState()
+    val userEmail by viewModel.userEmail.collectAsState()
+    val userPhone by viewModel.userPhone.collectAsState()
+    val addressList by viewModel.addressList.collectAsState()
+    val accessToken by viewModel.accessToken.collectAsState()
+    
+    var name by remember(userName) { mutableStateOf(userName ?: "") }
+    var email by remember(userEmail) { mutableStateOf(userEmail ?: "") }
+    var phone by remember(userPhone) { mutableStateOf(userPhone ?: "") }
     var dateOfBirth by remember { mutableStateOf("December 20, 1998") }
 
     val selectedAddress by viewModel.selectedAddress.collectAsState()
@@ -92,9 +100,12 @@ fun ProfileScreen(
         mutableStateOf(selectedAddress?.address_id ?: "")
     }
 
-    // Load addresses when the screen is first shown
-    LaunchedEffect(Unit) {
-        viewModel.loadAddresses()
+    // Load addresses when access token becomes available
+    LaunchedEffect(accessToken) {
+        if (accessToken != null) {
+            println("Loading addresses with available token")
+            viewModel.loadAddresses()
+        }
     }
 
     BackHandler(enabled = true, onBack = {
