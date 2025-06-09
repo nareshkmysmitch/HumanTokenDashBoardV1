@@ -6,22 +6,31 @@ import com.healthanalytics.android.data.models.onboard.AccountCreation
 import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
 import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.data.models.onboard.CommunicationAddress
+import com.healthanalytics.android.data.models.onboard.OnboardUiState
 import com.healthanalytics.android.data.models.onboard.OtpResponse
 import com.healthanalytics.android.data.models.onboard.Slot
 import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
 import com.healthanalytics.android.data.models.onboard.UpdateSlot
 import com.healthanalytics.android.data.models.onboard.VerifyOtp
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
 
 class OnboardViewModel(
-    val onboardApiService: OnboardApiService
+    private val onboardApiService: OnboardApiService,
+    private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
     private var phoneNumber: String = ""
@@ -34,7 +43,7 @@ class OnboardViewModel(
     private var weight: String = ""
     private var height: String = ""
     private var leadId = ""
-//    private var leadId = "49e69e7e-d371-42a9-8ee5-61f00e46e514"
+    private var accessToken = ""
 
     private var communicationAddress: CommunicationAddress? = null
     private var otpVerifiedResponse: OtpResponse? = null
@@ -56,7 +65,62 @@ class OnboardViewModel(
     private val _updateSlot = MutableSharedFlow<Resource<SlotsAvailability?>>()
     val updateSlot: SharedFlow<Resource<SlotsAvailability?>> = _updateSlot
 
+    private val _onBoardUiState = MutableStateFlow(OnboardUiState())
+    val onBoardUiState: StateFlow<OnboardUiState> = _onBoardUiState
+
     fun getPhoneNumber() = phoneNumber
+
+    init {
+        getAccessTokenFromDataStore()
+    }
+
+    fun updateOnBoardState(){
+        _onBoardUiState.update {
+            it.copy(
+                isLoading = false,
+                hasAccessToken = true
+            )
+        }
+    }
+
+    fun getAccessTokenFromDataStore() {
+        viewModelScope.launch {
+            preferencesRepository.accessToken
+                .onStart {
+                    _onBoardUiState.update {
+                        it.copy(
+                            isLoading = true
+                        )
+                    }
+                }
+                .catch { e ->
+                    _onBoardUiState.update {
+                        it.copy(
+                            isLoading = true
+                        )
+                    }
+                }
+                .collect { accessToken ->
+                    if (accessToken?.isNotEmpty() == true) {
+                        _onBoardUiState.update {
+                            it.copy(
+                                isLoading = false,
+                                hasAccessToken = true
+                            )
+                        }
+                    } else {
+                        _onBoardUiState.update {
+                            it.copy(
+                                isLoading = false,
+                                hasAccessToken = false
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    fun getAccessToken() = accessToken
 
     fun saveAccountDetails(firstName: String, lastName: String, email: String) {
         this.firstName = firstName
@@ -114,12 +178,24 @@ class OnboardViewModel(
                 )
                 if (response?.is_verified == true) {
                     otpVerifiedResponse = response
+                    saveProfileDetailsInDataStore(otpVerifiedResponse)
                     _otpVerifyState.emit(Resource.Success(response))
                 } else {
                     _otpVerifyState.emit(Resource.Error(errorMessage = "Something went wrong..."))
                 }
             } catch (_: Exception) {
                 _otpVerifyState.emit(Resource.Error(errorMessage = "Something went wrong..."))
+            }
+        }
+    }
+
+    fun saveProfileDetailsInDataStore(otpVerifiedResponse: OtpResponse?) {
+        viewModelScope.launch {
+            if (otpVerifiedResponse != null) {
+                if (otpVerifiedResponse.access_token != null){
+                    preferencesRepository.saveAccessToken(otpVerifiedResponse.access_token)
+                    preferencesRepository.saveIsLogin(true)
+                }
             }
         }
     }

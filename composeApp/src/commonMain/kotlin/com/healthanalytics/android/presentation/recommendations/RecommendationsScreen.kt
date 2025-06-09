@@ -33,12 +33,13 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.utils.capitalizeFirst
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RecommendationsScreen(
-    viewModel: RecommendationsViewModel = koinViewModel(),
-    preferencesViewModel: PreferencesViewModel = koinViewModel(),
+    viewModel: RecommendationsViewModel = koinInject(),
+    preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
 
     val uiState by viewModel.uiState.collectAsState()

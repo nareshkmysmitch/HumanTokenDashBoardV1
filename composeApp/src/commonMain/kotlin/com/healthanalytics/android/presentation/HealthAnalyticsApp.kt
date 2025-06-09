@@ -3,6 +3,7 @@ package com.healthanalytics.android.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -26,9 +28,6 @@ import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
-import com.healthanalytics.android.presentation.screens.ProfileScreen
-import com.healthanalytics.android.presentation.screens.chat.ChatScreen
-import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
@@ -76,6 +75,8 @@ fun HealthAnalyticsApp() {
 
 //    var isLogin by remember { mutableStateOf(false) }
     var isLogin by remember { mutableStateOf(true) }
+    val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
+    val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
 
     if (isLogin) {
 
@@ -121,8 +122,29 @@ fun HealthAnalyticsApp() {
                 isLogin = true
             }
         )
+    when {
+        onBoardUiState.isLoading -> {
+            CircularProgressIndicator()
+        }
+
+        onBoardUiState.hasAccessToken -> {
+            HomeScreen(
+                accessToken = "",
+            )
+        }
+
+        else -> {
+            OnboardContainer(
+                onboardViewModel = onboardViewModel,
+                isLoggedIn = {
+                    onboardViewModel.updateOnBoardState()
+                }
+            )
+        }
     }
 }
+
+
 
 @Composable
 private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
@@ -138,13 +160,12 @@ private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel
 }
 
 @Composable
-fun OnboardContainer(isLoggedIn: () -> Unit) {
-
+fun OnboardContainer(
+    isLoggedIn: () -> Unit,
+    onboardViewModel: OnboardViewModel
+) {
     org.koin.compose.KoinContext {
-
         val navController = rememberNavController()
-        val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
-
         NavHost(
             navController = navController,
             startDestination = OnboardRoute.Login
@@ -160,7 +181,7 @@ fun OnboardContainer(isLoggedIn: () -> Unit) {
 
             composable<OnboardRoute.OTPVerification> {
                 OTPContainer(
-                    onboardViewModel = onboardViewModel,
+                    onboardViewModel =onboardViewModel,
                     onBackClick = {
                         navController.navigateUp()
                     },
@@ -171,9 +192,8 @@ fun OnboardContainer(isLoggedIn: () -> Unit) {
             }
 
             composable<OnboardRoute.CreateAccount> {
-
                 CreateAccountContainer(
-                    onboardViewModel = onboardViewModel,
+                    onboardViewModel =onboardViewModel,
                     onBackClick = {
                         navController.navigateUp()
                     },
@@ -185,7 +205,7 @@ fun OnboardContainer(isLoggedIn: () -> Unit) {
 
             composable<OnboardRoute.HealthProfile> {
                 HealthProfileContainer(
-                    onboardViewModel = onboardViewModel,
+                    onboardViewModel =onboardViewModel,
                     onBackClick = {
                         navController.navigateUp()
                     },
@@ -197,7 +217,7 @@ fun OnboardContainer(isLoggedIn: () -> Unit) {
 
             composable<OnboardRoute.SampleCollectionAddress> {
                 SampleCollectionAddressContainer(
-                    onboardViewModel = onboardViewModel,
+                    onboardViewModel =onboardViewModel,
                     onBackClick = {
                         navController.navigateUp()
                     },
@@ -209,7 +229,7 @@ fun OnboardContainer(isLoggedIn: () -> Unit) {
 
             composable<OnboardRoute.ScheduleBloodTest> {
                 ScheduleBloodTestContainer(
-                    onboardViewModel = onboardViewModel,
+                    onboardViewModel =onboardViewModel,
                     onBackClick = {
                         navController.navigateUp()
                     },
