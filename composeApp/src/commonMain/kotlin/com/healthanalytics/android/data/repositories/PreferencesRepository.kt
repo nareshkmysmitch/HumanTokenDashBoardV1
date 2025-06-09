@@ -22,6 +22,13 @@ object PreferencesKeys {
     val USER_STATE = stringPreferencesKey("user_state")
     val USER_DISTRICT = stringPreferencesKey("user_district")
     val USER_COUNTRY = stringPreferencesKey("user_country")
+    val ADDRESS_LINE_1 = stringPreferencesKey("address_line_1")
+    val ADDRESS_LINE_2 = stringPreferencesKey("address_line_2")
+    val CITY = stringPreferencesKey("city")
+    val STATE = stringPreferencesKey("state")
+    val PINCODE = stringPreferencesKey("pincode")
+    val COUNTRY = stringPreferencesKey("country")
+    val ADDRESS_ID = stringPreferencesKey("address_id")
 }
 
 /**
@@ -78,6 +85,28 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     val userCountry: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.USER_COUNTRY] }
         .catch { emit(null) }
+
+    // Address getters
+    val addressLine1: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.ADDRESS_LINE_1] }
+    
+    val addressLine2: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.ADDRESS_LINE_2] }
+    
+    val city: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.CITY] }
+    
+    val state: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.STATE] }
+    
+    val pincode: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.PINCODE] }
+    
+    val country: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.COUNTRY] }
+    
+    val addressId: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.ADDRESS_ID] }
 
     suspend fun saveAccessToken(token: String) {
         dataStore.edit { preferences ->
@@ -160,6 +189,27 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
             preferences[PreferencesKeys.USER_STATE] = state
             preferences[PreferencesKeys.USER_DISTRICT] = district
             preferences[PreferencesKeys.USER_COUNTRY] = country
+        }
+    }
+
+    // Address setters
+    suspend fun saveAddress(
+        addressLine1: String?,
+        addressLine2: String?,
+        city: String?,
+        state: String?,
+        pincode: String?,
+        country: String?,
+        addressId: String?
+    ) {
+        dataStore.edit { preferences ->
+            if (addressLine1 != null) preferences[PreferencesKeys.ADDRESS_LINE_1] = addressLine1
+            if (addressLine2 != null) preferences[PreferencesKeys.ADDRESS_LINE_2] = addressLine2
+            if (city != null) preferences[PreferencesKeys.CITY] = city
+            if (state != null) preferences[PreferencesKeys.STATE] = state
+            if (pincode != null) preferences[PreferencesKeys.PINCODE] = pincode
+            if (country != null) preferences[PreferencesKeys.COUNTRY] = country
+            if (addressId != null) preferences[PreferencesKeys.ADDRESS_ID] = addressId
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
 import com.example.humantoken.ui.screens.Cart
+import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.data.models.AddressItem
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
@@ -12,9 +13,7 @@ import com.healthanalytics.android.data.repositories.PreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 sealed class MarketPlaceUiState {
@@ -95,6 +94,42 @@ class MarketPlaceViewModel(
     private val _userPhone = MutableStateFlow<String?>(null)
     val userPhone: StateFlow<String?> = _userPhone.asStateFlow()
 
+    // Address States from Preferences
+    private val _cachedAddressLine1 = MutableStateFlow<String?>(null)
+    val cachedAddressLine1: StateFlow<String?> = _cachedAddressLine1.asStateFlow()
+
+    private val _cachedAddressLine2 = MutableStateFlow<String?>(null)
+    val cachedAddressLine2: StateFlow<String?> = _cachedAddressLine2.asStateFlow()
+
+    private val _cachedCity = MutableStateFlow<String?>(null)
+    val cachedCity: StateFlow<String?> = _cachedCity.asStateFlow()
+
+    private val _cachedState = MutableStateFlow<String?>(null)
+    val cachedState: StateFlow<String?> = _cachedState.asStateFlow()
+
+    private val _cachedPincode = MutableStateFlow<String?>(null)
+    val cachedPincode: StateFlow<String?> = _cachedPincode.asStateFlow()
+
+    private val _cachedCountry = MutableStateFlow<String?>(null)
+    val cachedCountry: StateFlow<String?> = _cachedCountry.asStateFlow()
+
+    private val _cachedAddressId = MutableStateFlow<String?>(null)
+    val cachedAddressId: StateFlow<String?> = _cachedAddressId.asStateFlow()
+
+    // Helper function to convert UpdateAddressListResponse to Address
+    private fun createAddress(response: UpdateAddressListResponse): Address {
+        return Address(
+            address = response.address_line_1 ?: "",
+            pincode = response.pincode ?: "",
+            address_line_1 = response.address_line_1 ?: "",
+            address_line_2 = response.address_line_2,
+            city = response.city ?: "",
+            state = response.state ?: "",
+            country = response.country ?: "",
+            address_type = "communication"
+        )
+    }
+
     val filteredProducts = combine(
         _allProducts, _searchQuery, _selectedCategories, _sortOption
     ) { products, query, categories, sortOption ->
@@ -142,6 +177,7 @@ class MarketPlaceViewModel(
             }
         }
         
+        // Collect user details
         viewModelScope.launch {
             preferencesRepository.userName.collect { name ->
                 println("User Name Updated: $name")
@@ -159,6 +195,29 @@ class MarketPlaceViewModel(
                 println("User Phone Updated: $phone")
                 _userPhone.value = phone
             }
+        }
+
+        // Collect cached address
+        viewModelScope.launch {
+            preferencesRepository.addressLine1.collect { _cachedAddressLine1.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.addressLine2.collect { _cachedAddressLine2.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.city.collect { _cachedCity.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.state.collect { _cachedState.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.pincode.collect { _cachedPincode.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.country.collect { _cachedCountry.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.addressId.collect { _cachedAddressId.value = it }
         }
     }
 
@@ -294,19 +353,51 @@ class MarketPlaceViewModel(
     fun loadAddresses() {
         viewModelScope.launch {
             try {
+                // First set the cached address if available
+                if (_cachedAddressLine1.value != null) {
+                    val cachedAddressResponse = UpdateAddressListResponse(
+                        address_line_1 = _cachedAddressLine1.value,
+                        address_line_2 = _cachedAddressLine2.value,
+                        city = _cachedCity.value,
+                        state = _cachedState.value,
+                        pincode = _cachedPincode.value,
+                        country = _cachedCountry.value,
+                        di_address_id = _cachedAddressId.value
+                    )
+                    
+                    val cachedAddress = AddressItem(
+                        address = createAddress(cachedAddressResponse),
+                        address_id = _cachedAddressId.value ?: ""
+                    )
+                    _selectedAddress.value = cachedAddress
+                    _addressList.value = listOf(cachedAddress)
+                }
+
+                // Then try to load from API
                 val token = _accessToken.value
                 println("Loading addresses with token: $token")
                 if (token != null) {
                     val addresses = apiService.getAddresses(token)
                     println("Addresses response: $addresses")
-                    _addressList.value = addresses?.address_list ?: emptyList()
-                    // Select the first address as default if available
-                    if (_addressList.value.isNotEmpty()) {
-                        // Prefer communication address if available, otherwise use the first one
-                        val communicationAddress = _addressList.value.find {
+                    if (addresses?.address_list?.isNotEmpty() == true) {
+                        _addressList.value = addresses.address_list
+                        // Select the first address as default if available
+                        val communicationAddress = addresses.address_list.find {
                             it.address.address_type == "communication"
                         }
-                        _selectedAddress.value = communicationAddress ?: _addressList.value.first()
+                        val selectedAddress = communicationAddress ?: addresses.address_list.first()
+                        _selectedAddress.value = selectedAddress
+
+                        // Save the new address to preferences
+                        preferencesRepository.saveAddress(
+                            addressLine1 = selectedAddress.address.address_line_1,
+                            addressLine2 = selectedAddress.address.address_line_2,
+                            city = selectedAddress.address.city,
+                            state = selectedAddress.address.state,
+                            pincode = selectedAddress.address.pincode,
+                            country = selectedAddress.address.country,
+                            addressId = selectedAddress.address_id
+                        )
                     }
                 } else {
                     println("Cannot load addresses: Token is null")
