@@ -44,6 +44,7 @@ import com.healthanalytics.android.data.models.Conversation
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -53,7 +54,7 @@ fun ConversationListScreen(
     onNavigateToChat: (String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = koinViewModel(),
+    viewModel: ChatViewModel = koinInject(),
 ) {
 
     Logger.e { "ConversationListScreen" }

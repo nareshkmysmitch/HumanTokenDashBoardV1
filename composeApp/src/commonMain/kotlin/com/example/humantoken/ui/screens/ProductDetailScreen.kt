@@ -70,14 +70,14 @@ import com.seiko.imageloader.rememberImagePainter
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     product: Product,
     onNavigateBack: () -> Unit,
-    viewModel: MarketPlaceViewModel = koinViewModel()
+    viewModel: MarketPlaceViewModel = koinInject()
 ) {
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }

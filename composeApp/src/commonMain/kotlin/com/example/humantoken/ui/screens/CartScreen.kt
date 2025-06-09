@@ -59,6 +59,7 @@ import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceV
 import com.seiko.imageloader.rememberImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
@@ -130,7 +131,7 @@ fun CartScreen(
     onBackClick: () -> Unit,
     onCheckoutClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinViewModel(),
+    viewModel: MarketPlaceViewModel = koinInject(),
 ) {
     var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }

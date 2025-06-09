@@ -12,6 +12,16 @@ import kotlinx.coroutines.flow.map
 object PreferencesKeys {
     val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
     val IS_LOGIN = booleanPreferencesKey("is_login")
+    
+    // User Details Keys
+    val USER_NAME = stringPreferencesKey("user_name")
+    val USER_EMAIL = stringPreferencesKey("user_email")
+    val USER_PHONE = stringPreferencesKey("user_phone")
+    val USER_ADDRESS = stringPreferencesKey("user_address")
+    val USER_PINCODE = stringPreferencesKey("user_pincode")
+    val USER_STATE = stringPreferencesKey("user_state")
+    val USER_DISTRICT = stringPreferencesKey("user_district")
+    val USER_COUNTRY = stringPreferencesKey("user_country")
 }
 
 /**
@@ -36,15 +46,120 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
             emit(null)
         }
 
+    // User Details Flows
+    val userName: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_NAME] }
+        .catch { emit(null) }
+
+    val userEmail: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_EMAIL] }
+        .catch { emit(null) }
+
+    val userPhone: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_PHONE] }
+        .catch { emit(null) }
+
+    val userAddress: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_ADDRESS] }
+        .catch { emit(null) }
+
+    val userPincode: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_PINCODE] }
+        .catch { emit(null) }
+
+    val userState: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_STATE] }
+        .catch { emit(null) }
+
+    val userDistrict: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_DISTRICT] }
+        .catch { emit(null) }
+
+    val userCountry: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.USER_COUNTRY] }
+        .catch { emit(null) }
+
     suspend fun saveAccessToken(token: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.ACCESS_TOKEN_KEY] = token
         }
     }
 
-    suspend fun saveIsLogin(isLogin: Boolean){
+    suspend fun saveIsLogin(isLogin: Boolean) {
         dataStore.edit { preference ->
             preference[PreferencesKeys.IS_LOGIN] = isLogin
+        }
+    }
+
+    // Save User Details Methods
+    suspend fun saveUserName(name: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_NAME] = name
+        }
+    }
+
+    suspend fun saveUserEmail(email: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_EMAIL] = email
+        }
+    }
+
+    suspend fun saveUserPhone(phone: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_PHONE] = phone
+        }
+    }
+
+    suspend fun saveUserAddress(address: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_ADDRESS] = address
+        }
+    }
+
+    suspend fun saveUserPincode(pincode: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_PINCODE] = pincode
+        }
+    }
+
+    suspend fun saveUserState(state: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_STATE] = state
+        }
+    }
+
+    suspend fun saveUserDistrict(district: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_DISTRICT] = district
+        }
+    }
+
+    suspend fun saveUserCountry(country: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_COUNTRY] = country
+        }
+    }
+
+    // Convenience method to save all user details at once
+    suspend fun saveUserDetails(
+        name: String,
+        email: String,
+        phone: String,
+        address: String,
+        pincode: String,
+        state: String,
+        district: String,
+        country: String
+    ) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_NAME] = name
+            preferences[PreferencesKeys.USER_EMAIL] = email
+            preferences[PreferencesKeys.USER_PHONE] = phone
+            preferences[PreferencesKeys.USER_ADDRESS] = address
+            preferences[PreferencesKeys.USER_PINCODE] = pincode
+            preferences[PreferencesKeys.USER_STATE] = state
+            preferences[PreferencesKeys.USER_DISTRICT] = district
+            preferences[PreferencesKeys.USER_COUNTRY] = country
         }
     }
 
@@ -53,5 +168,4 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
             preferences.clear()
         }
     }
-
 } 
