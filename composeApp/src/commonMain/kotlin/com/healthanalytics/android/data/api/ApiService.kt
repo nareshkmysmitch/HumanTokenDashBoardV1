@@ -36,6 +36,13 @@ data class UpdateCartRequest(
     val quantity: String
 )
 
+@Serializable
+data class ProductDetailsResponse(
+    val status: String,
+    val message: String,
+    val data: Product
+)
+
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
@@ -45,6 +52,7 @@ interface ApiService {
     suspend fun addProduct(accessToken: String, productId: String, variantId: String): EncryptedResponse?
     suspend fun updateProduct(accessToken: String, productId: String, quantity: String): EncryptedResponse?
     suspend fun getCartList(accessToken: String): List<Cart?>?
+    suspend fun getProductDetails(accessToken: String, productId: String): Product?
 }
 
 class ApiServiceImpl(
@@ -164,6 +172,27 @@ class ApiServiceImpl(
             return cartList
         } catch (e: Exception) {
             println("Error handling cart response: ${e.message}")
+            e.printStackTrace()
+            return null
+        }
+    }
+
+    override suspend fun getProductDetails(accessToken: String, productId: String): Product? {
+        val response = httpClient.get("v4/human-token/market-place/product/$productId") {
+            header("access_token", accessToken)
+        }
+        val responseBody = response.bodyAsText()
+        println("Product details response --> Raw ${responseBody}")
+
+        try {
+            val encryptedResponse = json.decodeFromString<EncryptedResponse>(responseBody)
+            val productResponse = EncryptionUtils.handleDecryptionResponse<Product>(
+                """{"status":"${encryptedResponse.status}","message":"${encryptedResponse.message}","data":"${encryptedResponse.data}"}"""
+            )
+            println("Product response --> Decrypted ${productResponse}")
+            return productResponse
+        } catch (e: Exception) {
+            println("Error handling product details response: ${e.message}")
             e.printStackTrace()
             return null
         }

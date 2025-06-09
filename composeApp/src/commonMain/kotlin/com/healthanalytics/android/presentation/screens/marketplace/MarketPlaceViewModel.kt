@@ -39,6 +39,12 @@ enum class SortOption(val displayName: String) {
     NAME_Z_TO_A("Z to A (Name)"), PRICE_LOW_TO_HIGH("Low to High (Price)"), PRICE_HIGH_TO_LOW("High to Low (Price)")
 }
 
+sealed class ProductDetailsState {
+    data object Loading : ProductDetailsState()
+    data class Success(val product: Product) : ProductDetailsState()
+    data class Error(val message: String) : ProductDetailsState()
+}
+
 class MarketPlaceViewModel(
     private val apiService: ApiService
 ) : ViewModel() {
@@ -68,6 +74,9 @@ class MarketPlaceViewModel(
 
     private val _selectedAddress = MutableStateFlow<AddressItem?>(null)
     val selectedAddress = _selectedAddress.asStateFlow()
+
+    private val _productDetailsState = MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
+    val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
 
     val filteredProducts = combine(
         _allProducts, _searchQuery, _selectedCategories, _sortOption
@@ -243,6 +252,22 @@ class MarketPlaceViewModel(
             } catch (e: Exception) {
                 println("Profile update error: ${e.message}")
                 callback(false, e.message ?: "An error occurred")
+            }
+        }
+    }
+
+    fun getProductDetails(productId: String) {
+        viewModelScope.launch {
+            _productDetailsState.value = ProductDetailsState.Loading
+            try {
+                val product = apiService.getProductDetails(dummyAccessToken, productId)
+                if (product != null) {
+                    _productDetailsState.value = ProductDetailsState.Success(product)
+                } else {
+                    _productDetailsState.value = ProductDetailsState.Error("Failed to fetch product details")
+                }
+            } catch (e: Exception) {
+                _productDetailsState.value = ProductDetailsState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
