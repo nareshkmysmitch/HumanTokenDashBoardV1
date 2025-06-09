@@ -58,13 +58,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.Product
 import com.seiko.imageloader.rememberImagePainter
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarketPlaceScreen(
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinViewModel()
+    viewModel: MarketPlaceViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()

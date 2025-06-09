@@ -54,8 +54,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HealthDataScreen(
-    viewModel: HealthDataViewModel = koinViewModel(),
-    prefs: PreferencesViewModel = koinViewModel(),
+    viewModel: HealthDataViewModel = koinInject(),
+    prefs: PreferencesViewModel = koinInject(),
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
