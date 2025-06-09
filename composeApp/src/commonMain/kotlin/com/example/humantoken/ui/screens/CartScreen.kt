@@ -52,6 +52,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.data.api.Variant
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.CartActionState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
@@ -94,7 +95,7 @@ data class CartItem(
     val created_at: String? = null,
     val updated_at: String? = null,
     val product: Product? = null,
-    val variant: String? = null
+    val variant: Variant? = null
 )
 
 @Serializable

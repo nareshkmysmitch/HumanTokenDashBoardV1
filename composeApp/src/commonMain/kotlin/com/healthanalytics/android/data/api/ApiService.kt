@@ -123,17 +123,29 @@ class ApiServiceImpl(
         variantId: String
     ): EncryptedResponse? {
         println("Adding product: $productId, variantId: $variantId")
+        val request = AddToCartRequest(
+            product_id = productId,
+            variant_id = if (variantId.toInt() > 0) variantId.toString() else null
+        )
+        
         val response = httpClient.post("v4/human-token/market-place/cart/add") {
             header("access_token", accessToken)
-            contentType(ContentType.Application.Json)
-            setBody(AddToCartRequest(
-                product_id = productId,
-                variant_id = if (variantId.toInt() > 0) variantId.toString() else null
-            )).toEncryptedRequestBody()
+//            contentType(ContentType.Application.Json)
+//            setBody(json.encodeToString(AddToCartRequest.serializer(), request).toEncryptedRequestBody())
+//            setBody(request).toEncryptedRequestBody()
+            setBody(request)
         }
+        println("response --> $response")
         val responseBody = response.bodyAsText()
         println("Add product response: $responseBody")
-        return EncryptionUtils.handleDecryptionResponse<EncryptedResponse>(responseBody)
+        return try {
+            val encryptedResponse = json.decodeFromString<EncryptedResponse>(responseBody)
+            encryptedResponse
+        } catch (e: Exception) {
+            println("Error handling add product response: ${e.message}")
+            e.printStackTrace()
+            null
+        }
     }
 
     override suspend fun updateProduct(

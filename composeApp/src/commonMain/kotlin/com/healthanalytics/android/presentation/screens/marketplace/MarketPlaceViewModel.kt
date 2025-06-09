@@ -168,7 +168,7 @@ class MarketPlaceViewModel(
         }
     }
 
-    fun addToCart(productId: String, variantId: String = "0") {
+    fun addToCart(productId: String, variantId: String) {
         viewModelScope.launch {
             _cartActionState.value = CartActionState.Loading
             try {
