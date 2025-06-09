@@ -16,17 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -56,6 +45,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,6 +77,11 @@ fun MarketPlaceScreen(
     val filteredProducts by viewModel.filteredProducts.collectAsState(initial = emptyList())
 
     var showSortMenu by remember { mutableStateOf(false) }
+
+    // Add LaunchedEffect to initialize marketplace when screen opens
+    LaunchedEffect(Unit) {
+        viewModel.initializeMarketplace()
+    }
 
     Column(
         modifier = modifier
@@ -200,7 +195,7 @@ fun MarketPlaceScreen(
                         ) {
                             items(filteredProducts) { product ->
                                 ProductCard(product = product, onProductClick = {
-                                    onProductClick(product, )
+                                    onProductClick(product)
                                     println("product -> mps2$product")
                                 })
                             }

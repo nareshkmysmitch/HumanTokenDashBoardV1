@@ -8,10 +8,13 @@ import com.example.humantoken.ui.screens.Cart
 import com.healthanalytics.android.data.models.AddressItem
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 sealed class MarketPlaceUiState {
@@ -46,7 +49,8 @@ sealed class ProductDetailsState {
 }
 
 class MarketPlaceViewModel(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MarketPlaceUiState>(MarketPlaceUiState.Loading)
@@ -66,8 +70,10 @@ class MarketPlaceViewModel(
 
     private val _allProducts = MutableStateFlow<List<Product?>>(emptyList())
 
-    private val _cartActionState = MutableStateFlow<CartActionState>(CartActionState.Success(""))
+    private val _cartActionState = MutableStateFlow<CartActionState>(CartActionState.Loading)
     val cartActionState: StateFlow<CartActionState> = _cartActionState.asStateFlow()
+
+    private val _accessToken = MutableStateFlow<String?>(null)
 
     private val _addressList = MutableStateFlow<List<AddressItem>>(emptyList())
     val addressList = _addressList.asStateFlow()
@@ -117,12 +123,31 @@ class MarketPlaceViewModel(
         filtered
     }
 
-    // TODO: In a real app, get this from a secure storage or auth service
-    private val dummyAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTkzN2RiNzItNmVlMy00NTEwLTgzYjktM2UwNzI2MmRlNjQ5Iiwic2Vzc2lvbl9pZCI6IjNlNjNkY2U4LWJmY2ItNDY5Yi1hMDE1LWQ1ODRmMTVjNjRmZiIsInVzZXJfaW50X2lkIjoiNTc3IiwiaWF0IjoxNzQ5MTI5MTgyLCJleHAiOjE3NDk3MzM5ODJ9.dXgmh8whbL1IxEJSE_TAE9gxe1da-KFg2M87eWOXPU0"
-
     init {
-        loadProducts()
-        loadAddresses()
+        viewModelScope.launch {
+            preferencesRepository.accessToken.collect { token ->
+                _accessToken.value = token
+            }
+        }
+    }
+
+    // New function to initialize marketplace data
+    fun initializeMarketplace() {
+        viewModelScope.launch {
+            try {
+                val token = preferencesRepository.accessToken.first()
+                if (token != null) {
+                    _accessToken.value = token
+                    loadProducts()
+                    loadAddresses()
+                    getCartList()
+                } else {
+                    _uiState.value = MarketPlaceUiState.Error("Access token not available")
+                }
+            } catch (e: Exception) {
+                _uiState.value = MarketPlaceUiState.Error(e.message ?: "Failed to initialize marketplace")
+            }
+        }
     }
 
     fun updateSearchQuery(query: String) {
@@ -143,9 +168,14 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             _uiState.value = MarketPlaceUiState.Loading
             try {
-                val products = apiService.getProducts(dummyAccessToken)
-                _allProducts.value = products ?: emptyList()
-                _uiState.value = MarketPlaceUiState.Success(products ?: emptyList())
+                val token = _accessToken.value
+                if (token != null) {
+                    val products = apiService.getProducts(token)
+                    _allProducts.value = products ?: emptyList()
+                    _uiState.value = MarketPlaceUiState.Success(products ?: emptyList())
+                } else {
+                    _uiState.value = MarketPlaceUiState.Error("Access token not available")
+                }
             } catch (e: Exception) {
                 _uiState.value = MarketPlaceUiState.Error(e.message ?: "Unknown error occurred")
             }
@@ -156,11 +186,12 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             _cartListState.value = CartListState.Loading
             try {
-                val cartList = apiService.getCartList(dummyAccessToken)
-                if (cartList != null) {
-                    _cartListState.value = CartListState.Success(cartList.filterNotNull())
+                val token = _accessToken.value
+                if (token != null) {
+                    val cartList = apiService.getCartList(token)
+                    _cartListState.value = CartListState.Success(cartList?.filterNotNull() ?: emptyList())
                 } else {
-                    _cartListState.value = CartListState.Error("Failed to fetch cart items")
+                    _cartListState.value = CartListState.Error("Access token not available")
                 }
             } catch (e: Exception) {
                 _cartListState.value = CartListState.Error(e.message ?: "Unknown error occurred")
@@ -172,13 +203,17 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             _cartActionState.value = CartActionState.Loading
             try {
-                val response = apiService.addProduct(dummyAccessToken, productId, variantId)
-                if (response != null) {
-                    _cartActionState.value = CartActionState.Success(response.message ?: "Product added to cart")
-                    // Refresh cart list after adding
-                    getCartList()
+                val token = _accessToken.value
+                if (token != null) {
+                    val response = apiService.addProduct(token, productId, variantId)
+                    if (response != null) {
+                        _cartActionState.value = CartActionState.Success(response.message)
+                        getCartList()
+                    } else {
+                        _cartActionState.value = CartActionState.Error("Failed to add product to cart")
+                    }
                 } else {
-                    _cartActionState.value = CartActionState.Error("Failed to add product to cart")
+                    _cartActionState.value = CartActionState.Error("Access token not available")
                 }
             } catch (e: Exception) {
                 _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
@@ -190,13 +225,17 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             _cartActionState.value = CartActionState.Loading
             try {
-                val response = apiService.updateProduct(dummyAccessToken, productId, quantity)
-                if (response != null) {
-                    _cartActionState.value = CartActionState.Success(response.message ?: "Cart updated successfully")
-                    // Refresh cart list after updating
-                    getCartList()
+                val token = _accessToken.value
+                if (token != null) {
+                    val response = apiService.updateProduct(token, productId, quantity)
+                    if (response != null) {
+                        _cartActionState.value = CartActionState.Success(response.message)
+                        getCartList()
+                    } else {
+                        _cartActionState.value = CartActionState.Error("Failed to update cart item")
+                    }
                 } else {
-                    _cartActionState.value = CartActionState.Error("Failed to update cart")
+                    _cartActionState.value = CartActionState.Error("Access token not available")
                 }
             } catch (e: Exception) {
                 _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
@@ -207,9 +246,10 @@ class MarketPlaceViewModel(
     fun loadAddresses() {
         viewModelScope.launch {
             try {
-                val addressData = apiService.getAddresses(dummyAccessToken)
-                if (addressData != null) {
-                    _addressList.value = addressData.address_list
+                val token = _accessToken.value
+                if (token != null) {
+                    val addresses = apiService.getAddresses(token)
+                    _addressList.value = addresses?.address_list ?: emptyList()
                     // Select the first address as default if available
                     if (_addressList.value.isNotEmpty()) {
                         // Prefer communication address if available, otherwise use the first one
@@ -235,19 +275,24 @@ class MarketPlaceViewModel(
     ) {
         viewModelScope.launch {
             try {
-                val request = UpdateProfileRequest(
-                    name = name,
-                    email = email,
-                    phone = phone,
-                    address = address,
-                    di_address_id = diAddressId
-                )
-                val response = apiService.updateProfile(dummyAccessToken, request)
+                val token = _accessToken.value
+                if (token != null) {
+                    val request = UpdateProfileRequest(
+                        name = name,
+                        email = email,
+                        phone = phone,
+                        address = address,
+                        di_address_id = diAddressId
+                    )
+                    val response = apiService.updateProfile(token, request)
 
-                if (response?.message == "Profile updated successfully") {
-                    callback(true, response.message)
+                    if (response?.message == "Profile updated successfully") {
+                        callback(true, response.message)
+                    } else {
+                        callback(false, response?.message ?: "Failed to update profile")
+                    }
                 } else {
-                    callback(false, response?.message ?: "Failed to update profile")
+                    callback(false, "Access token not available")
                 }
             } catch (e: Exception) {
                 println("Profile update error: ${e.message}")
@@ -260,11 +305,16 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             _productDetailsState.value = ProductDetailsState.Loading
             try {
-                val product = apiService.getProductDetails(dummyAccessToken, productId)
-                if (product != null) {
-                    _productDetailsState.value = ProductDetailsState.Success(product)
+                val token = _accessToken.value
+                if (token != null) {
+                    val product = apiService.getProductDetails(token, productId)
+                    if (product != null) {
+                        _productDetailsState.value = ProductDetailsState.Success(product)
+                    } else {
+                        _productDetailsState.value = ProductDetailsState.Error("Product not found")
+                    }
                 } else {
-                    _productDetailsState.value = ProductDetailsState.Error("Failed to fetch product details")
+                    _productDetailsState.value = ProductDetailsState.Error("Access token not available")
                 }
             } catch (e: Exception) {
                 _productDetailsState.value = ProductDetailsState.Error(e.message ?: "Unknown error occurred")
