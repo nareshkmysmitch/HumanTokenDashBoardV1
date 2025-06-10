@@ -247,19 +247,30 @@ fun CartScreen(
                                 onQuantityDecrease = {
                                     item.product?.let { product ->
                                         val newQuantity = (item.quantity ?: 1) - 1
+//                                        if (newQuantity > 0) {
+//                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
+//                                        }
                                         if (newQuantity > 0) {
-                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
+                                            product.product_id?.let { viewModel.updateCartItem(it,
+                                                newQuantity.toString()
+                                            ) }
                                         }
                                     }
                                 },
                                 onQuantityIncrease = {
                                     item.product?.let { product ->
-                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
+                                        val newQuantity = (item.quantity ?: 1) + 1
+                                        if (newQuantity > 0) {
+                                            product.product_id?.let { viewModel.updateCartItem(it,
+                                                newQuantity.toString()
+                                            ) }
+                                        }
                                     }
+
                                 },
                                 onDeleteClick = {
                                     item.product?.id?.let { productId ->
-                                        viewModel.updateCartItem(productId, item.quantity?.toString() ?: "0")
+                                        viewModel.updateCartItem(productId, "0")
                                     }
                                 }
                             )

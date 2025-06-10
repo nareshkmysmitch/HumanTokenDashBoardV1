@@ -21,6 +21,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 @Serializable
 data class AddToCartRequest(
@@ -123,17 +125,15 @@ class ApiServiceImpl(
         variantId: String
     ): EncryptedResponse? {
         println("Adding product: $productId, variantId: $variantId")
-        val request = AddToCartRequest(
-            product_id = productId,
-            variant_id = if (variantId.toInt() > 0) variantId.toString() else null
-        )
+
+        val requestObject = buildJsonObject {
+            put("product_id", productId)
+            put("variant_id", variantId)
+        }
         
         val response = httpClient.post("v4/human-token/market-place/cart/add") {
             header("access_token", accessToken)
-//            contentType(ContentType.Application.Json)
-//            setBody(json.encodeToString(AddToCartRequest.serializer(), request).toEncryptedRequestBody())
-//            setBody(request).toEncryptedRequestBody()
-            setBody(request)
+            setBody(requestObject.toEncryptedRequestBody())
         }
         println("response --> $response")
         val responseBody = response.bodyAsText()
@@ -154,14 +154,25 @@ class ApiServiceImpl(
         quantity: String
     ): EncryptedResponse? {
         println("Updating product: $productId, quantity: $quantity")
+        val requestObject = buildJsonObject {
+            put("product_id", productId)
+            put("quantity", quantity)
+        }
+        
         val response = httpClient.put("v4/human-token/market-place/cart/update") {
             header("access_token", accessToken)
-            contentType(ContentType.Application.Json)
-            setBody(UpdateCartRequest(productId, quantity))
+            setBody(requestObject.toEncryptedRequestBody())
         }
         val responseBody = response.bodyAsText()
         println("Update product response: $responseBody")
-        return EncryptionUtils.handleDecryptionResponse<EncryptedResponse>(responseBody)
+        return try {
+            val encryptedResponse = json.decodeFromString<EncryptedResponse>(responseBody)
+            encryptedResponse
+        } catch (e: Exception) {
+            println("Error handling update product response: ${e.message}")
+            e.printStackTrace()
+            null
+        }
     }
 
     override suspend fun getCartList(accessToken: String): List<Cart?>? {
