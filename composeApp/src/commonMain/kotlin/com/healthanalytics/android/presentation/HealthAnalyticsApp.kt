@@ -273,7 +273,7 @@ fun HomeScreen(
         ) {
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
-                MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
+//                MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(onProductClick = {

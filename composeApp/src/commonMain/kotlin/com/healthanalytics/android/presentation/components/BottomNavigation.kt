@@ -16,7 +16,9 @@ enum class Screen {
 }
 
 enum class MainScreen {
-    DASHBOARD, BIOMARKERS, RECOMMENDATIONS, MARKETPLACE
+    DASHBOARD,
+//    BIOMARKERS,
+    RECOMMENDATIONS, MARKETPLACE
 }
 
 @Composable

@@ -218,4 +218,10 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
             preferences.clear()
         }
     }
+
+    suspend fun clearAllPreferences() {
+        dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
 } 

@@ -269,7 +269,7 @@ fun CartScreen(
 
                                 },
                                 onDeleteClick = {
-                                    item.product?.id?.let { productId ->
+                                    item.product?.product_id?.let { productId ->
                                         viewModel.updateCartItem(productId, "0")
                                     }
                                 }

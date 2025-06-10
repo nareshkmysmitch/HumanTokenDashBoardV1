@@ -55,6 +55,7 @@ interface ApiService {
     suspend fun updateProduct(accessToken: String, productId: String, quantity: String): EncryptedResponse?
     suspend fun getCartList(accessToken: String): List<Cart?>?
     suspend fun getProductDetails(accessToken: String, productId: String): Product?
+    suspend fun logout(accessToken: String): Boolean
 }
 
 class ApiServiceImpl(
@@ -218,6 +219,18 @@ class ApiServiceImpl(
             println("Error handling product details response: ${e.message}")
             e.printStackTrace()
             return null
+        }
+    }
+
+    override suspend fun logout(accessToken: String): Boolean {
+        return try {
+            val response = httpClient.post("v1/user/logout") {
+                header("access_token", accessToken)
+            }
+            response.status.value in 200..299
+        } catch (e: Exception) {
+            println("Error during logout: ${e.message}")
+            false
         }
     }
 }

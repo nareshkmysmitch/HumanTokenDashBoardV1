@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
+import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
@@ -69,6 +70,19 @@ fun ProfileScreen(
     val userPhone by viewModel.userPhone.collectAsState()
     val addressList by viewModel.addressList.collectAsState()
     val accessToken by viewModel.accessToken.collectAsState()
+    val logoutState by viewModel.logoutState.collectAsState()
+    
+    // Handle logout state changes
+    LaunchedEffect(logoutState) {
+        when (logoutState) {
+            is LogoutState.Success -> {
+                // User will be redirected to OnboardContainer automatically
+                // because hasAccessToken in HealthAnalyticsApp will become false
+                onNavigateBack()
+            }
+            else -> {}
+        }
+    }
     
     var name by remember(userName) { mutableStateOf(userName ?: "") }
     var email by remember(userEmail) { mutableStateOf(userEmail ?: "") }
@@ -408,7 +422,10 @@ fun ProfileScreen(
                     title = "Log out",
                     message = "You will be logged out of your Deep Holistics account. However this doesn't affect your logged data. Do you want to still logout?",
                     onDismiss = { showAlertDialog = false },
-                    onLogout = { showAlertDialog = false }
+                    onLogout = { 
+                        viewModel.logout()
+                        showAlertDialog = false
+                    }
                 )
             }
         }

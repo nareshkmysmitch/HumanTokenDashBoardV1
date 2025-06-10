@@ -47,6 +47,13 @@ sealed class ProductDetailsState {
     data class Error(val message: String) : ProductDetailsState()
 }
 
+sealed class LogoutState {
+    data object Initial : LogoutState()
+    data object Loading : LogoutState()
+    data class Success(val message: String) : LogoutState()
+    data class Error(val message: String) : LogoutState()
+}
+
 class MarketPlaceViewModel(
     private val apiService: ApiService,
     private val preferencesRepository: PreferencesRepository,
@@ -115,6 +122,9 @@ class MarketPlaceViewModel(
 
     private val _cachedAddressId = MutableStateFlow<String?>(null)
     val cachedAddressId: StateFlow<String?> = _cachedAddressId.asStateFlow()
+
+    private val _logoutState = MutableStateFlow<LogoutState>(LogoutState.Initial)
+    val logoutState: StateFlow<LogoutState> = _logoutState.asStateFlow()
 
     // Helper function to convert UpdateAddressListResponse to Address
     private fun createAddress(response: UpdateAddressListResponse): Address {
@@ -461,6 +471,30 @@ class MarketPlaceViewModel(
                 }
             } catch (e: Exception) {
                 _productDetailsState.value = ProductDetailsState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                _logoutState.value = LogoutState.Loading
+                val token = _accessToken.value
+                if (token == null) {
+                    _logoutState.value = LogoutState.Error("Access token not available")
+                    return@launch
+                }
+
+                val success = apiService.logout(token)
+                if (success) {
+                    // Clear all preferences
+                    preferencesRepository.clearAllPreferences()
+                    _logoutState.value = LogoutState.Success("Logged out successfully")
+                } else {
+                    _logoutState.value = LogoutState.Error("Failed to logout")
+                }
+            } catch (e: Exception) {
+                _logoutState.value = LogoutState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }

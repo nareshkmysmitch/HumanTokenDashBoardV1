@@ -19,7 +19,7 @@ actual fun getPlatform(): Platform = AndroidPlatform()
 
 actual fun getNavigationItems(): List<NavigationItem> = listOf(
     NavigationItem(MainScreen.DASHBOARD, "Dashboard", Icons.Default.Home),
-    NavigationItem(MainScreen.BIOMARKERS, "BioMarkers", Icons.Default.Info),
+//    NavigationItem(MainScreen.BIOMARKERS, "BioMarkers", Icons.Default.Info),
     NavigationItem(MainScreen.RECOMMENDATIONS, "Recommendations", Icons.Default.Settings),
     NavigationItem(MainScreen.MARKETPLACE, "Market Place", Icons.Default.ShoppingCart)
 )
