@@ -52,6 +52,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Variant
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.CartActionState
@@ -138,6 +139,9 @@ fun CartScreen(
     var error by remember { mutableStateOf<String?>(null) }
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
+    BackHandler(enabled = true) {
+        onBackClick()
+    }
     LaunchedEffect(Unit) {
         viewModel.getCartList()
         viewModel.cartListFlow.collectLatest { state ->
