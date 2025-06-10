@@ -48,7 +48,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HealthAnalyticsApp() {
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
-    var accessToken by remember { mutableStateOf<String?>(null) }
     var conversationId by remember { mutableStateOf("") }
     var product by remember { mutableStateOf(Product()) }
 
@@ -102,7 +101,7 @@ fun HealthAnalyticsApp() {
                     )
                 }
                 Screen.HOME -> {
-                    HomeScreen(accessToken, onProfileClick = {
+                    HomeScreen(onProfileClick = {
                         navigateTo(Screen.PROFILE)
                     }, onChatClick = {
                         navigateTo(Screen.CONVERSATION_LIST)
@@ -233,12 +232,10 @@ fun OnboardContainer(
             }
         }
     }
-
 }
 
 @Composable
 fun HomeScreen(
-    accessToken: String?,
     onProfileClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
