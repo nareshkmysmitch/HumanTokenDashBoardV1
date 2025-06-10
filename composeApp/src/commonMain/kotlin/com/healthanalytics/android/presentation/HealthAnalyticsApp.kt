@@ -50,9 +50,10 @@ fun HealthAnalyticsApp() {
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen is Screen.HOME || 
-            currentScreen is Screen.PROFILE || 
-            currentScreen is Screen.CONVERSATION_LIST) {
+        if (currentScreen is Screen.HOME ||
+            currentScreen is Screen.PROFILE ||
+            currentScreen is Screen.CONVERSATION_LIST
+        ) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
@@ -64,15 +65,11 @@ fun HealthAnalyticsApp() {
 
     val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
-    
     when {
-        onBoardUiState.isLoading -> { CircularProgressIndicator() }
-
+        onBoardUiState.isLoading -> CircularProgressIndicator()
         onBoardUiState.hasAccessToken -> {
             when (currentScreen) {
-                Screen.PROFILE -> ProfileScreen(
-                    onNavigateBack = { navigateBack() }
-                )
+                Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
                 Screen.CONVERSATION_LIST -> {
                     ConversationListScreen(
                         onNavigateToChat = { id ->
@@ -81,6 +78,7 @@ fun HealthAnalyticsApp() {
                         onNavigateBack = { navigateTo(Screen.HOME) }
                     )
                 }
+
                 is Screen.CHAT -> {
                     val chatScreen = currentScreen as Screen.CHAT
                     ChatScreen(
@@ -88,6 +86,7 @@ fun HealthAnalyticsApp() {
                         onNavigateBack = { navigateBack() }
                     )
                 }
+
                 is Screen.MARKETPLACE_DETAIL -> {
                     val marketplaceScreen = currentScreen as Screen.MARKETPLACE_DETAIL
                     ProductDetailScreen(
@@ -95,12 +94,8 @@ fun HealthAnalyticsApp() {
                         onNavigateBack = { navigateBack() }
                     )
                 }
-                Screen.CART -> {
-                    CartScreen(
-                        onCheckoutClick = { },
-                        onBackClick = { navigateBack() }
-                    )
-                }
+
+                Screen.CART -> CartScreen(onCheckoutClick = { }, onBackClick = { navigateBack() })
                 Screen.HOME -> {
                     HomeScreen(
                         onProfileClick = {
@@ -274,15 +269,13 @@ fun HomeScreen(
         ) {
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
-//                MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = {
-                    navigateBack()
-                })
+                MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = { navigateBack() })
                 MainScreen.MARKETPLACE -> {
-                    MarketPlaceScreen(onProductClick = {
-                        onMarketPlaceClick(it)
-                        println("product -> Ha1$it")
-                    },
+                    MarketPlaceScreen(
+                        onProductClick = {
+                            onMarketPlaceClick(it)
+                            println("product -> Ha1$it")
+                        },
                         navigateBack = {
                             navigateBack()
                         })
