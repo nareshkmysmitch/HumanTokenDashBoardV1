@@ -7,16 +7,30 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 
-object NetworkConfig {
-
-    private val chatAccessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiM2U3NmMxOWQtMTliMi00NGNhLWIzNWMtMDgyMGMzZDUyMzFjIiwic2Vzc2lvbl9pZCI6ImQ4NWFmZWVhLTkzNWEtNDc4My1iYWI0LTdiODZjY2I3NWI0MiIsInVzZXJfaW50X2lkIjoiNTc5IiwicHJvZmlsZV9pZCI6IjUxNiIsImxlYWRfaWQiOiJlNzRlY2UxNi1iOWJhLTQyODItOTQ1NC01NWU5NjQxMDA0YTIiLCJpYXQiOjE3NDkyMDQyNjMsImV4cCI6MTc0OTgwOTA2M30.-F3K2Tx2JO8VsqVZbgBQ-cU86E8wtR0GG8rttcH5oCI"
+object NetworkConfig : KoinComponent {
 
     const val BASE_URL = "https://api.stg.dh.deepholistics.com/"
     const val CLIENT_ID = "JmEfoQ2sP18APIiX9z0nY3vlDAKHIp8nKuyV"
     const val USER_TIMEZONE = "Asia/Calcutta"
+    
+    private val preferencesRepository: PreferencesRepository by inject()
+    
+    var chatAccessToken: String = ""
+        private set
+        
+    init {
+        // Initialize chatAccessToken from preferences
+        runBlocking {
+            chatAccessToken = preferencesRepository.accessToken.first() ?: ""
+        }
+    }
 
     fun createHttpClient(): HttpClient {
         return HttpClient {
