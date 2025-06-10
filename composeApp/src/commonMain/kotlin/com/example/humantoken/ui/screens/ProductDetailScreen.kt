@@ -19,8 +19,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.StarBorder
@@ -67,9 +69,6 @@ import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceV
 import com.healthanalytics.android.presentation.screens.marketplace.ProductDetailsState
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +139,7 @@ fun ProductDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = { onNavigateBack() }) {
                         Icon(
-                            painter = painterResource(Res.drawable.ic_calendar_icon),
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
                             tint = AppColors.primary,
                             modifier = Modifier.size(24.dp)
@@ -334,7 +333,7 @@ fun ProductDetailScreen(
                     Button(
                         onClick = {
                             val productId = currentProduct.product_id
-                            val variantId = currentProduct.variants?.get(0)?.variant_id
+                            val variantId = currentProduct.variants?.firstOrNull()?.variant_id
                             productId?.let { productId ->
                                 variantId?.let { variantId ->
                                     viewModel.addToCart(productId,variantId)
@@ -352,21 +351,6 @@ fun ProductDetailScreen(
                         )
                     }
 
-                    // Show snackbar if there's a message
-//                    snackbarMessage?.let { message ->
-//                        if (message.isNotEmpty()) {
-//                            Snackbar(
-//                                modifier = Modifier.padding(16.dp),
-//                                action = {
-//                                    TextButton(onClick = { snackbarMessage = null }) {
-//                                        Text("Dismiss")
-//                                    }
-//                                }
-//                            ) {
-//                                Text(message)
-//                            }
-//                        }
-//                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 

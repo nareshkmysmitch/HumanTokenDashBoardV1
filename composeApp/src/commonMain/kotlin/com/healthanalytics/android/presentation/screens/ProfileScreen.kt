@@ -16,6 +16,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Man
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -49,8 +53,6 @@ import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -149,7 +151,7 @@ fun ProfileScreen(
                         }
                     }) {
                         Icon(
-                            painter = painterResource(Res.drawable.ic_calendar_icon),
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
                             tint = AppColors.primary,
                             modifier = Modifier.size(24.dp)
@@ -207,7 +209,7 @@ fun ProfileScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                                        imageVector = Icons.Default.Man,
                                         contentDescription = "Profile",
                                         tint = Color.White,
                                         modifier = Modifier.size(32.dp)
