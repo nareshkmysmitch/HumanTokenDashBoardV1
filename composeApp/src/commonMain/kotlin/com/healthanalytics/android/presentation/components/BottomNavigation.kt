@@ -11,9 +11,9 @@ import com.healthanalytics.android.getNavigationItems
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
-enum class Screen {
-    HOME, PROFILE, CHAT, MARKETPLACE_DETAIL, CONVERSATION_LIST, CART
-}
+//enum class Screen {
+//    HOME, PROFILE, CHAT, MARKETPLACE_DETAIL, CONVERSATION_LIST, CART
+//}
 
 enum class MainScreen {
     DASHBOARD,

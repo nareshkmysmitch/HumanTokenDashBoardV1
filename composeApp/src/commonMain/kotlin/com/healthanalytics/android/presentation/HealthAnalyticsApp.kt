@@ -27,7 +27,6 @@ import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
-import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
@@ -46,71 +45,77 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HealthAnalyticsApp() {
-    var currentScreen by remember { mutableStateOf(Screen.HOME) }
-    var lastMainScreen by remember { mutableStateOf(Screen.HOME) }
-    var conversationId by remember { mutableStateOf("") }
-    var product by remember { mutableStateOf(Product()) }
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
+    var lastMainScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen in listOf(
-                Screen.CONVERSATION_LIST,
-                Screen.MARKETPLACE_DETAIL,
-                Screen.CHAT,
-                Screen.PROFILE,
-                Screen.HOME
-            )
-        ) {
+        if (currentScreen is Screen.HOME || 
+            currentScreen is Screen.PROFILE || 
+            currentScreen is Screen.CONVERSATION_LIST) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
     }
 
     fun navigateBack() {
-        // Navigate back to the last main screen instead of always going to dashboard
         currentScreen = lastMainScreen
     }
 
     val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
+    
     when {
         onBoardUiState.isLoading -> { CircularProgressIndicator() }
 
         onBoardUiState.hasAccessToken -> {
             when (currentScreen) {
-                Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+                Screen.PROFILE -> ProfileScreen(
+                    onNavigateBack = { navigateBack() }
+                )
                 Screen.CONVERSATION_LIST -> {
                     ConversationListScreen(
                         onNavigateToChat = { id ->
-                            conversationId = id
-                            navigateTo(Screen.CHAT)
+                            navigateTo(Screen.CHAT(conversationId = id))
                         },
                         onNavigateBack = { navigateTo(Screen.HOME) }
                     )
                 }
-                Screen.CHAT -> {
-                    ChatScreen(conversationId, onNavigateBack = { navigateBack() })
+                is Screen.CHAT -> {
+                    val chatScreen = currentScreen as Screen.CHAT
+                    ChatScreen(
+                        conversationId = chatScreen.conversationId,
+                        onNavigateBack = { navigateBack() }
+                    )
                 }
-                Screen.MARKETPLACE_DETAIL -> {
-                    ProductDetailScreen(product = product, onNavigateBack = { navigateBack() })
+                is Screen.MARKETPLACE_DETAIL -> {
+                    val marketplaceScreen = currentScreen as Screen.MARKETPLACE_DETAIL
+                    ProductDetailScreen(
+                        product = marketplaceScreen.product,
+                        onNavigateBack = { navigateBack() }
+                    )
                 }
                 Screen.CART -> {
                     CartScreen(
                         onCheckoutClick = { },
-                        onBackClick = { navigateBack() },
+                        onBackClick = { navigateBack() }
                     )
                 }
                 Screen.HOME -> {
-                    HomeScreen(onProfileClick = {
-                        navigateTo(Screen.PROFILE)
-                    }, onChatClick = {
-                        navigateTo(Screen.CONVERSATION_LIST)
-                    }, onMarketPlaceClick = {
-                        product = it
-                        navigateTo(Screen.MARKETPLACE_DETAIL)
-                    }, onCartClick = {
-                        navigateTo(Screen.CART)
-                    })
+                    HomeScreen(
+                        onProfileClick = {
+                            navigateTo(Screen.PROFILE)
+                        },
+                        onChatClick = {
+                            navigateTo(Screen.CONVERSATION_LIST)
+                        },
+                        onMarketPlaceClick = { product ->
+                            navigateTo(Screen.MARKETPLACE_DETAIL(product))
+                        },
+                        onCartClick = {
+                            navigateTo(Screen.CART)
+                        }
+                    )
                 }
             }
         }
@@ -125,7 +130,6 @@ fun HealthAnalyticsApp() {
         }
     }
 }
-
 
 @Composable
 private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
@@ -271,12 +275,17 @@ fun HomeScreen(
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
 //                MainScreen.BIOMARKERS -> BiomarkersScreen(token = accessToken.toString())
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
+                MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = {
+                    navigateBack()
+                })
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(onProductClick = {
                         onMarketPlaceClick(it)
                         println("product -> Ha1$it")
-                    })
+                    },
+                        navigateBack = {
+                            navigateBack()
+                        })
                 }
             }
         }

@@ -58,6 +58,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.koinInject
@@ -69,6 +70,7 @@ fun MarketPlaceScreen(
     modifier: Modifier = Modifier,
     viewModel: MarketPlaceViewModel = koinInject(),
     onProductClick: (Product) -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -78,6 +80,7 @@ fun MarketPlaceScreen(
 
     var showSortMenu by remember { mutableStateOf(false) }
 
+    BackHandler { navigateBack() }
     // Add LaunchedEffect to initialize marketplace when screen opens
     LaunchedEffect(Unit) {
         viewModel.initializeMarketplace()
