@@ -3,6 +3,8 @@ package com.healthanalytics.android.presentation.recommendations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
+import com.healthanalytics.android.data.api.AddActivityRequest
+import com.healthanalytics.android.data.api.AddSupplementRequest
 import com.healthanalytics.android.data.models.ActionPlanUiState
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationsUiState
@@ -13,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
 
 class RecommendationsViewModel(private val apiService: ApiService) : ViewModel() {
     private val _uiState = MutableStateFlow(RecommendationsUiState())
@@ -39,7 +40,9 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
     }
 
     fun getAvailableCategories(): List<String> {
-        return _uiState.value.recommendations.map { it.category ?: "" }.distinct()
+        return _uiState.value.recommendations
+            .map { it.category ?: "" }
+            .distinct()
     }
 
     fun getCategoryCount(category: String): Int {
@@ -71,6 +74,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
             }
         }
     }
+
 
 
     private val _uiActionState = MutableStateFlow(ActionPlanUiState())
@@ -219,4 +223,54 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         }
     }
 
+    fun addToPlan(accessToken: String, recommendation: Recommendation) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+
+                val action = recommendation.actions?.firstOrNull()
+                if (action != null) {
+                    val success = if (recommendation.category?.equals("SUPPLEMENTS", ignoreCase = true) == true) {
+                        // Add supplement
+                        val request = AddSupplementRequest(
+                            title = recommendation.name,
+                            recommendation_id = recommendation.id,
+                            action_id = action.id,
+                            name = recommendation.name
+                        )
+                        apiService.addSupplementToPlan(accessToken, request)
+                    } else {
+                        // Add activity
+                        val request = AddActivityRequest(
+                            sub_type = recommendation.category?.lowercase() ?: "activity",
+                            title = recommendation.name,
+                            recommendation_id = recommendation.id,
+                            action_id = action.id
+                        )
+                        apiService.addActivityToPlan(accessToken, request)
+                    }
+
+                    if (success) {
+                        // Reload recommendations and switch to Action Plan tab
+                        loadRecommendations(accessToken)
+                        setSelectedTab(RecommendationsTab.ACTION_PLAN)
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = "Failed to add to plan"
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to add to plan"
+                    )
+                }
+            }
+        }
+    }
 } 
