@@ -92,12 +92,12 @@ fun RecommendationsScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                items(viewModel.getAvailableCategories()) { category ->
+                items(viewModel.getRecommendationCategories()) { category ->
                     CategoryChip(
                         category = category,
                         count = viewModel.getCategoryCount(category),
                         selected = category == uiState.selectedCategory,
-                        onClick = { viewModel.updateSelectedCategory(category) }
+                        onClick = { viewModel.updateRecommendationCategory(category) }
                     )
                 }
             }

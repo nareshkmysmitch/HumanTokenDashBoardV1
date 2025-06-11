@@ -27,7 +27,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         _selectedTab.value = tab
     }
 
-    fun updateSelectedCategory(category: String?) {
+    fun updateRecommendationCategory(category: String?) {
         _uiState.update { it.copy(selectedCategory = category) }
     }
 
@@ -39,7 +39,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         }
     }
 
-    fun getAvailableCategories(): List<String> {
+    fun getRecommendationCategories(): List<String> {
         return _uiState.value.recommendations
             .map { it.category ?: "" }
             .distinct()
@@ -75,7 +75,6 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         }
     }
 
-
     private val _uiActionState = MutableStateFlow(ActionPlanUiState())
     val uiActionState: StateFlow<ActionPlanUiState> = _uiActionState.asStateFlow()
 
@@ -96,7 +95,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         }
     }
 
-    fun getActionAvailableCategories(): List<String> {
+    fun getActionCategories(): List<String> {
         return listOf("All") + _uiActionState.value.recommendations
             .map { it.category ?: "" }
             .distinct()

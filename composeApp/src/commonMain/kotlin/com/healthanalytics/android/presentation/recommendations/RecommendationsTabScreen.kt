@@ -14,40 +14,31 @@ import com.healthanalytics.android.presentation.actionplan.ActionPlanScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 enum class RecommendationsTab {
-    RECOMMENDATIONS,
-    ACTION_PLAN
+    RECOMMENDATIONS, ACTION_PLAN
 }
 
 @Composable
 fun RecommendationsTabScreen(viewModel: RecommendationsViewModel = koinViewModel()) {
-
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Tab Row
         TabRow(
-            selectedTabIndex = selectedTab.ordinal,
-            modifier = Modifier.fillMaxWidth()
+            selectedTabIndex = selectedTab.ordinal, modifier = Modifier.fillMaxWidth()
         ) {
             RecommendationsTab.values().forEach { tab ->
-                Tab(
-                    selected = selectedTab == tab,
-                    onClick = {
-                        viewModel.setSelectedTab(tab)
-                    },
-                    text = {
-                        Text(
-                            text = when (tab) {
-                                RecommendationsTab.RECOMMENDATIONS -> "Recommendations"
-                                RecommendationsTab.ACTION_PLAN -> "Action Plan"
-                            }
-                        )
-                    }
-                )
+                Tab(selected = selectedTab == tab, onClick = {
+                    viewModel.setSelectedTab(tab)
+                }, text = {
+                    Text(
+                        text = when (tab) {
+                            RecommendationsTab.RECOMMENDATIONS -> "Recommendations"
+                            RecommendationsTab.ACTION_PLAN -> "Action Plan"
+                        }
+                    )
+                })
             }
         }
 
-        // Content
         when (selectedTab) {
             RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen()
             RecommendationsTab.ACTION_PLAN -> ActionPlanScreen()

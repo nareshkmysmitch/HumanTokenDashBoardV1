@@ -60,7 +60,7 @@ fun ActionPlanScreen(
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filteredRecommendations = viewModel.getFilteredActions()
     val totalItems = viewModel.getActionTotalItems()
-    val categoryList = viewModel.getActionAvailableCategories()
+    val categoryList = viewModel.getActionCategories()
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -97,7 +97,7 @@ fun ActionPlanScreen(
             )
         }
 
-        println("category--> ${viewModel.getActionAvailableCategories()}")
+        println("category--> ${viewModel.getActionCategories()}")
 
 
         // Category Row

@@ -93,8 +93,6 @@ fun HomeScreen(
     }
 
 
-
-
     Scaffold(topBar = {
         TopAppBar(
             title = "Human Token", onProfileClick = onProfileClick, onChatClick = onChatClick
