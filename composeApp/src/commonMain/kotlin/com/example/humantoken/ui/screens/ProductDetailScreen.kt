@@ -2,8 +2,6 @@ package com.example.humantoken.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,9 +20,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Message
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
@@ -37,13 +35,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -76,16 +72,18 @@ import org.koin.compose.koinInject
 fun ProductDetailScreen(
     product: Product,
     onNavigateBack: () -> Unit,
+    onNavigateToCart: () -> Unit,
     viewModel: MarketPlaceViewModel = koinInject()
 ) {
     val scrollState = rememberScrollState()
-    var quantity by remember { mutableStateOf(1) }
     var selectedTab by remember { mutableStateOf(1) } // Reviews tab selected by default
 
     // Collect states
     val cartActionState by viewModel.cartActionState.collectAsState()
     val productDetailsState by viewModel.productDetailsState.collectAsState()
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
+
+    var buttonText by remember { mutableStateOf("Add to Cart") }
 
     // Fetch product details when the screen is first shown
     LaunchedEffect(Unit) {
@@ -96,10 +94,12 @@ fun ProductDetailScreen(
     LaunchedEffect(cartActionState) {
         when (cartActionState) {
             is CartActionState.Success -> {
+                buttonText = "Successfully added to cart"
                 snackbarMessage = (cartActionState as CartActionState.Success).message
             }
 
             is CartActionState.Error -> {
+                buttonText = "Failed to add to cart \n Try again"
                 snackbarMessage = (cartActionState as CartActionState.Error).message
             }
 
@@ -146,6 +146,16 @@ fun ProductDetailScreen(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = { onNavigateToCart() }) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "shopping cart",
+                            tint = AppColors.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
             )
         },
         containerColor = Color.Transparent
@@ -274,69 +284,73 @@ fun ProductDetailScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    /*
+                                        Spacer(modifier = Modifier.height(24.dp))
 
-                    // Quantity Selector
-                    Row(
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = Color(0xFF1C1B1F),
-                                shape = RoundedCornerShape(
-                                    12.dp
-                                )
-                            )
-                            .clip(RoundedCornerShape(12.dp)),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
-                                .clickable(onClick = { if (quantity > 1) quantity-- })
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text = "−",
-                                fontSize = 20.sp,
-                                color = Color.Black,
-                                modifier = Modifier.padding(horizontal = 12.dp)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = quantity.toString(),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color.Black
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
-                                .clickable(onClick = { currentProduct.stock?.let { if (quantity < it) quantity++ } })
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text = "+",
-                                fontSize = 20.sp,
-                                color = Color.Black,
-                                modifier = Modifier.padding(horizontal = 12.dp)
-                            )
-                        }
-                    }
+                                        // Quantity Selector
+                                        Row(
+                                            modifier = Modifier
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = Color(0xFF1C1B1F),
+                                                    shape = RoundedCornerShape(
+                                                        12.dp
+                                                    )
+                                                )
+                                                .clip(RoundedCornerShape(12.dp)),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
+                                                    .clickable(onClick = { if (quantity > 1) quantity-- })
+                                                    .padding(8.dp)
+                                            ) {
+                                                Text(
+                                                    text = "−",
+                                                    fontSize = 20.sp,
+                                                    color = Color.Black,
+                                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                                )
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                            ) {
+                                                Text(
+                                                    text = quantity.toString(),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    color = Color.Black
+                                                )
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                                                    .clickable(onClick = { currentProduct.stock?.let { if (quantity < it) quantity++ } })
+                                                    .padding(8.dp)
+                                            ) {
+                                                Text(
+                                                    text = "+",
+                                                    fontSize = 20.sp,
+                                                    color = Color.Black,
+                                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                                )
+                                            }
+                                        }
+                    */
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Add to Cart Button
                     Button(
                         onClick = {
-                            val productId = currentProduct.product_id
-                            val variantId = currentProduct.variants?.firstOrNull()?.variant_id
-                            productId?.let { productId ->
-                                variantId?.let { variantId ->
-                                    viewModel.addToCart(productId,variantId)
+                            if (buttonText != "Successfully added to cart") {
+                                val productId = currentProduct.product_id
+                                val variantId = currentProduct.variants?.firstOrNull()?.variant_id
+                                productId?.let { productId ->
+                                    variantId?.let { variantId ->
+                                        viewModel.addToCart(productId, variantId)
+                                    }
                                 }
                             }
                         },
@@ -346,11 +360,24 @@ fun ProductDetailScreen(
                         )
                     ) {
                         Text(
-                            text = "Add to Cart",
+                            text = buttonText,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 
+                    // Show snackbar if there's a message
+//                    snackbarMessage?.let { message ->
+//                        Snackbar(
+//                            modifier = Modifier.padding(16.dp),
+//                            action = {
+//                                TextButton(onClick = { snackbarMessage = null }) {
+//                                    Text("Dismiss")
+//                                }
+//                            }
+//                        ) {
+//                            Text(message)
+//                        }
+//                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 

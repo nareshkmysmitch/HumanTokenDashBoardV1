@@ -319,6 +319,7 @@ private fun CartItemCard(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val quantity = item.quantity ?: 1
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -362,18 +363,18 @@ private fun CartItemCard(
             // Quantity Controls
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 IconButton(
                     onClick = onQuantityDecrease,
                     modifier = Modifier
-                        .size(32.dp)
-                        .background(Color(0xFF1C1B1F), CircleShape)
+                        .size(24.dp)
+                        .background(if(quantity > 1) Color.Black else Color.LightGray, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
                         contentDescription = "Decrease quantity",
-                        tint = Color.White,
+                        tint = if (quantity > 1) Color.White else Color.Gray,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -388,7 +389,7 @@ private fun CartItemCard(
                 IconButton(
                     onClick = onQuantityIncrease,
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(24.dp)
                         .background(Color(0xFF1C1B1F), CircleShape)
                 ) {
                     Icon(

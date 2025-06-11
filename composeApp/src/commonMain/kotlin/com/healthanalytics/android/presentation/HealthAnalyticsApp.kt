@@ -91,7 +91,8 @@ fun HealthAnalyticsApp() {
                     val marketplaceScreen = currentScreen as Screen.MARKETPLACE_DETAIL
                     ProductDetailScreen(
                         product = marketplaceScreen.product,
-                        onNavigateBack = { navigateBack() }
+                        onNavigateBack = { navigateBack() },
+                        onNavigateToCart = { navigateTo(Screen.CART) },
                     )
                 }
 
