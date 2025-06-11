@@ -153,7 +153,10 @@ fun HealthAnalyticsApp() {
                 }
 
                 Screen.SCHEDULE_TEST_BOOKING -> {
-                    ScheduleTestBookingScreen(onNavigateBack = { navigateTo(Screen.TEST_BOOKING) })
+                    ScheduleTestBookingScreen(
+                        onNavigateBack = { navigateTo(Screen.TEST_BOOKING) },
+                        viewModel = marketPlaceViewModel,
+                    )
                 }
 
                 Screen.TEST_BOOKING -> {
@@ -161,6 +164,7 @@ fun HealthAnalyticsApp() {
                         onNavigateBack = { navigateBack() },
                         onNavigateToSchedule = { navigateTo(Screen.SCHEDULE_TEST_BOOKING) },
                         viewModel = testBookingViewModel,
+                        marketPlaceViewModel = marketPlaceViewModel,
                     )
                 }
             }
@@ -319,9 +323,7 @@ fun HomeScreen(
                 navigateTo(screen)
             })
     }) { paddingValues ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
-        ) {
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen(healthDataViewModel, preferenceViewModel)
                 MainScreen.RECOMMENDATIONS -> {

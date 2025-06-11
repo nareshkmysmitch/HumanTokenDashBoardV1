@@ -27,6 +27,7 @@ class TestBookingViewModel(
     val state: StateFlow<TestBookingState> = _state.asStateFlow()
 
     private val _accessToken = MutableStateFlow<String?>(null)
+    val accessToken: StateFlow<String?> = _accessToken
 
     init {
         viewModelScope.launch {
@@ -39,8 +40,8 @@ class TestBookingViewModel(
         }
     }
 
-    private suspend fun loadTests(accessToken: String) {
-        _state.update { it.copy(isLoading = true) }
+    suspend fun loadTests(accessToken: String) {
+//        _state.update { it.copy(isLoading = true) }
         try {
             val tests = api.getTestBookings(accessToken)
             _state.update { 

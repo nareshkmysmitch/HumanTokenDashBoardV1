@@ -17,7 +17,7 @@ import kotlin.time.Instant
 class HealthDataViewModel(
     private val apiService: ApiService,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(HealthDataUiState())
+    private val _uiState = MutableStateFlow(HealthDataUiState(isLoading = true))
     val uiState: StateFlow<HealthDataUiState> = _uiState.asStateFlow()
 
     init {
@@ -26,7 +26,7 @@ class HealthDataViewModel(
     @OptIn(ExperimentalTime::class)
     suspend fun loadHealthMetrics(accessToken: String) {
         try {
-            _uiState.update { it.copy(isLoading = true) }
+//            _uiState.update { it.copy(isLoading = true) }
             val metrics = apiService.getHealthMetrics(accessToken)
             _uiState.update {
                 it.copy(

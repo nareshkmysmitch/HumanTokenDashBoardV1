@@ -1,9 +1,5 @@
 package com.healthanalytics.android.presentation.health
 
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.filled.Clear
-//import androidx.compose.material.icons.filled.Close
-//import androidx.compose.material.icons.filled.Search
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
