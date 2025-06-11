@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
@@ -40,7 +39,6 @@ import org.koin.compose.koinInject
 fun RecommendationsScreen(
     viewModel: RecommendationsViewModel = koinInject(),
     preferencesViewModel: PreferencesViewModel = koinInject(),
-    navigateBack: () -> Unit,
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -53,7 +51,7 @@ fun RecommendationsScreen(
         }
     }
 
-    BackHandler { navigateBack() }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {

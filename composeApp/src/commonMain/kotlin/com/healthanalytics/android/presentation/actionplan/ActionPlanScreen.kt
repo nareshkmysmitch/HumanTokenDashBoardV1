@@ -68,13 +68,6 @@ fun ActionPlanScreen(
         }
     }
 
-    val accessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6ImI2YWRhYWJmLWRlYjctNGM3YS04MmYwLTQ1MTc0YjdlNWVhMiIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5NjE5MzQ2LCJleHAiOjE3NTAyMjQxNDZ9.hSqb61uZlJeyzYKtFLMfsafHdZGuHgQnj6CVfK_8RLE"
-
-
-    LaunchedEffect(Unit) {
-        preferencesViewModel.saveAccessToken(accessToken)
-    }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
