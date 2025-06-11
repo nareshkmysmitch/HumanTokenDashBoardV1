@@ -1,12 +1,12 @@
 package com.healthanalytics.android.data.api
 
 import com.healthanalytics.android.data.models.AddActivityRequest
+import com.healthanalytics.android.data.models.AddActivityResponse
 import com.healthanalytics.android.data.models.AddSupplementRequest
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.data.models.RemoveRecommendationResponse
-import com.healthanalytics.android.data.models.AddActivityResponse
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
@@ -110,11 +110,11 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
     ): Boolean {
         val response = httpClient.post("v1/medicine/add") {
             header("access_token", accessToken)
-            setBody(request)
+            setBody(request.toEncryptedRequestBody())
         }
         val responseBody = response.bodyAsText()
         val result = EncryptionUtils.handleDecryptionResponse<AddActivityResponse>(responseBody)
-        return result?.isUpdated == true
+        return result!= null
     }
 
     override suspend fun addActivityToPlan(
@@ -123,11 +123,11 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
     ): Boolean {
         val response = httpClient.post("v1/user/reminder/create") {
             header("access_token", accessToken)
-            setBody(request)
+            setBody(request.toEncryptedRequestBody())
         }
         val responseBody = response.bodyAsText()
         val result = EncryptionUtils.handleDecryptionResponse<AddActivityResponse>(responseBody)
-        return result?.isUpdated == true
+        return result != null
     }
 
 }

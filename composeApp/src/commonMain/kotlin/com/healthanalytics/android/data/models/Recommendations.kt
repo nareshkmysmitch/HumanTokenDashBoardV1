@@ -1,5 +1,6 @@
 package com.healthanalytics.android.data.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -58,9 +59,9 @@ data class EventConfig(
     val sub_type: String,
     val frequency: String,
     val scheduled_time: String,
-    val shape: String,
-    val color: String,
-    val duration: Int,
+    val shape: String?=null,
+    val color: String?=null,
+    val duration: Int?=null,
     val days_of_the_week: List<Int>,
 )
 

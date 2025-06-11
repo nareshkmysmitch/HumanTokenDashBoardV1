@@ -249,10 +249,10 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                             is_mock = false,
                             module = "recommendation",
                             profile_id = "65",
-                            shape = evenConfig.shape,
-                            color = evenConfig.color,
+                            shape = evenConfig.shape ?: "",
+                            color = evenConfig.color ?: "",
                             time = listOf(evenConfig.scheduled_time),
-                            duration = evenConfig.duration
+                            duration = evenConfig.duration ?: 0
                         )
                         apiService.addSupplementToPlan(accessToken, request)
                     } else {
@@ -262,7 +262,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                             recommendation_id = recommendation.id,
                             action_id = action.id,
                             type = evenConfig.type,
-                            sub_type = evenConfig.sub_type,
+                            sub_type = "running",
                             title = recommendation.name,
                             frequency = evenConfig.frequency,
                             is_mock = false,
@@ -274,7 +274,6 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
 
                     if (success == true) {
                         // Reload recommendations and switch to Action Plan tab
-                        loadActionRecommendations(accessToken)
                         setSelectedTab(RecommendationsTab.ACTION_PLAN)
                     } else {
                         _uiState.update {
