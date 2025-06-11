@@ -31,6 +31,7 @@ import com.healthanalytics.android.presentation.recommendations.RecommendationsS
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
+import com.healthanalytics.android.presentation.screens.health.BioMarkerFullReportScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailScreen
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
@@ -54,7 +55,7 @@ fun HealthAnalyticsApp() {
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen is Screen.HOME || currentScreen is Screen.PROFILE || currentScreen is Screen.CONVERSATION_LIST) {
+        if (currentScreen is HOME || currentScreen is Screen.PROFILE || currentScreen is Screen.CONVERSATION_LIST) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
@@ -70,30 +71,39 @@ fun HealthAnalyticsApp() {
         onBoardUiState.isLoading -> CircularProgressIndicator()
         onBoardUiState.hasAccessToken -> {
             when (currentScreen) {
-                Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
-                Screen.CONVERSATION_LIST -> {
+                PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+                CONVERSATION_LIST -> {
                     ConversationListScreen(onNavigateToChat = { id ->
                         navigateTo(CHAT(conversationId = id))
-                    }, onNavigateBack = { navigateTo(Screen.HOME) })
+                    }, onNavigateBack = { navigateTo(HOME) })
                 }
 
-                is Screen.CHAT -> {
-                    val chatScreen = currentScreen as Screen.CHAT
+                is CHAT -> {
+                    val chatScreen = currentScreen as CHAT
                     ChatScreen(
                         conversationId = chatScreen.conversationId,
                         onNavigateBack = { navigateBack() })
                 }
 
-                is Screen.MARKETPLACE_DETAIL -> {
-                    val marketplaceScreen = currentScreen as Screen.MARKETPLACE_DETAIL
+                is MARKETPLACE_DETAIL -> {
+                    val marketplaceScreen = currentScreen as MARKETPLACE_DETAIL
                     ProductDetailScreen(
                         product = marketplaceScreen.product, onNavigateBack = { navigateBack() })
                 }
 
-                Screen.CART -> CartScreen(onCheckoutClick = { }, onBackClick = { navigateBack() })
 
-                Screen.BIOMARKERS_DETAIL -> {
+                CART -> CartScreen(onCheckoutClick = { }, onBackClick = { navigateBack() })
+
+                BIOMARKERS_DETAIL -> {
                     BiomarkerDetailScreen(
+                        onNavigateBack = { navigateBack() },
+                        biomarker = biomarker,
+                        onNavigateFullReport = navigateBack()
+                    )
+                }
+
+                BIOMARKER_FULL_REPORT -> {
+                    BioMarkerFullReportScreen(
                         onNavigateBack = {
                             navigateBack()
                         }, biomarker = biomarker
@@ -109,6 +119,9 @@ fun HealthAnalyticsApp() {
                         navigateTo(MARKETPLACE_DETAIL(product))
                     }, onCartClick = {
                         navigateTo(CART)
+                    }, onBiomarkerFullReportClick = {
+                        biomarker = it ?: BloodData()
+                        navigateTo(BIOMARKER_FULL_REPORT)
                     }, onBiomarker = {
                         biomarker = it ?: BloodData()
                         navigateTo(BIOMARKERS_DETAIL)
@@ -216,6 +229,7 @@ fun HomeScreen(
     onChatClick: () -> Unit = {},
     onBiomarker: (BloodData?) -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
+    onBiomarkerFullReportClick: (BloodData?) -> Unit = {},
 ) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
