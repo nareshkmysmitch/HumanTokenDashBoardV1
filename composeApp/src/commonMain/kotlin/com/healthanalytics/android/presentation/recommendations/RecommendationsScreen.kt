@@ -212,9 +212,15 @@ fun RecommendationCard(recommendation: Recommendation) {
                 }
             }
 
+            val action = recommendation.actions?.firstOrNull()
+            val userAction = action?.user_recommendation_actions?.firstOrNull()
+
+            val isEnabled = userAction == null || userAction.is_completed == false
+
             // Add to Plan Button
             Button(
                 onClick = { /* TODO: Implement add to plan */ },
+                enabled = isEnabled,
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text("+ Add to Plan")
