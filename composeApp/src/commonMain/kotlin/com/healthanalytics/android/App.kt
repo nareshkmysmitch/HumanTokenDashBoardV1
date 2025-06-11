@@ -2,7 +2,7 @@ package com.healthanalytics.android
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import com.healthanalytics.android.presentation.actionplan.ActionPlanScreen
+import com.healthanalytics.android.presentation.HealthAnalyticsApp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
@@ -10,6 +10,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     MaterialTheme {
-        ActionPlanScreen()
+        HealthAnalyticsApp()
     }
 }
