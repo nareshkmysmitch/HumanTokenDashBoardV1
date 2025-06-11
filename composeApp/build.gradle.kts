@@ -27,9 +27,7 @@ kotlin {
         }
     }
     listOf(
-        iosX64(),
-     //   iosArm64(),
-        iosSimulatorArm64()
+        iosX64(), iosArm64(), iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
@@ -111,7 +109,6 @@ kotlin {
 
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
-
         }
 
         commonTest.dependencies {
@@ -155,17 +152,17 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-compose.desktop {
-    application {
-        mainClass = "com.healthanalytics.android.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.healthanalytics.android"
-            packageVersion = "1.0.0"
-        }
-    }
-}
+//compose.desktop {
+//    application {
+//        mainClass = "com.healthanalytics.android.MainKt"
+//
+//        nativeDistributions {
+//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+//            packageName = "com.healthanalytics.android"
+//            packageVersion = "1.0.0"
+//        }
+//    }
+//}
 
 
 //            implementation("moe.tlaster:precompose:1.5.0-beta02")

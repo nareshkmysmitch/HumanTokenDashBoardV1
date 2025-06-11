@@ -6,7 +6,7 @@ import com.healthanalytics.android.data.api.ChatApiService
 import com.healthanalytics.android.data.api.ChatApiServiceImpl
 import com.healthanalytics.android.data.network.NetworkConfig
 import com.healthanalytics.android.data.repositories.PreferencesRepository
-import com.healthanalytics.android.presentation.health.HealthDataViewModel
+import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
@@ -18,7 +18,6 @@ import com.healthanalytics.android.utils.KermitLogger
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
