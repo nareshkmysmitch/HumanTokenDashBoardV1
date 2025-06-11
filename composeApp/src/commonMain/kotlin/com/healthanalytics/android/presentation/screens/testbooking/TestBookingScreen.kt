@@ -25,7 +25,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun TestBookingScreen(
-    viewModel: TestBookingViewModel = koinInject(),
+    viewModel: TestBookingViewModel,
     onNavigateBack: () -> Unit,
     onNavigateToSchedule: () -> Unit,
 ) {

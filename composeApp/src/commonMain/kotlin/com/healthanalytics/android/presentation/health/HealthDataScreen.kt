@@ -1,5 +1,9 @@
 package com.healthanalytics.android.presentation.health
 
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material.icons.filled.Clear
+//import androidx.compose.material.icons.filled.Close
+//import androidx.compose.material.icons.filled.Search
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -19,15 +23,10 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.filled.Clear
-//import androidx.compose.material.icons.filled.Close
-//import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -49,14 +48,9 @@ import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HealthDataScreen(
-    viewModel: HealthDataViewModel = koinInject(),
-    prefs: PreferencesViewModel = koinInject(),
-) {
+fun HealthDataScreen(viewModel: HealthDataViewModel, prefs: PreferencesViewModel) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 

@@ -38,8 +38,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun RecommendationsScreen(
-    viewModel: RecommendationsViewModel = koinInject(),
-    preferencesViewModel: PreferencesViewModel = koinInject(),
+    viewModel: RecommendationsViewModel,
+    preferencesViewModel: PreferencesViewModel,
     navigateBack: () -> Unit,
 ) {
 

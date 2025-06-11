@@ -28,11 +28,16 @@ import com.healthanalytics.android.presentation.components.Screen.CHAT
 import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DETAIL
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
+import com.healthanalytics.android.presentation.health.HealthDataViewModel
+import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
+import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
+import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
@@ -44,6 +49,7 @@ import com.healthanalytics.android.presentation.screens.onboard.SampleCollection
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.testbooking.ScheduleTestBookingScreen
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingScreen
+import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -64,7 +70,7 @@ fun HealthAnalyticsApp() {
     }
 
     fun navigateBack() {
-        currentScreen = if(lastMainScreen == currentScreen){
+        currentScreen = if (lastMainScreen == currentScreen) {
             Screen.HOME
         } else {
             lastMainScreen
@@ -72,39 +78,58 @@ fun HealthAnalyticsApp() {
     }
 
     val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
+    val healthDataViewModel: HealthDataViewModel = koinInject<HealthDataViewModel>()
+    val preferencesViewModel: PreferencesViewModel = koinInject<PreferencesViewModel>()
+    val recommendationsViewModel: RecommendationsViewModel = koinInject<RecommendationsViewModel>()
+    val marketPlaceViewModel: MarketPlaceViewModel = koinInject<MarketPlaceViewModel>()
+    val testBookingViewModel: TestBookingViewModel = koinInject<TestBookingViewModel>()
+    val chatViewModel: ChatViewModel = koinInject<ChatViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
     when {
         onBoardUiState.isLoading -> CircularProgressIndicator()
         onBoardUiState.hasAccessToken -> {
             when (currentScreen) {
-                Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+                Screen.PROFILE -> {
+                    ProfileScreen(
+                        onNavigateBack = { navigateBack() },
+                        viewModel = marketPlaceViewModel,
+                    )
+                }
 
                 Screen.CONVERSATION_LIST -> {
                     ConversationListScreen(
                         onNavigateToChat = { id ->
                             navigateTo(CHAT(conversationId = id))
                         },
-                        onNavigateBack = { navigateTo(Screen.HOME) }
+                        onNavigateBack = { navigateTo(Screen.HOME) },
+                        viewModel = chatViewModel,
                     )
                 }
 
-                is Screen.CHAT -> {
-                    val chatScreen = currentScreen as Screen.CHAT
+                is CHAT -> {
+                    val chatScreen = currentScreen as CHAT
                     ChatScreen(
                         conversationId = chatScreen.conversationId,
-                        onNavigateBack = { navigateBack() }
+                        onNavigateBack = { navigateBack() },
+                        viewModel = chatViewModel,
                     )
                 }
 
-                is Screen.MARKETPLACE_DETAIL -> {
-                    val marketplaceScreen = currentScreen as Screen.MARKETPLACE_DETAIL
+                is MARKETPLACE_DETAIL -> {
+                    val marketplaceScreen = currentScreen as MARKETPLACE_DETAIL
                     ProductDetailScreen(
                         product = marketplaceScreen.product,
-                        onNavigateBack = { navigateBack() }
+                        onNavigateBack = { navigateBack() },
+                        viewModel = marketPlaceViewModel,
                     )
                 }
 
-                Screen.CART -> CartScreen(onCheckoutClick = { }, onBackClick = { navigateBack() })
+                Screen.CART -> CartScreen(
+                    onCheckoutClick = { },
+                    onBackClick = { navigateBack() },
+                    viewModel = marketPlaceViewModel,
+                )
+
                 Screen.HOME -> {
                     HomeScreen(
                         onProfileClick = {
@@ -119,7 +144,11 @@ fun HealthAnalyticsApp() {
                         },
                         onCartClick = {
                             navigateTo(Screen.CART)
-                        }
+                        },
+                        healthDataViewModel = healthDataViewModel,
+                        preferenceViewModel = preferencesViewModel,
+                        recommendationsViewModel = recommendationsViewModel,
+                        marketPlaceViewModel = marketPlaceViewModel,
                     )
                 }
 
@@ -130,7 +159,8 @@ fun HealthAnalyticsApp() {
                 Screen.TEST_BOOKING -> {
                     TestBookingScreen(
                         onNavigateBack = { navigateBack() },
-                        onNavigateToSchedule = { navigateTo(Screen.SCHEDULE_TEST_BOOKING) }
+                        onNavigateToSchedule = { navigateTo(Screen.SCHEDULE_TEST_BOOKING) },
+                        viewModel = testBookingViewModel,
                     )
                 }
             }
@@ -141,7 +171,7 @@ fun HealthAnalyticsApp() {
                 onboardViewModel = onboardViewModel,
                 isLoggedIn = {
                     onboardViewModel.updateOnBoardState()
-                }
+                },
             )
         }
     }
@@ -176,7 +206,7 @@ fun OnboardContainer(
                     onboardViewModel = onboardViewModel,
                     navigateToOtpVerification = {
                         navController.navigate(OnboardRoute.OTPVerification)
-                    }
+                    },
                 )
             }
 
@@ -188,7 +218,7 @@ fun OnboardContainer(
                     },
                     navigateToAccountCreation = {
                         navController.navigate(OnboardRoute.CreateAccount)
-                    }
+                    },
                 )
             }
 
@@ -200,7 +230,7 @@ fun OnboardContainer(
                     },
                     navigateToHealthProfile = {
                         navController.navigate(OnboardRoute.HealthProfile)
-                    }
+                    },
                 )
             }
 
@@ -212,7 +242,7 @@ fun OnboardContainer(
                     },
                     navigateToAddress = {
                         navController.navigate(OnboardRoute.SampleCollectionAddress)
-                    }
+                    },
                 )
             }
 
@@ -224,7 +254,7 @@ fun OnboardContainer(
                     },
                     navigateToBloodTest = {
                         navController.navigate(OnboardRoute.ScheduleBloodTest)
-                    }
+                    },
                 )
             }
 
@@ -236,7 +266,7 @@ fun OnboardContainer(
                     },
                     navigateToPayment = {
                         navController.navigate(OnboardRoute.Payment)
-                    }
+                    },
                 )
             }
 
@@ -247,7 +277,7 @@ fun OnboardContainer(
                     },
                     onContinueClick = {
                         isLoggedIn()
-                    }
+                    },
                 )
             }
         }
@@ -256,6 +286,10 @@ fun OnboardContainer(
 
 @Composable
 fun HomeScreen(
+    healthDataViewModel: HealthDataViewModel,
+    preferenceViewModel: PreferencesViewModel,
+    recommendationsViewModel: RecommendationsViewModel,
+    marketPlaceViewModel: MarketPlaceViewModel,
     onProfileClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
@@ -289,8 +323,15 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             when (currentScreen) {
-                MainScreen.DASHBOARD -> HealthDataScreen()
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = { navigateBack() })
+                MainScreen.DASHBOARD -> HealthDataScreen(healthDataViewModel, preferenceViewModel)
+                MainScreen.RECOMMENDATIONS -> {
+                    RecommendationsScreen(
+                        navigateBack = { navigateBack() },
+                        preferencesViewModel = preferenceViewModel,
+                        viewModel = recommendationsViewModel,
+                    )
+                }
+
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(
                         onProductClick = {
@@ -299,7 +340,9 @@ fun HomeScreen(
                         },
                         navigateBack = {
                             navigateBack()
-                        })
+                        },
+                        viewModel = marketPlaceViewModel,
+                    )
                 }
             }
         }

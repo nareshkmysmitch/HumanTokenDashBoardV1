@@ -132,7 +132,7 @@ fun CartScreen(
     onBackClick: () -> Unit,
     onCheckoutClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinInject(),
+    viewModel: MarketPlaceViewModel,
 ) {
     var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }

@@ -54,7 +54,7 @@ fun ConversationListScreen(
     onNavigateToChat: (String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = koinInject(),
+    viewModel: ChatViewModel,
 ) {
 
     Logger.e { "ConversationListScreen" }

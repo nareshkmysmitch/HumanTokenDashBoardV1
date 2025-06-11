@@ -76,7 +76,7 @@ import org.koin.compose.koinInject
 fun ProductDetailScreen(
     product: Product,
     onNavigateBack: () -> Unit,
-    viewModel: MarketPlaceViewModel = koinInject()
+    viewModel: MarketPlaceViewModel,
 ) {
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }

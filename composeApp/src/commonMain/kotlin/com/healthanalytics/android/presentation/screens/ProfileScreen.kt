@@ -61,7 +61,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ProfileScreen(
     onNavigateBack: () -> Unit,
-    viewModel: MarketPlaceViewModel = koinInject()
+    viewModel: MarketPlaceViewModel,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }

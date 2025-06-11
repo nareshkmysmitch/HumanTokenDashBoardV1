@@ -9,4 +9,5 @@ fun ScheduleTestBookingScreen(
     onNavigateBack: () -> Unit,
 ) {
     BackHandler(enabled = true, onBack = onNavigateBack)
+
 }
