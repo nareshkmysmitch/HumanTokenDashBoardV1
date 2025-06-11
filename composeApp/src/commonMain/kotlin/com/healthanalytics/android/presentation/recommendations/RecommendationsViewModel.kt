@@ -74,7 +74,6 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
     }
 
 
-
     private val _uiActionState = MutableStateFlow(ActionPlanUiState())
     val uiActionState: StateFlow<ActionPlanUiState> = _uiActionState.asStateFlow()
 
@@ -105,7 +104,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         return _uiActionState.value.recommendations.count { recommendation ->
             recommendation.actions?.any { action ->
                 action.user_recommendation_actions.isNotEmpty()
-            } == true
+            } == true && recommendation.actions.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.is_completed == true
         }
     }
 
