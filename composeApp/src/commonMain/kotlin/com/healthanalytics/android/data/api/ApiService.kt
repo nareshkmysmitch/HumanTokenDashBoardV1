@@ -1,9 +1,9 @@
 package com.healthanalytics.android.data.api
 
-import com.healthanalytics.android.data.models.ApiResult
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
+import com.healthanalytics.android.data.models.RemoveRecommendationResponse
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
@@ -20,7 +20,7 @@ interface ApiService {
     suspend fun removeRecommendation(
         accessToken: String,
         request: RemoveRecommendationRequest,
-    ): Boolean
+    ): Boolean?
 }
 
 
@@ -59,7 +59,7 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
     override suspend fun removeRecommendation(
         accessToken: String,
         request: RemoveRecommendationRequest,
-    ): Boolean {
+    ): Boolean? {
         val encrypted = request.toEncryptedRequestBody()
         val response = httpClient.post("v1/user/reminder/delete") {
             header("access_token", accessToken)
@@ -67,7 +67,8 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
         }
         println("$encrypted")
         val responseBody = response.bodyAsText()
-        val result = EncryptionUtils.handleDecryptionResponse<ApiResult>(responseBody)
-        return result?.status == "success"
+        val result =
+            EncryptionUtils.handleDecryptionResponse<RemoveRecommendationResponse>(responseBody)
+        return result?.isDeleted
     }
 } 

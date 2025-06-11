@@ -85,11 +85,13 @@ class ActionPlanViewModel(private val apiService: ApiService) : ViewModel() {
                         reminder_id = userAction.event_id ?: "",
                         occurrence_id = "1",
                         recommendation_id = recommendation.id,
-                        action_id = action.id
+                        action_id = action.id,
+                        event_selection = "all",
+                        module = "recommendation"
                     )
 
                     val success = apiService.removeRecommendation(accessToken, request)
-                    if (success) {
+                    if (success == true) {
                         // Reload recommendations after successful removal
                         loadRecommendations(accessToken)
                     } else {
