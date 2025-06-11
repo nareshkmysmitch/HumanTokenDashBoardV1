@@ -39,6 +39,26 @@ data class Product(
     val vendor_id: String? = null,
     val vendor_name: String? = null,
     val vendor_product_id: String? = null,
+    val variants: List<Variant>? = null
+)
+
+@Serializable
+data class Variant(
+    val id: String? = null,
+    val product_id: String? = null,
+    val variant_id: String? = null,
+    val name: String? = null,
+    val description: String? = null,
+    val attributes: Map<String, String>? = null,
+    val price: String? = null,
+    val mrp: String? = null,
+    val sku: String? = null,
+    val stock: Int? = null,
+    val img_urls: List<String>? = null,
+    val is_active: Boolean? = null,
+    val vendor_variant_id: String? = null,
+    val created_at: String? = null,
+    val updated_at: String? = null
 )
 
 @Serializable

@@ -45,6 +45,7 @@ import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Message
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +54,7 @@ fun ChatScreen(
     conversationId: String,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = koinViewModel()
+    viewModel: ChatViewModel = koinInject()
 ) {
     val uiState by viewModel.chatState.collectAsState()
     val messageInput by viewModel.messageInput.collectAsState()

@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
+import com.example.humantoken.ui.screens.Cart
+import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.data.models.AddressItem
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +22,18 @@ sealed class MarketPlaceUiState {
     data class Error(val message: String) : MarketPlaceUiState()
 }
 
+sealed class CartListState {
+    data object Loading : CartListState()
+    data class Success(val cartList: List<Cart>) : CartListState()
+    data class Error(val message: String) : CartListState()
+}
+
+sealed class CartActionState {
+    data object Loading : CartActionState()
+    data class Success(val message: String) : CartActionState()
+    data class Error(val message: String) : CartActionState()
+}
+
 enum class SortOption(val displayName: String) {
     RATING_LOW_TO_HIGH("Low to High (Ratings)"), RATING_HIGH_TO_LOW("High to Low (Ratings)"), NAME_A_TO_Z(
         "A to Z (Name)"
@@ -26,12 +41,29 @@ enum class SortOption(val displayName: String) {
     NAME_Z_TO_A("Z to A (Name)"), PRICE_LOW_TO_HIGH("Low to High (Price)"), PRICE_HIGH_TO_LOW("High to Low (Price)")
 }
 
+sealed class ProductDetailsState {
+    data object Loading : ProductDetailsState()
+    data class Success(val product: Product) : ProductDetailsState()
+    data class Error(val message: String) : ProductDetailsState()
+}
+
+sealed class LogoutState {
+    data object Initial : LogoutState()
+    data object Loading : LogoutState()
+    data class Success(val message: String) : LogoutState()
+    data class Error(val message: String) : LogoutState()
+}
+
 class MarketPlaceViewModel(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MarketPlaceUiState>(MarketPlaceUiState.Loading)
     val uiState: StateFlow<MarketPlaceUiState> = _uiState.asStateFlow()
+
+    private val _cartListState = MutableStateFlow<CartListState>(CartListState.Loading)
+    val cartListFlow: StateFlow<CartListState> = _cartListState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
@@ -44,11 +76,69 @@ class MarketPlaceViewModel(
 
     private val _allProducts = MutableStateFlow<List<Product?>>(emptyList())
 
+    private val _cartActionState = MutableStateFlow<CartActionState>(CartActionState.Loading)
+    val cartActionState: StateFlow<CartActionState> = _cartActionState.asStateFlow()
+
+    private val _accessToken = MutableStateFlow<String?>(null)
+    val accessToken: StateFlow<String?> = _accessToken.asStateFlow()
+
     private val _addressList = MutableStateFlow<List<AddressItem>>(emptyList())
     val addressList = _addressList.asStateFlow()
 
     private val _selectedAddress = MutableStateFlow<AddressItem?>(null)
     val selectedAddress = _selectedAddress.asStateFlow()
+
+    private val _productDetailsState = MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
+    val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
+
+    // User Profile States
+    private val _userName = MutableStateFlow<String?>(null)
+    val userName: StateFlow<String?> = _userName.asStateFlow()
+
+    private val _userEmail = MutableStateFlow<String?>(null)
+    val userEmail: StateFlow<String?> = _userEmail.asStateFlow()
+
+    private val _userPhone = MutableStateFlow<String?>(null)
+    val userPhone: StateFlow<String?> = _userPhone.asStateFlow()
+
+    // Address States from Preferences
+    private val _cachedAddressLine1 = MutableStateFlow<String?>(null)
+    val cachedAddressLine1: StateFlow<String?> = _cachedAddressLine1.asStateFlow()
+
+    private val _cachedAddressLine2 = MutableStateFlow<String?>(null)
+    val cachedAddressLine2: StateFlow<String?> = _cachedAddressLine2.asStateFlow()
+
+    private val _cachedCity = MutableStateFlow<String?>(null)
+    val cachedCity: StateFlow<String?> = _cachedCity.asStateFlow()
+
+    private val _cachedState = MutableStateFlow<String?>(null)
+    val cachedState: StateFlow<String?> = _cachedState.asStateFlow()
+
+    private val _cachedPincode = MutableStateFlow<String?>(null)
+    val cachedPincode: StateFlow<String?> = _cachedPincode.asStateFlow()
+
+    private val _cachedCountry = MutableStateFlow<String?>(null)
+    val cachedCountry: StateFlow<String?> = _cachedCountry.asStateFlow()
+
+    private val _cachedAddressId = MutableStateFlow<String?>(null)
+    val cachedAddressId: StateFlow<String?> = _cachedAddressId.asStateFlow()
+
+    private val _logoutState = MutableStateFlow<LogoutState>(LogoutState.Initial)
+    val logoutState: StateFlow<LogoutState> = _logoutState.asStateFlow()
+
+    // Helper function to convert UpdateAddressListResponse to Address
+    private fun createAddress(response: UpdateAddressListResponse): Address {
+        return Address(
+            address = response.address_line_1 ?: "",
+            pincode = response.pincode ?: "",
+            address_line_1 = response.address_line_1 ?: "",
+            address_line_2 = response.address_line_2,
+            city = response.city ?: "",
+            state = response.state ?: "",
+            country = response.country ?: "",
+            address_type = "communication"
+        )
+    }
 
     val filteredProducts = combine(
         _allProducts, _searchQuery, _selectedCategories, _sortOption
@@ -89,12 +179,88 @@ class MarketPlaceViewModel(
         filtered
     }
 
-    // TODO: In a real app, get this from a secure storage or auth service
-    private val dummyAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTkzN2RiNzItNmVlMy00NTEwLTgzYjktM2UwNzI2MmRlNjQ5Iiwic2Vzc2lvbl9pZCI6IjNlNjNkY2U4LWJmY2ItNDY5Yi1hMDE1LWQ1ODRmMTVjNjRmZiIsInVzZXJfaW50X2lkIjoiNTc3IiwiaWF0IjoxNzQ5MTI5MTgyLCJleHAiOjE3NDk3MzM5ODJ9.dXgmh8whbL1IxEJSE_TAE9gxe1da-KFg2M87eWOXPU0"
-
     init {
-        loadProducts()
-        loadAddresses()
+        viewModelScope.launch {
+            preferencesRepository.accessToken.collect { token ->
+                println("Access Token Updated: $token")
+                _accessToken.value = token
+            }
+        }
+        
+        // Collect user details
+        viewModelScope.launch {
+            preferencesRepository.userName.collect { name ->
+                println("User Name Updated: $name")
+                _userName.value = name
+            }
+        }
+        viewModelScope.launch {
+            preferencesRepository.userEmail.collect { email ->
+                println("User Email Updated: $email")
+                _userEmail.value = email
+            }
+        }
+        viewModelScope.launch {
+            preferencesRepository.userPhone.collect { phone ->
+                println("User Phone Updated: $phone")
+                _userPhone.value = phone
+            }
+        }
+
+        // Collect cached address
+        viewModelScope.launch {
+            preferencesRepository.addressLine1.collect { _cachedAddressLine1.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.addressLine2.collect { _cachedAddressLine2.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.city.collect { _cachedCity.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.state.collect { _cachedState.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.pincode.collect { _cachedPincode.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.country.collect { _cachedCountry.value = it }
+        }
+        viewModelScope.launch {
+            preferencesRepository.addressId.collect { _cachedAddressId.value = it }
+        }
+    }
+
+    fun initializeMarketplace() {
+        println("Initializing Marketplace")
+        viewModelScope.launch {
+            try {
+                val token = _accessToken.value
+                println("Current Token: $token")
+                
+                if (token != null) {
+                    loadProducts()
+                    loadAddresses()
+                    getCartList()
+                } else {
+                    println("Token not available, waiting for token...")
+                    // Wait for the first token value
+                    preferencesRepository.accessToken.collect { newToken ->
+                        if (newToken != null) {
+                            println("Token received: $newToken")
+                            _accessToken.value = newToken
+                            loadProducts()
+                            loadAddresses()
+                            getCartList()
+                            return@collect // Exit after first valid token
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                println("Marketplace initialization error: ${e.message}")
+                _uiState.value = MarketPlaceUiState.Error(e.message ?: "Failed to initialize marketplace")
+            }
+        }
     }
 
     fun updateSearchQuery(query: String) {
@@ -115,11 +281,81 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             _uiState.value = MarketPlaceUiState.Loading
             try {
-                val products = apiService.getProducts(dummyAccessToken)
-                _allProducts.value = products ?: emptyList()
-                _uiState.value = MarketPlaceUiState.Success(products ?: emptyList())
+                val token = _accessToken.value
+                println("Loading products with token: $token")
+                if (token != null) {
+                    val products = apiService.getProducts(token)
+                    _allProducts.value = products ?: emptyList()
+                    _uiState.value = MarketPlaceUiState.Success(products ?: emptyList())
+                } else {
+                    _uiState.value = MarketPlaceUiState.Error("Access token not available")
+                }
             } catch (e: Exception) {
+                println("Error loading products: ${e.message}")
                 _uiState.value = MarketPlaceUiState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun getCartList() {
+        viewModelScope.launch {
+            _cartListState.value = CartListState.Loading
+            try {
+                val token = _accessToken.value
+                println("Loading cart with token: $token")
+                if (token != null) {
+                    val cartList = apiService.getCartList(token)
+                    _cartListState.value = CartListState.Success(cartList?.filterNotNull() ?: emptyList())
+                } else {
+                    _cartListState.value = CartListState.Error("Access token not available")
+                }
+            } catch (e: Exception) {
+                println("Error loading cart: ${e.message}")
+                _cartListState.value = CartListState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun addToCart(productId: String, variantId: String) {
+        viewModelScope.launch {
+            _cartActionState.value = CartActionState.Loading
+            try {
+                val token = _accessToken.value
+                if (token != null) {
+                    val response = apiService.addProduct(token, productId, variantId)
+                    if (response != null) {
+                        _cartActionState.value = CartActionState.Success(response.message)
+                        getCartList()
+                    } else {
+                        _cartActionState.value = CartActionState.Error("Failed to add product to cart")
+                    }
+                } else {
+                    _cartActionState.value = CartActionState.Error("Access token not available")
+                }
+            } catch (e: Exception) {
+                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun updateCartItem(productId: String, quantity: String) {
+        viewModelScope.launch {
+            _cartActionState.value = CartActionState.Loading
+            try {
+                val token = _accessToken.value
+                if (token != null) {
+                    val response = apiService.updateProduct(token, productId, quantity)
+                    if (response != null) {
+                        _cartActionState.value = CartActionState.Success(response.message)
+                        getCartList()
+                    } else {
+                        _cartActionState.value = CartActionState.Error("Failed to update cart item")
+                    }
+                } else {
+                    _cartActionState.value = CartActionState.Error("Access token not available")
+                }
+            } catch (e: Exception) {
+                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -127,17 +363,54 @@ class MarketPlaceViewModel(
     fun loadAddresses() {
         viewModelScope.launch {
             try {
-                val addressData = apiService.getAddresses(dummyAccessToken)
-                if (addressData != null) {
-                    _addressList.value = addressData.address_list
-                    // Select the first address as default if available
-                    if (_addressList.value.isNotEmpty()) {
-                        // Prefer communication address if available, otherwise use the first one
-                        val communicationAddress = _addressList.value.find {
+                // First set the cached address if available
+                if (_cachedAddressLine1.value != null) {
+                    val cachedAddressResponse = UpdateAddressListResponse(
+                        address_line_1 = _cachedAddressLine1.value,
+                        address_line_2 = _cachedAddressLine2.value,
+                        city = _cachedCity.value,
+                        state = _cachedState.value,
+                        pincode = _cachedPincode.value,
+                        country = _cachedCountry.value,
+                        di_address_id = _cachedAddressId.value
+                    )
+                    
+                    val cachedAddress = AddressItem(
+                        address = createAddress(cachedAddressResponse),
+                        address_id = _cachedAddressId.value ?: ""
+                    )
+                    _selectedAddress.value = cachedAddress
+                    _addressList.value = listOf(cachedAddress)
+                }
+
+                // Then try to load from API
+                val token = _accessToken.value
+                println("Loading addresses with token: $token")
+                if (token != null) {
+                    val addresses = apiService.getAddresses(token)
+                    println("Addresses response: $addresses")
+                    if (addresses?.address_list?.isNotEmpty() == true) {
+                        _addressList.value = addresses.address_list
+                        // Select the first address as default if available
+                        val communicationAddress = addresses.address_list.find {
                             it.address.address_type == "communication"
                         }
-                        _selectedAddress.value = communicationAddress ?: _addressList.value.first()
+                        val selectedAddress = communicationAddress ?: addresses.address_list.first()
+                        _selectedAddress.value = selectedAddress
+
+                        // Save the new address to preferences
+                        preferencesRepository.saveAddress(
+                            addressLine1 = selectedAddress.address.address_line_1,
+                            addressLine2 = selectedAddress.address.address_line_2,
+                            city = selectedAddress.address.city,
+                            state = selectedAddress.address.state,
+                            pincode = selectedAddress.address.pincode,
+                            country = selectedAddress.address.country,
+                            addressId = selectedAddress.address_id
+                        )
                     }
+                } else {
+                    println("Cannot load addresses: Token is null")
                 }
             } catch (e: Exception) {
                 println("Error loading addresses: ${e.message}")
@@ -155,23 +428,73 @@ class MarketPlaceViewModel(
     ) {
         viewModelScope.launch {
             try {
-                val request = UpdateProfileRequest(
-                    name = name,
-                    email = email,
-                    phone = phone,
-                    address = address,
-                    di_address_id = diAddressId
-                )
-                val response = apiService.updateProfile(dummyAccessToken, request)
+                val token = _accessToken.value
+                if (token != null) {
+                    val request = UpdateProfileRequest(
+                        name = name,
+                        email = email,
+                        phone = phone,
+                        address = address,
+                        di_address_id = diAddressId
+                    )
+                    val response = apiService.updateProfile(token, request)
 
-                if (response?.message == "Profile updated successfully") {
-                    callback(true, response.message)
+                    if (response?.message == "Profile updated successfully") {
+                        callback(true, response.message)
+                    } else {
+                        callback(false, response?.message ?: "Failed to update profile")
+                    }
                 } else {
-                    callback(false, response?.message ?: "Failed to update profile")
+                    callback(false, "Access token not available")
                 }
             } catch (e: Exception) {
                 println("Profile update error: ${e.message}")
                 callback(false, e.message ?: "An error occurred")
+            }
+        }
+    }
+
+    fun getProductDetails(productId: String) {
+        viewModelScope.launch {
+            _productDetailsState.value = ProductDetailsState.Loading
+            try {
+                val token = _accessToken.value
+                if (token != null) {
+                    val product = apiService.getProductDetails(token, productId)
+                    if (product != null) {
+                        _productDetailsState.value = ProductDetailsState.Success(product)
+                    } else {
+                        _productDetailsState.value = ProductDetailsState.Error("Product not found")
+                    }
+                } else {
+                    _productDetailsState.value = ProductDetailsState.Error("Access token not available")
+                }
+            } catch (e: Exception) {
+                _productDetailsState.value = ProductDetailsState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                _logoutState.value = LogoutState.Loading
+                val token = _accessToken.value
+                if (token == null) {
+                    _logoutState.value = LogoutState.Error("Access token not available")
+                    return@launch
+                }
+
+                val success = apiService.logout(token)
+                if (success) {
+                    // Clear all preferences
+                    preferencesRepository.clearAllPreferences()
+                    _logoutState.value = LogoutState.Success("Logged out successfully")
+                } else {
+                    _logoutState.value = LogoutState.Error("Failed to logout")
+                }
+            } catch (e: Exception) {
+                _logoutState.value = LogoutState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }

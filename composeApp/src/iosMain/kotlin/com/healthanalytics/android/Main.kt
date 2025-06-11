@@ -15,7 +15,7 @@ fun MainViewController(): UIViewController {
 //    val root = RootComponent(
 //        componentContext = DefaultComponentContext(lifecycle = lifecycle)
 //    )
-//
+
     return ComposeUIViewController {
         MaterialTheme {
             App()

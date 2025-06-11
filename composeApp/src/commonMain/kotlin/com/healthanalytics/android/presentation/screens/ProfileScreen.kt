@@ -16,6 +16,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Man
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,25 +49,46 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
+import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onNavigateBack: () -> Unit,
-    viewModel: MarketPlaceViewModel = koinViewModel()
+    viewModel: MarketPlaceViewModel = koinInject()
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
-    var name by remember { mutableStateOf("Agent Nash") }
-    var email by remember { mutableStateOf("agentnash@yopmail.com") }
-    var phone by remember { mutableStateOf("+91 9677004512") }
+    
+    // Get values from ViewModel states
+    val userName by viewModel.userName.collectAsState()
+    val userEmail by viewModel.userEmail.collectAsState()
+    val userPhone by viewModel.userPhone.collectAsState()
+    val addressList by viewModel.addressList.collectAsState()
+    val accessToken by viewModel.accessToken.collectAsState()
+    val logoutState by viewModel.logoutState.collectAsState()
+    
+    // Handle logout state changes
+    LaunchedEffect(logoutState) {
+        when (logoutState) {
+            is LogoutState.Success -> {
+                // User will be redirected to OnboardContainer automatically
+                // because hasAccessToken in HealthAnalyticsApp will become false
+                onNavigateBack()
+            }
+            else -> {}
+        }
+    }
+    
+    var name by remember(userName) { mutableStateOf(userName ?: "") }
+    var email by remember(userEmail) { mutableStateOf(userEmail ?: "") }
+    var phone by remember(userPhone) { mutableStateOf(userPhone ?: "") }
     var dateOfBirth by remember { mutableStateOf("December 20, 1998") }
 
     val selectedAddress by viewModel.selectedAddress.collectAsState()
@@ -91,9 +116,12 @@ fun ProfileScreen(
         mutableStateOf(selectedAddress?.address_id ?: "")
     }
 
-    // Load addresses when the screen is first shown
-    LaunchedEffect(Unit) {
-        viewModel.loadAddresses()
+    // Load addresses when access token becomes available
+    LaunchedEffect(accessToken) {
+        if (accessToken != null) {
+            println("Loading addresses with available token")
+            viewModel.loadAddresses()
+        }
     }
 
     BackHandler(enabled = true, onBack = {
@@ -123,7 +151,7 @@ fun ProfileScreen(
                         }
                     }) {
                         Icon(
-                            painter = painterResource(Res.drawable.ic_calendar_icon),
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
                             tint = AppColors.primary,
                             modifier = Modifier.size(24.dp)
@@ -181,7 +209,7 @@ fun ProfileScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                                        imageVector = Icons.Default.Man,
                                         contentDescription = "Profile",
                                         tint = Color.White,
                                         modifier = Modifier.size(32.dp)
@@ -396,7 +424,10 @@ fun ProfileScreen(
                     title = "Log out",
                     message = "You will be logged out of your Deep Holistics account. However this doesn't affect your logged data. Do you want to still logout?",
                     onDismiss = { showAlertDialog = false },
-                    onLogout = { showAlertDialog = false }
+                    onLogout = { 
+                        viewModel.logout()
+                        showAlertDialog = false
+                    }
                 )
             }
         }
