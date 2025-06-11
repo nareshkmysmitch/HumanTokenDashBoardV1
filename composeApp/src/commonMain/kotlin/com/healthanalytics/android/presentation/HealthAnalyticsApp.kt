@@ -20,16 +20,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
+import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
+import com.healthanalytics.android.presentation.components.Screen.*
 import com.healthanalytics.android.presentation.components.TopAppBar
-import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
+import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailScreen
+import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
@@ -47,13 +50,11 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HealthAnalyticsApp() {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
     var lastMainScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
+    var biomarker by remember { mutableStateOf(BloodData()) }
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen is Screen.HOME ||
-            currentScreen is Screen.PROFILE ||
-            currentScreen is Screen.CONVERSATION_LIST
-        ) {
+        if (currentScreen is Screen.HOME || currentScreen is Screen.PROFILE || currentScreen is Screen.CONVERSATION_LIST) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
@@ -71,57 +72,56 @@ fun HealthAnalyticsApp() {
             when (currentScreen) {
                 Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
                 Screen.CONVERSATION_LIST -> {
-                    ConversationListScreen(
-                        onNavigateToChat = { id ->
-                            navigateTo(Screen.CHAT(conversationId = id))
-                        },
-                        onNavigateBack = { navigateTo(Screen.HOME) }
-                    )
+                    ConversationListScreen(onNavigateToChat = { id ->
+                        navigateTo(CHAT(conversationId = id))
+                    }, onNavigateBack = { navigateTo(Screen.HOME) })
                 }
 
                 is Screen.CHAT -> {
                     val chatScreen = currentScreen as Screen.CHAT
                     ChatScreen(
                         conversationId = chatScreen.conversationId,
-                        onNavigateBack = { navigateBack() }
-                    )
+                        onNavigateBack = { navigateBack() })
                 }
 
                 is Screen.MARKETPLACE_DETAIL -> {
                     val marketplaceScreen = currentScreen as Screen.MARKETPLACE_DETAIL
                     ProductDetailScreen(
-                        product = marketplaceScreen.product,
-                        onNavigateBack = { navigateBack() }
-                    )
+                        product = marketplaceScreen.product, onNavigateBack = { navigateBack() })
                 }
 
                 Screen.CART -> CartScreen(onCheckoutClick = { }, onBackClick = { navigateBack() })
-                Screen.HOME -> {
-                    HomeScreen(
-                        onProfileClick = {
-                            navigateTo(Screen.PROFILE)
-                        },
-                        onChatClick = {
-                            navigateTo(Screen.CONVERSATION_LIST)
-                        },
-                        onMarketPlaceClick = { product ->
-                            navigateTo(Screen.MARKETPLACE_DETAIL(product))
-                        },
-                        onCartClick = {
-                            navigateTo(Screen.CART)
-                        }
+
+                Screen.BIOMARKERS_DETAIL -> {
+                    BiomarkerDetailScreen(
+                        onNavigateBack = {
+                            navigateBack()
+                        }, biomarker = biomarker
                     )
+                }
+
+                HOME -> {
+                    HomeScreen(onProfileClick = {
+                        navigateTo(PROFILE)
+                    }, onChatClick = {
+                        navigateTo(CONVERSATION_LIST)
+                    }, onMarketPlaceClick = { product ->
+                        navigateTo(MARKETPLACE_DETAIL(product))
+                    }, onCartClick = {
+                        navigateTo(CART)
+                    }, onBiomarker = {
+                        biomarker = it ?: BloodData()
+                        navigateTo(BIOMARKERS_DETAIL)
+                    })
                 }
             }
         }
 
         else -> {
             OnboardContainer(
-                onboardViewModel = onboardViewModel,
-                isLoggedIn = {
+                onboardViewModel = onboardViewModel, isLoggedIn = {
                     onboardViewModel.updateOnBoardState()
-                }
-            )
+                })
         }
     }
 }
@@ -141,58 +141,42 @@ private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel
 
 @Composable
 fun OnboardContainer(
-    isLoggedIn: () -> Unit,
-    onboardViewModel: OnboardViewModel
+    isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel
 ) {
     org.koin.compose.KoinContext {
         val navController = rememberNavController()
         NavHost(
-            navController = navController,
-            startDestination = OnboardRoute.Login
+            navController = navController, startDestination = OnboardRoute.Login
         ) {
             composable<OnboardRoute.Login> {
                 LoginScreenContainer(
-                    onboardViewModel = onboardViewModel,
-                    navigateToOtpVerification = {
+                    onboardViewModel = onboardViewModel, navigateToOtpVerification = {
                         navController.navigate(OnboardRoute.OTPVerification)
-                    }
-                )
+                    })
             }
 
             composable<OnboardRoute.OTPVerification> {
-                OTPContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToAccountCreation = {
-                        navController.navigate(OnboardRoute.CreateAccount)
-                    }
-                )
+                OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                    navController.navigateUp()
+                }, navigateToAccountCreation = {
+                    navController.navigate(OnboardRoute.CreateAccount)
+                })
             }
 
             composable<OnboardRoute.CreateAccount> {
-                CreateAccountContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToHealthProfile = {
-                        navController.navigate(OnboardRoute.HealthProfile)
-                    }
-                )
+                CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                    navController.navigateUp()
+                }, navigateToHealthProfile = {
+                    navController.navigate(OnboardRoute.HealthProfile)
+                })
             }
 
             composable<OnboardRoute.HealthProfile> {
-                HealthProfileContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToAddress = {
-                        navController.navigate(OnboardRoute.SampleCollectionAddress)
-                    }
-                )
+                HealthProfileContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                    navController.navigateUp()
+                }, navigateToAddress = {
+                    navController.navigate(OnboardRoute.SampleCollectionAddress)
+                })
             }
 
             composable<OnboardRoute.SampleCollectionAddress> {
@@ -203,31 +187,23 @@ fun OnboardContainer(
                     },
                     navigateToBloodTest = {
                         navController.navigate(OnboardRoute.ScheduleBloodTest)
-                    }
-                )
+                    })
             }
 
             composable<OnboardRoute.ScheduleBloodTest> {
-                ScheduleBloodTestContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToPayment = {
-                        navController.navigate(OnboardRoute.Payment)
-                    }
-                )
+                ScheduleBloodTestContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                    navController.navigateUp()
+                }, navigateToPayment = {
+                    navController.navigate(OnboardRoute.Payment)
+                })
             }
 
             composable<OnboardRoute.Payment> {
-                PaymentScreen(
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    onContinueClick = {
-                        isLoggedIn()
-                    }
-                )
+                PaymentScreen(onBackClick = {
+                    navController.navigateUp()
+                }, onContinueClick = {
+                    isLoggedIn()
+                })
             }
         }
     }
@@ -238,6 +214,7 @@ fun HomeScreen(
     onProfileClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
+    onBiomarker: (BloodData?) -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
 ) {
 
@@ -268,17 +245,15 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             when (currentScreen) {
-                MainScreen.DASHBOARD -> HealthDataScreen()
+                MainScreen.DASHBOARD -> HealthDataScreen(onNavigateToDetail = { onBiomarker(it) })
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = { navigateBack() })
                 MainScreen.MARKETPLACE -> {
-                    MarketPlaceScreen(
-                        onProductClick = {
-                            onMarketPlaceClick(it)
-                            println("product -> Ha1$it")
-                        },
-                        navigateBack = {
-                            navigateBack()
-                        })
+                    MarketPlaceScreen(onProductClick = {
+                        onMarketPlaceClick(it)
+                        println("product -> Ha1$it")
+                    }, navigateBack = {
+                        navigateBack()
+                    })
                 }
             }
         }

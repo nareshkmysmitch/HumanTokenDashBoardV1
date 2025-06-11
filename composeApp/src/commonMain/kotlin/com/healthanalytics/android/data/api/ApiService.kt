@@ -80,7 +80,7 @@ class ApiServiceImpl(
         val responseBody = response.bodyAsText()
         val healthMetricsResponse =
             EncryptionUtils.handleDecryptionResponse<HealthMetrics>(responseBody)
-        return healthMetricsResponse?.blood?.data
+        return healthMetricsResponse?.blood?.bloodData
     }
 
     override suspend fun updateProfile(

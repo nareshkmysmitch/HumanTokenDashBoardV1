@@ -9,4 +9,6 @@ sealed class Screen {
     data class CHAT(val conversationId: String) : Screen()
     data class MARKETPLACE_DETAIL(val product: Product) : Screen()
     data object CART : Screen()
-} 
+
+    data object BIOMARKERS_DETAIL : Screen()
+}

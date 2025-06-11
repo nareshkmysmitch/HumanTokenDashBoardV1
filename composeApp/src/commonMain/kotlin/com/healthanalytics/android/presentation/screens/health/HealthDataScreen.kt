@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,10 +52,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthDataScreen(
     viewModel: HealthDataViewModel = koinInject(),
     prefs: PreferencesViewModel = koinInject(),
+    onNavigateToDetail: (BloodData?) -> Unit
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -72,7 +76,6 @@ fun HealthDataScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-
         Text(
             text = "Health Data",
             style = MaterialTheme.typography.headlineMedium,
@@ -99,20 +102,6 @@ fun HealthDataScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 placeholder = { Text("Search health data") },
-//                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                trailingIcon = {
-                    if (uiState.searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-//                            Icon(Icons.Default.Clear, contentDescription = "Clear")
-                        }
-                    }
-                    IconButton(onClick = {
-                        viewModel.updateSearchQuery("")
-                        isSearchVisible = false
-                    }) {
-//                        Icon(Icons.Default.Close, contentDescription = "Close")
-                    }
-                },
                 singleLine = true
             )
         }
@@ -151,7 +140,10 @@ fun HealthDataScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(filteredMetrics) { metric ->
-                    MetricCard(metric = metric)
+                    MetricCard(
+                        metric = metric,
+                        onMetricClick ={ onNavigateToDetail(metric)}
+                    )
                 }
             }
         }
@@ -159,9 +151,14 @@ fun HealthDataScreen(
 }
 
 @Composable
-fun MetricCard(metric: BloodData?) {
+fun MetricCard(
+    metric: BloodData?,
+    onMetricClick: (BloodData) -> Unit = {}
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { metric?.let { onMetricClick(it) } },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
