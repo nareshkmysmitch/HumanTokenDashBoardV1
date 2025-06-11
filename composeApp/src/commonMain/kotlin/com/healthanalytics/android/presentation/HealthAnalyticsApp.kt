@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.healthanalytics.android.data.models.Product
+import com.healthanalytics.android.payment.RazorpayHandler
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.TopAppBar
@@ -31,10 +32,12 @@ import com.healthanalytics.android.presentation.screens.onboard.HealthProfileCon
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
 import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
-import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
-import com.healthanalytics.android.presentation.screens.onboard.PaymentScreen
+import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
+import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
+import com.healthanalytics.android.presentation.theme.AppColors
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -113,8 +116,15 @@ fun HealthAnalyticsApp() {
         }
 
         onBoardUiState.hasAccessToken -> {
-            HomeScreen(
-                accessToken = "",
+//            HomeScreen(
+//                accessToken = "",
+//            )
+
+            OnboardContainer(
+                onboardViewModel = onboardViewModel,
+                isLoggedIn = {
+                    onboardViewModel.updateOnBoardState()
+                }
             )
         }
 
@@ -150,92 +160,103 @@ fun OnboardContainer(
 ) {
     org.koin.compose.KoinContext {
         val navController = rememberNavController()
-        NavHost(
-            navController = navController,
-            startDestination = OnboardRoute.Login
-        ) {
-            composable<OnboardRoute.Login> {
-                LoginScreenContainer(
-                    onboardViewModel = onboardViewModel,
-                    navigateToOtpVerification = {
-                        navController.navigate(OnboardRoute.OTPVerification)
-                    }
-                )
-            }
+        val razorpayHandler: RazorpayHandler = getKoin().get()
 
-            composable<OnboardRoute.OTPVerification> {
-                OTPContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToAccountCreation = {
-                        navController.navigate(OnboardRoute.CreateAccount)
-                    }
-                )
-            }
+        Scaffold(
+            containerColor = AppColors.backgroundDark
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = OnboardRoute.Login,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable<OnboardRoute.Login> {
+                    LoginScreenContainer(
+                        onboardViewModel = onboardViewModel,
+                        navigateToOtpVerification = {
+                            navController.navigate(OnboardRoute.OTPVerification)
+                        }
+                    )
+                }
 
-            composable<OnboardRoute.CreateAccount> {
-                CreateAccountContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToHealthProfile = {
-                        navController.navigate(OnboardRoute.HealthProfile)
-                    }
-                )
-            }
+                composable<OnboardRoute.OTPVerification> {
+                    OTPContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        navigateToAccountCreation = {
+                            navController.navigate(OnboardRoute.CreateAccount)
+                        }
+                    )
+                }
 
-            composable<OnboardRoute.HealthProfile> {
-                HealthProfileContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToAddress = {
-                        navController.navigate(OnboardRoute.SampleCollectionAddress)
-                    }
-                )
-            }
+                composable<OnboardRoute.CreateAccount> {
+                    CreateAccountContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        navigateToHealthProfile = {
+                            navController.navigate(OnboardRoute.HealthProfile)
+                        }
+                    )
+                }
 
-            composable<OnboardRoute.SampleCollectionAddress> {
-                SampleCollectionAddressContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToBloodTest = {
-                        navController.navigate(OnboardRoute.ScheduleBloodTest)
-                    }
-                )
-            }
+                composable<OnboardRoute.HealthProfile> {
+                    HealthProfileContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        navigateToAddress = {
+                            navController.navigate(OnboardRoute.SampleCollectionAddress)
+                        }
+                    )
+                }
 
-            composable<OnboardRoute.ScheduleBloodTest> {
-                ScheduleBloodTestContainer(
-                    onboardViewModel = onboardViewModel,
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    navigateToPayment = {
-                        navController.navigate(OnboardRoute.Payment)
-                    }
-                )
-            }
+                composable<OnboardRoute.SampleCollectionAddress> {
+                    SampleCollectionAddressContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        navigateToBloodTest = {
+                            navController.navigate(OnboardRoute.ScheduleBloodTest)
+                        }
+                    )
+                }
 
-            composable<OnboardRoute.Payment> {
-                PaymentScreen(
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    onContinueClick = {
-                        isLoggedIn()
-                    }
-                )
+                composable<OnboardRoute.ScheduleBloodTest> {
+                    ScheduleBloodTestContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        navigateToPayment = {
+                            navController.navigate(OnboardRoute.Payment)
+                        }
+                    )
+                }
+
+                composable<OnboardRoute.Payment> {
+
+                    onboardViewModel.generateOrderId()
+
+                    PaymentScreenContainer(
+                        onboardViewModel = onboardViewModel,
+                        razorpayHandler = razorpayHandler,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        isPaymentCompleted = {
+                            isLoggedIn()
+                        }
+                    )
+                }
             }
         }
     }
-
 }
 
 @Composable

@@ -6,9 +6,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import com.healthanalytics.android.presentation.theme.AppColors
-import humantokendashboardv1.composeapp.generated.resources.Res
 
 
 @Composable

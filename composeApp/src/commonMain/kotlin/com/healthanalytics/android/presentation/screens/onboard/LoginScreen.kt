@@ -39,13 +39,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.data.models.onboard.AuthResponse
+import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
+import humantokendashboardv1.composeapp.generated.resources.rounded_logo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
@@ -61,7 +62,8 @@ fun LoginScreenContainer(
         onContinueClick = {
             onboardViewModel.sendOTP(it)
         },
-        navigateToOtpVerification = navigateToOtpVerification
+        navigateToOtpVerification = navigateToOtpVerification,
+        phoneNumber = onboardViewModel.getPhoneNumber()
     )
 }
 
@@ -73,7 +75,8 @@ fun LoginScreen(
     loginState: SharedFlow<Resource<AuthResponse?>>,
     onContinueClick: (String) -> Unit = {},
     onCountryCodeClick: () -> Unit = {},
-    navigateToOtpVerification: () -> Unit
+    navigateToOtpVerification: () -> Unit,
+    phoneNumber: String
 ) {
 
     GetOTPResponse(
@@ -81,11 +84,11 @@ fun LoginScreen(
         navigateToOtpVerification = navigateToOtpVerification
     )
 
-    var phoneNumber by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf(phoneNumber) }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
-        delay(100) // Small delay to ensure the UI is fully composed
+        delay(100)
         focusRequester.requestFocus()
     }
 
@@ -104,7 +107,7 @@ fun LoginScreen(
         ) {
             // App Logo
             Image(
-                painter = painterResource(Res.drawable.ic_calendar_icon),
+                painter = painterResource(Res.drawable.rounded_logo),
                 contentDescription = AppStrings.appName,
                 modifier = Modifier.size(80.dp)
             )
@@ -275,5 +278,7 @@ fun GetOTPResponse(
         else -> {}
     }
 }
+
+
 
 

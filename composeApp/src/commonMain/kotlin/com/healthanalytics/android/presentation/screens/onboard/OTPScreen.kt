@@ -1,14 +1,17 @@
 package com.healthanalytics.android.presentation.screens.onboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowLeft
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
@@ -26,19 +29,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.components.DHToolBar
 import com.healthanalytics.android.data.models.onboard.OtpResponse
+import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.*
 import com.healthanalytics.android.utils.Resource
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
-import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.contracts.contract
 
-// Extension function for clickable without ripple effect
 private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     clickable(
         indication = null,
@@ -54,8 +53,10 @@ fun OTPContainer(
     onBackClick: () -> Unit = {},
     navigateToAccountCreation: () -> Unit
 ) {
+    val otpVerifyState by onboardViewModel.otpVerifyState.collectAsStateWithLifecycle(null)
+
     OTPScreen(
-        otpVerifyState = onboardViewModel.otpVerifyState,
+        otpVerifyState = otpVerifyState,
         phoneNumber = onboardViewModel.getPhoneNumber(),
         onBackClick = onBackClick,
         otpVerified = navigateToAccountCreation,
@@ -76,7 +77,7 @@ fun OTPScreen(
     onContinueClick: (String) -> Unit = {},
     onResendClick: () -> Unit = {},
     otpVerified: () -> Unit,
-    otpVerifyState: SharedFlow<Resource<OtpResponse?>>
+    otpVerifyState: Resource<OtpResponse?>?
 ) {
     var otpValues by remember { mutableStateOf(List(6) { "" }) }
     var resendTimer by remember { mutableStateOf(45) }
@@ -110,47 +111,17 @@ fun OTPScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.backgroundDark)
             .padding(Dimensions.screenPadding)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top Bar with Back Button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 40.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Back",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = "Deep Holistics",
-                    style = AppTextStyles.headingSmall.copy(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = AppColors.textPrimary
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Empty space to balance the layout
-                Spacer(modifier = Modifier.size(40.dp))
-            }
+            DHToolBar(
+                title = "Login",
+                onBackClick = onBackClick
+            )
 
             Spacer(modifier = Modifier.height(80.dp))
 
@@ -306,23 +277,16 @@ fun OTPScreen(
 
 @Composable
 fun GetVerifyOTPResponse(
-    otpVerifyState: SharedFlow<Resource<OtpResponse?>>,
+    otpVerifyState: Resource<OtpResponse?>?,
     otpVerified: () -> Unit
 ) {
-    val response by otpVerifyState.collectAsStateWithLifecycle(null)
-    when (response) {
-        is Resource.Error<*> -> {
-
-        }
-
+    when (otpVerifyState) {
+        is Resource.Error<*> -> {}
+        is Resource.Loading<*> -> {}
         is Resource.Success -> {
             LaunchedEffect(Unit) {
                 otpVerified()
             }
-        }
-
-        is Resource.Loading<*> -> {
-
         }
 
         else -> {}
@@ -378,3 +342,17 @@ private fun OTPInputField(
         }
     )
 }
+
+@Preview
+@Composable
+fun OTPScreenPreview() {
+    OTPScreen(
+        otpVerifyState = Resource.Loading(),
+        phoneNumber = "+91 1234567890",
+        onBackClick = {},
+        otpVerified = {},
+        onResendClick = {},
+        onContinueClick = {}
+    )
+}
+

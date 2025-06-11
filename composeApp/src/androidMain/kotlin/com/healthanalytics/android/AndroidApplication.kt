@@ -1,6 +1,7 @@
 package com.healthanalytics.android
 
 import android.app.Application
+import com.healthanalytics.android.di.androidModule
 import com.healthanalytics.android.di.initKoin
 import org.koin.android.ext.koin.androidContext
 

@@ -49,4 +49,7 @@ object AppColors {
     val PurpleButtonBackground = Color(0XFF54414E)
     val Transparent = Color.Transparent
 
+    val white = Color(0xFFFFFFFF)
+
+
 }
