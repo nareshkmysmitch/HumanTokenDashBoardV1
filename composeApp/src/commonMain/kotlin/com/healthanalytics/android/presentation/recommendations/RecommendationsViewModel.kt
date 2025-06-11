@@ -7,6 +7,7 @@ import com.healthanalytics.android.data.models.ActionPlanUiState
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationsUiState
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
+import com.healthanalytics.android.data.models.RemoveSupplementsRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +22,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
     private val _selectedTab = MutableStateFlow(RecommendationsTab.RECOMMENDATIONS)
     val selectedTab: StateFlow<RecommendationsTab> = _selectedTab
 
-     fun setSelectedTab(tab: RecommendationsTab) {
+    fun setSelectedTab(tab: RecommendationsTab) {
         _selectedTab.value = tab
     }
 
@@ -149,6 +150,51 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                     )
 
                     val success = apiService.removeRecommendation(accessToken, request)
+                    if (success == true) {
+                        // Reload recommendations after successful removal
+                        loadActionRecommendations(accessToken)
+                    } else {
+                        _uiActionState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = "Failed to remove recommendation"
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiActionState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to remove recommendation"
+                    )
+                }
+            }
+        }
+    }
+
+    fun removeSupplements(accessToken: String, recommendation: Recommendation) {
+        viewModelScope.launch {
+            try {
+                _uiActionState.update { it.copy(isLoading = true) }
+
+                val action = recommendation.actions?.firstOrNull()
+                val userAction = action?.user_recommendation_actions?.firstOrNull()
+
+                if (action != null && userAction != null) {
+                    val request = RemoveSupplementsRequest(
+                        profile_id = "65", // TODO: Get from user profile
+                        reminder_id = null,
+                        occurrence_id = "1",
+                        recommendation_id = recommendation.id,
+                        action_id = action.id,
+                        is_mock = false,
+                        medicine_id = userAction.medicine_id,
+                        event_selection = "all",
+                        module = "recommendation"
+                    )
+
+                    val success = apiService.removeSupplements(accessToken, request)
                     if (success == true) {
                         // Reload recommendations after successful removal
                         loadActionRecommendations(accessToken)
