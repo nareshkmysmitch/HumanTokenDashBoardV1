@@ -84,7 +84,8 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         return _uiActionState.value.recommendations.filter { recommendation ->
             recommendation.actions?.any { action ->
                 action.user_recommendation_actions.isNotEmpty()
-            } == true && (_uiActionState.value.selectedCategory == "All" ||
+            } == true && recommendation.actions.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.is_completed == true
+                    && (_uiActionState.value.selectedCategory == "All" ||
                     recommendation.category?.equals(
                         _uiActionState.value.selectedCategory,
                         ignoreCase = true
