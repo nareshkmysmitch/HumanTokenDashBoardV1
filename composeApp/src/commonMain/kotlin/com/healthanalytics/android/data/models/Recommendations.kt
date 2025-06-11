@@ -47,6 +47,7 @@ data class Action(
     val is_generic: Boolean,
     val created_at: String,
     val updated_at: String,
+
     val user_recommendation_actions: List<UserRecommendationAction?> = listOf(),
 )
 
@@ -57,6 +58,9 @@ data class EventConfig(
     val sub_type: String,
     val frequency: String,
     val scheduled_time: String,
+    val shape: String,
+    val color: String,
+    val duration: Int,
     val days_of_the_week: List<Int>,
 )
 

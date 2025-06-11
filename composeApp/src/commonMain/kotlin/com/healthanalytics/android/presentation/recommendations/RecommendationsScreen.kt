@@ -108,7 +108,11 @@ fun RecommendationsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(filterList) { recommendation ->
-                    RecommendationCard(recommendation = recommendation)
+                    RecommendationCard(
+                        accessToken = preferencesState.data,
+                        viewModel = viewModel,
+                        recommendation = recommendation
+                    )
                 }
             }
         }
@@ -140,7 +144,11 @@ fun CategoryChip(
 }
 
 @Composable
-fun RecommendationCard(recommendation: Recommendation) {
+fun RecommendationCard(
+    recommendation: Recommendation,
+    viewModel: RecommendationsViewModel,
+    accessToken: String?,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -219,7 +227,7 @@ fun RecommendationCard(recommendation: Recommendation) {
 
             // Add to Plan Button
             Button(
-                onClick = {  },
+                onClick = { accessToken?.let { viewModel.addToPlan(it, recommendation) } },
                 enabled = isEnabled,
                 modifier = Modifier.align(Alignment.End)
             ) {

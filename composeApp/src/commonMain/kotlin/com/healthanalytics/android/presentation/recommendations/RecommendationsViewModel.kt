@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.models.ActionPlanUiState
+import com.healthanalytics.android.data.models.AddActivityRequest
+import com.healthanalytics.android.data.models.AddSupplementRequest
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationsUiState
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
@@ -214,6 +216,80 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                     it.copy(
                         isLoading = false,
                         error = e.message ?: "Failed to remove recommendation"
+                    )
+                }
+            }
+        }
+    }
+
+    fun addToPlan(accessToken: String, recommendation: Recommendation) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+
+                val action = recommendation.actions?.firstOrNull()
+                val evenConfig = action?.event_config
+
+                if (action != null && evenConfig != null) {
+                    val success = if (recommendation.category?.equals(
+                            "SUPPLEMENTS",
+                            ignoreCase = true
+                        ) == true
+                    ) {
+                        val request = AddSupplementRequest(
+                            title = recommendation.name,
+                            name = recommendation.name,
+                            recommendation_id = recommendation.id,
+                            action_id = action.id,
+                            type = evenConfig.type,
+                            sub_type = evenConfig.sub_type,
+                            frequency = evenConfig.frequency,
+                            scheduled_time = evenConfig.scheduled_time,
+                            days_of_the_week = evenConfig.days_of_the_week,
+                            is_mock = false,
+                            module = "recommendation",
+                            profile_id = "65",
+                            shape = evenConfig.shape,
+                            color = evenConfig.color,
+                            time = listOf(evenConfig.scheduled_time),
+                            duration = evenConfig.duration
+                        )
+                        apiService.addSupplementToPlan(accessToken, request)
+                    } else {
+                        // Add activity
+                        val request = AddActivityRequest(
+                            module = "recommendation",
+                            recommendation_id = recommendation.id,
+                            action_id = action.id,
+                            type = evenConfig.type,
+                            sub_type = evenConfig.sub_type,
+                            title = recommendation.name,
+                            frequency = evenConfig.frequency,
+                            is_mock = false,
+                            scheduled_time = evenConfig.scheduled_time,
+                            days_of_the_week = evenConfig.days_of_the_week,
+                        )
+                        apiService.addActivityToPlan(accessToken, request)
+                    }
+
+                    if (success == true) {
+                        // Reload recommendations and switch to Action Plan tab
+                        loadActionRecommendations(accessToken)
+                        setSelectedTab(RecommendationsTab.ACTION_PLAN)
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = "Failed to add to plan"
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to add to plan"
                     )
                 }
             }
