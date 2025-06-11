@@ -219,7 +219,7 @@ fun RecommendationCard(recommendation: Recommendation) {
 
             // Add to Plan Button
             Button(
-                onClick = { /* TODO: Implement add to plan */ },
+                onClick = {  },
                 enabled = isEnabled,
                 modifier = Modifier.align(Alignment.End)
             ) {
