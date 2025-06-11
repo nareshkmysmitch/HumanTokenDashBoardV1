@@ -12,13 +12,15 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import kotlinx.serialization.Serializable
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
     suspend fun getRecommendations(accessToken: String): List<Recommendation>?
-    suspend fun removeRecommendation(accessToken: String, request: RemoveRecommendationRequest): Boolean
+    suspend fun removeRecommendation(
+        accessToken: String,
+        request: RemoveRecommendationRequest,
+    ): Boolean
 }
 
 
@@ -54,11 +56,16 @@ class ApiServiceImpl(private val httpClient: HttpClient) : ApiService {
         return recommendationsList?.recommendations
     }
 
-    override suspend fun removeRecommendation(accessToken: String, request: RemoveRecommendationRequest): Boolean {
+    override suspend fun removeRecommendation(
+        accessToken: String,
+        request: RemoveRecommendationRequest,
+    ): Boolean {
+        val encrypted = request.toEncryptedRequestBody()
         val response = httpClient.post("v1/user/reminder/delete") {
             header("access_token", accessToken)
             setBody(request.toEncryptedRequestBody())
         }
+        println("$encrypted")
         val responseBody = response.bodyAsText()
         val result = EncryptionUtils.handleDecryptionResponse<ApiResult>(responseBody)
         return result?.status == "success"

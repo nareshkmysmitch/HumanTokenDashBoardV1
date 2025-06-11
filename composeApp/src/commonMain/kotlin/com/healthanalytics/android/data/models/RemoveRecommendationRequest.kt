@@ -7,6 +7,7 @@ data class RemoveRecommendationRequest(
     val profile_id: String? = null,
     val health_profile_id: String? = null,
     val food_profile_id: String? = null,
+
     val reminder_id: String,
     val occurrence_id: String,
     val event_selection: String = "all",

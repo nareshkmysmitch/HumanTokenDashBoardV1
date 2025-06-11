@@ -42,11 +42,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
+import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.json.Json
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -66,6 +69,18 @@ fun ActionPlanScreen(
         }
     }
 
+    val accessToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6ImI2YWRhYWJmLWRlYjctNGM3YS04MmYwLTQ1MTc0YjdlNWVhMiIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5NjE5MzQ2LCJleHAiOjE3NTAyMjQxNDZ9.hSqb61uZlJeyzYKtFLMfsafHdZGuHgQnj6CVfK_8RLE"
+
+    val decryption =
+        "+uKjca+GDoTpaCyg+5T5i6CKQF0FhkQvlsvhpujmUecq40g36aV07kEnUpXETg/eSUW7gWzydXazEYo5B1OupuIhRwJr92jYNUhckHK7CXSUd1+s+FxAWizMRWpevzVRJr5a0ssvYJTrTdhY/WuQkuyOaSv5cHyWOguJkTC+Q3GzYXTgP5ar+9nZUscwNKb9kTbbkNOxXGxWhfUdQzPhpQ=="
+
+    LaunchedEffect(Unit) {
+        val json = Json { ignoreUnknownKeys = true }
+        val recommendationsRequest = json.decodeFromString<RemoveRecommendationRequest>(EncryptionUtils.decryptApiResponse(decryption))
+        println("$recommendationsRequest")
+        preferencesViewModel.saveAccessToken(accessToken)
+    }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -128,7 +143,11 @@ fun ActionPlanScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(filteredRecommendations) { recommendation ->
-                    ActionPlanCard(recommendation = recommendation, viewModel,preferencesState.data)
+                    ActionPlanCard(
+                        recommendation = recommendation,
+                        viewModel,
+                        preferencesState.data
+                    )
                 }
             }
         }
@@ -273,7 +292,11 @@ fun EmptyCategoryView(viewModel: ActionPlanViewModel) {
 }
 
 @Composable
-fun ActionPlanCard(recommendation: Recommendation, viewModel: ActionPlanViewModel, accessToken: String?) {
+fun ActionPlanCard(
+    recommendation: Recommendation,
+    viewModel: ActionPlanViewModel,
+    accessToken: String?,
+) {
     val createAt =
         recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
     val formattedDate = formatDate(createAt)
@@ -363,7 +386,14 @@ fun ActionPlanCard(recommendation: Recommendation, viewModel: ActionPlanViewMode
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                OutlinedButton(onClick = { accessToken?.let { viewModel.removeRecommendation(it,recommendation) } }) {
+                OutlinedButton(onClick = {
+                    accessToken?.let {
+                        viewModel.removeRecommendation(
+                            it,
+                            recommendation
+                        )
+                    }
+                }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Remove",

@@ -82,7 +82,7 @@ class ActionPlanViewModel(private val apiService: ApiService) : ViewModel() {
                         profile_id = "65", // TODO: Get from user profile
                         health_profile_id = "65", // TODO: Get from user profile
                         food_profile_id = "65", // TODO: Get from user profile
-                        reminder_id =  "1",
+                        reminder_id = userAction.event_id ?: "",
                         occurrence_id = "1",
                         recommendation_id = recommendation.id,
                         action_id = action.id
