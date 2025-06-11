@@ -73,5 +73,18 @@ data class Vendor(
 @Serializable
 data class SendMessage(val conversation_id: String, val message: String)
 
+@Serializable
+data class TestBookingData(
+    val products: List<Product>? = null,
+    val pagination: Pagination? = null
+)
+
+@Serializable
+data class TestBookingResponse(
+    val status: String? = null,
+    val message: String? = null,
+    val data: TestBookingData? = null
+)
+
 
 

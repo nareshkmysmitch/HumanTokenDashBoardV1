@@ -1,9 +1,11 @@
 package com.healthanalytics.android.presentation.health
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.HealthDataUiState
+import io.ktor.util.reflect.instanceOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +20,9 @@ class HealthDataViewModel(
     private val _uiState = MutableStateFlow(HealthDataUiState())
     val uiState: StateFlow<HealthDataUiState> = _uiState.asStateFlow()
 
+    init {
+        println("view model initialized --> ${viewModelScope.hashCode()}, ${this.hashCode()}, ${this.instanceOf(HealthDataViewModel::class)}")
+    }
     @OptIn(ExperimentalTime::class)
     suspend fun loadHealthMetrics(accessToken: String) {
         try {

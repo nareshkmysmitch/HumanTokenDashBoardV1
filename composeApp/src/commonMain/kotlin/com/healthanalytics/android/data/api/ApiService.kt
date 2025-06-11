@@ -13,6 +13,7 @@ import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -56,6 +57,7 @@ interface ApiService {
     suspend fun getCartList(accessToken: String): List<Cart?>?
     suspend fun getProductDetails(accessToken: String, productId: String): Product?
     suspend fun logout(accessToken: String): Boolean
+    suspend fun getTestBookings(accessToken: String): List<Product?>?
 }
 
 class ApiServiceImpl(
@@ -231,6 +233,29 @@ class ApiServiceImpl(
         } catch (e: Exception) {
             println("Error during logout: ${e.message}")
             false
+        }
+    }
+
+    override suspend fun getTestBookings(accessToken: String): List<Product?>? {
+        val response = httpClient.get("v4/human-token/market-place/products") {
+            header("access_token", accessToken)
+            parameter("category", "gene,gut,blood")
+            parameter("limit", "6")
+        }
+        val responseBody = response.bodyAsText()
+        println("Test Booking response --> Raw ${responseBody}")
+        
+        try {
+            val encryptedResponse = json.decodeFromString<EncryptedResponse>(responseBody)
+            val productResponse = EncryptionUtils.handleDecryptionResponse<ProductData>(
+                """{"status":"${encryptedResponse.status}","message":"${encryptedResponse.message}","data":"${encryptedResponse.data}"}"""
+            )
+            println("Product response --> Decrypted ${productResponse}")
+            return productResponse?.products
+        } catch (e: Exception) {
+            println("Error handling test booking response: ${e.message}")
+            e.printStackTrace()
+            return null
         }
     }
 }

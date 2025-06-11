@@ -24,6 +24,8 @@ import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
+import com.healthanalytics.android.presentation.components.Screen.CHAT
+import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DETAIL
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
 import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
@@ -40,6 +42,8 @@ import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreen
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
+import com.healthanalytics.android.presentation.screens.testbooking.ScheduleTestBookingScreen
+import com.healthanalytics.android.presentation.screens.testbooking.TestBookingScreen
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -60,7 +64,11 @@ fun HealthAnalyticsApp() {
     }
 
     fun navigateBack() {
-        currentScreen = lastMainScreen
+        currentScreen = if(lastMainScreen == currentScreen){
+            Screen.HOME
+        } else {
+            lastMainScreen
+        }
     }
 
     val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
@@ -70,10 +78,11 @@ fun HealthAnalyticsApp() {
         onBoardUiState.hasAccessToken -> {
             when (currentScreen) {
                 Screen.PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+
                 Screen.CONVERSATION_LIST -> {
                     ConversationListScreen(
                         onNavigateToChat = { id ->
-                            navigateTo(Screen.CHAT(conversationId = id))
+                            navigateTo(CHAT(conversationId = id))
                         },
                         onNavigateBack = { navigateTo(Screen.HOME) }
                     )
@@ -99,17 +108,29 @@ fun HealthAnalyticsApp() {
                 Screen.HOME -> {
                     HomeScreen(
                         onProfileClick = {
-                            navigateTo(Screen.PROFILE)
+//                            navigateTo(Screen.PROFILE)
+                            navigateTo(Screen.TEST_BOOKING)
                         },
                         onChatClick = {
                             navigateTo(Screen.CONVERSATION_LIST)
                         },
                         onMarketPlaceClick = { product ->
-                            navigateTo(Screen.MARKETPLACE_DETAIL(product))
+                            navigateTo(MARKETPLACE_DETAIL(product))
                         },
                         onCartClick = {
                             navigateTo(Screen.CART)
                         }
+                    )
+                }
+
+                Screen.SCHEDULE_TEST_BOOKING -> {
+                    ScheduleTestBookingScreen(onNavigateBack = { navigateTo(Screen.TEST_BOOKING) })
+                }
+
+                Screen.TEST_BOOKING -> {
+                    TestBookingScreen(
+                        onNavigateBack = { navigateBack() },
+                        onNavigateToSchedule = { navigateTo(Screen.SCHEDULE_TEST_BOOKING) }
                     )
                 }
             }
