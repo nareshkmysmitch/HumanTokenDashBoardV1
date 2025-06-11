@@ -98,8 +98,7 @@ fun HealthAnalyticsApp() {
                     BiomarkerDetailScreen(
                         onNavigateBack = { navigateBack() },
                         biomarker = biomarker,
-                        onNavigateFullReport = navigateBack()
-                    )
+                        onNavigateFullReport = { navigateTo(BIOMARKER_FULL_REPORT) })
                 }
 
                 BIOMARKER_FULL_REPORT -> {

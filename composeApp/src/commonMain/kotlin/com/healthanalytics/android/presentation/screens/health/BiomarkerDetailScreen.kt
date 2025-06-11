@@ -41,7 +41,7 @@ fun BiomarkerDetailScreen(
     biomarker: BloodData,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateFullReport: Unit
+    onNavigateFullReport: () -> Unit
 ) {
 
     BackHandler(enabled = true, onBack = onNavigateBack)
@@ -65,7 +65,7 @@ fun BiomarkerDetailScreen(
 
             Button(
                 onClick = {
-                    onNavigateFullReport
+                    onNavigateFullReport()
                 },
                 modifier = Modifier.fillMaxWidth().padding(top = 24.dp, start = 20.dp, end = 20.dp),
                 colors = ButtonDefaults.buttonColors(
