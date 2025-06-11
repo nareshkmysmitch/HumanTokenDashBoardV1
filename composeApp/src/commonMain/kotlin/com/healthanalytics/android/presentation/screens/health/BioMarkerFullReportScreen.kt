@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +15,7 @@ import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.Cause
+import com.healthanalytics.android.data.api.MetricData
 //import com.healthanalytics.android.data.api.Causes
 import com.healthanalytics.android.data.api.ReportedSymptom
 import com.healthanalytics.android.data.api.WellnessCategory
@@ -72,7 +75,7 @@ fun BioMarkerFullReportScreen(
                     }
 
                     item {
-                        TabSection(state.data?.metricData?.firstOrNull()?.causes ?: emptyList())
+                        TabSection(state.data?.metricData?.firstOrNull()?.causes ?: emptyList(), state.data?.metricData)
                     }
 
                     item {
@@ -142,9 +145,11 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TabSection(causes: List<Cause>) {
+private fun TabSection(causes: List<Cause>, metricData: List<MetricData>?) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Why It Matters?", "Causes")
+
+    val whyItMattersData = metricData?.firstOrNull { it.category == "why_it_matters" }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TabRow(selectedTabIndex = selectedTab) {
@@ -152,7 +157,8 @@ private fun TabSection(causes: List<Cause>) {
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
-                    text = { Text(title) })
+                    text = { Text(title) }
+                )
             }
         }
 
@@ -160,13 +166,114 @@ private fun TabSection(causes: List<Cause>) {
             modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             when (selectedTab) {
-//                0 -> Text(whyItMatters ?: "No information available")
-//                1 -> CausesContent(causes)
+                0 -> WhyItMattersContent(whyItMattersData)
+                1 -> CausesContent(causes)
             }
         }
     }
 }
 
+@Composable
+private fun WhyItMattersContent(metricData: MetricData?) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        if (metricData?.content != null) {
+            Text(
+                text = metricData.content,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        } else {
+            Text(
+                text = "Elevated ALT is a key indicator of liver inflammation or damage.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        metricData?.keyPoints?.let { keyPoints ->
+            if (keyPoints.isNotBlank()) {
+                Text(
+                    text = keyPoints,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CausesContent(causes: List<Cause>) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        // Factors that may increase levels
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Factors That May Increase Levels",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            causes.filter { it.type == "increase" }.forEach { cause ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowUpward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = cause.name ?: "",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
+        // Factors that may decrease levels
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Factors That May Decrease Levels",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            causes.filter { it.type == "decrease" }.forEach { cause ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDownward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = cause.name ?: "",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
+        Text(
+            text = "Note: These are general factors that may influence your Eosinophils %. Individual responses can vary based on your unique genetic makeup and overall health.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
 
 @Composable
 private fun CorrelationsSection(
