@@ -44,6 +44,8 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.recommendations.RecommendationsTab
+import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
@@ -54,18 +56,18 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ActionPlanScreen(
-    viewModel: ActionPlanViewModel = koinViewModel(),
+    viewModel: RecommendationsViewModel = koinViewModel(),
     preferencesViewModel: PreferencesViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiActionState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
-    val filteredRecommendations = viewModel.getFilteredRecommendations()
-    val totalItems = viewModel.getTotalItems()
-    val categoryList = viewModel.getAvailableCategories()
+    val filteredRecommendations = viewModel.getFilteredActions()
+    val totalItems = viewModel.getActionTotalItems()
+    val categoryList = viewModel.getActionAvailableCategories()
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
-            viewModel.loadRecommendations(token)
+            viewModel.loadActionRecommendations(token)
         }
     }
 
@@ -77,7 +79,9 @@ fun ActionPlanScreen(
 
     LaunchedEffect(Unit) {
         val json = Json { ignoreUnknownKeys = true }
-        val recommendationsRequest = json.decodeFromString<RemoveRecommendationRequest>(EncryptionUtils.decryptApiResponse(decryption))
+        val recommendationsRequest = json.decodeFromString<RemoveRecommendationRequest>(
+            EncryptionUtils.decryptApiResponse(decryption)
+        )
         println("$recommendationsRequest")
         preferencesViewModel.saveAccessToken(accessToken)
     }
@@ -103,7 +107,7 @@ fun ActionPlanScreen(
             )
         }
 
-        println("category--> ${viewModel.getAvailableCategories()}")
+        println("category--> ${viewModel.getActionAvailableCategories()}")
 
 
         // Category Row
@@ -117,7 +121,7 @@ fun ActionPlanScreen(
                 CategoryChip(
                     category = category,
                     selected = category == uiState.selectedCategory,
-                    onClick = { viewModel.updateSelectedCategory(category) }
+                    onClick = { viewModel.updateActionCategory(category) }
                 )
             }
         }
@@ -133,7 +137,7 @@ fun ActionPlanScreen(
                 CircularProgressIndicator()
             }
         } else if (totalItems == 0) {
-            EmptyActionPlan()
+            EmptyActionPlan(viewModel)
         } else if (filteredRecommendations.isEmpty()) {
             EmptyCategoryView(viewModel)
         } else {
@@ -178,7 +182,7 @@ fun CategoryChip(
 }
 
 @Composable
-fun EmptyActionPlan() {
+fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -221,7 +225,7 @@ fun EmptyActionPlan() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /* TODO: Navigate to recommendations */ }
+            onClick = { viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS) }
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -235,7 +239,7 @@ fun EmptyActionPlan() {
 }
 
 @Composable
-fun EmptyCategoryView(viewModel: ActionPlanViewModel) {
+fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -278,7 +282,7 @@ fun EmptyCategoryView(viewModel: ActionPlanViewModel) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { viewModel.updateSelectedCategory("All") }
+            onClick = { viewModel.updateActionCategory("All") }
         ) {
             Icon(
                 imageVector = Icons.Default.Dashboard,
@@ -294,7 +298,7 @@ fun EmptyCategoryView(viewModel: ActionPlanViewModel) {
 @Composable
 fun ActionPlanCard(
     recommendation: Recommendation,
-    viewModel: ActionPlanViewModel,
+    viewModel: RecommendationsViewModel,
     accessToken: String?,
 ) {
     val createAt =

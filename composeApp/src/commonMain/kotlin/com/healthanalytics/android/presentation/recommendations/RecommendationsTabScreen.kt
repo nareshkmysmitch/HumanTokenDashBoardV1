@@ -1,10 +1,17 @@
 package com.healthanalytics.android.presentation.recommendations
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.presentation.actionplan.ActionPlanScreen
+import org.koin.compose.viewmodel.koinViewModel
 
 enum class RecommendationsTab {
     RECOMMENDATIONS,
@@ -12,8 +19,9 @@ enum class RecommendationsTab {
 }
 
 @Composable
-fun RecommendationsTabScreen() {
-    var selectedTab by remember { mutableStateOf(RecommendationsTab.RECOMMENDATIONS) }
+fun RecommendationsTabScreen(viewModel: RecommendationsViewModel = koinViewModel()) {
+
+    val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Tab Row
@@ -24,7 +32,9 @@ fun RecommendationsTabScreen() {
             RecommendationsTab.values().forEach { tab ->
                 Tab(
                     selected = selectedTab == tab,
-                    onClick = { selectedTab = tab },
+                    onClick = {
+                        viewModel.setSelectedTab(tab)
+                    },
                     text = {
                         Text(
                             text = when (tab) {
