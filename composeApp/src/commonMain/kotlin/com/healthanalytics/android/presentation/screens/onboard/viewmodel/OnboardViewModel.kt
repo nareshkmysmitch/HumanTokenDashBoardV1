@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.models.onboard.AccountCreation
 import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
+import com.healthanalytics.android.data.models.onboard.AccountDetails
 import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.data.models.onboard.CommunicationAddress
 import com.healthanalytics.android.data.models.onboard.GenerateOrderId
@@ -36,16 +37,10 @@ class OnboardViewModel(
 
     private var phoneNumber: String = ""
     private var mh: String = ""
-    private var firstName: String = ""
-    private var lastName: String = ""
-    private var email: String = ""
-    private var dob: String = ""
-    private var selectedGender: String = ""
-    private var weight: String = ""
-    private var height: String = ""
     private var leadId = ""
     private var accessToken = ""
 
+    private var accountDetails: AccountDetails? = null
     private var communicationAddress: CommunicationAddress? = null
     private var otpVerifiedResponse: OtpResponse? = null
     private var generateOrderIdResponse: GenerateOrderIdResponse? = null
@@ -129,22 +124,12 @@ class OnboardViewModel(
 
     fun getAccessToken() = accessToken
 
-    fun saveAccountDetails(firstName: String, lastName: String, email: String) {
-        this.firstName = firstName
-        this.lastName = lastName
-        this.email = email
-    }
+    fun getAccountDetails() = accountDetails
 
-    fun saveProfileDetails(
-        selectedDate: String,
-        selectedGender: String,
-        weight: String,
-        height: String
-    ) {
-        dob = selectedDate
-        this.selectedGender = selectedGender
-        this.weight = weight
-        this.height = height
+    fun getAddressDetails() = communicationAddress
+
+    fun saveAccountDetails(accountDetails: AccountDetails) {
+        this.accountDetails = accountDetails
     }
 
     fun sendOTP(phoneNumber: String) {
@@ -211,12 +196,12 @@ class OnboardViewModel(
         this.communicationAddress = communicationAddress
         val accountCreation = AccountCreation(
             mobile = phoneNumber,
-            first_name = firstName,
-            last_name = lastName,
-            email = email,
-            gender = selectedGender.lowercase(),
-            height = height,
-            weight = weight,
+            first_name = accountDetails?.firstName ?: "",
+            last_name = accountDetails?.lastName ?: "",
+            email = accountDetails?.email ?: "",
+            gender = accountDetails?.gender?.lowercase() ?: "",
+            height = accountDetails?.height ?: "",
+            weight = accountDetails?.weight ?: "",
             country_code = "91",
             communication_address = communicationAddress
         )
@@ -270,9 +255,11 @@ class OnboardViewModel(
     fun generateOrderId() {
         //todo remove hardcoded values
         val generateOrderId = GenerateOrderId(
-            lead_id = "5d3c488f-db1f-445e-8054-8f161b28886f",
+            lead_id = leadId,
             coupon_code = "null"
         )
+
+//        "5d3c488f-db1f-445e-8054-8f161b28886f"
 
         viewModelScope.launch {
             try {
@@ -289,7 +276,7 @@ class OnboardViewModel(
     fun getPaymentStatus(orderId: String) {
         val paymentRequest = PaymentRequest(
             payment_order_id = orderId,
-            lead_id = "5d3c488f-db1f-445e-8054-8f161b28886f",
+            lead_id = leadId,
             coupon_code = "null"
         )
 

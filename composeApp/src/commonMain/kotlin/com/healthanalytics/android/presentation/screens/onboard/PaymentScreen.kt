@@ -1,8 +1,6 @@
 package com.healthanalytics.android.presentation.screens.onboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +17,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,16 +24,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.components.DHToolBar
 import com.healthanalytics.android.payment.RazorpayHandler
 import com.healthanalytics.android.payment.RazorpayResultListener
 import com.healthanalytics.android.payment.startRazorpayFlow
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
-import org.jetbrains.compose.resources.painterResource
+import com.healthanalytics.android.presentation.theme.FontSize
 
 @Composable
 fun PaymentScreenContainer(
@@ -92,67 +89,19 @@ fun PaymentScreen(
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top section with back button and logo
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimensions.size16dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Back button
-                TextButton(
-                    onClick = onBackClick,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = AppColors.textPrimary
-                    )
-                ) {
-                    Text(
-                        text = "← Back",
-                        style = AppTextStyles.bodyMedium,
-                        color = AppColors.textPrimary
-                    )
-                }
 
-                // Logo and title
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(Dimensions.iconSize)
-                    )
-                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
-                    Text(
-                        text = "Deep Holistics",
-                        style = AppTextStyles.headingSmall,
-                        color = AppColors.textPrimary
-                    )
-                }
+            DHToolBar(
+                title = AppStrings.PAYMENT,
+                onBackClick = onBackClick
+            )
 
-                // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.size48dp))
-            }
-
-            Spacer(modifier = Modifier.height(Dimensions.size48dp))
+            Spacer(modifier = Modifier.height(Dimensions.size50dp))
 
             // Main content
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
-                // Title
-                Text(
-                    text = "Next Steps",
-                    style = AppTextStyles.headingLarge.copy(
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = Dimensions.size48dp)
-                )
-
                 // Payment Confirmation Card
                 NextStepCard(
                     icon = "💳",
@@ -187,7 +136,7 @@ fun PaymentScreen(
                     .fillMaxWidth()
                     .height(Dimensions.buttonHeight),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6B5B95),
+                    containerColor = Color(0xFF665771),
                     contentColor = AppColors.textPrimary
                 ),
                 shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
@@ -216,7 +165,7 @@ private fun NextStepCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A2A2A).copy(alpha = 0.8f)
+            containerColor = Color(0xFF444463).copy(alpha = 0.2f)
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -231,7 +180,7 @@ private fun NextStepCard(
                 modifier = Modifier
                     .size(48.dp)
                     .background(
-                        color = Color(0xFF3A3A3A),
+                        color = AppColors.backgroundDark,
                         shape = RoundedCornerShape(12.dp)
                     ),
                 contentAlignment = Alignment.Center
@@ -250,20 +199,16 @@ private fun NextStepCard(
             ) {
                 Text(
                     text = title,
-                    style = AppTextStyles.headingMedium.copy(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = com.healthanalytics.android.presentation.theme.FontFamily.semiBold(),
                     color = AppColors.textPrimary,
                     modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
 
                 Text(
                     text = description,
-                    style = AppTextStyles.bodyMedium.copy(
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    ),
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = com.healthanalytics.android.presentation.theme.FontFamily.medium(),
                     color = AppColors.textSecondary
                 )
             }

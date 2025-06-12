@@ -1,30 +1,41 @@
 package com.healthanalytics.android.presentation.screens.onboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.components.DHToolBar
+import com.healthanalytics.android.components.PrimaryButton
 import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
 import com.healthanalytics.android.data.models.onboard.CommunicationAddress
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
-import com.healthanalytics.android.presentation.theme.AppTextStyles
+import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.utils.Resource
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.coroutines.flow.SharedFlow
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun SampleCollectionAddressContainer(
@@ -33,6 +44,7 @@ fun SampleCollectionAddressContainer(
     navigateToBloodTest: () -> Unit,
 ) {
     SampleCollectionAddressScreen(
+        addressDetails = onboardViewModel.getAddressDetails(),
         accountCreationState = onboardViewModel.accountCreationState,
         onBackClick = onBackClick,
         navigateToBloodTest = navigateToBloodTest,
@@ -55,12 +67,13 @@ fun SampleCollectionAddressScreen(
     onBackClick: () -> Unit = {},
     onScheduleClick: (String, String, String, String) -> Unit = { _, _, _, _ -> },
     accountCreationState: SharedFlow<Resource<AccountCreationResponse?>>,
-    navigateToBloodTest: () -> Unit
+    navigateToBloodTest: () -> Unit,
+    addressDetails: CommunicationAddress?
 ) {
-    var streetAddress by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var state by remember { mutableStateOf("") }
-    var zipCode by remember { mutableStateOf("") }
+    var streetAddress by remember { mutableStateOf(addressDetails?.address_line_1 ?: "") }
+    var city by remember { mutableStateOf(addressDetails?.address_line_2 ?: "") }
+    var state by remember { mutableStateOf(addressDetails?.state ?: "" ) }
+    var zipCode by remember { mutableStateOf(addressDetails?.pincode ?: "") }
 
     Box(
         modifier = Modifier
@@ -73,228 +86,148 @@ fun SampleCollectionAddressScreen(
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top section with back button and logo
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimensions.size16dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Back button
-                TextButton(
-                    onClick = onBackClick,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = AppColors.textPrimary
-                    )
-                ) {
-                    Text(
-                        text = "← Back",
-                        style = AppTextStyles.bodyMedium,
-                        color = AppColors.textPrimary
-                    )
-                }
 
-                // Logo and title
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(Dimensions.iconSize)
-                    )
-                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
-                    Text(
-                        text = "Deep Holistics",
-                        style = AppTextStyles.headingSmall,
-                        color = AppColors.textPrimary
-                    )
-                }
-
-                // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.size48dp))
-            }
-
-            Spacer(modifier = Modifier.height(Dimensions.size48dp + Dimensions.size8dp))
-
-            // Title
-            Text(
-                text = "Sample Collection Address",
-                style = AppTextStyles.headingLarge.copy(fontSize = 28.sp),
-                color = AppColors.textPrimary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = Dimensions.size48dp)
+            DHToolBar(
+                title = AppStrings.SAMPLE_COLLECTION_ADDRESS,
+                onBackClick = onBackClick
             )
 
-            // Street Address Field
+            Spacer(modifier = Modifier.height(Dimensions.size50dp))
+
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = Dimensions.size60dp)
             ) {
-                Text(
-                    text = "STREET ADDRESS",
-                    style = AppTextStyles.labelMedium,
-                    color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
-                )
-                OutlinedTextField(
-                    value = streetAddress,
-                    onValueChange = { streetAddress = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = {
-                        Text(
-                            text = "Enter your full street address",
-                            color = AppColors.inputHint,
-                            style = AppTextStyles.bodyMedium
-                        )
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppColors.inputBorder,
-                        unfocusedBorderColor = AppColors.outline,
-                        focusedTextColor = AppColors.inputText,
-                        unfocusedTextColor = AppColors.inputText,
-                        cursorColor = AppColors.inputText
-                    ),
-                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                )
-            }
+                // Street Address Field
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FieldNameText(
+                        name = AppStrings.STREET_ADDRESS
+                    )
+                    OutlinedTextField(
+                        maxLines = 2,
+                        value = streetAddress,
+                        onValueChange = { streetAddress = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AppColors.inputBorder,
+                            unfocusedBorderColor = AppColors.outline,
+                            focusedTextColor = AppColors.inputText,
+                            unfocusedTextColor = AppColors.inputText,
+                            cursorColor = AppColors.inputText
+                        ),
+                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // City Field
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "CITY",
-                    style = AppTextStyles.labelMedium,
-                    color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
-                )
-                OutlinedTextField(
-                    value = city,
-                    onValueChange = { city = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = {
-                        Text(
-                            text = "City",
-                            color = AppColors.inputHint,
-                            style = AppTextStyles.bodyMedium
-                        )
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppColors.inputBorder,
-                        unfocusedBorderColor = AppColors.outline,
-                        focusedTextColor = AppColors.inputText,
-                        unfocusedTextColor = AppColors.inputText,
-                        cursorColor = AppColors.inputText
-                    ),
-                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                )
-            }
+                // City Field
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FieldNameText(
+                        name = AppStrings.CITY
+                    )
+                    OutlinedTextField(
+                        maxLines = 1,
+                        value = city,
+                        onValueChange = { city = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AppColors.inputBorder,
+                            unfocusedBorderColor = AppColors.outline,
+                            focusedTextColor = AppColors.inputText,
+                            unfocusedTextColor = AppColors.inputText,
+                            cursorColor = AppColors.inputText
+                        ),
+                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // State Field
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "STATE",
-                    style = AppTextStyles.labelMedium,
-                    color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
-                )
-                OutlinedTextField(
-                    value = state,
-                    onValueChange = { state = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = {
-                        Text(
-                            text = "State",
-                            color = AppColors.inputHint,
-                            style = AppTextStyles.bodyMedium
-                        )
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppColors.inputBorder,
-                        unfocusedBorderColor = AppColors.outline,
-                        focusedTextColor = AppColors.inputText,
-                        unfocusedTextColor = AppColors.inputText,
-                        cursorColor = AppColors.inputText
-                    ),
-                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                )
-            }
+                // State Field
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FieldNameText(
+                        name = AppStrings.STATE
+                    )
+                    OutlinedTextField(
+                        maxLines = 1,
+                        value = state,
+                        onValueChange = { state = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AppColors.inputBorder,
+                            unfocusedBorderColor = AppColors.outline,
+                            focusedTextColor = AppColors.inputText,
+                            unfocusedTextColor = AppColors.inputText,
+                            cursorColor = AppColors.inputText
+                        ),
+                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // Zip Code Field
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "ZIP CODE",
-                    style = AppTextStyles.labelMedium,
-                    color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
-                )
-                OutlinedTextField(
-                    value = zipCode,
-                    onValueChange = { zipCode = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = {
-                        Text(
-                            text = "Zip code",
-                            color = AppColors.inputHint,
-                            style = AppTextStyles.bodyMedium
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppColors.inputBorder,
-                        unfocusedBorderColor = AppColors.outline,
-                        focusedTextColor = AppColors.inputText,
-                        unfocusedTextColor = AppColors.inputText,
-                        cursorColor = AppColors.inputText
-                    ),
-                    shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                )
-            }
+                // Zip Code Field
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FieldNameText(
+                        name = AppStrings.PIN_CODE
+                    )
+                    OutlinedTextField(
+                        maxLines = 1,
+                        value = zipCode,
+                        onValueChange = { zipCode = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AppColors.inputBorder,
+                            unfocusedBorderColor = AppColors.outline,
+                            focusedTextColor = AppColors.inputText,
+                            unfocusedTextColor = AppColors.inputText,
+                            cursorColor = AppColors.inputText
+                        ),
+                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Schedule Button
-            Button(
-                onClick = {
-                    if (streetAddress.isNotEmpty() && city.isNotEmpty() &&
-                        state.isNotEmpty() && zipCode.isNotEmpty()
-                    ) {
-                        onScheduleClick(streetAddress.trim(), city.trim(), state.trim(), zipCode.trim())
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Dimensions.buttonHeight),
-                enabled = streetAddress.isNotEmpty() && city.isNotEmpty() &&
-                        state.isNotEmpty() && zipCode.isNotEmpty(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.buttonBackground,
-                    contentColor = AppColors.buttonText,
-                    disabledContainerColor = AppColors.inputBackground,
-                    disabledContentColor = AppColors.textSecondary
-                ),
-                shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
-            ) {
-                Text(
-                    text = "Schedule",
-                    style = AppTextStyles.buttonText
-                )
+                Spacer(modifier = Modifier.height(40.dp))
             }
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
+        }
+
+        Box(
+            modifier = Modifier.fillMaxWidth()
+                .background(AppColors.backgroundDark)
+                .align(Alignment.BottomCenter),
+            contentAlignment = Alignment.Center
+        ) {
+            PrimaryButton(
+                modifier = Modifier.padding(Dimensions.size16dp),
+                buttonName = AppStrings.SCHEDULE,
+                isEnable = streetAddress.isNotEmpty() && city.isNotEmpty() &&
+                        state.isNotEmpty() && zipCode.isNotEmpty(),
+                onclick = {
+                    if (streetAddress.isNotEmpty() && city.isNotEmpty() &&
+                        state.isNotEmpty() && zipCode.isNotEmpty()
+                    ) {
+                        onScheduleClick(
+                            streetAddress.trim(),
+                            city.trim(),
+                            state.trim(),
+                            zipCode.trim()
+                        )
+                    }
+                }
+            )
         }
 
         GetAccountCreationResponse(
@@ -310,8 +243,8 @@ fun GetAccountCreationResponse(
     navigateToBloodTest: () -> Unit
 ) {
     val response by accountCreationState.collectAsStateWithLifecycle(null)
-    when(response){
-        is Resource.Error<*> ->{}
+    when (response) {
+        is Resource.Error<*> -> {}
 
         is Resource.Loading<*> -> {}
 
@@ -320,6 +253,7 @@ fun GetAccountCreationResponse(
                 navigateToBloodTest()
             }
         }
+
         else -> {}
     }
 }

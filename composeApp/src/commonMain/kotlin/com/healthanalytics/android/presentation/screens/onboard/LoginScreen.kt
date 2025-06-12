@@ -45,7 +45,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
-import com.healthanalytics.android.presentation.theme.TextSize
+import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.rounded_logo
@@ -116,7 +116,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(Dimensions.size48dp))
 
             Text(
-                fontSize = TextSize.textSize32sp,
+                fontSize = FontSize.textSize32sp,
                 text = AppStrings.LOGIN_TITLE,
                 fontFamily = FontFamily.semiBold(),
                 color = AppColors.textPrimary,
@@ -137,7 +137,7 @@ fun LoginScreen(
             Text(
                 text = AppStrings.PHONE_NUMBER,
                 fontFamily = FontFamily.medium(),
-                fontSize = TextSize.textSize14sp,
+                fontSize = FontSize.textSize14sp,
                 color = AppColors.textSecondary,
                 modifier = Modifier.fillMaxWidth()
             )

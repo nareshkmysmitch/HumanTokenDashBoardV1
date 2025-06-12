@@ -2,7 +2,7 @@ package com.healthanalytics.android.presentation.theme
 
 import androidx.compose.ui.unit.sp
 
-object TextSize {
+object FontSize {
     val textSize12sp = 12.sp
     val textSize13sp = 13.sp
     val textSize14sp = 14.sp

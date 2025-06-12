@@ -1,5 +1,6 @@
 package com.healthanalytics.android.data.models.onboard
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,5 +19,16 @@ data class AccountCreation(
 @Serializable
 data class AccountCreationResponse(
     val lead_id: String? = null
+)
+
+@Serializable
+data class AccountDetails(
+    val firstName: String = "",
+    val lastName: String = "",
+    val email: String = "",
+    val dob: LocalDate? = null,
+    val gender: String = "",
+    val weight: String = "",
+    val height: String = ""
 )
 

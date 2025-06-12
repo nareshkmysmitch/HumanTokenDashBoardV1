@@ -28,7 +28,6 @@ import com.healthanalytics.android.presentation.recommendations.RecommendationsS
 import com.healthanalytics.android.presentation.screens.BiomarkersScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
-import com.healthanalytics.android.presentation.screens.onboard.HealthProfileContainer
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
 import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
@@ -197,18 +196,6 @@ fun OnboardContainer(
                         onBackClick = {
                             navController.navigateUp()
                         },
-                        navigateToHealthProfile = {
-                            navController.navigate(OnboardRoute.HealthProfile)
-                        }
-                    )
-                }
-
-                composable<OnboardRoute.HealthProfile> {
-                    HealthProfileContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
-                        },
                         navigateToAddress = {
                             navController.navigate(OnboardRoute.SampleCollectionAddress)
                         }
@@ -241,7 +228,7 @@ fun OnboardContainer(
 
                 composable<OnboardRoute.Payment> {
 
-                    onboardViewModel.generateOrderId()
+//                    onboardViewModel.generateOrderId()
 
                     PaymentScreenContainer(
                         onboardViewModel = onboardViewModel,

@@ -42,7 +42,7 @@ object NetworkConfig {
                 contentType(ContentType.Application.Json)
                 header("client_id", CLIENT_ID)
                 header("user_timezone", USER_TIMEZONE)
-                header("Authorization", chatAccessToken)
+//                header("Authorization", chatAccessToken)
             }
         }
     }

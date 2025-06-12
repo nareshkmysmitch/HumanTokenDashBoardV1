@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.onboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,22 +13,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,21 +40,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.components.DHToolBar
 import com.healthanalytics.android.data.models.onboard.Slot
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
+import com.healthanalytics.android.presentation.components.ShowDatePicker
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.utils.DateUtils
 import com.healthanalytics.android.utils.Resource
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
@@ -116,10 +114,6 @@ fun ScheduleBloodTestScreen(
         }
     }
 
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = selectedDate.toEpochDays().toLong() * 24 * 60 * 60 * 1000
-    )
-
     // Format selected date for display
     val formattedDate = remember(selectedDate) {
         val dayOfWeek = selectedDate.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }
@@ -138,77 +132,28 @@ fun ScheduleBloodTestScreen(
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top section with back button and logo
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimensions.size16dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Back button
-                TextButton(
-                    onClick = onBackClick,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = AppColors.textPrimary
-                    )
-                ) {
-                    Text(
-                        text = "← Back",
-                        style = AppTextStyles.bodyMedium,
-                        color = AppColors.textPrimary
-                    )
-                }
 
-                // Logo and title
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(Dimensions.iconSize)
-                    )
-                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
-                    Text(
-                        text = "Deep Holistics",
-                        style = AppTextStyles.headingSmall,
-                        color = AppColors.textPrimary
-                    )
-                }
+            DHToolBar(
+                title = AppStrings.SCHEDULE_YOUR_BLOOD_TEST,
+                onBackClick = onBackClick
+            )
 
-                // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.size48dp))
-            }
-
-            Spacer(modifier = Modifier.height(Dimensions.size48dp))
+            Spacer(modifier = Modifier.height(Dimensions.size50dp))
 
             // Main content
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
-                // Title
-                Text(
-                    text = "Schedule your blood test",
-                    style = AppTextStyles.headingLarge.copy(
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = Dimensions.size16dp)
-                )
-
                 // Description
                 Text(
-                    text = "Get started with 100+ advanced biomarkers measuring everything from energy and mood-related markers to cancers, heart diseases and more. We connect the dots across your entire health profile.",
-                    style = AppTextStyles.bodyMedium.copy(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp
-                    ),
-                    color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.size48dp)
+                    text = AppStrings.SCHEDULE_YOUR_BLOOD_TEST_DESCRIPTION,
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.regular(),
+                    color = AppColors.white,
                 )
+
+                Spacer(Modifier.height(Dimensions.size30dp))
 
                 // Date section
                 Row(
@@ -221,22 +166,22 @@ fun ScheduleBloodTestScreen(
                     Column {
                         Text(
                             text = formattedDate,
-                            style = AppTextStyles.headingMedium.copy(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold
-                            ),
+                            fontSize = FontSize.textSize18sp,
+                            fontFamily = FontFamily.semiBold(),
                             color = AppColors.textPrimary
                         )
+
                         Text(
-                            text = "Fasting test",
-                            style = AppTextStyles.bodyMedium,
-                            color = AppColors.textSecondary
+                            text = AppStrings.FASTING_TEST,
+                            fontSize = FontSize.textSize14sp,
+                            fontFamily = FontFamily.medium(),
+                            color = AppColors.textSecondary,
                         )
                     }
 
                     // Calendar icon
                     Icon(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                        imageVector = Icons.Rounded.CalendarMonth,
                         contentDescription = "Calendar",
                         tint = AppColors.textSecondary,
                         modifier = Modifier
@@ -304,31 +249,20 @@ fun ScheduleBloodTestScreen(
     }
 
     if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDatePicker = false
-                    datePickerState.selectedDateMillis?.let { millis ->
-                        selectedDate =
-                            kotlinx.datetime.Instant.fromEpochMilliseconds(millis).toLocalDateTime(
-                                TimeZone.currentSystemDefault()
-                            ).date
-
-                        onDateChanged(selectedDate)
-                    }
-                }) {
-                    Text("Confirm")
-                }
+        ShowDatePicker(
+            selectedDate = selectedDate,
+            onDismiss = {
+                showDatePicker = false
             },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
-                }
+            onCancel = {
+                showDatePicker = false
+            },
+            onConfirm = {
+                showDatePicker = false
+                selectedDate = it
+                onDateChanged(selectedDate)
             }
-        ) {
-            DatePicker(state = datePickerState)
-        }
+        )
     }
 }
 

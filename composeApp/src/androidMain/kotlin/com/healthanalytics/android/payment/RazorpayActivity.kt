@@ -43,7 +43,7 @@ class RazorpayActivity : Activity(), PaymentResultWithDataListener {
             put("amount", intent.getIntExtra("amount", 0))
             put("currency", intent.getStringExtra("currency"))
             put("description", intent.getStringExtra("description"))
-//            put("razorpay_order_id", intent.getStringExtra("orderId"))
+            put("order_id", intent.getStringExtra("orderId"))
 
 //            put("prefill", JSONObject().apply {
 //                put("email", intent.getStringExtra("email"))
