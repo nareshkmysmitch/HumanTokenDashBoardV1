@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.actionplan
+package com.healthanalytics.android.presentation.screens.actionplan
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,8 +31,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-//import androidx.compose.material3.OutlinedButton
-//import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,19 +44,20 @@ import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
-import com.healthanalytics.android.presentation.recommendations.RecommendationsTab
-import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ActionPlanScreen(
-    viewModel: RecommendationsViewModel = koinViewModel(),
-    preferencesViewModel: PreferencesViewModel = koinViewModel(),
+    viewModel: RecommendationsViewModel,
+    preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiActionState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()

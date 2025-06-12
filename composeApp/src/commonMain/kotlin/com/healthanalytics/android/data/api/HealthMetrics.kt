@@ -60,7 +60,7 @@ data class Range(
     @SerialName("time_variation") val timeVariation: String? = null,
     @SerialName("age_variation") val ageVariation: String? = null,
     @SerialName("sex_variation") val sexVariation: String? = null,
-    @SerialName("range") val range: String? = null,
+    @SerialName("range") val range: String,
     @SerialName("display_rating") val displayRating: String? = null,
     @SerialName("rating_rank") val ratingRank: Int? = null,
     @SerialName("symbol") val symbol: String? = null,

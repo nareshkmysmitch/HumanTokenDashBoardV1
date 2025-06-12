@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.recommendations
+package com.healthanalytics.android.presentation.screens.recommendations
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,14 +33,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
-import com.healthanalytics.android.presentation.actionplan.MetricChip
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import org.koin.compose.koinInject
 
 @Composable
 fun RecommendationsScreen(
-    viewModel: RecommendationsViewModel = koinInject(),
+    viewModel: RecommendationsViewModel,
     preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()

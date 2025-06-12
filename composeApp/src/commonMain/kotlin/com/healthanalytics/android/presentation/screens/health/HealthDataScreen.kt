@@ -107,19 +107,6 @@ fun HealthDataScreen(
             )
         }
 
-        // Filter Chips
-        LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
-            items(availableFilters) { filter ->
-                FilterChip(
-                    selected = uiState.selectedFilter == filter,
-                    onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
-                    label = { Text(filter ?: "") })
-            }
-        }
 
 
         // Metrics List
@@ -130,6 +117,20 @@ fun HealthDataScreen(
                 CircularProgressIndicator()
             }
         } else {
+            // Filter Chips
+            LazyRow(
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp)
+            ) {
+                items(availableFilters) { filter ->
+                    FilterChip(
+                        selected = uiState.selectedFilter == filter,
+                        onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
+                        label = { Text(filter ?: "") })
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(12.dp),
