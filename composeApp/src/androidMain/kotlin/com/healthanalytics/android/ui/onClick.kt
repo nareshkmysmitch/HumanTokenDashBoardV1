@@ -16,7 +16,7 @@ fun Modifier.onTextClick(rippleEffect: Boolean = false, onClick: () -> Unit): Mo
         onClick = { onClick() }, indication = if (rippleEffect) {
             ripple(
                 bounded = true,
-                color = AppColors.PurpleBackground,
+                color = AppColors.PurpleTitle,
             )
         } else {
             null
