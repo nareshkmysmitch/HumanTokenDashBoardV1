@@ -193,7 +193,7 @@ fun RecommendationCard(
                         modifier = Modifier.wrapContentWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        metrics.chunked(2).forEach { rowMetrics ->
+                        metrics.chunked(1).forEach { rowMetrics ->
                             Row(
                                 modifier = Modifier.wrapContentWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -201,13 +201,13 @@ fun RecommendationCard(
                                 rowMetrics.forEach { metricRecommendation ->
                                     MetricChip(
                                         metric = metricRecommendation.metric.metric,
-                                        modifier = Modifier.weight(1f)
+//                                        modifier = Modifier.weight(1f)
                                     )
                                 }
                                 // Add empty space if odd number of metrics
-                                if (rowMetrics.size == 1) {
-                                    Spacer(modifier = Modifier.weight(1f))
-                                }
+//                                if (rowMetrics.size == 1) {
+//                                    Spacer(modifier = Modifier.weight(1f))
+//                                }
                             }
                         }
                     }

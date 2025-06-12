@@ -86,11 +86,11 @@ fun ChatScreen(
             title = {
                 when (val state = uiState) {
                     is ChatUiState.Success -> Text(
-                        text = "Chat", color = AppColors.White
+                        text = "Chat", color = AppColors.Black
                     )
 
                     else -> Text(
-                        text = "Chat", color = AppColors.White
+                        text = "Chat", color = AppColors.Black
                     )
                 }
             }, navigationIcon = {
@@ -100,9 +100,9 @@ fun ChatScreen(
                     )
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = AppColors.PurpleTitle,
-                navigationIconContentColor = AppColors.White,
-                titleContentColor = AppColors.White
+                containerColor = AppColors.AppBackgroundColor,
+                navigationIconContentColor = AppColors.Black,
+                titleContentColor = AppColors.Black
             )
         )
     }, bottomBar = {

@@ -83,9 +83,9 @@ fun ConversationListScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.PurpleTitle,
-                    navigationIconContentColor = AppColors.White,
-                    titleContentColor = AppColors.White
+                    containerColor = AppColors.AppBackgroundColor,
+                    navigationIconContentColor = AppColors.Black,
+                    titleContentColor = AppColors.Black
                 )
             )
         },

@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.StarBorder
@@ -37,14 +36,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -109,15 +107,18 @@ fun ProductDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-
-
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.AppBackgroundColor,
+                    navigationIconContentColor = AppColors.Black,
+                    titleContentColor = AppColors.Black
+                ),
                 title = {
                     when (productDetailsState) {
                         is ProductDetailsState.Success -> {
                             (productDetailsState as ProductDetailsState.Success).product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.primary,
+                                    color = AppColors.Black,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -128,7 +129,7 @@ fun ProductDetailScreen(
                             product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.primary,
+                                    color = AppColors.Black,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -141,13 +142,13 @@ fun ProductDetailScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.primary,
+                            tint = AppColors.Black,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 },
             )
-        }, containerColor = Color.Transparent
+        },
     ) { paddingValues ->
         when (productDetailsState) {
             is ProductDetailsState.Loading -> {
@@ -171,9 +172,7 @@ fun ProductDetailScreen(
 
             is ProductDetailsState.Success -> {
                 val currentProduct = (productDetailsState as ProductDetailsState.Success).product
-                Column(
-                    modifier = Modifier.fillMaxSize().verticalScroll(scrollState).padding(16.dp)
-                ) {
+                Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
                     Spacer(modifier = Modifier.height(50.dp))
                     // Product Image
                     if (currentProduct.img_urls?.isNotEmpty() == true && currentProduct.img_urls.firstOrNull() != null) {
@@ -181,9 +180,9 @@ fun ProductDetailScreen(
                             Image(
                                 painter = rememberImagePainter(it),
                                 contentDescription = currentProduct.name,
-                                contentScale = ContentScale.Crop,
+                                contentScale = ContentScale.FillWidth,
                                 modifier = Modifier.fillMaxWidth().height(300.dp)
-                                    .clip(RoundedCornerShape(16.dp))
+                                    .padding(top = 16.dp)
                             )
                         }
                     }
@@ -193,6 +192,7 @@ fun ProductDetailScreen(
                     // Product Info Section
                     currentProduct.name?.let {
                         Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
                             text = it,
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold
@@ -201,6 +201,7 @@ fun ProductDetailScreen(
 
                     currentProduct.description?.let {
                         Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
                             text = it,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -215,6 +216,7 @@ fun ProductDetailScreen(
                         "--"
                     }
                     Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         text = price,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
@@ -224,7 +226,10 @@ fun ProductDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Rating Section
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
                         repeat(5) {
                             Icon(
                                 imageVector = Icons.Default.StarBorder,
@@ -271,7 +276,7 @@ fun ProductDetailScreen(
                             width = 1.dp, color = Color(0xFF1C1B1F), shape = RoundedCornerShape(
                                 12.dp
                             )
-                        ).clip(RoundedCornerShape(12.dp)),
+                        ).clip(RoundedCornerShape(12.dp)).padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
@@ -279,7 +284,8 @@ fun ProductDetailScreen(
                                 RoundedCornerShape(
                                     topStart = 8.dp, bottomStart = 8.dp
                                 )
-                            ).clickable(onClick = { if (quantity > 1) quantity-- }).padding(8.dp)
+                            ).clickable(onClick = { if (quantity > 1) quantity-- })
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = "−",
@@ -304,7 +310,7 @@ fun ProductDetailScreen(
                                 )
                             )
                                 .clickable(onClick = { currentProduct.stock?.let { if (quantity < it) quantity++ } })
-                                .padding(8.dp)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = "+",
@@ -327,7 +333,9 @@ fun ProductDetailScreen(
                                     viewModel.addToCart(productId, variantId)
                                 }
                             }
-                        }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFE91E63)
                         )
                     ) {
@@ -541,6 +549,7 @@ fun ProductDetailScreen(
 @Composable
 private fun InfoRow(icon: ImageVector, text: String) {
     Row(
+        modifier = Modifier.padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -560,7 +569,7 @@ private fun InfoRow(icon: ImageVector, text: String) {
 @Composable
 private fun ProductInfoRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
