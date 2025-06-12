@@ -58,7 +58,6 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
     }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
-    var totalAmount by remember { mutableStateOf(0.0) }
 
     val selectedAddress by viewModel.selectedAddress.collectAsState()
 
@@ -81,6 +80,9 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
     var country by remember(selectedAddress) {
         mutableStateOf(selectedAddress?.address?.country ?: "")
     }
+    val getCartList by viewModel.cartListFlow.collectAsState()
+
+    var totalPrice by remember { mutableStateOf(0.0) }
 
     LaunchedEffect(Unit) {
         viewModel.getCartList()
@@ -91,7 +93,6 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                     cartItems = state.cartList.flatMap { cart ->
                         cart.cart_items?.filter { it.product?.type == "non_product" } ?: emptyList()
                     }
-                    totalAmount = cartItems.sumOf { it.product?.price?.toDoubleOrNull() ?: 0.0 }
                     isLoading = false
                 }
 
@@ -103,6 +104,26 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                 is CartListState.Loading -> {
                     isLoading = true
                 }
+            }
+        }
+    }
+
+    LaunchedEffect(getCartList) {
+        when (getCartList) {
+            is CartListState.Success -> {
+                cartItems = (getCartList as CartListState.Success).cartList.flatMap { cart ->
+                    cart.cart_items ?: emptyList()
+                }
+                isLoading = false
+            }
+
+            is CartListState.Error -> {
+                error = (getCartList as CartListState.Error).message
+                isLoading = false
+            }
+
+            is CartListState.Loading -> {
+                isLoading = true
             }
         }
     }
@@ -174,6 +195,15 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
+                            println("cartItems --> $cartItems")
+                            
+                            // Calculate total price once
+                            LaunchedEffect(cartItems) {
+                                totalPrice = cartItems.sumOf { item ->
+                                    item.product?.price?.toDoubleOrNull() ?: 0.0
+                                }
+                            }
+                            
                             cartItems.forEach { item ->
                                 Row(
                                     modifier = Modifier
@@ -206,7 +236,7 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "₹$totalAmount",
+                                    text = "₹$totalPrice",
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
                                 )
