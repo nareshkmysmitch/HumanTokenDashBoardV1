@@ -33,6 +33,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,12 +61,11 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: MarketPlaceViewModel,
+    onNavigateBack: () -> Unit, viewModel: MarketPlaceViewModel,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
-    
+
     // Get values from ViewModel states
     val userName by viewModel.userName.collectAsState()
     val userEmail by viewModel.userEmail.collectAsState()
@@ -73,7 +73,7 @@ fun ProfileScreen(
     val addressList by viewModel.addressList.collectAsState()
     val accessToken by viewModel.accessToken.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
-    
+
     // Handle logout state changes
     LaunchedEffect(logoutState) {
         when (logoutState) {
@@ -82,10 +82,11 @@ fun ProfileScreen(
                 // because hasAccessToken in HealthAnalyticsApp will become false
                 onNavigateBack()
             }
+
             else -> {}
         }
     }
-    
+
     var name by remember(userName) { mutableStateOf(userName ?: "") }
     var email by remember(userEmail) { mutableStateOf(userEmail ?: "") }
     var phone by remember(userPhone) { mutableStateOf(userPhone ?: "") }
@@ -133,48 +134,48 @@ fun ProfileScreen(
     })
     Scaffold(
         topBar = {
-            com.healthanalytics.android.presentation.components.TopAppBar(
+            TopAppBar(
 
-                title = if (isEditing) "Edit Profile" else "Your Profile",
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.Black,
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
+                ),
 
-//                title = {
-//                    Text(
-//                        text =
-//                        color = AppColors.primary,
-//                        fontSize = 20.sp,
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                },
-//                navigationIcon = {
-//                    IconButton(onClick = {
-//                        if (!isEditing) {
-//                            onNavigateBack()
-//                        } else {
-//                            isEditing = false
-//                        }
-//                    }) {
-//                        Icon(
-//                            imageVector = Icons.Default.ArrowBack,
-//                            contentDescription = "back arrow",
-//                            tint = AppColors.primary,
-//                            modifier = Modifier.size(24.dp)
-//                        )
-//                    }
-//                },
+                title = {
+                    Text(
+                        text = if (isEditing) "Edit Profile" else "Your Profile",
+                        color = AppColors.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        if (!isEditing) {
+                            onNavigateBack()
+                        } else {
+                            isEditing = false
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "back arrow",
+                            tint = AppColors.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
             )
-        },
-        containerColor = AppColors.AppBackgroundColor
+        }, containerColor = Color.Black
     ) { paddingValues ->
         Surface(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
-            color =  AppColors.AppBackgroundColor
+            modifier = Modifier.fillMaxSize().padding(paddingValues), color = Color.Black
         ) {
             if (!isEditing) {
                 // Profile View Screen
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                    modifier = Modifier.fillMaxSize().padding(16.dp)
                 ) {
 
                     Card(
@@ -205,9 +206,7 @@ fun ProfileScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Box(
-                                    modifier = Modifier
-                                        .size(64.dp)
-                                        .clip(CircleShape)
+                                    modifier = Modifier.size(64.dp).clip(CircleShape)
                                         .background(Color(0xFF8B5CF6)),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -227,9 +226,7 @@ fun ProfileScreen(
                                         color = Color.White
                                     )
                                     Text(
-                                        text = email,
-                                        fontSize = 14.sp,
-                                        color = Color.Gray
+                                        text = email, fontSize = 14.sp, color = Color.Gray
                                     )
                                 }
                             }
@@ -251,9 +248,7 @@ fun ProfileScreen(
 
                             Button(
                                 onClick = { isEditing = true },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 24.dp),
+                                modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF8B5CF6)
                                 )
@@ -265,12 +260,9 @@ fun ProfileScreen(
 
                     Button(
                         onClick = { showAlertDialog = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = Color.White
+                            containerColor = Color.Transparent, contentColor = Color.White
                         ),
                         border = ButtonDefaults.outlinedButtonBorder
                     ) {
@@ -280,9 +272,7 @@ fun ProfileScreen(
             } else {
                 // Edit Profile Screen
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                    modifier = Modifier.fillMaxSize().padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text(
@@ -300,14 +290,10 @@ fun ProfileScreen(
                     )
 
                     ProfileTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = "Full Name"
+                        value = name, onValueChange = { name = it }, label = "Full Name"
                     )
                     ProfileTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = "Email"
+                        value = email, onValueChange = { email = it }, label = "Email"
                     )
                     ProfileTextField(
                         value = phone,
@@ -358,20 +344,14 @@ fun ProfileScreen(
                         )
                     }
                     ProfileTextField(
-                        value = pincode,
-                        onValueChange = { pincode = it },
-                        label = "Pincode"
+                        value = pincode, onValueChange = { pincode = it }, label = "Pincode"
                     )
                     ProfileTextField(
-                        value = country,
-                        onValueChange = { country = it },
-                        label = "Country"
+                        value = country, onValueChange = { country = it }, label = "Country"
                     )
 
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 24.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Button(
@@ -385,7 +365,7 @@ fun ProfileScreen(
                                     country = country,
                                     di_address_id = addressId
                                 )
-                                
+
                                 viewModel.updateProfile(
                                     name = name,
                                     email = email,
@@ -398,9 +378,7 @@ fun ProfileScreen(
                                         viewModel.loadAddresses() // Reload addresses after successful update
                                     }
                                 }
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
+                            }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF8B5CF6)
                             )
                         ) {
@@ -410,8 +388,7 @@ fun ProfileScreen(
                             onClick = { isEditing = false },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.White
+                                containerColor = Color.Transparent, contentColor = Color.White
                             ),
                             border = ButtonDefaults.outlinedButtonBorder
                         ) {
@@ -427,11 +404,10 @@ fun ProfileScreen(
                     title = "Log out",
                     message = "You will be logged out of your Deep Holistics account. However this doesn't affect your logged data. Do you want to still logout?",
                     onDismiss = { showAlertDialog = false },
-                    onLogout = { 
+                    onLogout = {
                         viewModel.logout()
                         showAlertDialog = false
-                    }
-                )
+                    })
             }
         }
     }
@@ -443,15 +419,10 @@ private fun ProfileInfoItem(label: String, value: String) {
         modifier = Modifier.padding(vertical = 8.dp)
     ) {
         Text(
-            text = label,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White
+            text = label, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White
         )
         Text(
-            text = value,
-            fontSize = 14.sp,
-            color = Color.Gray
+            text = value, fontSize = 14.sp, color = Color.Gray
         )
     }
 }
@@ -469,9 +440,7 @@ private fun ProfileTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label, color = Color.White) },
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
         enabled = enabled,
         colors = TextFieldColors(
             cursorColor = Color.White,
@@ -517,8 +486,7 @@ private fun ProfileTextField(
             disabledSuffixColor = Color.White,
             errorSuffixColor = Color.White,
             textSelectionColors = TextSelectionColors(
-                handleColor = Color.White,
-                backgroundColor = Color.White
+                handleColor = Color.White, backgroundColor = Color.White
             )
         ),
         shape = RoundedCornerShape(8.dp)

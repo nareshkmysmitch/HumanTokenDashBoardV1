@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.StarBorder
@@ -37,14 +36,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -74,13 +72,11 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
-    product: Product,
-    onNavigateBack: () -> Unit,
-    viewModel: MarketPlaceViewModel,
+    product: Product, onNavigateBack: () -> Unit, viewModel: MarketPlaceViewModel,
 ) {
     val scrollState = rememberScrollState()
     var quantity by remember { mutableStateOf(1) }
-    var selectedTab by remember { mutableStateOf(1) } // Reviews tab selected by default
+    var selectedTab by remember { mutableStateOf(1) }
 
     // Collect states
     val cartActionState by viewModel.cartActionState.collectAsState()
@@ -111,13 +107,18 @@ fun ProductDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.AppBackgroundColor,
+                    navigationIconContentColor = AppColors.Black,
+                    titleContentColor = AppColors.Black
+                ),
                 title = {
                     when (productDetailsState) {
                         is ProductDetailsState.Success -> {
                             (productDetailsState as ProductDetailsState.Success).product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.primary,
+                                    color = AppColors.Black,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -128,7 +129,7 @@ fun ProductDetailScreen(
                             product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.primary,
+                                    color = AppColors.Black,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -141,20 +142,18 @@ fun ProductDetailScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.primary,
+                            tint = AppColors.Black,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 },
             )
         },
-        containerColor = Color.Transparent
     ) { paddingValues ->
         when (productDetailsState) {
             is ProductDetailsState.Loading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
@@ -162,8 +161,7 @@ fun ProductDetailScreen(
 
             is ProductDetailsState.Error -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = (productDetailsState as ProductDetailsState.Error).message,
@@ -174,12 +172,7 @@ fun ProductDetailScreen(
 
             is ProductDetailsState.Success -> {
                 val currentProduct = (productDetailsState as ProductDetailsState.Success).product
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(16.dp)
-                ) {
+                Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
                     Spacer(modifier = Modifier.height(50.dp))
                     // Product Image
                     if (currentProduct.img_urls?.isNotEmpty() == true && currentProduct.img_urls.firstOrNull() != null) {
@@ -187,11 +180,9 @@ fun ProductDetailScreen(
                             Image(
                                 painter = rememberImagePainter(it),
                                 contentDescription = currentProduct.name,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(300.dp)
-                                    .clip(RoundedCornerShape(16.dp))
+                                contentScale = ContentScale.FillWidth,
+                                modifier = Modifier.fillMaxWidth().height(300.dp)
+                                    .padding(top = 16.dp)
                             )
                         }
                     }
@@ -201,6 +192,7 @@ fun ProductDetailScreen(
                     // Product Info Section
                     currentProduct.name?.let {
                         Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
                             text = it,
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold
@@ -209,6 +201,7 @@ fun ProductDetailScreen(
 
                     currentProduct.description?.let {
                         Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
                             text = it,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -223,6 +216,7 @@ fun ProductDetailScreen(
                         "--"
                     }
                     Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         text = price,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
@@ -232,7 +226,10 @@ fun ProductDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Rating Section
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
                         repeat(5) {
                             Icon(
                                 imageVector = Icons.Default.StarBorder,
@@ -265,12 +262,9 @@ fun ProductDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         currentProduct.tags?.forEach { tag ->
-                            SuggestionChip(
-                                onClick = { },
-                                label = {
-                                    tag?.replaceFirstChar { it.uppercase() }?.let { Text(it) }
-                                }
-                            )
+                            SuggestionChip(onClick = { }, label = {
+                                tag?.replaceFirstChar { it.uppercase() }?.let { Text(it) }
+                            })
                         }
                     }
 
@@ -278,22 +272,20 @@ fun ProductDetailScreen(
 
                     // Quantity Selector
                     Row(
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = Color(0xFF1C1B1F),
-                                shape = RoundedCornerShape(
-                                    12.dp
-                                )
+                        modifier = Modifier.border(
+                            width = 1.dp, color = Color(0xFF1C1B1F), shape = RoundedCornerShape(
+                                12.dp
                             )
-                            .clip(RoundedCornerShape(12.dp)),
+                        ).clip(RoundedCornerShape(12.dp)).padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
-                                .clickable(onClick = { if (quantity > 1) quantity-- })
-                                .padding(8.dp)
+                            modifier = Modifier.clip(
+                                RoundedCornerShape(
+                                    topStart = 8.dp, bottomStart = 8.dp
+                                )
+                            ).clickable(onClick = { if (quantity > 1) quantity-- })
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = "−",
@@ -303,8 +295,7 @@ fun ProductDetailScreen(
                             )
                         }
                         Box(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = quantity.toString(),
@@ -313,10 +304,13 @@ fun ProductDetailScreen(
                             )
                         }
                         Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                            modifier = Modifier.clip(
+                                RoundedCornerShape(
+                                    topEnd = 8.dp, bottomEnd = 8.dp
+                                )
+                            )
                                 .clickable(onClick = { currentProduct.stock?.let { if (quantity < it) quantity++ } })
-                                .padding(8.dp)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = "+",
@@ -336,18 +330,17 @@ fun ProductDetailScreen(
                             val variantId = currentProduct.variants?.firstOrNull()?.variant_id
                             productId?.let { productId ->
                                 variantId?.let { variantId ->
-                                    viewModel.addToCart(productId,variantId)
+                                    viewModel.addToCart(productId, variantId)
                                 }
                             }
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFE91E63)
                         )
                     ) {
                         Text(
-                            text = "Add to Cart",
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            text = "Add to Cart", modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 
@@ -387,8 +380,7 @@ fun ProductDetailScreen(
                     // Tabs Section
                     Column(modifier = Modifier.fillMaxWidth()) {
                         ScrollableTabRow(
-                            selectedTabIndex = selectedTab,
-                            edgePadding = 16.dp,
+                            selectedTabIndex = selectedTab, edgePadding = 16.dp,
                             //                    containerColor = Color(0xFF1C1B1F),
                             //                    contentColor = Color.Black,
                             indicator = { tabPositions ->
@@ -397,13 +389,9 @@ fun ProductDetailScreen(
                                     height = 2.dp,
                                     color = Color.Black
                                 )
-                            }
-                        ) {
+                            }) {
                             listOf(
-                                "Product Details",
-                                "Ingredients",
-                                "Directions",
-                                "Reviews"
+                                "Product Details", "Ingredients", "Directions", "Reviews"
                             ).forEachIndexed { index, title ->
                                 Tab(
                                     selected = selectedTab == index,
@@ -424,8 +412,7 @@ fun ProductDetailScreen(
                                                 Color.Black.copy(alpha = 0.6f)
                                             }
                                         )
-                                    }
-                                )
+                                    })
                             }
                         }
 
@@ -436,9 +423,7 @@ fun ProductDetailScreen(
                             0 -> {
                                 // Product Details Tab
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                 ) {
                                     Text(
                                         text = "Product Information",
@@ -449,12 +434,10 @@ fun ProductDetailScreen(
                                     Spacer(modifier = Modifier.height(16.dp))
                                     ProductInfoRow("SKU:", currentProduct.sku ?: "")
                                     ProductInfoRow(
-                                        "Category:",
-                                        currentProduct.category?.firstOrNull() ?: ""
+                                        "Category:", currentProduct.category?.firstOrNull() ?: ""
                                     )
                                     ProductInfoRow(
-                                        "Stock:",
-                                        "${currentProduct.stock ?: 0} available"
+                                        "Stock:", "${currentProduct.stock ?: 0} available"
                                     )
                                 }
                             }
@@ -462,9 +445,7 @@ fun ProductDetailScreen(
                             1 -> {
                                 // Ingredients Tab
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                 ) {
                                     Text(
                                         text = "Product ingredients information will be available soon.",
@@ -477,9 +458,7 @@ fun ProductDetailScreen(
                             2 -> {
                                 // Directions Tab
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                 ) {
                                     Text(
                                         text = "Usage directions will be available soon.",
@@ -492,9 +471,7 @@ fun ProductDetailScreen(
                             3 -> {
                                 // Reviews Tab
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                 ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -513,8 +490,7 @@ fun ProductDetailScreen(
                                             shape = RoundedCornerShape(8.dp)
                                         ) {
                                             Text(
-                                                text = "Write a Review",
-                                                color = Color.Black
+                                                text = "Write a Review", color = Color.Black
                                             )
                                         }
                                     }
@@ -573,6 +549,7 @@ fun ProductDetailScreen(
 @Composable
 private fun InfoRow(icon: ImageVector, text: String) {
     Row(
+        modifier = Modifier.padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -592,9 +569,7 @@ private fun InfoRow(icon: ImageVector, text: String) {
 @Composable
 private fun ProductInfoRow(label: String, value: String) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -603,9 +578,7 @@ private fun ProductInfoRow(label: String, value: String) {
             color = Color.Black.copy(alpha = 0.6f)
         )
         Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black
+            text = value, style = MaterialTheme.typography.bodyLarge, color = Color.Black
         )
     }
 } 

@@ -303,7 +303,7 @@ private fun TimeSlotCard(
     time: String, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     AppCard(
-        modifier = modifier.fillMaxWidth().height(56.dp).clickable { onClick() }.then(
+        modifier = modifier.background(AppColors.White).fillMaxWidth().height(56.dp).clickable { onClick() }.then(
             if (isSelected) {
                 Modifier.border(
                     width = 2.dp, color = AppColors.DarkPurple, shape = RoundedCornerShape(12.dp)

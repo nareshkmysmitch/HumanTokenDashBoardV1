@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.recommendations
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -34,6 +36,8 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.actionplan.MetricChip
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
+import org.koin.compose.koinInject
 
 @Composable
 fun RecommendationsScreen(
@@ -53,21 +57,22 @@ fun RecommendationsScreen(
         }
     }
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
     ) {
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor),
+                contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else {
             // Category Selector
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp)
             ) {
                 items(viewModel.getRecommendationCategories()) { category ->
                     CategoryChip(
@@ -80,8 +85,8 @@ fun RecommendationsScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 items(filterList) { recommendation ->
                     RecommendationCard(
@@ -124,10 +129,13 @@ fun RecommendationCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.White // Replace with your desired color
+        ),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
             // Title and Difficulty
             Row(
@@ -166,24 +174,24 @@ fun RecommendationCard(
             recommendation.metric_recommendations?.let { metrics ->
                 if (metrics.isNotEmpty()) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.wrapContentWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        metrics.chunked(2).forEach { rowMetrics ->
+                        metrics.chunked(1).forEach { rowMetrics ->
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.wrapContentWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 rowMetrics.forEach { metricRecommendation ->
                                     MetricChip(
                                         metric = metricRecommendation.metric.metric,
-                                        modifier = Modifier.weight(1f)
+//                                        modifier = Modifier.weight(1f)
                                     )
                                 }
                                 // Add empty space if odd number of metrics
-                                if (rowMetrics.size == 1) {
-                                    Spacer(modifier = Modifier.weight(1f))
-                                }
+//                                if (rowMetrics.size == 1) {
+//                                    Spacer(modifier = Modifier.weight(1f))
+//                                }
                             }
                         }
                     }
