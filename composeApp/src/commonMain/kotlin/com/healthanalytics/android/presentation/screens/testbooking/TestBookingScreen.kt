@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -95,7 +96,7 @@ fun TestBookingScreen(
                 title = {
                     Text(
                         text = "Test Booking",
-                        color = AppColors.primary,
+                        color = AppColors.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -105,14 +106,16 @@ fun TestBookingScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.primary,
+                            tint = AppColors.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                ),
             )
         },
-        containerColor = Color.Black
     ) { paddingValues ->
         Box(
             modifier = Modifier

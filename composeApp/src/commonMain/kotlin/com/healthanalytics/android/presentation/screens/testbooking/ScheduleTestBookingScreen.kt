@@ -130,7 +130,7 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1A1A1A)
+                    containerColor = Color.Black
                 )
             )
         }
@@ -335,7 +335,7 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                     .fillMaxWidth()
                     .padding(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFB91D82)
+                    containerColor = Color(0xFF8B5CF6)
                 )
             ) {
                 Text(
