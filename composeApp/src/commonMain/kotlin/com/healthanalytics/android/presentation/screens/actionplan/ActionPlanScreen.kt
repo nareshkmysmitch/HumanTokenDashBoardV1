@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.actionplan
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,15 +75,12 @@ fun ActionPlanScreen(
     ) {
         // Header Section
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Your Action Plan",
-                style = MaterialTheme.typography.headlineMedium
+                text = "Your Action Plan", style = MaterialTheme.typography.headlineMedium
             )
             Text(
                 text = "$totalItems items",
@@ -96,17 +94,14 @@ fun ActionPlanScreen(
 
         // Category Row
         LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(categoryList) { category ->
                 CategoryChip(
                     category = category,
                     selected = category == uiState.selectedCategory,
-                    onClick = { viewModel.updateActionCategory(category) }
-                )
+                    onClick = { viewModel.updateActionCategory(category) })
             }
         }
 
@@ -115,8 +110,7 @@ fun ActionPlanScreen(
         // Content Section
         if (uiState.isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -132,9 +126,7 @@ fun ActionPlanScreen(
             ) {
                 items(filteredRecommendations) { recommendation ->
                     ActionPlanCard(
-                        recommendation = recommendation,
-                        viewModel,
-                        preferencesState.data
+                        recommendation = recommendation, viewModel, preferencesState.data
                     )
                 }
             }
@@ -151,9 +143,7 @@ fun CategoryChip(
     val categoryEnum = RecommendationCategory.fromString(category)
 
     FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = {
+        selected = selected, onClick = onClick, label = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -161,16 +151,13 @@ fun CategoryChip(
                 Text(categoryEnum.icon)
                 Text(category.capitalizeFirst())
             }
-        }
-    )
+        })
 }
 
 @Composable
 fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -182,9 +169,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             Icon(
                 imageVector = Icons.Default.Assignment,
                 contentDescription = null,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize(),
+                modifier = Modifier.padding(16.dp).fillMaxSize(),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -209,8 +194,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS) }
-        ) {
+            onClick = { viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS) }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,
@@ -225,9 +209,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
 @Composable
 fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -239,9 +221,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             Icon(
                 imageVector = Icons.Default.FilterList,
                 contentDescription = null,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize(),
+                modifier = Modifier.padding(16.dp).fillMaxSize(),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -266,8 +246,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { viewModel.updateActionCategory("All") }
-        ) {
+            onClick = { viewModel.updateActionCategory("All") }) {
             Icon(
                 imageVector = Icons.Default.Dashboard,
                 contentDescription = null,
@@ -291,12 +270,12 @@ fun ActionPlanCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),  colors = CardDefaults.cardColors(
+            containerColor = AppColors.White
+        ),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             // Header with icon and title
             Row(
@@ -314,8 +293,7 @@ fun ActionPlanCard(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = recommendation.name,
-                        style = MaterialTheme.typography.titleMedium
+                        text = recommendation.name, style = MaterialTheme.typography.titleMedium
                     )
                 }
 
@@ -377,15 +355,9 @@ fun ActionPlanCard(
                 OutlinedButton(onClick = {
                     accessToken?.let {
                         if (recommendation.category == "supplements") {
-                            viewModel.removeSupplements(
-                                it,
-                                recommendation
-                            )
+                            viewModel.removeSupplements(it, recommendation)
                         } else {
-                            viewModel.removeRecommendation(
-                                it,
-                                recommendation
-                            )
+                            viewModel.removeRecommendation(it, recommendation)
                         }
                     }
                 }) {
@@ -408,15 +380,13 @@ fun MetricChip(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        shape = MaterialTheme.shapes.small,
-        modifier = modifier
+        color = AppColors.White, shape = MaterialTheme.shapes.extraSmall, modifier = modifier,
     ) {
         Text(
             text = metric,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSecondaryContainer
+            color = AppColors.DarkPurple
         )
     }
 }
@@ -431,9 +401,6 @@ fun formatDate(isoString: String?): String {
         val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
         val month = localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
         val year = localDateTime.year
-
-
-
         "$day/$month/$year"
     } ?: ""
 }

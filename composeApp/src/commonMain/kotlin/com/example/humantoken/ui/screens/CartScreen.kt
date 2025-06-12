@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -37,6 +38,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,6 +59,7 @@ import com.healthanalytics.android.data.api.Variant
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.CartActionState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
@@ -184,6 +187,11 @@ fun CartScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.AppBackgroundColor,
+                    navigationIconContentColor = AppColors.Black,
+                    titleContentColor = AppColors.Black
+                ),
                 title = {
                     Text(
                         text = "My Cart",
@@ -322,7 +330,10 @@ private fun CartItemCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.White // Replace with your desired color
+        ),
     ) {
         Row(
             modifier = Modifier
@@ -429,7 +440,10 @@ private fun OrderSummary(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.White
+        ),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

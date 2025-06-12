@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.data.models.Biomarker
+import com.healthanalytics.android.presentation.components.AppCard
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.coroutines.launch
 
 @Composable
@@ -102,9 +104,8 @@ fun DashboardScreen(
 
 @Composable
 fun BiomarkerCard(biomarker: Biomarker) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    AppCard(
+        modifier = Modifier.fillMaxWidth().background(AppColors.White),
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -117,7 +118,8 @@ fun BiomarkerCard(biomarker: Biomarker) {
                 Text(
                     text = biomarker.name,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = AppColors.DarkPurple
                 )
                 
                 StatusChip(status = biomarker.status)
@@ -128,7 +130,7 @@ fun BiomarkerCard(biomarker: Biomarker) {
                 Text(
                     text = "${biomarker.value} ${biomarker.unit ?: ""}",
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.primary
+                    color = AppColors.DarkPurple
                 )
             }
             
@@ -137,7 +139,7 @@ fun BiomarkerCard(biomarker: Biomarker) {
                 Text(
                     text = biomarker.description,
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = AppColors.DarkPurple.copy(alpha = 0.7f)
                 )
             }
         }

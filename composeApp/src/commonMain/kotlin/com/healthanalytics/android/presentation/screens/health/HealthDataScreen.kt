@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,7 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.presentation.components.CardDefaults.defaultElevation
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -74,20 +77,20 @@ fun HealthDataScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
     ) {
-        Text(
-            text = "Health Data",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
+//        Text(
+//            text = "Health Data",
+//            style = MaterialTheme.typography.headlineMedium,
+//            modifier = Modifier.padding(horizontal = 16.dp)
+//        )
 
         // Last Updated
-        Text(
-            text = "Last updated: ${formatDate(uiState.lastUpdated?.createdAt)}",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
+//        Text(
+//            text = "Last updated: ${formatDate(uiState.lastUpdated?.createdAt)}",
+//            style = MaterialTheme.typography.bodyMedium,
+//            modifier = Modifier.padding(horizontal = 16.dp)
+//        )
 
         // Search Bar (Conditionally Visible)
         AnimatedVisibility(
@@ -98,9 +101,7 @@ fun HealthDataScreen(
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 placeholder = { Text("Search health data") },
                 singleLine = true
             )
@@ -108,42 +109,36 @@ fun HealthDataScreen(
 
         // Filter Chips
         LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp)
         ) {
             items(availableFilters) { filter ->
                 FilterChip(
                     selected = uiState.selectedFilter == filter,
                     onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
-                    label = { Text(filter ?: "") }
-                )
+                    label = { Text(filter ?: "") })
             }
         }
 
-        println("state -->  uiState :: ${uiState.isLoading} || preferencesState ::${preferencesState.isLoading} ")
-        println("state -->  ${filteredMetrics.size} ")
+
         // Metrics List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+
+                ) {
                 items(filteredMetrics) { metric ->
                     MetricCard(
-                        metric = metric,
-                        onMetricClick ={ onNavigateToDetail(metric)}
-                    )
+                        metric = metric, onMetricClick = { onNavigateToDetail(metric) })
                 }
             }
         }
@@ -152,19 +147,17 @@ fun HealthDataScreen(
 
 @Composable
 fun MetricCard(
-    metric: BloodData?,
-    onMetricClick: (BloodData) -> Unit = {}
+    metric: BloodData?, onMetricClick: (BloodData) -> Unit = {}
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { metric?.let { onMetricClick(it) } },
+        modifier = Modifier.fillMaxWidth().clickable { metric?.let { onMetricClick(it) } },
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.White
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -176,8 +169,7 @@ fun MetricCard(
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                 )
                 StatusChip(status = metric?.displayRating ?: "")
             }
@@ -194,8 +186,7 @@ fun MetricCard(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Blood",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Blood", style = MaterialTheme.typography.bodyMedium
                 )
             }
 
@@ -220,8 +211,7 @@ fun StatusChip(status: String) {
     }
 
     Surface(
-        color = backgroundColor,
-        shape = MaterialTheme.shapes.small
+        color = backgroundColor, shape = MaterialTheme.shapes.small
     ) {
         Text(
             text = status,

@@ -23,15 +23,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,10 +44,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Message
+import com.healthanalytics.android.presentation.components.FilledAppButton
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,45 +76,46 @@ fun ChatScreen(
                     listState.scrollToItem(state.messages.size - 1)
                 }
             }
+
             else -> {}
         }
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    when (val state = uiState) {
-                        is ChatUiState.Success -> Text("Chat")
-                        else -> Text("Chat")
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
+    Scaffold(modifier = modifier.fillMaxSize(), topBar = {
+        TopAppBar(
+            title = {
+                when (val state = uiState) {
+                    is ChatUiState.Success -> Text(
+                        text = "Chat", color = AppColors.Black
+                    )
+
+                    else -> Text(
+                        text = "Chat", color = AppColors.Black
+                    )
                 }
-            )
-        },
-        bottomBar = {
-            ChatInput(
-                value = messageInput,
-                onValueChange = viewModel::updateMessageInput,
-                onSend = {
-                    viewModel.sendMessage(conversationId)
-                    // Clear input
-                    viewModel.updateMessageInput("")
-                    // Reload the first page to get the latest messages including bot response
-                    coroutineScope.launch {
-                        // Small delay to ensure the message is processed
-                        delay(500)
-                        viewModel.loadChat(conversationId)
-                    }
+            }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.White
+                    )
                 }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColors.AppBackgroundColor,
+                navigationIconContentColor = AppColors.Black,
+                titleContentColor = AppColors.Black
             )
-        }
-    ) { paddingValues ->
+        )
+    }, bottomBar = {
+        ChatInput(
+            value = messageInput, onValueChange = viewModel::updateMessageInput, onSend = {
+                viewModel.sendMessage(conversationId)
+                viewModel.updateMessageInput("")
+                coroutineScope.launch {
+                    delay(500)
+                    viewModel.loadChat(conversationId)
+                }
+            })
+    }) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
@@ -129,12 +132,11 @@ fun ChatScreen(
                         isLoadingMore = state.isLoadingMore,
                         canLoadMore = state.canLoadMore,
                         listState = listState,
-                        onLoadMore = { 
+                        onLoadMore = {
                             if (state.canLoadMore) {
                                 viewModel.loadChat(conversationId, isLoadingMore = true)
                             }
-                        }
-                    )
+                        })
                 }
 
                 is ChatUiState.Error -> {
@@ -196,14 +198,15 @@ private fun ChatMessage(
 ) {
     val isUserMessage = message.sender.toString() != "bot"
     val backgroundColor = if (isUserMessage) {
-        MaterialTheme.colorScheme.primaryContainer
+        AppColors.HotPink
     } else {
-        MaterialTheme.colorScheme.secondaryContainer
+        AppColors.SpearMint
     }
+
     val contentColor = if (isUserMessage) {
-        MaterialTheme.colorScheme.onPrimaryContainer
+        AppColors.White
     } else {
-        MaterialTheme.colorScheme.onSecondaryContainer
+        AppColors.Black
     }
 
     Row(
@@ -226,6 +229,7 @@ private fun ChatMessage(
                     style = MaterialTheme.typography.labelSmall,
                     color = contentColor.copy(alpha = 0.7f),
                     modifier = Modifier.align(if (isUserMessage) Alignment.End else Alignment.Start)
+                        .padding(top = if (isUserMessage) 0.dp else 4.dp)
                 )
             }
         }
@@ -241,10 +245,10 @@ private fun ChatInput(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier, tonalElevation = 2.dp
+        modifier = modifier, tonalElevation = 2.dp, color = AppColors.Transparent
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
@@ -252,17 +256,26 @@ private fun ChatInput(
                 onValueChange = onValueChange,
                 modifier = Modifier.weight(1f),
                 placeholder = {
-                    Text("Ask about your biomarkers, health recommendations...")
+                    Text("Ask you asdsddfsf...")
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = { onSend() }),
-                maxLines = 4
+                maxLines = 1,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppColors.DarkPurple,
+                    unfocusedBorderColor = AppColors.DarkPurple.copy(alpha = 0.5f),
+                    focusedContainerColor = AppColors.White,
+                    unfocusedContainerColor = AppColors.White
+                )
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            FilledIconButton(
-                onClick = onSend, enabled = value.isNotBlank(), modifier = Modifier.size(40.dp)
+            FilledAppButton(
+                onClick = onSend,
+                enabled = value.isNotBlank(),
+                modifier = Modifier.size(40.dp),
+                contentPadding = PaddingValues(8.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Send,
