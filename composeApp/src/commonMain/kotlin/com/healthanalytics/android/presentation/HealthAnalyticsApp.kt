@@ -52,6 +52,8 @@ import com.healthanalytics.android.presentation.screens.onboard.SampleCollection
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.symptoms.SymptomsScreen
+import com.healthanalytics.android.presentation.screens.symptoms.SymptomsViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -74,6 +76,7 @@ fun HealthAnalyticsApp() {
     }
 
     val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
+    val symptomsViewModel: SymptomsViewModel = koinInject<SymptomsViewModel>()
     val recommendationsViewModel: RecommendationsViewModel = koinInject<RecommendationsViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
     when {
@@ -120,7 +123,8 @@ fun HealthAnalyticsApp() {
 
                 HOME -> {
                     HomeScreen(onProfileClick = {
-                        navigateTo(PROFILE)
+//                        navigateTo(PROFILE)
+                        navigateTo(Screen.SYMPTOMS)
                     }, onChatClick = {
                         navigateTo(CONVERSATION_LIST)
                     }, onMarketPlaceClick = { product ->
@@ -134,6 +138,13 @@ fun HealthAnalyticsApp() {
                         biomarker = it ?: BloodData()
                         navigateTo(BIOMARKERS_DETAIL)
                     }, recommendationsViewModel = recommendationsViewModel)
+                }
+
+                Screen.SYMPTOMS -> {
+                    SymptomsScreen(
+                        onNavigateBack = { navigateBack() },
+                        viewModel = symptomsViewModel
+                    )
                 }
             }
         }

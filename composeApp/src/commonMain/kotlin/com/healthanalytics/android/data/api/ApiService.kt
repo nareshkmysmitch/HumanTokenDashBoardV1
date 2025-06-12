@@ -12,6 +12,9 @@ import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.data.models.RemoveRecommendationResponse
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
+import com.healthanalytics.android.data.models.Symptom
+import com.healthanalytics.android.data.models.SymptomResponse
+import com.healthanalytics.android.data.models.SymptomsWrapper
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
@@ -73,6 +76,8 @@ interface ApiService {
     suspend fun getBiomarkerReport(
         accessToken: String, type: String, metricId: String
     ): BiomarkerReportData?
+
+    suspend fun getSymptoms(accessToken: String): List<Symptom>?
 }
 
 
@@ -319,5 +324,21 @@ class ApiServiceImpl(
         val result = EncryptionUtils.handleDecryptionResponse<AddActivityResponse>(responseBody)
         return result != null
 
+    }
+
+    override suspend fun getSymptoms(accessToken: String): List<Symptom>? {
+        try {
+            val response = httpClient.get("v4/human-token/symptom") {
+                header("access_token", accessToken)
+            }
+            val responseBody = response.bodyAsText()
+            println("Symptoms response --> Raw ${responseBody}")
+            val symptomsWrapper = EncryptionUtils.handleDecryptionResponse<SymptomsWrapper>(responseBody)
+            return symptomsWrapper?.symptoms
+        } catch (e: Exception) {
+            println("Error handling symptoms response: ${e.message}")
+            e.printStackTrace()
+            return null
+        }
     }
 }
