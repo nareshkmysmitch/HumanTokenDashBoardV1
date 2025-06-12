@@ -133,38 +133,41 @@ fun ProfileScreen(
     })
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = if (isEditing) "Edit Profile" else "Your Profile",
-                        color = AppColors.primary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        if (!isEditing) {
-                            onNavigateBack()
-                        } else {
-                            isEditing = false
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back arrow",
-                            tint = AppColors.primary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                },
+            com.healthanalytics.android.presentation.components.TopAppBar(
+
+                title = if (isEditing) "Edit Profile" else "Your Profile",
+
+//                title = {
+//                    Text(
+//                        text =
+//                        color = AppColors.primary,
+//                        fontSize = 20.sp,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                },
+//                navigationIcon = {
+//                    IconButton(onClick = {
+//                        if (!isEditing) {
+//                            onNavigateBack()
+//                        } else {
+//                            isEditing = false
+//                        }
+//                    }) {
+//                        Icon(
+//                            imageVector = Icons.Default.ArrowBack,
+//                            contentDescription = "back arrow",
+//                            tint = AppColors.primary,
+//                            modifier = Modifier.size(24.dp)
+//                        )
+//                    }
+//                },
             )
         },
-        containerColor = Color.Black
+        containerColor = AppColors.AppBackgroundColor
     ) { paddingValues ->
         Surface(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
-            color = Color.Black
+            color =  AppColors.AppBackgroundColor
         ) {
             if (!isEditing) {
                 // Profile View Screen
