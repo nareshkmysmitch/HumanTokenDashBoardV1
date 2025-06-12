@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -26,10 +25,10 @@ import com.healthanalytics.android.data.api.Range
 
 // Global spacing configuration for HorizontalBar
 data class HorizontalBarSpacing(
-    val barSpacing: Dp = 4.dp,
-    val arrowBarSpacing: Dp = 8.dp,
+    val barSpacing: Dp = 2.dp,
+    val arrowBarSpacing: Dp = 2.dp,
     val barRangeSpacing: Dp = 8.dp,
-    val rangeRatingSpacing: Dp = 8.dp
+    val rangeRatingSpacing: Dp = 8.dp,
 )
 
 @Composable
@@ -40,8 +39,8 @@ fun HorizontalBar(
     spacing: HorizontalBarSpacing = HorizontalBarSpacing(),
 ) {
     val sortedRanges = ranges.sortedBy { it.id }
-    val barHeight = 24.dp
-    val arrowHeight = 16.dp
+    val barHeight = 14.dp
+    val arrowHeight = 12.dp
     val density = LocalDensity.current
 
     Column(
@@ -107,11 +106,11 @@ fun HorizontalBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             val labelCount = sortedRanges.size - 1
             if (labelCount > 0) {
-                Spacer(modifier = Modifier.weight(1f))
                 for (i in 0 until labelCount) {
                     val currentRange = parseRange(sortedRanges[i].range)
                     val label = currentRange.second.toString()
@@ -120,11 +119,6 @@ fun HorizontalBar(
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
                     )
-                    if (i < labelCount - 1) {
-                        Spacer(modifier = Modifier.weight(2f))
-                    } else {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
                 }
             }
         }
@@ -167,7 +161,7 @@ private fun calculateValuePosition(
     ranges: List<Range>,
     totalWidth: Float,
     density: androidx.compose.ui.unit.Density,
-    barSpacing: Dp
+    barSpacing: Dp,
 ): Float? {
     val barSpacingPx = with(density) { barSpacing.toPx() }
     val totalSpacing = barSpacingPx * (ranges.size - 1)
@@ -201,14 +195,17 @@ private fun parseRange(range: String): Pair<Double, Double> {
             val value = range.substring(1).trim().toDouble()
             Pair(0.0, value)
         }
+
         range.startsWith(">") -> {
             val value = range.substring(1).trim().toDouble()
             Pair(value, value + 4) // Adding 4 as per requirement
         }
+
         range.contains("to") -> {
             val parts = range.split("to").map { it.trim().toDouble() }
             Pair(parts[0], parts[1])
         }
+
         else -> Pair(0.0, 0.0)
     }
 }
@@ -233,6 +230,5 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
     drawPath(
         path = path,
         color = color,
-        style = Stroke(width = 2f)
     )
 }
