@@ -163,7 +163,8 @@ fun HealthAnalyticsApp() {
                 HOME -> {
                     HomeScreen(
                         onProfileClick = {
-                            navigateTo(PROFILE)
+//                            navigateTo(PROFILE)
+                            navigateTo(TEST_BOOKING)
                         },
                         onChatClick = {
                             navigateTo(CONVERSATION_LIST)

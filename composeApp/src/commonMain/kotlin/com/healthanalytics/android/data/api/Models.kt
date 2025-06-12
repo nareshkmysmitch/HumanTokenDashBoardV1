@@ -40,9 +40,7 @@ data class Product(
     val vendor_name: String? = null,
     val vendor_product_id: String? = null,
     val variants: List<Variant>? = null,
-
-    // For local usage
-    var isAdded: Boolean = false,
+    val isAdded: Boolean = false
 )
 
 @Serializable

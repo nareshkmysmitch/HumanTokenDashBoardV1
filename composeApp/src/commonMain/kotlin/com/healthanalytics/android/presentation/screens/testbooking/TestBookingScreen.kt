@@ -116,7 +116,6 @@ fun TestBookingScreen(
         },
         containerColor = Color.Black
     ) { paddingValues ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -127,7 +126,6 @@ fun TestBookingScreen(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-
                 Spacer(Modifier.padding(paddingValues))
                 Text(
                     text = "Schedule comprehensive health screenings and diagnostic tests",
@@ -137,7 +135,6 @@ fun TestBookingScreen(
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
-                // Test Grid
                 if (state.isLoading || state.error != null) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -145,12 +142,6 @@ fun TestBookingScreen(
                     ) {
                         CircularProgressIndicator(color = Color(0xFFF50057))
                     }
-//                } else if (state.error != null) {
-//                    Text(
-//                        text = state.error!!,
-//                        color = Color.Red,
-//                        modifier = Modifier.padding(16.dp)
-//                    )
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(1),
@@ -159,33 +150,26 @@ fun TestBookingScreen(
                         modifier = Modifier.weight(1f)
                     ) {
                         items(state.availableTests) { test ->
-                            var updatedTest = test
-                            val updatedVariants = mutableListOf<Variant>()
-                            var variantId = test.variants?.firstOrNull()?.variant_id
-                            test.variants?.let {
-                                cartItems.forEach { cartItem ->
-                                    if (cartItem.product_id == test.product_id) {
-                                        variantId = cartItem.variant_id
-                                        cartItem.variant?.let { variant ->
-                                            println("variant --> $variant")
-                                            updatedVariants.add(variant)
-                                        }
-                                        updatedTest = updatedTest.copy(isAdded = true)
-                                    }
-                                }
+                            val isInCart = cartItems.any { cartItem ->
+                                cartItem.product?.product_id == test.product_id
                             }
-                            updatedTest = updatedTest.copy(variants = updatedVariants.toList())
-                            println("updatedVariants --> $updatedVariants, $updatedTest")
+                            val updatedTest = test.copy(isAdded = isInCart)
                             TestCard(
                                 test = updatedTest,
                                 isSelected = test in state.selectedTests,
                                 onSelect = {
-//                                    viewModel.toggleTestSelection(test)
-                                    marketPlaceViewModel.addToCart(
-                                        updatedTest.product_id ?: "",
-                                        updatedTest.variants?.firstOrNull()?.variant_id ?: variantId
-                                        ?: ""
-                                    )
+                                    if (!updatedTest.isAdded) {
+                                        marketPlaceViewModel.addToCart(
+                                            updatedTest.product_id ?: "",
+                                            updatedTest.variants?.firstOrNull()?.variant_id ?: ""
+                                        )
+                                    } else {
+                                        marketPlaceViewModel.updateCartItem(
+                                            updatedTest.product_id ?: "",
+                                            "0"
+                                        )
+                                    }
+                                    viewModel.toggleTestSelection(updatedTest)
                                 }
                             )
                         }
@@ -215,7 +199,6 @@ fun TestBookingScreen(
                                 fontSize = 14.sp
                             )
                             Text(
-//                            text = "Total: ₹${String.format("%.2f", state.totalAmount)}",
                                 text = "Total: ₹${state.totalAmount.toFloat()}",
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold,
@@ -249,7 +232,7 @@ private fun TestCard(
         shape = MaterialTheme.shapes.medium
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -299,15 +282,15 @@ private fun TestCard(
                     modifier = Modifier
                         .size(32.dp)
                         .background(
-                            color = if (isSelected) Color.Green.copy(alpha = 0.5f) else Color.White.copy(
+                            color = if (test.isAdded) Color.Green.copy(alpha = 0.5f) else Color.White.copy(
                                 alpha = 0.1f
                             ),
                             shape = CircleShape
                         )
                 ) {
                     Icon(
-                        imageVector = if (!isSelected) Icons.Default.Add else Icons.Default.Check,
-                        contentDescription = if (isSelected) "Remove test" else "Add test",
+                        imageVector = if (!test.isAdded) Icons.Default.Add else Icons.Default.Check,
+                        contentDescription = if (test.isAdded) "Remove test" else "Add test",
                         tint = Color.White
                     )
                 }
