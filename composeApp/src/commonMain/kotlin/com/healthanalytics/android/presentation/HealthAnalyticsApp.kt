@@ -258,6 +258,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             when (currentScreen) {
+
                 MainScreen.DASHBOARD -> HealthDataScreen(onNavigateToDetail = { onBiomarker(it) })
                 MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = { navigateBack() })
                 MainScreen.MARKETPLACE -> {

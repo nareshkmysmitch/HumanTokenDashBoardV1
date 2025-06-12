@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
@@ -40,7 +39,6 @@ import org.koin.compose.koinInject
 fun RecommendationsScreen(
     viewModel: RecommendationsViewModel = koinInject(),
     preferencesViewModel: PreferencesViewModel = koinInject(),
-    navigateBack: () -> Unit,
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -53,7 +51,7 @@ fun RecommendationsScreen(
         }
     }
 
-    BackHandler { navigateBack() }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -95,12 +93,12 @@ fun RecommendationsScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                items(viewModel.getAvailableCategories()) { category ->
+                items(viewModel.getRecommendationCategories()) { category ->
                     CategoryChip(
                         category = category,
                         count = viewModel.getCategoryCount(category),
                         selected = category == uiState.selectedCategory,
-                        onClick = { viewModel.updateSelectedCategory(category) }
+                        onClick = { viewModel.updateRecommendationCategory(category) }
                     )
                 }
             }
@@ -111,7 +109,11 @@ fun RecommendationsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(filterList) { recommendation ->
-                    RecommendationCard(recommendation = recommendation)
+                    RecommendationCard(
+                        accessToken = preferencesState.data,
+                        viewModel = viewModel,
+                        recommendation = recommendation
+                    )
                 }
             }
         }
@@ -143,7 +145,11 @@ fun CategoryChip(
 }
 
 @Composable
-fun RecommendationCard(recommendation: Recommendation) {
+fun RecommendationCard(
+    recommendation: Recommendation,
+    viewModel: RecommendationsViewModel,
+    accessToken: String?,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -215,9 +221,15 @@ fun RecommendationCard(recommendation: Recommendation) {
                 }
             }
 
+            val action = recommendation.actions?.firstOrNull()
+            val userAction = action?.user_recommendation_actions?.firstOrNull()
+
+            val isEnabled = userAction == null || userAction.is_completed == false
+
             // Add to Plan Button
             Button(
-                onClick = { /* TODO: Implement add to plan */ },
+                onClick = { accessToken?.let { viewModel.addToPlan(it, recommendation) } },
+                enabled = isEnabled,
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text("+ Add to Plan")
