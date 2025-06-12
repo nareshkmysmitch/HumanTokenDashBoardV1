@@ -1,18 +1,27 @@
 package com.healthanalytics.android.data.api
 
+import com.healthanalytics.android.data.models.AddActivityRequest
+import com.healthanalytics.android.data.models.AddActivityResponse
+import com.healthanalytics.android.data.models.AddSupplementRequest
 import com.example.humantoken.ui.screens.Cart
 import com.example.humantoken.ui.screens.EncryptedResponse
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.Recommendations
+import com.healthanalytics.android.data.models.RemoveRecommendationRequest
+import com.healthanalytics.android.data.models.RemoveRecommendationResponse
+import com.healthanalytics.android.data.models.RemoveSupplementsRequest
 import com.healthanalytics.android.data.models.AddressData
 import com.healthanalytics.android.data.models.ProfileUpdateResponse
 import com.healthanalytics.android.utils.EncryptionUtils
+import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.UpdateProfileResponse
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -49,6 +58,26 @@ interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
     suspend fun getRecommendations(accessToken: String): List<Recommendation>?
+    suspend fun removeRecommendation(
+        accessToken: String,
+        request: RemoveRecommendationRequest,
+    ): Boolean?
+
+    suspend fun removeSupplements(
+        accessToken: String,
+        request: RemoveSupplementsRequest,
+    ): Boolean?
+
+    suspend fun addSupplementToPlan(
+        accessToken: String,
+        request: AddSupplementRequest,
+    ): Boolean?
+
+    suspend fun addActivityToPlan(
+        accessToken: String,
+        request: AddActivityRequest,
+    ): Boolean?
+
     suspend fun updateProfile(accessToken: String, request: UpdateProfileRequest): ProfileUpdateResponse?
     suspend fun getAddresses(accessToken: String): AddressData?
     suspend fun addProduct(accessToken: String, productId: String, variantId: String): EncryptedResponse?
@@ -57,6 +86,7 @@ interface ApiService {
     suspend fun getProductDetails(accessToken: String, productId: String): Product?
     suspend fun logout(accessToken: String): Boolean
 }
+
 
 class ApiServiceImpl(
     private val httpClient: HttpClient,
@@ -131,7 +161,7 @@ class ApiServiceImpl(
             put("product_id", productId)
             put("variant_id", variantId)
         }
-        
+
         val response = httpClient.post("v4/human-token/market-place/cart/add") {
             header("access_token", accessToken)
             setBody(requestObject.toEncryptedRequestBody())
@@ -159,7 +189,7 @@ class ApiServiceImpl(
             put("product_id", productId)
             put("quantity", quantity)
         }
-        
+
         val response = httpClient.put("v4/human-token/market-place/cart/update") {
             header("access_token", accessToken)
             setBody(requestObject.toEncryptedRequestBody())
@@ -232,5 +262,59 @@ class ApiServiceImpl(
             println("Error during logout: ${e.message}")
             false
         }
+    }
+
+    override suspend fun removeRecommendation(
+        accessToken: String,
+        request: RemoveRecommendationRequest,
+    ): Boolean? {
+        val response = httpClient.post("v1/user/reminder/delete") {
+            header("access_token", accessToken)
+            setBody(request.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val result =
+            EncryptionUtils.handleDecryptionResponse<RemoveRecommendationResponse>(responseBody)
+        return result?.isDeleted
+    }
+
+    override suspend fun removeSupplements(
+        accessToken: String,
+        request: RemoveSupplementsRequest,
+    ): Boolean? {
+        val response = httpClient.post("v1/medicine/delete") {
+            header("access_token", accessToken)
+            setBody(request.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val result =
+            EncryptionUtils.handleDecryptionResponse<RemoveRecommendationResponse>(responseBody)
+        return result?.isDeleted
+    }
+
+    override suspend fun addSupplementToPlan(
+        accessToken: String,
+        request: AddSupplementRequest,
+    ): Boolean {
+        val response = httpClient.post("v1/medicine/add") {
+            header("access_token", accessToken)
+            setBody(request.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val result = EncryptionUtils.handleDecryptionResponse<AddActivityResponse>(responseBody)
+        return result!= null
+    }
+
+    override suspend fun addActivityToPlan(
+        accessToken: String,
+        request: AddActivityRequest,
+    ): Boolean {
+        val response = httpClient.post("v1/user/reminder/create") {
+            header("access_token", accessToken)
+            setBody(request.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val result = EncryptionUtils.handleDecryptionResponse<AddActivityResponse>(responseBody)
+        return result != null
     }
 }

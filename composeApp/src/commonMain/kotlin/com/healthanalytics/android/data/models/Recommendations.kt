@@ -1,5 +1,6 @@
 package com.healthanalytics.android.data.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -47,7 +48,8 @@ data class Action(
     val is_generic: Boolean,
     val created_at: String,
     val updated_at: String,
-    // val user_recommendation_actions: List<Any>?
+
+    val user_recommendation_actions: List<UserRecommendationAction?> = listOf(),
 )
 
 @Serializable
@@ -57,7 +59,23 @@ data class EventConfig(
     val sub_type: String,
     val frequency: String,
     val scheduled_time: String,
+    val shape: String?=null,
+    val color: String?=null,
+    val duration: Int?=null,
     val days_of_the_week: List<Int>,
+)
+
+@Serializable
+data class UserRecommendationAction(
+    val action_id: String? = null,
+    val created_at: String? = null,
+    val event_id: String? = null,
+    val id: String? = null,
+    val is_completed: Boolean? = null,
+    val medicine_id: String? = null,
+    val recommendation_id: String? = null,
+    val updated_at: String? = null,
+    val user_id: String? = null,
 )
 
 enum class RecommendationCategory(val icon: String) {

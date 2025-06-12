@@ -26,7 +26,7 @@ import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
-import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
+import com.healthanalytics.android.presentation.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
@@ -269,7 +269,7 @@ fun HomeScreen(
         ) {
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = { navigateBack() })
+                MainScreen.RECOMMENDATIONS -> RecommendationsTabScreen(navigateBack = { navigateBack() })
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(
                         onProductClick = {
