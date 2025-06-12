@@ -26,7 +26,7 @@ import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.health.HealthDataScreen
-import com.healthanalytics.android.presentation.recommendations.RecommendationsTabScreen
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen

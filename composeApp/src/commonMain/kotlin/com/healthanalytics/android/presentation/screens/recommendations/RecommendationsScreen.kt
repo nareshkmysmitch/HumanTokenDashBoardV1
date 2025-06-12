@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.recommendations
+package com.healthanalytics.android.presentation.screens.recommendations
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

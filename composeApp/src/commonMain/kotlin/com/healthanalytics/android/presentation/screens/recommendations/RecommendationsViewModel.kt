@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.recommendations
+package com.healthanalytics.android.presentation.screens.recommendations
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

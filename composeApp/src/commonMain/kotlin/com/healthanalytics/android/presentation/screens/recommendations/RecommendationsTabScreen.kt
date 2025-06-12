@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.recommendations
+package com.healthanalytics.android.presentation.screens.recommendations
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.BackHandler
-import com.healthanalytics.android.presentation.actionplan.ActionPlanScreen
+import com.healthanalytics.android.presentation.screens.actionplan.ActionPlanScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 enum class RecommendationsTab {

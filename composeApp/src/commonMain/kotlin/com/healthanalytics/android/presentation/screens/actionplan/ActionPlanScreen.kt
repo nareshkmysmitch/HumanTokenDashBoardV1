@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.actionplan
+package com.healthanalytics.android.presentation.screens.actionplan
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
-import com.healthanalytics.android.presentation.recommendations.RecommendationsTab
-import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
