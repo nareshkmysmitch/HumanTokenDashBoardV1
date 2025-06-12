@@ -49,12 +49,12 @@ import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun ActionPlanScreen(
-    viewModel: RecommendationsViewModel = koinViewModel(),
-    preferencesViewModel: PreferencesViewModel = koinViewModel(),
+    viewModel: RecommendationsViewModel = koinInject(),
+    preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiActionState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()

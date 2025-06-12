@@ -61,7 +61,6 @@ import com.seiko.imageloader.rememberImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
 data class Product(

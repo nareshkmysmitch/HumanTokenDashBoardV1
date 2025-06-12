@@ -272,7 +272,6 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                     }
 
                     if (success == true) {
-                        // Reload recommendations and switch to Action Plan tab
                         setSelectedTab(RecommendationsTab.ACTION_PLAN)
                     } else {
                         _uiState.update {
