@@ -29,8 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
+import com.healthanalytics.android.presentation.actionplan.CategoryChip
+import com.healthanalytics.android.presentation.actionplan.MetricChip
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.utils.capitalizeFirst
 import org.koin.compose.koinInject
@@ -40,7 +43,6 @@ fun RecommendationsScreen(
     viewModel: RecommendationsViewModel = koinInject(),
     preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filterList = viewModel.getFilteredRecommendations()
@@ -50,8 +52,6 @@ fun RecommendationsScreen(
             viewModel.loadRecommendations(token)
         }
     }
-
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -65,8 +65,7 @@ fun RecommendationsScreen(
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -82,14 +81,11 @@ fun RecommendationsScreen(
                 })",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+                modifier = Modifier.padding(horizontal = 16.dp))
 
             // Category Selector
             LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
@@ -98,8 +94,7 @@ fun RecommendationsScreen(
                         category = category,
                         count = viewModel.getCategoryCount(category),
                         selected = category == uiState.selectedCategory,
-                        onClick = { viewModel.updateRecommendationCategory(category) }
-                    )
+                        onClick = { viewModel.updateRecommendationCategory(category) })
                 }
             }
 
@@ -130,9 +125,7 @@ fun CategoryChip(
     val categoryEnum = RecommendationCategory.fromString(category)
 
     FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = {
+        selected = selected, onClick = onClick, label = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -140,8 +133,7 @@ fun CategoryChip(
                 Text(categoryEnum.icon)
                 Text("$category ($count)")
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -155,9 +147,7 @@ fun RecommendationCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             // Title and Difficulty
             Row(
@@ -248,8 +238,7 @@ fun DifficultyChip(difficulty: String) {
     }
 
     Surface(
-        color = backgroundColor,
-        shape = MaterialTheme.shapes.small
+        color = backgroundColor, shape = MaterialTheme.shapes.small
     ) {
         Text(
             text = difficulty.replaceFirstChar { it.uppercase() },

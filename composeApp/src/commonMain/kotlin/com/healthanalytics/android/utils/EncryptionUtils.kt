@@ -1,5 +1,6 @@
 package com.healthanalytics.android.utils
 
+import co.touchlab.kermit.Logger
 import com.healthanalytics.android.data.models.ApiResult
 import com.healthanalytics.android.data.network.decrypt
 import com.healthanalytics.android.data.network.encrypt
@@ -50,17 +51,19 @@ object EncryptionUtils {
             // Decrypt the data field
             val decryptedData = encryptedResponse.data?.let { decryptApiResponse(it) }
 
-            println("decryptedData..$decryptedData")
-            println("decryptedData json..${json.decodeFromString<T>(decryptedData.toString())}")
+            Logger.e("decryptedData..$decryptedData")
 
             // Parse the decrypted data as the expected type
             if (decryptedData?.isNotEmpty() == true) {
+
+                Logger.e { "Decoded String ${json.decodeFromString<T>(decryptedData)}" }
                 json.decodeFromString<T>(decryptedData)
             } else {
+                Logger.e { "Else Block.. " }
                 null
             }
         } catch (e: Exception) {
-            println("Failed to handle encrypted response: ${e.message}")
+            Logger.e("Failed to handle encrypted response: ${e.message}")
             null
         }
     }

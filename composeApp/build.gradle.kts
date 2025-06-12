@@ -74,7 +74,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(libs.lifecycle.viewmodel.compose)
+//            implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
 //            implementation(libs.lifecycle.viewmodel.compose)
 
@@ -109,7 +109,6 @@ kotlin {
 
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
-
         }
 
         commonTest.dependencies {
@@ -153,17 +152,17 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-compose.desktop {
-    application {
-        mainClass = "com.healthanalytics.android.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.healthanalytics.android"
-            packageVersion = "1.0.0"
-        }
-    }
-}
+//compose.desktop {
+//    application {
+//        mainClass = "com.healthanalytics.android.MainKt"
+//
+//        nativeDistributions {
+//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+//            packageName = "com.healthanalytics.android"
+//            packageVersion = "1.0.0"
+//        }
+//    }
+//}
 
 
 //            implementation("moe.tlaster:precompose:1.5.0-beta02")
