@@ -100,9 +100,13 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
     }
 
     fun getActionCategories(): List<String> {
-        return listOf("All") + _uiActionState.value.recommendations
-            .map { it.category ?: "" }
-            .distinct()
+        return if (_uiActionState.value.recommendations.isNotEmpty()) {
+            listOf("All") + _uiActionState.value.recommendations
+                .map { it.category ?: "" }
+                .distinct()
+        } else {
+            listOf()
+        }
     }
 
     fun getActionTotalItems(): Int {
