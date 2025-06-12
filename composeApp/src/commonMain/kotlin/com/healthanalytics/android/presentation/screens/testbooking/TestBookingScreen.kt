@@ -44,10 +44,10 @@ import androidx.compose.ui.unit.sp
 import com.example.humantoken.ui.screens.CartItem
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.data.api.Variant
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
-import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,33 +55,36 @@ fun TestBookingScreen(
     viewModel: TestBookingViewModel,
     marketPlaceViewModel: MarketPlaceViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToSchedule: () -> Unit,
+    onNavigateToSchedule: (Set<Product>) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val accessToken by marketPlaceViewModel.accessToken.collectAsState()
     var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    val getCartList by marketPlaceViewModel.cartListFlow.collectAsState()
+
     LaunchedEffect(Unit) {
         marketPlaceViewModel.getCartList()
-        marketPlaceViewModel.cartListFlow.collectLatest { state ->
-            when (state) {
-                is CartListState.Success -> {
-                    cartItems = state.cartList.flatMap { cart ->
-                        cart.cart_items ?: emptyList()
-                    }
-                    accessToken?.let { viewModel.loadTests(it) }
-                    isLoading = false
-                }
+    }
 
-                is CartListState.Error -> {
-                    error = state.message
-                    isLoading = false
+    LaunchedEffect(getCartList) {
+        when (getCartList) {
+            is CartListState.Success -> {
+                cartItems = (getCartList as CartListState.Success).cartList.flatMap { cart ->
+                    cart.cart_items ?: emptyList()
                 }
+                accessToken?.let { viewModel.loadTests(it) }
+                isLoading = false
+            }
 
-                is CartListState.Loading -> {
-                    isLoading = true
-                }
+            is CartListState.Error -> {
+                error = (getCartList as CartListState.Error).message
+                isLoading = false
+            }
+
+            is CartListState.Loading -> {
+                isLoading = true
             }
         }
     }
@@ -132,19 +135,19 @@ fun TestBookingScreen(
                 )
 
                 // Test Grid
-                if (state.isLoading) {
+                if (state.isLoading || state.error != null) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = Color(0xFFF50057))
                     }
-                } else if (state.error != null) {
-                    Text(
-                        text = state.error!!,
-                        color = Color.Red,
-                        modifier = Modifier.padding(16.dp)
-                    )
+//                } else if (state.error != null) {
+//                    Text(
+//                        text = state.error!!,
+//                        color = Color.Red,
+//                        modifier = Modifier.padding(16.dp)
+//                    )
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(1),
@@ -153,10 +156,33 @@ fun TestBookingScreen(
                         modifier = Modifier.weight(1f)
                     ) {
                         items(state.availableTests) { test ->
+                            var updatedTest = test
+                            val updatedVariants = mutableListOf<Variant>()
+                            var variantId = test.variants?.firstOrNull()?.variant_id
+                            test.variants?.let {
+                                cartItems.forEach { cartItem ->
+                                    if (cartItem.product_id == test.product_id) {
+                                        variantId = cartItem.variant_id
+                                        cartItem.variant?.let { variant ->
+                                            println("variant --> $variant")
+                                            updatedVariants.add(variant)
+                                        }
+                                        updatedTest = updatedTest.copy(isAdded = true)
+                                    }
+                                }
+                            }
+                            updatedTest = updatedTest.copy(variants = updatedVariants.toList())
+                            println("updatedVariants --> $updatedVariants, $updatedTest")
                             TestCard(
-                                test = test,
+                                test = updatedTest,
                                 isSelected = test in state.selectedTests,
-                                onSelect = { viewModel.toggleTestSelection(test) }
+                                onSelect = {
+//                                    viewModel.toggleTestSelection(test)
+                                    marketPlaceViewModel.addToCart(
+                                        updatedTest.product_id ?: "",
+                                        updatedTest.variants?.firstOrNull()?.variant_id ?: variantId ?:""
+                                    )
+                                }
                             )
                         }
                     }
@@ -193,7 +219,7 @@ fun TestBookingScreen(
                             )
                         }
                         Button(
-                            onClick = { onNavigateToSchedule() },
+                            onClick = { onNavigateToSchedule(state.selectedTests) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF8B5CF6)
                             ),

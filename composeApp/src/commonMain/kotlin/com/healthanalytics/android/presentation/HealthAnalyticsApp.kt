@@ -85,6 +85,7 @@ fun HealthAnalyticsApp() {
     val testBookingViewModel: TestBookingViewModel = koinInject<TestBookingViewModel>()
     val chatViewModel: ChatViewModel = koinInject<ChatViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
+    var localTestList by remember { mutableStateOf<List<Product>>(emptyList()) }
     when {
         onBoardUiState.isLoading -> CircularProgressIndicator()
         onBoardUiState.hasAccessToken -> {
@@ -156,13 +157,17 @@ fun HealthAnalyticsApp() {
                     ScheduleTestBookingScreen(
                         onNavigateBack = { navigateTo(Screen.TEST_BOOKING) },
                         viewModel = marketPlaceViewModel,
+                        localTestList = localTestList,
                     )
                 }
 
                 Screen.TEST_BOOKING -> {
                     TestBookingScreen(
                         onNavigateBack = { navigateBack() },
-                        onNavigateToSchedule = { navigateTo(Screen.SCHEDULE_TEST_BOOKING) },
+                        onNavigateToSchedule = {
+                            localTestList = localTestList + it
+                            navigateTo(Screen.SCHEDULE_TEST_BOOKING)
+                        },
                         viewModel = testBookingViewModel,
                         marketPlaceViewModel = marketPlaceViewModel,
                     )

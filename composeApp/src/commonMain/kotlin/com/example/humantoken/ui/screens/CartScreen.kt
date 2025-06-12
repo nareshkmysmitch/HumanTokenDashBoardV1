@@ -52,16 +52,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Variant
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.CartActionState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.seiko.imageloader.rememberImagePainter
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
 data class Product(
@@ -83,7 +81,7 @@ data class Product(
     val is_active: Boolean? = null,
     val type: String? = null,
     val created_at: String? = null,
-    val updated_at: String? = null
+    val updated_at: String? = null,
 )
 
 @Serializable
@@ -109,7 +107,7 @@ data class Cart(
     val type: String? = null,
     val created_at: String? = null,
     val updated_at: String? = null,
-    val cart_items: List<CartItem>? = null
+    val cart_items: List<CartItem>? = null,
 )
 
 @Serializable
@@ -138,47 +136,40 @@ fun CartScreen(
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
+    val cartListFlow by viewModel.cartListFlow.collectAsStateWithLifecycle()
+    val cartActionState by viewModel.cartActionState.collectAsStateWithLifecycle()
 
     BackHandler(enabled = true) {
         onBackClick()
     }
     LaunchedEffect(Unit) {
         viewModel.getCartList()
-        viewModel.cartListFlow.collectLatest { state ->
-            when (state) {
-                is CartListState.Success -> {
-                    cartItems = state.cartList.flatMap { cart ->
-                        cart.cart_items ?: emptyList()
-                    }
-                    isLoading = false
-                }
-                is CartListState.Error -> {
-                    error = state.message
-                    isLoading = false
-                }
-                is CartListState.Loading -> {
-                    isLoading = true
-                }
+    }
+    when(cartListFlow){
+        is CartListState.Success -> {
+            cartItems = (cartListFlow as CartListState.Success).cartList.flatMap { cart ->
+                cart.cart_items ?: emptyList()
             }
+            isLoading = false
+        }
+        is CartListState.Error -> {
+            error = (cartListFlow as CartListState.Error).message
+            isLoading = false
+        }
+        is CartListState.Loading -> {
+            isLoading = true
         }
     }
 
-    // Collect cart action state for showing feedback
-    LaunchedEffect(Unit) {
-        viewModel.cartActionState.collectLatest { state ->
-            when (state) {
-                is CartActionState.Success -> {
-                    if (state.message.isNotEmpty()) {
-                        snackbarMessage = state.message
-                    }
-                }
-                is CartActionState.Error -> {
-                    snackbarMessage = state.message
-                }
-                is CartActionState.Loading -> {
-                    // Handle loading if needed
-                }
-            }
+    when(cartActionState){
+        is CartActionState.Success -> {
+            snackbarMessage = (cartActionState as CartActionState.Success).message
+        }
+        is CartActionState.Error -> {
+            snackbarMessage = (cartActionState as CartActionState.Error).message
+        }
+        is CartActionState.Loading -> {
+            // Handle loading if needed
         }
     }
 

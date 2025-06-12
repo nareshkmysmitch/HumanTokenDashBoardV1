@@ -131,7 +131,9 @@ class ApiServiceImpl(
 
         val requestObject = buildJsonObject {
             put("product_id", productId)
-            put("variant_id", variantId)
+            if(variantId.isNotEmpty()) {
+                put("variant_id", variantId)
+            }
         }
         
         val response = httpClient.post("v4/human-token/market-place/cart/add") {
