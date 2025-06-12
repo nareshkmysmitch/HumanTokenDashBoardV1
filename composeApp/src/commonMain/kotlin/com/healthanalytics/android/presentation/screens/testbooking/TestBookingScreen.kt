@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -46,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import com.example.humantoken.ui.screens.CartItem
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
-import com.healthanalytics.android.data.api.Variant
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -154,9 +152,18 @@ fun TestBookingScreen(
                                 cartItem.product?.product_id == test.product_id
                             }
                             val updatedTest = test.copy(isAdded = isInCart)
+                            
+                            LaunchedEffect(isInCart) {
+                                if (isInCart && !state.selectedTests.any { it.product_id == updatedTest.product_id }) {
+                                    viewModel.toggleTestSelection(updatedTest)
+                                } else if (!isInCart) {
+                                    viewModel.removeTest(updatedTest)
+                                }
+                                println("isInCart --> $isInCart, selectedTests --> ${state.selectedTests}")
+                            }
+                            
                             TestCard(
                                 test = updatedTest,
-                                isSelected = test in state.selectedTests,
                                 onSelect = {
                                     if (!updatedTest.isAdded) {
                                         marketPlaceViewModel.addToCart(
@@ -168,8 +175,8 @@ fun TestBookingScreen(
                                             updatedTest.product_id ?: "",
                                             "0"
                                         )
+                                        viewModel.removeTest(updatedTest)
                                     }
-                                    viewModel.toggleTestSelection(updatedTest)
                                 }
                             )
                         }
@@ -223,7 +230,6 @@ fun TestBookingScreen(
 @Composable
 private fun TestCard(
     test: Product,
-    isSelected: Boolean,
     onSelect: () -> Unit
 ) {
     Surface(

@@ -41,11 +41,11 @@ class TestBookingViewModel(
     }
 
     suspend fun loadTests(accessToken: String) {
-//        _state.update { it.copy(isLoading = true) }
+        _state.update { it.copy(isLoading = true) }
         try {
             val tests = api.getTestBookings(accessToken)
-            _state.update { 
-                it.copy(
+            _state.update { currentState ->
+                currentState.copy(
                     isLoading = false,
                     availableTests = tests?.filterNotNull() ?: emptyList(),
                     error = null
@@ -64,10 +64,11 @@ class TestBookingViewModel(
     fun toggleTestSelection(test: Product) {
         _state.update { currentState ->
             val updatedSelection = currentState.selectedTests.toMutableSet()
-            if (test in updatedSelection) {
-                updatedSelection.remove(test)
-            } else {
+            
+            if (test.isAdded) {
                 updatedSelection.add(test)
+            } else {
+                updatedSelection.removeAll { it.product_id == test.product_id }
             }
             
             val totalAmount = updatedSelection.sumOf { product ->
@@ -81,14 +82,28 @@ class TestBookingViewModel(
         }
     }
 
+    fun removeTest(test: Product) {
+        _state.update { currentState ->
+            val updatedSelection = currentState.selectedTests.toMutableSet()
+            updatedSelection.removeAll { it.product_id == test.product_id }
+            
+            val totalAmount = updatedSelection.sumOf { product ->
+                product.price?.toDoubleOrNull() ?: 0.0
+            }
+            
+            currentState.copy(
+                selectedTests = updatedSelection,
+                totalAmount = totalAmount
+            )
+        }
+    }
+
     fun scheduleTests() {
-        // TODO: Implement test scheduling
         val selectedTests = _state.value.selectedTests
         if (selectedTests.isEmpty()) return
         
         viewModelScope.launch {
             try {
-                // TODO: Call API to schedule tests
                 println("Scheduling tests: ${selectedTests.map { it.name }}")
             } catch (e: Exception) {
                 _state.update { 
