@@ -56,11 +56,11 @@ fun RecommendationsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         // Header
-        Text(
-            text = "Recommendations",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(16.dp)
-        )
+//        Text(
+//            text = "Recommendations",
+//            style = MaterialTheme.typography.headlineMedium,
+//            modifier = Modifier.padding(16.dp)
+//        )
 
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
@@ -71,17 +71,17 @@ fun RecommendationsScreen(
             }
         } else {
             // Subtitle with selected category and count
-            Text(
-                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
-                    uiState.selectedCategory?.let {
-                        viewModel.getCategoryCount(
-                            it
-                        )
-                    }
-                })",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp))
+//            Text(
+//                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
+//                    uiState.selectedCategory?.let {
+//                        viewModel.getCategoryCount(
+//                            it
+//                        )
+//                    }
+//                })",
+//                style = MaterialTheme.typography.titleMedium,
+//                color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                modifier = Modifier.padding(horizontal = 16.dp))
 
             // Category Selector
             LazyRow(

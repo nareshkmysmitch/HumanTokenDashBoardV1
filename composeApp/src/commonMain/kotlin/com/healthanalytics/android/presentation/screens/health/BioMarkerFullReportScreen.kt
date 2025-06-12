@@ -16,10 +16,11 @@ import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.Cause
 import com.healthanalytics.android.data.api.MetricData
-//import com.healthanalytics.android.data.api.Causes
 import com.healthanalytics.android.data.api.ReportedSymptom
 import com.healthanalytics.android.data.api.WellnessCategory
+import com.healthanalytics.android.presentation.components.AppCard
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -50,11 +51,25 @@ fun BioMarkerFullReportScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(biomarker.displayName ?: "") }, navigationIcon = {
+            TopAppBar(
+                title = {
+                Text(
+                    text = biomarker.displayName ?: "", color = AppColors.White
+                )
+            }, navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.White
+                    )
                 }
-            })
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColors.PurpleTitle,
+                navigationIconContentColor = AppColors.White,
+                titleContentColor = AppColors.White
+            )
+            )
         }) { paddingValues ->
         when (val state = uiState) {
             is BioMarkerReportUiState.Loading -> {
@@ -75,7 +90,10 @@ fun BioMarkerFullReportScreen(
                     }
 
                     item {
-                        TabSection(state.data?.metricData?.firstOrNull()?.causes ?: emptyList(), state.data?.metricData)
+                        TabSection(
+                            state.data?.metricData?.firstOrNull()?.causes ?: emptyList(),
+                            state.data?.metricData
+                        )
                     }
 
                     item {
@@ -100,10 +118,8 @@ fun BioMarkerFullReportScreen(
 
 @Composable
 private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+    AppCard(
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp)
@@ -115,7 +131,8 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
             ) {
                 Text(
                     text = biomarker.displayName ?: "",
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = AppColors.DarkPurple
                 )
                 StatusChip(status = biomarker.displayRating ?: "")
             }
@@ -124,19 +141,22 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
 
             Text(
                 text = "${biomarker.value} ${biomarker.unit}",
-                style = MaterialTheme.typography.headlineLarge
+                style = MaterialTheme.typography.headlineLarge,
+                color = AppColors.DarkPurple
             )
 
             Text(
                 text = "Last Updated: ${formatDate(releasedAt ?: "")}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = AppColors.DarkPurple.copy(alpha = 0.7f)
             )
 
             if (!biomarker.shortDescription.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = biomarker.shortDescription, style = MaterialTheme.typography.bodyMedium
+                    text = biomarker.shortDescription,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AppColors.DarkPurple
                 )
             }
         }
@@ -157,8 +177,7 @@ private fun TabSection(causes: List<Cause>, metricData: List<MetricData>?) {
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
-                    text = { Text(title) }
-                )
+                    text = { Text(title) })
             }
         }
 
@@ -176,8 +195,7 @@ private fun TabSection(causes: List<Cause>, metricData: List<MetricData>?) {
 @Composable
 private fun WhyItMattersContent(metricData: MetricData?) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (metricData?.content != null) {
             Text(
@@ -208,8 +226,7 @@ private fun WhyItMattersContent(metricData: MetricData?) {
 @Composable
 private fun CausesContent(causes: List<Cause>) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Factors that may increase levels
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -232,8 +249,7 @@ private fun CausesContent(causes: List<Cause>) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = cause.name ?: "",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = cause.name ?: "", style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
@@ -260,8 +276,7 @@ private fun CausesContent(causes: List<Cause>) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = cause.name ?: "",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = cause.name ?: "", style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }

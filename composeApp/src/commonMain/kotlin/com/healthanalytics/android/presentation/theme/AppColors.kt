@@ -7,7 +7,8 @@ object AppColors {
     val primary = Color(0xFF6366F1)
 
     val White = Color(0xFFFFFFFF)
-
+    val GrayCardColor = Color(0xFFF0F0F0)
+    val AppBackgroundColor = Color(0xFFFFFFFF)
 
     val primaryDark = Color(0xFF4F46E5)
     val secondary = Color(0xFF8B5CF6)
@@ -47,6 +48,8 @@ object AppColors {
     val surfaceVariant = Color(0xFF2A2A3E)
     val outline = Color(0xFF5A5A6E)
     val PurpleBackground = Color(0xFF767633)
+    val DarkPurple = Color(0xFF2f1b29)
+    val PurpleTitle = Color(0xFF490d30)
     val PurpleCardBackground = Color(0xFF2E2332)
     val PurpleIconBackground = Color(0XFF393442)
     val PurpleButtonBackground = Color(0XFF54414E)

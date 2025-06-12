@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,12 +42,12 @@ import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Conversation
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,21 +68,37 @@ fun ConversationListScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Conversations")
+                    Text(
+                        text = "Conversations",
+                        color = AppColors.White
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.Default.ArrowBack, 
+                            contentDescription = "Back",
+                            tint = AppColors.White
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.PurpleTitle,
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
+                )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Create new conversation */ }) {
+                onClick = { /* TODO: Create new conversation */ },
+                containerColor = AppColors.DarkPurple,
+                contentColor = AppColors.White
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "New Chat")
             }
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {

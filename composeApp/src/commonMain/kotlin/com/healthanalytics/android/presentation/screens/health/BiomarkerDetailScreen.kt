@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.presentation.components.FilledAppButton
 import com.healthanalytics.android.presentation.theme.AppColors
+import kotlinx.serialization.json.JsonNull.content
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,17 +46,29 @@ fun BiomarkerDetailScreen(
     modifier: Modifier = Modifier,
     onNavigateFullReport: () -> Unit
 ) {
-
     BackHandler(enabled = true, onBack = onNavigateBack)
-    Logger.e { "BiomarkerDetailScreen $biomarker" }
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Biomarker Details") }, navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            })
+            TopAppBar(
+                title = {
+                    Text(
+                        "Biomarker Details", color = AppColors.White
+                    )
+                }, navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppColors.White
+                        )
+                    }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.PurpleTitle,
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
+                )
+            )
         }) { paddingValues ->
         Column(
             modifier = modifier.fillMaxSize().padding(paddingValues)
@@ -63,14 +78,10 @@ fun BiomarkerDetailScreen(
             RangeGraph(biomarker)
             BiomarkerDescription(biomarker)
 
-            Button(
-                onClick = {
-                    onNavigateFullReport()
-                },
+            FilledAppButton(
+                onClick = onNavigateFullReport,
                 modifier = Modifier.fillMaxWidth().padding(top = 24.dp, start = 20.dp, end = 20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.Rose, contentColor = AppColors.White
-                )
+
             ) {
                 Text("View Full Report")
             }

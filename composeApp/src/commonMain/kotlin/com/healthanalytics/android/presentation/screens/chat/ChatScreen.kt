@@ -28,10 +28,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,6 +45,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Message
+import com.healthanalytics.android.presentation.components.FilledAppButton
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -84,15 +88,30 @@ fun ChatScreen(
             TopAppBar(
                 title = {
                     when (val state = uiState) {
-                        is ChatUiState.Success -> Text("Chat")
-                        else -> Text("Chat")
+                        is ChatUiState.Success -> Text(
+                            text = "Chat",
+                            color = AppColors.White
+                        )
+                        else -> Text(
+                            text = "Chat",
+                            color = AppColors.White
+                        )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.Default.ArrowBack, 
+                            contentDescription = "Back",
+                            tint = AppColors.White
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.PurpleTitle,
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
+                )
             )
         },
         bottomBar = {
@@ -101,11 +120,8 @@ fun ChatScreen(
                 onValueChange = viewModel::updateMessageInput,
                 onSend = {
                     viewModel.sendMessage(conversationId)
-                    // Clear input
                     viewModel.updateMessageInput("")
-                    // Reload the first page to get the latest messages including bot response
                     coroutineScope.launch {
-                        // Small delay to ensure the message is processed
                         delay(500)
                         viewModel.loadChat(conversationId)
                     }
@@ -241,10 +257,13 @@ private fun ChatInput(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier, tonalElevation = 2.dp
+        modifier = modifier, 
+        tonalElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
@@ -256,13 +275,22 @@ private fun ChatInput(
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = { onSend() }),
-                maxLines = 4
+                maxLines = 4,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppColors.DarkPurple,
+                    unfocusedBorderColor = AppColors.DarkPurple.copy(alpha = 0.5f),
+                    focusedContainerColor = AppColors.White,
+                    unfocusedContainerColor = AppColors.White
+                )
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            FilledIconButton(
-                onClick = onSend, enabled = value.isNotBlank(), modifier = Modifier.size(40.dp)
+            FilledAppButton(
+                onClick = onSend,
+                enabled = value.isNotBlank(),
+                modifier = Modifier.size(40.dp),
+                contentPadding = PaddingValues(8.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Send,

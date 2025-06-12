@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.presentation.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +35,8 @@ fun TopAppBar(
         title = {
             Text(
                 text = title,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = AppColors.White
             )
         },
         actions = {
@@ -43,7 +45,8 @@ fun TopAppBar(
                     Icon(
                         imageVector = Icons.Default.Chat,
                         contentDescription = "Chat",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
+                        tint = AppColors.White
                     )
                 }
             }
@@ -52,15 +55,17 @@ fun TopAppBar(
                     Icon(
                         imageVector = endIcon,
                         contentDescription = "Profile",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
+                        tint = AppColors.White
                     )
                 }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = AppColors.PurpleTitle,
+            navigationIconContentColor = AppColors.White,
+            titleContentColor = AppColors.White,
+            actionIconContentColor = AppColors.White
         ),
         modifier = modifier
     )
