@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,7 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.presentation.components.CardDefaults.defaultElevation
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -74,7 +77,7 @@ fun HealthDataScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
     ) {
 //        Text(
 //            text = "Health Data",
@@ -106,9 +109,9 @@ fun HealthDataScreen(
 
         // Filter Chips
         LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp)
         ) {
             items(availableFilters) { filter ->
                 FilterChip(
@@ -118,8 +121,7 @@ fun HealthDataScreen(
             }
         }
 
-        println("state -->  uiState :: ${uiState.isLoading} || preferencesState ::${preferencesState.isLoading} ")
-        println("state -->  ${filteredMetrics.size} ")
+
         // Metrics List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
@@ -130,9 +132,10 @@ fun HealthDataScreen(
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+
+                ) {
                 items(filteredMetrics) { metric ->
                     MetricCard(
                         metric = metric, onMetricClick = { onNavigateToDetail(metric) })
@@ -148,10 +151,13 @@ fun MetricCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { metric?.let { onMetricClick(it) } },
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.White
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

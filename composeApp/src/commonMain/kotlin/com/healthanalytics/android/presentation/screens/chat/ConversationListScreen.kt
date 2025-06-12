@@ -92,7 +92,7 @@ fun ConversationListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { /* TODO: Create new conversation */ },
-                containerColor = AppColors.DarkPurple,
+                containerColor = AppColors.Pink,
                 contentColor = AppColors.White
             ) {
                 Icon(Icons.Default.Add, contentDescription = "New Chat")
@@ -127,9 +127,7 @@ fun ConversationListScreen(
 
                             if (state.isLoadingMore) {
                                 item {
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth().padding(16.dp)
-                                    ) {
+                                    Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                                         CircularProgressIndicator(
                                             modifier = Modifier.align(Alignment.Center).size(24.dp)
                                         )

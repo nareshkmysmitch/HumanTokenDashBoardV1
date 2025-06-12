@@ -181,8 +181,8 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF1C1C1E)
-                        )
+                            containerColor = AppColors.White
+                        ),
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp)

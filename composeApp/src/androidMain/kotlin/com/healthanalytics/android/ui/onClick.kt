@@ -10,7 +10,6 @@ import androidx.compose.ui.res.colorResource
 import com.healthanalytics.android.presentation.theme.AppColors
 import humantokendashboardv1.composeapp.generated.resources.Res
 
-
 @Composable
 fun Modifier.onTextClick(rippleEffect: Boolean = false, onClick: () -> Unit): Modifier {
     return this.clickable(
