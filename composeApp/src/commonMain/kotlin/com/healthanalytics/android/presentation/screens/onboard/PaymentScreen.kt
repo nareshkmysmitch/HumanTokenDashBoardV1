@@ -96,7 +96,7 @@ fun PaymentScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimensions.spacingMedium),
+                    .padding(top = Dimensions.size16dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -123,7 +123,7 @@ fun PaymentScreen(
                         contentDescription = "Logo",
                         modifier = Modifier.size(Dimensions.iconSize)
                     )
-                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
+                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
                     Text(
                         text = "Deep Holistics",
                         style = AppTextStyles.headingSmall,
@@ -132,10 +132,10 @@ fun PaymentScreen(
                 }
 
                 // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
+                Spacer(modifier = Modifier.width(Dimensions.size48dp))
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
+            Spacer(modifier = Modifier.height(Dimensions.size48dp))
 
             // Main content
             Column(
@@ -150,7 +150,7 @@ fun PaymentScreen(
                         fontWeight = FontWeight.Bold
                     ),
                     color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                    modifier = Modifier.padding(bottom = Dimensions.size48dp)
                 )
 
                 // Payment Confirmation Card
@@ -158,7 +158,7 @@ fun PaymentScreen(
                     icon = "💳",
                     title = "Payment Confirmation",
                     description = "Secure online payment will be processed after confirming your details.",
-                    modifier = Modifier.padding(bottom = Dimensions.spacingLarge)
+                    modifier = Modifier.padding(bottom = Dimensions.size24dp)
                 )
 
                 // At-Home Blood Draw Card
@@ -166,7 +166,7 @@ fun PaymentScreen(
                     icon = "🏷️",
                     title = "At-Home Blood Draw",
                     description = "A certified phlebotomist will visit your address at the scheduled time for sample collection.",
-                    modifier = Modifier.padding(bottom = Dimensions.spacingLarge)
+                    modifier = Modifier.padding(bottom = Dimensions.size24dp)
                 )
 
                 // Access Dashboard Card
@@ -174,7 +174,7 @@ fun PaymentScreen(
                     icon = "⚙️",
                     title = "Access your Dashboard",
                     description = "After processing your sample, you'll get access to your comprehensive health dashboard with detailed biomarker insights.",
-                    modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                    modifier = Modifier.padding(bottom = Dimensions.size48dp)
                 )
             }
 
@@ -201,7 +201,7 @@ fun PaymentScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
         }
     }
 }
@@ -242,7 +242,7 @@ private fun NextStepCard(
                 )
             }
 
-            Spacer(modifier = Modifier.width(Dimensions.spacingMedium))
+            Spacer(modifier = Modifier.width(Dimensions.size16dp))
 
             // Content
             Column(
@@ -255,7 +255,7 @@ private fun NextStepCard(
                         fontWeight = FontWeight.SemiBold
                     ),
                     color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
 
                 Text(

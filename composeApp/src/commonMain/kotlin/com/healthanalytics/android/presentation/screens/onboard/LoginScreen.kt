@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
@@ -38,12 +37,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.components.PrimaryButton
 import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.TextSize
 import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.rounded_logo
@@ -102,29 +104,27 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .padding(top = 80.dp),
+                .padding(top = Dimensions.size12dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // App Logo
             Image(
                 painter = painterResource(Res.drawable.rounded_logo),
                 contentDescription = AppStrings.appName,
-                modifier = Modifier.size(80.dp)
+                modifier = Modifier.size(Dimensions.size80dp)
             )
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
+            Spacer(modifier = Modifier.height(Dimensions.size48dp))
 
-            // Login Title
             Text(
-                text = AppStrings.loginTitle,
-                style = AppTextStyles.headingSmall,
+                fontSize = TextSize.textSize32sp,
+                text = AppStrings.LOGIN_TITLE,
+                fontFamily = FontFamily.semiBold(),
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXSmall))
+            Spacer(modifier = Modifier.height(Dimensions.size4dp))
 
-            // Login Subtitle
             Text(
                 text = AppStrings.loginSubtitle,
                 style = AppTextStyles.headingSmall,
@@ -132,19 +132,18 @@ fun LoginScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
+            Spacer(modifier = Modifier.height(Dimensions.size48dp))
 
-            // Phone Number Label
             Text(
-                text = AppStrings.phoneNumberLabel,
-                style = AppTextStyles.labelMedium,
+                text = AppStrings.PHONE_NUMBER,
+                fontFamily = FontFamily.medium(),
+                fontSize = TextSize.textSize14sp,
                 color = AppColors.textSecondary,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingSmall))
+            Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
-            // Phone Number Input Container with border
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,7 +159,6 @@ fun LoginScreen(
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Country Code Button
                 OutlinedButton(
                     onClick = onCountryCodeClick,
                     modifier = Modifier
@@ -186,7 +184,6 @@ fun LoginScreen(
                     )
                 }
 
-                // Vertical divider line
                 Box(
                     modifier = Modifier
                         .width(1.dp)
@@ -194,7 +191,6 @@ fun LoginScreen(
                         .background(Color(0xFF4A4A4A))
                 )
 
-                // Phone Number TextField
                 OutlinedTextField(
                     value = phoneNumber,
                     onValueChange = { phoneNumber = it },
@@ -232,28 +228,15 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXLarge))
+            Spacer(modifier = Modifier.height(Dimensions.size32dp))
 
-            // Continue Button below phone input
-            Button(
-                onClick = { onContinueClick(phoneNumber.trim()) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Dimensions.buttonHeight),
-                shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.buttonBackground,
-                    contentColor = AppColors.buttonText,
-                    disabledContainerColor = AppColors.inputBackground,
-                    disabledContentColor = AppColors.textSecondary
-                ),
-                enabled = phoneNumber.isNotBlank()
-            ) {
-                Text(
-                    text = AppStrings.continueButton,
-                    style = AppTextStyles.buttonText
-                )
-            }
+            PrimaryButton(
+                buttonName = AppStrings.CONTINUE,
+                isEnable = phoneNumber.isNotBlank(),
+                onclick = {
+                    onContinueClick(phoneNumber.trim())
+                }
+            )
         }
     }
 }
@@ -270,7 +253,6 @@ fun GetOTPResponse(
         is Resource.Error -> {}
         is Resource.Success -> {
             LaunchedEffect(response) {
-                println("Resource.Success.....")
                 navigateToOtpVerification()
             }
         }

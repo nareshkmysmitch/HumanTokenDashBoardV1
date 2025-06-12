@@ -59,8 +59,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
@@ -144,7 +142,7 @@ fun ScheduleBloodTestScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimensions.spacingMedium),
+                    .padding(top = Dimensions.size16dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -171,7 +169,7 @@ fun ScheduleBloodTestScreen(
                         contentDescription = "Logo",
                         modifier = Modifier.size(Dimensions.iconSize)
                     )
-                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
+                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
                     Text(
                         text = "Deep Holistics",
                         style = AppTextStyles.headingSmall,
@@ -180,10 +178,10 @@ fun ScheduleBloodTestScreen(
                 }
 
                 // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
+                Spacer(modifier = Modifier.width(Dimensions.size48dp))
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
+            Spacer(modifier = Modifier.height(Dimensions.size48dp))
 
             // Main content
             Column(
@@ -198,7 +196,7 @@ fun ScheduleBloodTestScreen(
                         fontWeight = FontWeight.Bold
                     ),
                     color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingMedium)
+                    modifier = Modifier.padding(bottom = Dimensions.size16dp)
                 )
 
                 // Description
@@ -209,14 +207,14 @@ fun ScheduleBloodTestScreen(
                         lineHeight = 24.sp
                     ),
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                    modifier = Modifier.padding(bottom = Dimensions.size48dp)
                 )
 
                 // Date section
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = Dimensions.spacingLarge),
+                        .padding(bottom = Dimensions.size24dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -252,7 +250,7 @@ fun ScheduleBloodTestScreen(
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                    modifier = Modifier.padding(bottom = Dimensions.size48dp)
                 ) {
                     items(slotState.data?.slots ?: listOf()) { timeSlot ->
                         val startLocalDateTime = timeSlot.start_time?.let {
@@ -296,7 +294,7 @@ fun ScheduleBloodTestScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
         }
 
         getSlotUpdatedResponse(

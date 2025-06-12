@@ -64,7 +64,7 @@ fun DHToolBar(
         if (title != null) {
             Text(
                 text = title,
-                fontFamily = FontFamily.pilSemiBold(),
+                fontFamily = FontFamily.semiBold(),
                 fontSize = 22.sp,
                 color = AppColors.white,
                 maxLines = 1,

@@ -11,22 +11,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.components.DHToolBar
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CreateAccountContainer(
@@ -83,60 +82,15 @@ fun CreateAccountScreen(
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top section with back button and logo
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimensions.spacingMedium),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Back button
-                TextButton(
-                    onClick = onBackClick,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = AppColors.textPrimary
-                    )
-                ) {
-                    Text(
-                        text = "← Back",
-                        style = AppTextStyles.bodyMedium,
-                        color = AppColors.textPrimary
-                    )
-                }
 
-                // Logo and title
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(Dimensions.iconSize)
-                    )
-                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
-                    Text(
-                        text = "Deep Holistics",
-                        style = AppTextStyles.headingSmall,
-                        color = AppColors.textPrimary
-                    )
-                }
-
-                // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
-            }
-
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge + Dimensions.spacingSmall))
-
-            // Title
-            Text(
-                text = "Create your account",
-                style = AppTextStyles.headingLarge.copy(fontSize = 28.sp),
-                color = AppColors.textPrimary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge - Dimensions.spacingSmall)
+            DHToolBar(
+                title = AppStrings.CREATE_ACCOUNT,
+                onBackClick = onBackClick
             )
 
+            Spacer(modifier = Modifier.height(Dimensions.size48dp + Dimensions.size8dp))
+
+          
             // First Name Field
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -145,7 +99,7 @@ fun CreateAccountScreen(
                     text = "FIRST NAME",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = firstName,
@@ -175,7 +129,7 @@ fun CreateAccountScreen(
                     text = "LAST NAME",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = lastName,
@@ -203,7 +157,7 @@ fun CreateAccountScreen(
                     text = "EMAIL",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = email,
@@ -239,7 +193,7 @@ fun CreateAccountScreen(
                         text = emailError,
                         style = AppTextStyles.caption,
                         color = AppColors.error,
-                        modifier = Modifier.padding(top = Dimensions.spacingXSmall)
+                        modifier = Modifier.padding(top = Dimensions.size4dp)
                     )
                 }
             }
@@ -272,4 +226,10 @@ fun CreateAccountScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun CreateAccountScreenPreview() {
+    CreateAccountScreen()
 }

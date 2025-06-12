@@ -26,8 +26,6 @@ import com.healthanalytics.android.presentation.theme.Dimensions
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HealthProfileContainer(
@@ -83,7 +81,7 @@ fun HealthProfileScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimensions.spacingMedium),
+                    .padding(top = Dimensions.size16dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -110,7 +108,7 @@ fun HealthProfileScreen(
                         contentDescription = "Logo",
                         modifier = Modifier.size(Dimensions.iconSize)
                     )
-                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
+                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
                     Text(
                         text = "Deep Holistics",
                         style = AppTextStyles.headingSmall,
@@ -119,10 +117,10 @@ fun HealthProfileScreen(
                 }
 
                 // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
+                Spacer(modifier = Modifier.width(Dimensions.size48dp))
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge + Dimensions.spacingSmall))
+            Spacer(modifier = Modifier.height(Dimensions.size48dp + Dimensions.size8dp))
 
             // Title
             Text(
@@ -130,7 +128,7 @@ fun HealthProfileScreen(
                 style = AppTextStyles.headingLarge.copy(fontSize = 28.sp),
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                modifier = Modifier.padding(bottom = Dimensions.size48dp)
             )
 
             // Date of Birth Field
@@ -141,7 +139,7 @@ fun HealthProfileScreen(
                     text = "DATE OF BIRTH",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
 
                 OutlinedTextField(
@@ -244,7 +242,7 @@ fun HealthProfileScreen(
                     text = "GENDER",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 ExposedDropdownMenuBox(
                     expanded = showGenderDropdown,
@@ -316,7 +314,7 @@ fun HealthProfileScreen(
                     text = "WEIGHT (KG)",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = weight,
@@ -354,7 +352,7 @@ fun HealthProfileScreen(
                     text = "HEIGHT (CM)",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = height,

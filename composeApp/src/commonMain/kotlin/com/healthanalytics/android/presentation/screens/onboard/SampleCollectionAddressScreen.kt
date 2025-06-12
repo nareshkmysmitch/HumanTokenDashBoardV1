@@ -9,8 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,10 +24,7 @@ import com.healthanalytics.android.utils.Resource
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SampleCollectionAddressContainer(
@@ -82,7 +77,7 @@ fun SampleCollectionAddressScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimensions.spacingMedium),
+                    .padding(top = Dimensions.size16dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -109,7 +104,7 @@ fun SampleCollectionAddressScreen(
                         contentDescription = "Logo",
                         modifier = Modifier.size(Dimensions.iconSize)
                     )
-                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
+                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
                     Text(
                         text = "Deep Holistics",
                         style = AppTextStyles.headingSmall,
@@ -118,10 +113,10 @@ fun SampleCollectionAddressScreen(
                 }
 
                 // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
+                Spacer(modifier = Modifier.width(Dimensions.size48dp))
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge + Dimensions.spacingSmall))
+            Spacer(modifier = Modifier.height(Dimensions.size48dp + Dimensions.size8dp))
 
             // Title
             Text(
@@ -129,7 +124,7 @@ fun SampleCollectionAddressScreen(
                 style = AppTextStyles.headingLarge.copy(fontSize = 28.sp),
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                modifier = Modifier.padding(bottom = Dimensions.size48dp)
             )
 
             // Street Address Field
@@ -140,7 +135,7 @@ fun SampleCollectionAddressScreen(
                     text = "STREET ADDRESS",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = streetAddress,
@@ -174,7 +169,7 @@ fun SampleCollectionAddressScreen(
                     text = "CITY",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = city,
@@ -208,7 +203,7 @@ fun SampleCollectionAddressScreen(
                     text = "STATE",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = state,
@@ -242,7 +237,7 @@ fun SampleCollectionAddressScreen(
                     text = "ZIP CODE",
                     style = AppTextStyles.labelMedium,
                     color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    modifier = Modifier.padding(bottom = Dimensions.size8dp)
                 )
                 OutlinedTextField(
                     value = zipCode,
@@ -299,7 +294,7 @@ fun SampleCollectionAddressScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
         }
 
         GetAccountCreationResponse(
