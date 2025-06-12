@@ -74,17 +74,17 @@ fun ActionPlanScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         // Header Section
-        /*  Row(
-              modifier = Modifier.fillMaxWidth().padding(16.dp),
-              horizontalArrangement = Arrangement.End,
-              verticalAlignment = Alignment.CenterVertically
-          ) {
-              Text(
-                  text = "$totalItems items",
-                  style = MaterialTheme.typography.titleMedium,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant
-              )
-          }*/
+        /* Row(
+             modifier = Modifier.fillMaxWidth().padding(16.dp),
+             horizontalArrangement = Arrangement.End,
+             verticalAlignment = Alignment.CenterVertically
+         ) {
+             Text(
+                 text = "$totalItems items",
+                 style = MaterialTheme.typography.titleMedium,
+                 color = MaterialTheme.colorScheme.onSurfaceVariant
+             )
+         }*/
 
         println("category--> ${viewModel.getActionCategories()}")
 
