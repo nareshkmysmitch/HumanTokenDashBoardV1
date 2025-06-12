@@ -37,7 +37,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun RecommendationsScreen(
-    viewModel: RecommendationsViewModel = koinInject(),
+    viewModel: RecommendationsViewModel,
     preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
 
@@ -50,7 +50,6 @@ fun RecommendationsScreen(
             viewModel.loadRecommendations(token)
         }
     }
-
 
     Column(
         modifier = Modifier.fillMaxSize()

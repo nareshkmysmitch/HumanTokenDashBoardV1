@@ -40,6 +40,7 @@ import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreen
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -64,6 +65,7 @@ fun HealthAnalyticsApp() {
     }
 
     val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
+    val recommendationsViewModel: RecommendationsViewModel = koinInject<RecommendationsViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
     when {
         onBoardUiState.isLoading -> CircularProgressIndicator()
@@ -109,7 +111,8 @@ fun HealthAnalyticsApp() {
                         },
                         onCartClick = {
                             navigateTo(Screen.CART)
-                        }
+                        },
+                        recommendationsViewModel=recommendationsViewModel
                     )
                 }
             }
@@ -239,6 +242,7 @@ fun HomeScreen(
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
+    recommendationsViewModel: RecommendationsViewModel,
 ) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
@@ -269,7 +273,7 @@ fun HomeScreen(
         ) {
             when (currentScreen) {
                 MainScreen.DASHBOARD -> HealthDataScreen()
-                MainScreen.RECOMMENDATIONS -> RecommendationsTabScreen(navigateBack = { navigateBack() })
+                MainScreen.RECOMMENDATIONS -> RecommendationsTabScreen(recommendationsViewModel,navigateBack = { navigateBack() })
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(
                         onProductClick = {

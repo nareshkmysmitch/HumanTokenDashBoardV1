@@ -17,11 +17,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RecommendationsViewModel(private val apiService: ApiService) : ViewModel() {
+
+    init {
+        println("New Instances -->")
+    }
     private val _uiState = MutableStateFlow(RecommendationsUiState())
     val uiState: StateFlow<RecommendationsUiState> = _uiState.asStateFlow()
 
     private val _selectedTab = MutableStateFlow(RecommendationsTab.RECOMMENDATIONS)
-    val selectedTab: StateFlow<RecommendationsTab> = _selectedTab
+    val selectedTab: StateFlow<RecommendationsTab> = _selectedTab.asStateFlow()
 
     fun setSelectedTab(tab: RecommendationsTab) {
         _selectedTab.value = tab

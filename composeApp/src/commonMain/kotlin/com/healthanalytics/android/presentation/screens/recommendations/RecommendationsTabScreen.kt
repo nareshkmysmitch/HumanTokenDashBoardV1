@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.presentation.screens.actionplan.ActionPlanScreen
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 enum class RecommendationsTab {
     RECOMMENDATIONS, ACTION_PLAN
@@ -20,12 +21,13 @@ enum class RecommendationsTab {
 
 @Composable
 fun RecommendationsTabScreen(
-    viewModel: RecommendationsViewModel = koinInject(),
+    viewModel: RecommendationsViewModel,
     navigateBack: () -> Unit,
 ) {
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
 
     BackHandler { navigateBack() }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
             selectedTabIndex = selectedTab.ordinal, modifier = Modifier.fillMaxWidth()
@@ -45,8 +47,8 @@ fun RecommendationsTabScreen(
         }
 
         when (selectedTab) {
-            RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen()
-            RecommendationsTab.ACTION_PLAN -> ActionPlanScreen()
+            RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen(viewModel)
+            RecommendationsTab.ACTION_PLAN -> ActionPlanScreen(viewModel)
         }
     }
 } 
