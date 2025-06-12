@@ -10,12 +10,12 @@ import platform.UIKit.UIViewController
 
 fun MainViewController(): UIViewController {
     initKoin()
-    
+
 //    val lifecycle = LifecycleRegistry()
 //    val root = RootComponent(
 //        componentContext = DefaultComponentContext(lifecycle = lifecycle)
 //    )
-    
+
     return ComposeUIViewController {
         MaterialTheme {
             App()
