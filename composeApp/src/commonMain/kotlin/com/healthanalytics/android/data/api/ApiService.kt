@@ -273,8 +273,6 @@ class ApiServiceImpl(
             return null
         }
     }
-}
-
 
     override suspend fun getBiomarkerReport(
         accessToken: String, type: String, metricId: String
