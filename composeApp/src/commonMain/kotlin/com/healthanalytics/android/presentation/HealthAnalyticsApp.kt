@@ -144,7 +144,6 @@ fun HealthAnalyticsApp() {
                     ScheduleTestBookingScreen(
                         onNavigateBack = { navigateTo(TEST_BOOKING) },
                         viewModel = marketPlaceViewModel,
-                        localTestList = localTestList,
                     )
                 }
 
