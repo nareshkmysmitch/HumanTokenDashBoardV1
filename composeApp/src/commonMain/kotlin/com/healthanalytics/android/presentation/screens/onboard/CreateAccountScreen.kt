@@ -206,6 +206,7 @@ fun CreateAccountScreen(
                     if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && emailError.isEmpty()) {
                         onContinueClick(firstName.trim(), lastName.trim(), email.trim())
                     }
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
