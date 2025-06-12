@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -126,6 +128,7 @@ fun TestBookingScreen(
                     .padding(16.dp)
             ) {
 
+                Spacer(Modifier.padding(paddingValues))
                 Text(
                     text = "Schedule comprehensive health screenings and diagnostic tests",
                     style = MaterialTheme.typography.bodyLarge.copy(
@@ -180,7 +183,8 @@ fun TestBookingScreen(
 //                                    viewModel.toggleTestSelection(test)
                                     marketPlaceViewModel.addToCart(
                                         updatedTest.product_id ?: "",
-                                        updatedTest.variants?.firstOrNull()?.variant_id ?: variantId ?:""
+                                        updatedTest.variants?.firstOrNull()?.variant_id ?: variantId
+                                        ?: ""
                                     )
                                 }
                             )
