@@ -72,19 +72,6 @@ fun HealthDataScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-//        Text(
-//            text = "Health Data",
-//            style = MaterialTheme.typography.headlineMedium,
-//            modifier = Modifier.padding(horizontal = 16.dp)
-//        )
-
-        // Last Updated
-//        Text(
-//            text = "Last updated: ${formatDate(uiState.lastUpdated?.createdAt)}",
-//            style = MaterialTheme.typography.bodyMedium,
-//            modifier = Modifier.padding(horizontal = 16.dp)
-//        )
-
         // Search Bar (Conditionally Visible)
         AnimatedVisibility(
             visible = isSearchVisible,

@@ -25,12 +25,17 @@ import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
+import com.healthanalytics.android.presentation.components.Screen.BIOMARKERS_DETAIL
+import com.healthanalytics.android.presentation.components.Screen.BIOMARKER_FULL_REPORT
+import com.healthanalytics.android.presentation.components.Screen.CART
 import com.healthanalytics.android.presentation.components.Screen.CHAT
+import com.healthanalytics.android.presentation.components.Screen.CONVERSATION_LIST
+import com.healthanalytics.android.presentation.components.Screen.HOME
 import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DETAIL
-import com.healthanalytics.android.presentation.components.Screen.*
+import com.healthanalytics.android.presentation.components.Screen.PROFILE
+import com.healthanalytics.android.presentation.components.Screen.SCHEDULE_TEST_BOOKING
+import com.healthanalytics.android.presentation.components.Screen.TEST_BOOKING
 import com.healthanalytics.android.presentation.components.TopAppBar
-import com.healthanalytics.android.presentation.health.HealthDataScreen
-import com.healthanalytics.android.presentation.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
@@ -41,6 +46,7 @@ import com.healthanalytics.android.presentation.screens.chat.ConversationListScr
 import com.healthanalytics.android.presentation.screens.health.BioMarkerFullReportScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailScreen
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
+import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
@@ -66,7 +72,7 @@ fun HealthAnalyticsApp() {
 
     fun navigateTo(screen: Screen) {
         // Remember the last main screen when navigating away from main screens
-        if (currentScreen is HOME || currentScreen is Screen.PROFILE || currentScreen is Screen.CONVERSATION_LIST) {
+        if (currentScreen is HOME || currentScreen is PROFILE || currentScreen is CONVERSATION_LIST) {
             lastMainScreen = currentScreen
         }
         currentScreen = screen
@@ -74,7 +80,7 @@ fun HealthAnalyticsApp() {
 
     fun navigateBack() {
         currentScreen = if (lastMainScreen == currentScreen) {
-            Screen.HOME
+            HOME
         } else {
             lastMainScreen
         }
@@ -101,9 +107,11 @@ fun HealthAnalyticsApp() {
                 }
 
                 CONVERSATION_LIST -> {
-                    ConversationListScreen(onNavigateToChat = { id ->
-                        navigateTo(CHAT(conversationId = id))
-                    }, onNavigateBack = { navigateTo(HOME) },
+                    ConversationListScreen(
+                        onNavigateToChat = { id ->
+                            navigateTo(CHAT(conversationId = id))
+                        },
+                        onNavigateBack = { navigateTo(HOME) },
                         viewModel = chatViewModel,
                     )
                 }
@@ -126,26 +134,53 @@ fun HealthAnalyticsApp() {
                     )
                 }
 
-                Screen.CART -> CartScreen(
+                CART -> CartScreen(
                     onCheckoutClick = { },
                     onBackClick = { navigateBack() },
                     viewModel = marketPlaceViewModel,
                 )
 
-                Screen.HOME -> {
+                SCHEDULE_TEST_BOOKING -> {
+                    ScheduleTestBookingScreen(
+                        onNavigateBack = { navigateTo(TEST_BOOKING) },
+                        viewModel = marketPlaceViewModel,
+                        localTestList = localTestList,
+                    )
+                }
+
+                TEST_BOOKING -> {
+                    TestBookingScreen(
+                        onNavigateBack = { navigateBack() },
+                        onNavigateToSchedule = {
+                            localTestList = localTestList + it
+                            navigateTo(SCHEDULE_TEST_BOOKING)
+                        },
+                        viewModel = testBookingViewModel,
+                        marketPlaceViewModel = marketPlaceViewModel,
+                    )
+                }
+
+                HOME -> {
                     HomeScreen(
                         onProfileClick = {
-//                            navigateTo(Screen.PROFILE)
-                            navigateTo(Screen.TEST_BOOKING)
+                            navigateTo(PROFILE)
                         },
                         onChatClick = {
-                            navigateTo(Screen.CONVERSATION_LIST)
+                            navigateTo(CONVERSATION_LIST)
                         },
                         onMarketPlaceClick = { product ->
                             navigateTo(MARKETPLACE_DETAIL(product))
                         },
                         onCartClick = {
-                            navigateTo(Screen.CART)
+                            navigateTo(CART)
+                        },
+                        onBiomarkerFullReportClick = {
+                            biomarker = it ?: BloodData()
+                            navigateTo(BIOMARKER_FULL_REPORT)
+                        },
+                        onBiomarker = {
+                            biomarker = it ?: BloodData()
+                            navigateTo(BIOMARKERS_DETAIL)
                         },
                         healthDataViewModel = healthDataViewModel,
                         preferenceViewModel = preferencesViewModel,
@@ -153,26 +188,6 @@ fun HealthAnalyticsApp() {
                         marketPlaceViewModel = marketPlaceViewModel,
                     )
                 }
-
-                Screen.SCHEDULE_TEST_BOOKING -> {
-                    ScheduleTestBookingScreen(
-                        onNavigateBack = { navigateTo(Screen.TEST_BOOKING) },
-                        viewModel = marketPlaceViewModel,
-                        localTestList = localTestList,
-                    )
-                }
-
-                Screen.TEST_BOOKING -> {
-                    TestBookingScreen(
-                        onNavigateBack = { navigateBack() },
-                        onNavigateToSchedule = {
-                            localTestList = localTestList + it
-                            navigateTo(Screen.SCHEDULE_TEST_BOOKING)
-                        },
-                        viewModel = testBookingViewModel,
-                        marketPlaceViewModel = marketPlaceViewModel,
-
-                CART -> CartScreen(onCheckoutClick = { }, onBackClick = { navigateBack() })
 
                 BIOMARKERS_DETAIL -> {
                     BiomarkerDetailScreen(
@@ -188,24 +203,6 @@ fun HealthAnalyticsApp() {
                         }, biomarker = biomarker
                     )
                 }
-
-                HOME -> {
-                    HomeScreen(onProfileClick = {
-                        navigateTo(PROFILE)
-                    }, onChatClick = {
-                        navigateTo(CONVERSATION_LIST)
-                    }, onMarketPlaceClick = { product ->
-                        navigateTo(MARKETPLACE_DETAIL(product))
-                    }, onCartClick = {
-                        navigateTo(CART)
-                    }, onBiomarkerFullReportClick = {
-                        biomarker = it ?: BloodData()
-                        navigateTo(BIOMARKER_FULL_REPORT)
-                    }, onBiomarker = {
-                        biomarker = it ?: BloodData()
-                        navigateTo(BIOMARKERS_DETAIL)
-                    })
-                }
             }
         }
 
@@ -213,7 +210,7 @@ fun HealthAnalyticsApp() {
             OnboardContainer(
                 onboardViewModel = onboardViewModel, isLoggedIn = {
                     onboardViewModel.updateOnBoardState()
-                },
+                }
             )
         }
     }
@@ -243,34 +240,44 @@ fun OnboardContainer(
         ) {
             composable<OnboardRoute.Login> {
                 LoginScreenContainer(
-                    onboardViewModel = onboardViewModel, navigateToOtpVerification = {
+                    onboardViewModel = onboardViewModel,
+                    navigateToOtpVerification = {
                         navController.navigate(OnboardRoute.OTPVerification)
                     },
                 )
             }
 
             composable<OnboardRoute.OTPVerification> {
-                OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                    navController.navigateUp()
-                }, navigateToAccountCreation = {
+                OTPContainer(
+                    onboardViewModel = onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToAccountCreation = {
                         navController.navigate(OnboardRoute.CreateAccount)
                     },
                 )
             }
 
             composable<OnboardRoute.CreateAccount> {
-                CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                    navController.navigateUp()
-                }, navigateToHealthProfile = {
+                CreateAccountContainer(
+                    onboardViewModel = onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToHealthProfile = {
                         navController.navigate(OnboardRoute.HealthProfile)
                     },
                 )
             }
 
             composable<OnboardRoute.HealthProfile> {
-                HealthProfileContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                    navController.navigateUp()
-                }, navigateToAddress = {
+                HealthProfileContainer(
+                    onboardViewModel = onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToAddress = {
                         navController.navigate(OnboardRoute.SampleCollectionAddress)
                     },
                 )
@@ -289,9 +296,12 @@ fun OnboardContainer(
             }
 
             composable<OnboardRoute.ScheduleBloodTest> {
-                ScheduleBloodTestContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                    navController.navigateUp()
-                }, navigateToPayment = {
+                ScheduleBloodTestContainer(
+                    onboardViewModel = onboardViewModel,
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
+                    navigateToPayment = {
                         navController.navigate(OnboardRoute.Payment)
                     },
                 )
@@ -350,7 +360,11 @@ fun HomeScreen(
     }) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (currentScreen) {
-                MainScreen.DASHBOARD -> HealthDataScreen(healthDataViewModel, preferenceViewModel, onNavigateToDetail = { onBiomarker(it) })
+                MainScreen.DASHBOARD -> HealthDataScreen(
+                    healthDataViewModel,
+                    preferenceViewModel,
+                    onNavigateToDetail = { onBiomarker(it) })
+
                 MainScreen.RECOMMENDATIONS -> {
                     RecommendationsScreen(
                         navigateBack = { navigateBack() },
@@ -360,12 +374,14 @@ fun HomeScreen(
                 }
 
                 MainScreen.MARKETPLACE -> {
-                    MarketPlaceScreen(onProductClick = {
-                        onMarketPlaceClick(it)
-                        println("product -> Ha1$it")
-                    }, navigateBack = {
-                        navigateBack()
-                    },
+                    MarketPlaceScreen(
+                        onProductClick = {
+                            onMarketPlaceClick(it)
+                            println("product -> Ha1$it")
+                        },
+                        navigateBack = {
+                            navigateBack()
+                        },
                         viewModel = marketPlaceViewModel,
                     )
                 }

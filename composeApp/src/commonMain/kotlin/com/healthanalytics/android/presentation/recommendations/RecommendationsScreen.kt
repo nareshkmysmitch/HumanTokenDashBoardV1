@@ -29,23 +29,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
-import com.healthanalytics.android.presentation.actionplan.CategoryChip
 import com.healthanalytics.android.presentation.actionplan.MetricChip
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
-import com.healthanalytics.android.utils.capitalizeFirst
-import org.koin.compose.koinInject
 
 @Composable
 fun RecommendationsScreen(
     viewModel: RecommendationsViewModel,
     preferencesViewModel: PreferencesViewModel,
+    navigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filterList = viewModel.getFilteredRecommendations()
+
+    BackHandler { navigateBack() }
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -55,13 +55,6 @@ fun RecommendationsScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Header
-//        Text(
-//            text = "Recommendations",
-//            style = MaterialTheme.typography.headlineMedium,
-//            modifier = Modifier.padding(16.dp)
-//        )
-
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
@@ -70,19 +63,6 @@ fun RecommendationsScreen(
                 CircularProgressIndicator()
             }
         } else {
-            // Subtitle with selected category and count
-//            Text(
-//                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
-//                    uiState.selectedCategory?.let {
-//                        viewModel.getCategoryCount(
-//                            it
-//                        )
-//                    }
-//                })",
-//                style = MaterialTheme.typography.titleMedium,
-//                color = MaterialTheme.colorScheme.onSurfaceVariant,
-//                modifier = Modifier.padding(horizontal = 16.dp))
-
             // Category Selector
             LazyRow(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),

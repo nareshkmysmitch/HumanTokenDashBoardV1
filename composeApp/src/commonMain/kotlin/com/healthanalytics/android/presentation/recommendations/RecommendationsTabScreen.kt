@@ -45,7 +45,7 @@ fun RecommendationsTabScreen(
         }
 
         when (selectedTab) {
-            RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen()
+            RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen(viewModel = viewModel, preferencesViewModel = koinViewModel(), navigateBack = navigateBack)
             RecommendationsTab.ACTION_PLAN -> ActionPlanScreen()
         }
     }
