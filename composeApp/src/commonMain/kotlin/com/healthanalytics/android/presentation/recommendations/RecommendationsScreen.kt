@@ -29,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.BackHandler
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
+import com.healthanalytics.android.presentation.actionplan.CategoryChip
+import com.healthanalytics.android.presentation.actionplan.MetricChip
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.utils.capitalizeFirst
 import org.koin.compose.koinInject
@@ -40,9 +42,7 @@ import org.koin.compose.koinInject
 fun RecommendationsScreen(
     viewModel: RecommendationsViewModel,
     preferencesViewModel: PreferencesViewModel,
-    navigateBack: () -> Unit,
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filterList = viewModel.getFilteredRecommendations()
@@ -52,56 +52,49 @@ fun RecommendationsScreen(
             viewModel.loadRecommendations(token)
         }
     }
-
-    BackHandler { navigateBack() }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         // Header
-        Text(
-            text = "Recommendations",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(16.dp)
-        )
+//        Text(
+//            text = "Recommendations",
+//            style = MaterialTheme.typography.headlineMedium,
+//            modifier = Modifier.padding(16.dp)
+//        )
 
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else {
             // Subtitle with selected category and count
-            Text(
-                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
-                    uiState.selectedCategory?.let {
-                        viewModel.getCategoryCount(
-                            it
-                        )
-                    }
-                })",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+//            Text(
+//                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
+//                    uiState.selectedCategory?.let {
+//                        viewModel.getCategoryCount(
+//                            it
+//                        )
+//                    }
+//                })",
+//                style = MaterialTheme.typography.titleMedium,
+//                color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                modifier = Modifier.padding(horizontal = 16.dp))
 
             // Category Selector
             LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                items(viewModel.getAvailableCategories()) { category ->
+                items(viewModel.getRecommendationCategories()) { category ->
                     CategoryChip(
                         category = category,
                         count = viewModel.getCategoryCount(category),
                         selected = category == uiState.selectedCategory,
-                        onClick = { viewModel.updateSelectedCategory(category) }
-                    )
+                        onClick = { viewModel.updateRecommendationCategory(category) })
                 }
             }
 
@@ -111,7 +104,11 @@ fun RecommendationsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(filterList) { recommendation ->
-                    RecommendationCard(recommendation = recommendation)
+                    RecommendationCard(
+                        accessToken = preferencesState.data,
+                        viewModel = viewModel,
+                        recommendation = recommendation
+                    )
                 }
             }
         }
@@ -128,9 +125,7 @@ fun CategoryChip(
     val categoryEnum = RecommendationCategory.fromString(category)
 
     FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = {
+        selected = selected, onClick = onClick, label = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -138,20 +133,21 @@ fun CategoryChip(
                 Text(categoryEnum.icon)
                 Text("$category ($count)")
             }
-        }
-    )
+        })
 }
 
 @Composable
-fun RecommendationCard(recommendation: Recommendation) {
+fun RecommendationCard(
+    recommendation: Recommendation,
+    viewModel: RecommendationsViewModel,
+    accessToken: String?,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             // Title and Difficulty
             Row(
@@ -215,9 +211,15 @@ fun RecommendationCard(recommendation: Recommendation) {
                 }
             }
 
+            val action = recommendation.actions?.firstOrNull()
+            val userAction = action?.user_recommendation_actions?.firstOrNull()
+
+            val isEnabled = userAction == null || userAction.is_completed == false
+
             // Add to Plan Button
             Button(
-                onClick = { /* TODO: Implement add to plan */ },
+                onClick = { accessToken?.let { viewModel.addToPlan(it, recommendation) } },
+                enabled = isEnabled,
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text("+ Add to Plan")
@@ -236,8 +238,7 @@ fun DifficultyChip(difficulty: String) {
     }
 
     Surface(
-        color = backgroundColor,
-        shape = MaterialTheme.shapes.small
+        color = backgroundColor, shape = MaterialTheme.shapes.small
     ) {
         Text(
             text = difficulty.replaceFirstChar { it.uppercase() },

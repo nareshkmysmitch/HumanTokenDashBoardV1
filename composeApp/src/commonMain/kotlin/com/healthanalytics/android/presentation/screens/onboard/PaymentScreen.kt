@@ -1,4 +1,3 @@
-
 package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.Image
@@ -13,6 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.presentation.components.AppCard
+import com.healthanalytics.android.presentation.components.FilledAppButton
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
@@ -22,32 +23,24 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun PaymentScreen(
-    onBackClick: () -> Unit = {},
-    onContinueClick: () -> Unit = {}
+    onBackClick: () -> Unit = {}, onContinueClick: () -> Unit = {}
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.backgroundDark)
+        modifier = Modifier.fillMaxSize().background(AppColors.backgroundDark)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(Dimensions.cardPadding),
+            modifier = Modifier.fillMaxSize().padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top section with back button and logo
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimensions.spacingMedium),
+                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.spacingMedium),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Back button
                 TextButton(
-                    onClick = onBackClick,
-                    colors = ButtonDefaults.textButtonColors(
+                    onClick = onBackClick, colors = ButtonDefaults.textButtonColors(
                         contentColor = AppColors.textPrimary
                     )
                 ) {
@@ -83,15 +76,13 @@ fun PaymentScreen(
 
             // Main content
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
+                modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start
             ) {
                 // Title
                 Text(
                     text = "Next Steps",
                     style = AppTextStyles.headingLarge.copy(
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 32.sp, fontWeight = FontWeight.Bold
                     ),
                     color = AppColors.textPrimary,
                     modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
@@ -124,24 +115,16 @@ fun PaymentScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Continue Button
-            Button(
+            FilledAppButton(
                 onClick = onContinueClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Dimensions.buttonHeight),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6B5B95),
-                    contentColor = AppColors.textPrimary
-                ),
-                shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
+                modifier = Modifier.fillMaxWidth().height(Dimensions.buttonHeight)
             ) {
                 Text(
                     text = "Continue to Pay ₹4,999",
-                    style = AppTextStyles.buttonText.copy(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                    ),
+                    color = AppColors.White
                 )
             }
 
@@ -152,63 +135,40 @@ fun PaymentScreen(
 
 @Composable
 private fun NextStepCard(
-    icon: String,
-    title: String,
-    description: String,
-    modifier: Modifier = Modifier
+    icon: String, title: String, description: String, modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A2A2A).copy(alpha = 0.8f)
-        ),
-        shape = RoundedCornerShape(16.dp)
+    AppCard(
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimensions.cardPadding),
-            verticalAlignment = Alignment.Top
+            modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.Top
         ) {
-            // Icon
             Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(
-                        color = Color(0xFF3A3A3A),
-                        shape = RoundedCornerShape(12.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.size(48.dp).background(
+                    color = AppColors.DarkPurple.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(12.dp)
+                ), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = icon,
-                    fontSize = 20.sp
+                    text = icon, fontSize = 20.sp
                 )
             }
 
-            Spacer(modifier = Modifier.width(Dimensions.spacingMedium))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            // Content
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = title,
-                    style = AppTextStyles.headingMedium.copy(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingSmall)
+                    text = title, style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                    ), color = AppColors.DarkPurple, modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 Text(
-                    text = description,
-                    style = AppTextStyles.bodyMedium.copy(
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    ),
-                    color = AppColors.textSecondary
+                    text = description, style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 14.sp, lineHeight = 20.sp
+                    ), color = AppColors.DarkPurple.copy(alpha = 0.7f)
                 )
             }
         }

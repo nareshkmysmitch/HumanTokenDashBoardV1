@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.health
+package com.healthanalytics.android.presentation.screens.health
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

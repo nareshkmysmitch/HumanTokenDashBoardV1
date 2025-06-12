@@ -6,10 +6,13 @@ import com.healthanalytics.android.data.api.ChatApiService
 import com.healthanalytics.android.data.api.ChatApiServiceImpl
 import com.healthanalytics.android.data.network.NetworkConfig
 import com.healthanalytics.android.data.repositories.PreferencesRepository
-import com.healthanalytics.android.presentation.health.HealthDataViewModel
+import com.healthanalytics.android.data.repository.BiomarkerRepository
+import com.healthanalytics.android.data.repository.BiomarkerRepositoryImpl
+import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.health.BioMarkerReportViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.OnboardApiService
@@ -31,6 +34,8 @@ val sharedModules = module {
 
     single { NetworkConfig.createHttpClient() }
     single<ApiService> { ApiServiceImpl(get()) }
+    single<BiomarkerRepository> { BiomarkerRepositoryImpl(get()) }
+
     single<ChatApiService> { ChatApiServiceImpl(get()) }
     single<OnboardApiService> { OnboardApiServiceImpl(get()) }
     single<PreferencesRepository> { PreferencesRepository(get()) }
@@ -42,6 +47,7 @@ val sharedModules = module {
     factoryOf(::ChatViewModel)
     factoryOf(::RecommendationsViewModel)
     viewModelOf(::OnboardViewModel)
+    factoryOf(::BioMarkerReportViewModel)
 
 }
 
