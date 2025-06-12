@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.presentation.components.HorizontalBar
 import com.healthanalytics.android.presentation.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +42,7 @@ fun BiomarkerDetailScreen(
     biomarker: BloodData,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateFullReport: () -> Unit
+    onNavigateFullReport: () -> Unit,
 ) {
 
     BackHandler(enabled = true, onBack = onNavigateBack)
@@ -60,7 +61,10 @@ fun BiomarkerDetailScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             BiomarkerHeader(biomarker)
-            RangeGraph(biomarker)
+            if (biomarker.ranges?.isNotEmpty() == true && biomarker.value != null) {
+                HorizontalBar(biomarker.ranges, biomarker.value)
+            }
+            //RangeGraph(biomarker)
             BiomarkerDescription(biomarker)
 
             Button(
