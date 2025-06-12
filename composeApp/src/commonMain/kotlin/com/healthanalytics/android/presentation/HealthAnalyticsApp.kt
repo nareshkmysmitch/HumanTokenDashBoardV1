@@ -260,7 +260,7 @@ fun HomeScreen(
             when (currentScreen) {
 
                 MainScreen.DASHBOARD -> HealthDataScreen(onNavigateToDetail = { onBiomarker(it) })
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen(navigateBack = { navigateBack() })
+                MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(onProductClick = {
                         onMarketPlaceClick(it)

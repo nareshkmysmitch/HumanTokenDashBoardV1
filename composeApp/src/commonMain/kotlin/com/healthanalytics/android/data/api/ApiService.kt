@@ -29,24 +29,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-@Serializable
-data class AddToCartRequest(
-    val product_id: String,
-    val variant_id: String? = null,
-    val quantity: Int = 1,
-    val metadata: Map<String, String> = emptyMap()
-)
-
-@Serializable
-data class UpdateCartRequest(
-    val product_id: String, val quantity: String
-)
-
-@Serializable
-data class ProductDetailsResponse(
-    val status: String, val message: String, val data: Product
-)
-
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
     suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
@@ -72,7 +54,9 @@ interface ApiService {
         request: AddActivityRequest,
     ): Boolean?
 
-    suspend fun updateProfile(accessToken: String, request: UpdateProfileRequest): ProfileUpdateResponse?
+    suspend fun updateProfile(
+        accessToken: String, request: UpdateProfileRequest
+    ): ProfileUpdateResponse?
 
     suspend fun getAddresses(accessToken: String): AddressData?
     suspend fun addProduct(
@@ -280,6 +264,7 @@ class ApiServiceImpl(
         val reportResponse =
             EncryptionUtils.handleDecryptionResponse<BiomarkerReportData>(responseBody)
         return reportResponse
+    }
 
     override suspend fun removeRecommendation(
         accessToken: String,
@@ -319,7 +304,7 @@ class ApiServiceImpl(
         }
         val responseBody = response.bodyAsText()
         val result = EncryptionUtils.handleDecryptionResponse<AddActivityResponse>(responseBody)
-        return result!= null
+        return result != null
     }
 
     override suspend fun addActivityToPlan(
