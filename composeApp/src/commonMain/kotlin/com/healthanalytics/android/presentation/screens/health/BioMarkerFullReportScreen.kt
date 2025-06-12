@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.health
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,10 +67,10 @@ fun BioMarkerFullReportScreen(
                     )
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = AppColors.PurpleTitle,
-                navigationIconContentColor = AppColors.White,
-                titleContentColor = AppColors.White
-            )
+                    containerColor = AppColors.AppBackgroundColor,
+                    navigationIconContentColor = AppColors.Black,
+                    titleContentColor = AppColors.Black
+                )
             )
         }) { paddingValues ->
         when (val state = uiState) {
@@ -119,7 +121,7 @@ fun BioMarkerFullReportScreen(
 @Composable
 private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
     AppCard(
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
+        modifier = Modifier.fillMaxWidth().padding(16.dp).background(AppColors.White),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp)
@@ -321,7 +323,10 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
     ) {
         categories.forEach { category ->
             Card(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                        containerColor = AppColors.White
+                        ),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -357,7 +362,9 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
     ) {
         symptoms.forEach { symptom ->
             Card(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),   colors = CardDefaults.cardColors(
+                    containerColor = AppColors.White
+                ),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),

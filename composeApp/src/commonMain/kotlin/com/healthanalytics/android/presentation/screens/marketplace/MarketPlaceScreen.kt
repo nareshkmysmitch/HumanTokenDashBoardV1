@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -87,22 +88,19 @@ fun MarketPlaceScreen(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+        modifier = modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
     ) {
         // Search and Filter Row
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            tonalElevation = 1.dp,
-            color = MaterialTheme.colorScheme.surface
+            modifier = Modifier.fillMaxWidth(), tonalElevation = 1.dp,
+//            color = MaterialTheme.colorScheme.surface
+            color = Color.Transparent
+
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth().background(AppColors.AppBackgroundColor)) {
                 // Search Bar and Sort Button
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -126,29 +124,22 @@ fun MarketPlaceScreen(
                     }
 
                     DropdownMenu(
-                        expanded = showSortMenu,
-                        onDismissRequest = { showSortMenu = false }
-                    ) {
-                        SortOption.values().forEach { option ->
+                        expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
+                        SortOption.entries.forEach { option ->
                             DropdownMenuItem(
-                                text = { Text(option.displayName) },
-                                onClick = {
+                                text = { Text(option.displayName) }, onClick = {
                                     viewModel.updateSortOption(option)
                                     showSortMenu = false
-                                },
-                                leadingIcon = if (currentSortOption == option) {
+                                }, leadingIcon = if (currentSortOption == option) {
                                     { Icon(Icons.Default.Check, contentDescription = null) }
-                                } else null
-                            )
+                                } else null)
                         }
                     }
                 }
 
                 // Category Chips
                 LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(MarketPlaceViewModel.PRODUCT_CATEGORIES) { category ->
@@ -164,8 +155,7 @@ fun MarketPlaceScreen(
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
-                            } else null
-                        )
+                            } else null)
                     }
                 }
             }
@@ -173,9 +163,7 @@ fun MarketPlaceScreen(
 
         // Products Grid
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp)
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp)
         ) {
             when (uiState) {
                 is MarketPlaceUiState.Loading -> {
@@ -220,31 +208,24 @@ fun MarketPlaceScreen(
 
 @Composable
 private fun ProductCard(
-    product: Product,
-    onProductClick: (Product) -> Unit,
-    modifier: Modifier = Modifier
+    product: Product, onProductClick: (Product) -> Unit, modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.fillMaxWidth().clickable {
             onProductClick(product)
-            println("product -> mps1$product")
         },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = AppColors.White
+        ),
     ) {
         Column {
             // Product Image or Placeholder
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(
-                        if (product.img_urls.isNullOrEmpty())
-                            MaterialTheme.colorScheme.surfaceVariant
-                        else MaterialTheme.colorScheme.surface
-                    )
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f).background(
+                    if (product.img_urls.isNullOrEmpty()) MaterialTheme.colorScheme.surfaceVariant
+                    else MaterialTheme.colorScheme.surface
+                )
             ) {
                 product.img_urls?.firstOrNull()?.let { imageUrl ->
                     Image(
@@ -259,9 +240,7 @@ private fun ProductCard(
                 product.rating?.let { rating ->
                     Surface(
                         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f),
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.TopEnd),
+                        modifier = Modifier.padding(8.dp).align(Alignment.TopEnd),
                         shape = MaterialTheme.shapes.small
                     ) {
                         Row(
@@ -377,9 +356,7 @@ private fun EmptyState(
 
 @Composable
 private fun ErrorView(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    message: String, onRetry: () -> Unit, modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.padding(16.dp),

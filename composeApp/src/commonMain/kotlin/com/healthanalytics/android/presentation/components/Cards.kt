@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -21,10 +22,10 @@ fun AppCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.background(AppColors.White),
         shape = RoundedCornerShape(com.healthanalytics.android.presentation.components.CardDefaults.defaultCornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.GrayCardColor,
+            containerColor = AppColors.White,
             contentColor = AppColors.DarkPurple
         ),
         elevation = CardDefaults.cardElevation(

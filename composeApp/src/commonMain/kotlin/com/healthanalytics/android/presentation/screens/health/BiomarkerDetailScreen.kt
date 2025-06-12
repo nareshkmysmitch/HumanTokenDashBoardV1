@@ -63,10 +63,10 @@ fun BiomarkerDetailScreen(
                             tint = AppColors.White
                         )
                     }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.PurpleTitle,
-                    navigationIconContentColor = AppColors.White,
-                    titleContentColor = AppColors.White
+                },  colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.AppBackgroundColor,
+                    navigationIconContentColor = AppColors.Black,
+                    titleContentColor = AppColors.Black
                 )
             )
         }) { paddingValues ->

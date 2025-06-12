@@ -138,7 +138,7 @@ private fun NextStepCard(
     icon: String, title: String, description: String, modifier: Modifier = Modifier
 ) {
     AppCard(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth().background(AppColors.White),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.Top
