@@ -29,11 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
-import com.healthanalytics.android.presentation.actionplan.CategoryChip
-import com.healthanalytics.android.presentation.actionplan.MetricChip
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.utils.capitalizeFirst
 import org.koin.compose.koinInject

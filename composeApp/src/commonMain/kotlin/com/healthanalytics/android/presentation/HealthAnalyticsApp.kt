@@ -25,9 +25,15 @@ import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
 import com.healthanalytics.android.presentation.components.Screen
-import com.healthanalytics.android.presentation.components.Screen.*
+import com.healthanalytics.android.presentation.components.Screen.BIOMARKERS_DETAIL
+import com.healthanalytics.android.presentation.components.Screen.BIOMARKER_FULL_REPORT
+import com.healthanalytics.android.presentation.components.Screen.CART
+import com.healthanalytics.android.presentation.components.Screen.CHAT
+import com.healthanalytics.android.presentation.components.Screen.CONVERSATION_LIST
+import com.healthanalytics.android.presentation.components.Screen.HOME
+import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DETAIL
+import com.healthanalytics.android.presentation.components.Screen.PROFILE
 import com.healthanalytics.android.presentation.components.TopAppBar
-import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
@@ -44,6 +50,8 @@ import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreen
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -66,6 +74,7 @@ fun HealthAnalyticsApp() {
     }
 
     val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
+    val recommendationsViewModel: RecommendationsViewModel = koinInject<RecommendationsViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
     when {
         onBoardUiState.isLoading -> CircularProgressIndicator()
@@ -124,7 +133,7 @@ fun HealthAnalyticsApp() {
                     }, onBiomarker = {
                         biomarker = it ?: BloodData()
                         navigateTo(BIOMARKERS_DETAIL)
-                    })
+                    }, recommendationsViewModel = recommendationsViewModel)
                 }
             }
         }
@@ -140,7 +149,7 @@ fun HealthAnalyticsApp() {
 
 @Composable
 private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
-    navController: NavController
+    navController: NavController,
 ): T {
     val navGraphRoute = destination.parent?.route ?: return koinViewModel<T>()
     val parentEntry = remember(this) {
@@ -153,7 +162,7 @@ private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel
 
 @Composable
 fun OnboardContainer(
-    isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel
+    isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel,
 ) {
     org.koin.compose.KoinContext {
         val navController = rememberNavController()
@@ -229,6 +238,7 @@ fun HomeScreen(
     onBiomarker: (BloodData?) -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
     onBiomarkerFullReportClick: (BloodData?) -> Unit = {},
+    recommendationsViewModel: RecommendationsViewModel,
 ) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
@@ -260,7 +270,10 @@ fun HomeScreen(
             when (currentScreen) {
 
                 MainScreen.DASHBOARD -> HealthDataScreen(onNavigateToDetail = { onBiomarker(it) })
-                MainScreen.RECOMMENDATIONS -> RecommendationsScreen()
+                MainScreen.RECOMMENDATIONS -> RecommendationsTabScreen(navigateBack = {
+                    navigateBack()
+                }, viewModel = recommendationsViewModel)
+
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(onProductClick = {
                         onMarketPlaceClick(it)
