@@ -96,7 +96,7 @@ fun TestBookingScreen(
                 title = {
                     Text(
                         text = "Test Booking",
-                        color = AppColors.White,
+                        color = AppColors.white,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -106,7 +106,7 @@ fun TestBookingScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.White,
+                            tint = AppColors.white,
                             modifier = Modifier.size(24.dp)
                         )
                     }

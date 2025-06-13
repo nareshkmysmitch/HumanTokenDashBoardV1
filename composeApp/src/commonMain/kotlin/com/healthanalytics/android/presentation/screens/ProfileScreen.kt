@@ -73,14 +73,15 @@ fun ProfileScreen(
     val accessToken by viewModel.accessToken.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.clearLogoutState() }
     // Handle logout state changes
     LaunchedEffect(logoutState) {
         when (logoutState) {
             is LogoutState.Success -> {
                 // User will be redirected to OnboardContainer automatically
                 // because hasAccessToken in HealthAnalyticsApp will become false
-                onNavigateBack()
-                viewModel.clearLogoutState()
+//                onNavigateBack()
             }
 
             else -> {}
