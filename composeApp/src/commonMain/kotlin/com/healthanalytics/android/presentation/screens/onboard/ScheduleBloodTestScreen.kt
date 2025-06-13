@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.onboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,23 +13,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,24 +40,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.components.DHToolBar
 import com.healthanalytics.android.data.models.onboard.Slot
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
-import com.healthanalytics.android.presentation.components.AppCard
-import com.healthanalytics.android.presentation.components.FilledAppButton
+import com.healthanalytics.android.presentation.components.ShowDatePicker
+import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.utils.DateUtils
 import com.healthanalytics.android.utils.Resource
-import humantokendashboardv1.composeapp.generated.resources.Res
-import humantokendashboardv1.composeapp.generated.resources.ic_calendar_icon
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
@@ -92,7 +86,8 @@ fun ScheduleBloodTestContainer(
             onboardViewModel.getSlotAvailability(
                 selectedDate = DateUtils.getIso(it)
             )
-        })
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,10 +114,6 @@ fun ScheduleBloodTestScreen(
         }
     }
 
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = selectedDate.toEpochDays().toLong() * 24 * 60 * 60 * 1000
-    )
-
     // Format selected date for display
     val formattedDate = remember(selectedDate) {
         val dayOfWeek = selectedDate.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }
@@ -131,103 +122,72 @@ fun ScheduleBloodTestScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().background(AppColors.backgroundDark)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.backgroundDark)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(Dimensions.cardPadding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top section with back button and logo
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.spacingMedium),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Back button
-                TextButton(
-                    onClick = onBackClick, colors = ButtonDefaults.textButtonColors(
-                        contentColor = AppColors.textPrimary
-                    )
-                ) {
-                    Text(
-                        text = "← Back",
-                        style = AppTextStyles.bodyMedium,
-                        color = AppColors.textPrimary
-                    )
-                }
 
-                // Logo and title
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(Dimensions.iconSize)
-                    )
-                    Spacer(modifier = Modifier.width(Dimensions.spacingSmall))
-                    Text(
-                        text = "Deep Holistics",
-                        style = AppTextStyles.headingSmall,
-                        color = AppColors.textPrimary
-                    )
-                }
+            DHToolBar(
+                title = AppStrings.SCHEDULE_YOUR_BLOOD_TEST,
+                onBackClick = onBackClick
+            )
 
-                // Empty space for balance
-                Spacer(modifier = Modifier.width(Dimensions.spacingXXLarge))
-            }
-
-            Spacer(modifier = Modifier.height(Dimensions.spacingXXLarge))
+            Spacer(modifier = Modifier.height(Dimensions.size50dp))
 
             // Main content
             Column(
-                modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
             ) {
-                // Title
-                Text(
-                    text = "Schedule your blood test",
-                    style = AppTextStyles.headingLarge.copy(
-                        fontSize = 28.sp, fontWeight = FontWeight.Bold
-                    ),
-                    color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingMedium)
-                )
-
                 // Description
                 Text(
-                    text = "Get started with 100+ advanced biomarkers measuring everything from energy and mood-related markers to cancers, heart diseases and more. We connect the dots across your entire health profile.",
-                    style = AppTextStyles.bodyMedium.copy(
-                        fontSize = 16.sp, lineHeight = 24.sp
-                    ),
-                    color = AppColors.textSecondary,
-                    modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                    text = AppStrings.SCHEDULE_YOUR_BLOOD_TEST_DESCRIPTION,
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.regular(),
+                    color = AppColors.white,
                 )
+
+                Spacer(Modifier.height(Dimensions.size30dp))
 
                 // Date section
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.spacingLarge),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = Dimensions.size24dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
                         Text(
-                            text = formattedDate, style = AppTextStyles.headingMedium.copy(
-                                fontSize = 20.sp, fontWeight = FontWeight.SemiBold
-                            ), color = AppColors.textPrimary
+                            text = formattedDate,
+                            fontSize = FontSize.textSize18sp,
+                            fontFamily = FontFamily.semiBold(),
+                            color = AppColors.textPrimary
                         )
+
                         Text(
-                            text = "Fasting test",
-                            style = AppTextStyles.bodyMedium,
-                            color = AppColors.textSecondary
+                            text = AppStrings.FASTING_TEST,
+                            fontSize = FontSize.textSize14sp,
+                            fontFamily = FontFamily.medium(),
+                            color = AppColors.textSecondary,
                         )
                     }
 
                     // Calendar icon
                     Icon(
-                        painter = painterResource(Res.drawable.ic_calendar_icon),
+                        imageVector = Icons.Rounded.CalendarMonth,
                         contentDescription = "Calendar",
                         tint = AppColors.textSecondary,
-                        modifier = Modifier.size(32.dp).clickable { showDatePicker = true })
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable { showDatePicker = true }
+                    )
                 }
 
                 // Time slots grid
@@ -235,7 +195,7 @@ fun ScheduleBloodTestScreen(
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.padding(bottom = Dimensions.spacingXXLarge)
+                    modifier = Modifier.padding(bottom = Dimensions.size48dp)
                 ) {
                     items(slotState.data?.slots ?: listOf()) { timeSlot ->
                         val startLocalDateTime = timeSlot.start_time?.let {
@@ -248,83 +208,105 @@ fun ScheduleBloodTestScreen(
                             isSelected = selectedTimeSlot == timeSlot,
                             onClick = {
                                 selectedTimeSlot = timeSlot
-                            })
+                            }
+                        )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            FilledAppButton(
-                onClick = { selectedTimeSlot?.let { onContinueClick(it) } },
-                modifier = Modifier.fillMaxWidth().height(Dimensions.buttonHeight),
-                enabled = selectedTimeSlot != null
+            // Continue Button
+            Button(
+                onClick = {
+                    selectedTimeSlot?.let { onContinueClick(it) }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(Dimensions.buttonHeight),
+                enabled = selectedTimeSlot != null,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.buttonBackground,
+                    contentColor = AppColors.buttonText,
+                    disabledContainerColor = AppColors.inputBackground,
+                    disabledContentColor = AppColors.textSecondary
+                ),
+                shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
             ) {
                 Text(
-                    text = "Continue", style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold
-                    ), color = AppColors.White
+                    text = "Continue",
+                    style = AppTextStyles.buttonText
                 )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.spacingMedium))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
         }
 
         getSlotUpdatedResponse(
-            slotUpdateState = slotUpdateState, navigateToPayment = navigateToPayment
+            slotUpdateState = slotUpdateState,
+            navigateToPayment = navigateToPayment
         )
     }
 
     if (showDatePicker) {
-        DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
-            TextButton(onClick = {
+        ShowDatePicker(
+            selectedDate = selectedDate,
+            onDismiss = {
                 showDatePicker = false
-                datePickerState.selectedDateMillis?.let { millis ->
-                    selectedDate =
-                        kotlinx.datetime.Instant.fromEpochMilliseconds(millis).toLocalDateTime(
-                            TimeZone.currentSystemDefault()
-                        ).date
-
-                    onDateChanged(selectedDate)
-                }
-            }) {
-                Text("Confirm")
+            },
+            onCancel = {
+                showDatePicker = false
+            },
+            onConfirm = {
+                showDatePicker = false
+                selectedDate = it
+                onDateChanged(selectedDate)
             }
-        }, dismissButton = {
-            TextButton(onClick = { showDatePicker = false }) {
-                Text("Cancel")
-            }
-        }) {
-            DatePicker(state = datePickerState)
-        }
+        )
     }
 }
 
 @Composable
 private fun TimeSlotCard(
-    time: String, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier
+    time: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
 ) {
-    AppCard(
-        modifier = modifier.background(AppColors.White).fillMaxWidth().height(56.dp).clickable { onClick() }.then(
-            if (isSelected) {
-                Modifier.border(
-                    width = 2.dp, color = AppColors.DarkPurple, shape = RoundedCornerShape(12.dp)
-                )
-            } else {
-                Modifier
-            }
-        )
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .clickable { onClick() }
+            .then(
+                if (isSelected) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = AppColors.buttonBackground,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                } else {
+                    Modifier
+                }
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected)
+                AppColors.buttonBackground.copy(alpha = 0.1f)
+            else
+                Color(0xFF2A2A2A)
+        ),
+        shape = RoundedCornerShape(12.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = time,
-                style = MaterialTheme.typography.bodyMedium.copy(
+                style = AppTextStyles.bodyMedium.copy(
                     fontSize = 16.sp,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                 ),
-                color = if (isSelected) AppColors.DarkPurple else AppColors.DarkPurple.copy(alpha = 0.7f),
+                color = if (isSelected) AppColors.buttonBackground else AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
         }
@@ -333,7 +315,8 @@ private fun TimeSlotCard(
 
 @Composable
 fun getSlotUpdatedResponse(
-    slotUpdateState: Resource<SlotsAvailability?>?, navigateToPayment: () -> Unit
+    slotUpdateState: Resource<SlotsAvailability?>?,
+    navigateToPayment: () -> Unit
 ) {
     when (slotUpdateState) {
         is Resource.Loading<*> -> {}
@@ -343,7 +326,6 @@ fun getSlotUpdatedResponse(
                 navigateToPayment()
             }
         }
-
         else -> {}
     }
 }

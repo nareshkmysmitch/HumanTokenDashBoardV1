@@ -14,9 +14,9 @@ import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.screens.health.BioMarkerReportViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
-import com.healthanalytics.android.presentation.screens.onboard.OnboardViewModel
-import com.healthanalytics.android.presentation.screens.onboard.OnboardApiService
-import com.healthanalytics.android.presentation.screens.onboard.OnboardApiServiceImpl
+import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
+import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
+import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiServiceImpl
 import com.healthanalytics.android.utils.KermitLogger
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module

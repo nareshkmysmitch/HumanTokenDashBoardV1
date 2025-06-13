@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		186027002DF8364500A1D6F0 /* RazorpayCheckout in Frameworks */ = {isa = PBXBuildFile; productRef = 186026FF2DF8364500A1D6F0 /* RazorpayCheckout */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		B9DA97B12DC1472C00A4DA20 /* HumanTokenDashBoardV1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumanTokenDashBoardV1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				186027002DF8364500A1D6F0 /* RazorpayCheckout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				186026FF2DF8364500A1D6F0 /* RazorpayCheckout */,
 			);
 			productName = iosApp;
 			productReference = B9DA97B12DC1472C00A4DA20 /* HumanTokenDashBoardV1.app */;
@@ -115,6 +121,9 @@
 			);
 			mainGroup = B9DA97A82DC1472C00A4DA20;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				186026FE2DF8364500A1D6F0 /* XCRemoteSwiftPackageReference "razorpay-pod" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B9DA97B22DC1472C00A4DA20 /* Products */;
 			projectDirPath = "";
@@ -379,6 +388,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		186026FE2DF8364500A1D6F0 /* XCRemoteSwiftPackageReference "razorpay-pod" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/razorpay/razorpay-pod.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		186026FF2DF8364500A1D6F0 /* RazorpayCheckout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 186026FE2DF8364500A1D6F0 /* XCRemoteSwiftPackageReference "razorpay-pod" */;
+			productName = RazorpayCheckout;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B9DA97A92DC1472C00A4DA20 /* Project object */;
 }

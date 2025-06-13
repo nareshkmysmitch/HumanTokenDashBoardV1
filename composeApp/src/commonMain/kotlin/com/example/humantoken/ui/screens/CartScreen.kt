@@ -332,7 +332,7 @@ private fun CartItemCard(
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White // Replace with your desired color
+            containerColor = AppColors.white // Replace with your desired color
         ),
     ) {
         Row(
@@ -442,7 +442,7 @@ private fun OrderSummary(
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+            containerColor = AppColors.white
         ),
     ) {
         Column(
