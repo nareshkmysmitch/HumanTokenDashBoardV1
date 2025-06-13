@@ -96,6 +96,8 @@ fun HealthAnalyticsApp() {
     val testBookingViewModel: TestBookingViewModel = koinInject<TestBookingViewModel>()
     val chatViewModel: ChatViewModel = koinInject<ChatViewModel>()
     val recommendationsViewModel: RecommendationsViewModel = koinInject<RecommendationsViewModel>()
+
+
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
     var localTestList by remember { mutableStateOf<List<Product>>(emptyList()) }
     when {

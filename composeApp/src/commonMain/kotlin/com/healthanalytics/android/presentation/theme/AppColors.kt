@@ -38,6 +38,8 @@ object AppColors {
     val outline = Color(0xFF5A5A6E)
     val PurpleBackground = Color(0xFF767633)
     val DarkPurple = Color(0xFF2f1b29)
+    val Purple = Color(0xFF490D30)
+    val Teal  = Color(0xFF1F2937)
     val PurpleTitle = Color(0xFF82054e)
     val PurpleCardBackground = Color(0xFF2E2332)
 
