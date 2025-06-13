@@ -83,4 +83,10 @@ class SymptomsViewModel(
     }
 
     fun getSelectedSymptomsCount(): Int = _state.value.selectedSymptoms.size
+    
+    fun clearSelectedSymptoms() {
+        _state.update { currentState ->
+            currentState.copy(selectedSymptoms = emptySet())
+        }
+    }
 } 

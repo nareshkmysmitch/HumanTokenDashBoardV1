@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -72,8 +73,20 @@ fun SymptomsScreen(
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = AppColors.White
+                            tint = AppColors.white
                         )
+                    }
+                },
+                actions = {
+                    TextButton(
+                        onClick = {
+                            viewModel.clearSelectedSymptoms()
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Cancel")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -98,6 +111,12 @@ fun SymptomsScreen(
                     text = "Select any symptoms you're currently experiencing",
                     color = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.padding(bottom = 24.dp)
+                )
+                Text(
+                    text = "${viewModel.getSelectedSymptomsCount()} symptoms selected",
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(vertical = 4.dp)
                 )
 
                 if (state.isLoading) {
@@ -132,34 +151,21 @@ fun SymptomsScreen(
                 }
 
                 // Bottom Bar with Submit Button
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    color = Color.Black
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                if (viewModel.getSelectedSymptomsCount() > 0) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        color = Color.Black
                     ) {
-                        Text(
-                            text = "${viewModel.getSelectedSymptomsCount()} symptoms selected",
-                            color = Color.White,
-                            fontSize = 14.sp
-                        )
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            TextButton(
-                                onClick = onNavigateBack,
-                                colors = ButtonDefaults.textButtonColors(
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Text("Cancel")
-                            }
+
                             Button(
+                                modifier = Modifier.fillMaxWidth(),
                                 onClick = { /* Handle submit */ },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF8B5CF6)
@@ -247,6 +253,15 @@ private fun SymptomItem(
                 color = Color.White,
                 fontSize = 14.sp
             )
+            Spacer(modifier = Modifier.weight(1f))
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Selected",
+                    tint = Color.Green,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 } 
