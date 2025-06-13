@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.actionplan
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,11 +48,12 @@ import com.healthanalytics.android.presentation.screens.recommendations.MetricCh
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.koinInject
 
 @Composable
 fun ActionPlanScreen(
@@ -71,26 +73,8 @@ fun ActionPlanScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
-        // Header Section
-        /* Row(
-             modifier = Modifier.fillMaxWidth().padding(16.dp),
-             horizontalArrangement = Arrangement.End,
-             verticalAlignment = Alignment.CenterVertically
-         ) {
-             Text(
-                 text = "$totalItems items",
-                 style = MaterialTheme.typography.titleMedium,
-                 color = MaterialTheme.colorScheme.onSurfaceVariant
-             )
-         }*/
-
-        println("category--> ${viewModel.getActionCategories()}")
-
-
-
-
         Spacer(modifier = Modifier.height(16.dp))
 
         // Content Section
@@ -177,7 +161,9 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
 
         Text(
             text = "Your Action Plan is Empty",
-            style = MaterialTheme.typography.headlineSmall,
+            fontSize = FontSize.textSize24sp,
+            fontFamily = FontFamily.bold(),
+            color = AppColors.white,
             textAlign = TextAlign.Center
         )
 
@@ -185,9 +171,10 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
 
         Text(
             text = "Add recommendations to your action plan to start tracking your health goals",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            fontSize = FontSize.textSize16sp,
+            fontFamily = FontFamily.medium(),
+            color = AppColors.TextGrey,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -200,7 +187,12 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Browse Recommendations")
+            Text(
+                "Browse Recommendations",
+                fontSize = FontSize.textSize16sp,
+                color = AppColors.white,
+                fontFamily = FontFamily.bold(),
+            )
         }
     }
 }
@@ -229,7 +221,9 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
 
         Text(
             text = "No Items in This Category",
-            style = MaterialTheme.typography.headlineSmall,
+            fontSize = FontSize.textSize24sp,
+            fontFamily = FontFamily.bold(),
+            color = AppColors.white,
             textAlign = TextAlign.Center
         )
 
@@ -237,9 +231,10 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
 
         Text(
             text = "You don't have any action plan items in the selected category",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            fontSize = FontSize.textSize16sp,
+            fontFamily = FontFamily.medium(),
+            color = AppColors.TextGrey,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -252,7 +247,11 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Show All Items")
+            Text(
+                "Show All Items", fontSize = FontSize.textSize16sp,
+                color = AppColors.white,
+                fontFamily = FontFamily.bold(),
+            )
         }
     }
 }
