@@ -61,7 +61,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onNavigateBack: () -> Unit, viewModel: MarketPlaceViewModel,
+    onNavigateBack: () -> Unit,
+    viewModel: MarketPlaceViewModel,
+    onNavigateToTestBooking: () -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
@@ -256,6 +258,16 @@ fun ProfileScreen(
                                 Text("Edit Profile")
                             }
                         }
+                    }
+
+                    Button(
+                        onClick = { onNavigateToTestBooking() },
+                        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.LightGray
+                        )
+                    ) {
+                        Text("Test Booking", color = Color.Black)
                     }
 
                     Button(

@@ -56,7 +56,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ActionPlanScreen(
     viewModel: RecommendationsViewModel,
-    preferencesViewModel: PreferencesViewModel = koinInject(),
+    preferencesViewModel: PreferencesViewModel,
 ) {
     val uiState by viewModel.uiActionState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
