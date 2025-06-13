@@ -37,6 +37,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -58,9 +59,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.App
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.FontFamily
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.koinInject
 
@@ -87,16 +90,15 @@ fun MarketPlaceScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
+        modifier = modifier.fillMaxSize().background(AppColors.Black)
     ) {
         // Search and Filter Row
         Surface(
             modifier = Modifier.fillMaxWidth(), tonalElevation = 1.dp,
-//            color = MaterialTheme.colorScheme.surface
-            color = Color.Transparent
+            color = AppColors.Black
 
         ) {
-            Column(modifier = Modifier.fillMaxWidth().background(AppColors.AppBackgroundColor)) {
+            Column(modifier = Modifier.fillMaxWidth().background(AppColors.Black)) {
                 // Search Bar and Sort Button
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -215,7 +217,7 @@ private fun ProductCard(
         },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.white
+            containerColor = AppColors.BlueBackground
         ),
     ) {
         Column {
@@ -273,7 +275,8 @@ private fun ProductCard(
                         text = it,
                         style = MaterialTheme.typography.titleSmall,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        color = AppColors.white
                     )
                 }
 
@@ -281,7 +284,7 @@ private fun ProductCard(
                     Text(
                         text = it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = AppColors.white
                     )
                 }
 
@@ -294,7 +297,8 @@ private fun ProductCard(
                         Text(
                             text = "₹$price",
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = AppColors.white,
+                            fontFamily = FontFamily.bold()
                         )
                     }
                     product.mrp?.let { mrp ->
@@ -302,7 +306,7 @@ private fun ProductCard(
                             text = "₹$mrp",
                             style = MaterialTheme.typography.bodySmall,
                             textDecoration = TextDecoration.LineThrough,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = AppColors.textSecondary
                         )
                     }
                 }
