@@ -56,7 +56,7 @@ fun ChatScreen(
     conversationId: String,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = koinInject()
+    viewModel: ChatViewModel,
 ) {
     val uiState by viewModel.chatState.collectAsState()
     val messageInput by viewModel.messageInput.collectAsState()

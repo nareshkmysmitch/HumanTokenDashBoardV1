@@ -21,10 +21,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.filled.Clear
-//import androidx.compose.material.icons.filled.Close
-//import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -56,8 +52,8 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthDataScreen(
-    viewModel: HealthDataViewModel = koinInject(),
-    prefs: PreferencesViewModel = koinInject(),
+    viewModel: HealthDataViewModel,
+    prefs: PreferencesViewModel,
     onNavigateToDetail: (BloodData?) -> Unit
 ) {
     val preferencesState by prefs.uiState.collectAsState()
@@ -77,19 +73,6 @@ fun HealthDataScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
     ) {
-//        Text(
-//            text = "Health Data",
-//            style = MaterialTheme.typography.headlineMedium,
-//            modifier = Modifier.padding(horizontal = 16.dp)
-//        )
-
-        // Last Updated
-//        Text(
-//            text = "Last updated: ${formatDate(uiState.lastUpdated?.createdAt)}",
-//            style = MaterialTheme.typography.bodyMedium,
-//            modifier = Modifier.padding(horizontal = 16.dp)
-//        )
-
         // Search Bar (Conditionally Visible)
         AnimatedVisibility(
             visible = isSearchVisible,

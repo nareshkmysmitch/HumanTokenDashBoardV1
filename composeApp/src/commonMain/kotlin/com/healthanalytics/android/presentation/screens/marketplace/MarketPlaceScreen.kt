@@ -68,7 +68,7 @@ import org.koin.compose.koinInject
 @Composable
 fun MarketPlaceScreen(
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinInject(),
+    viewModel: MarketPlaceViewModel,
     onProductClick: (Product) -> Unit,
     navigateBack: () -> Unit,
 ) {

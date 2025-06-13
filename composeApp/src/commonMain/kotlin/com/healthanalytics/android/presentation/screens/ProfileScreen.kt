@@ -58,7 +58,9 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onNavigateBack: () -> Unit, viewModel: MarketPlaceViewModel = koinInject()
+    onNavigateBack: () -> Unit,
+    viewModel: MarketPlaceViewModel,
+    onNavigateToTestBooking: () -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
@@ -71,13 +73,15 @@ fun ProfileScreen(
     val accessToken by viewModel.accessToken.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.clearLogoutState() }
     // Handle logout state changes
     LaunchedEffect(logoutState) {
         when (logoutState) {
             is LogoutState.Success -> {
                 // User will be redirected to OnboardContainer automatically
                 // because hasAccessToken in HealthAnalyticsApp will become false
-                onNavigateBack()
+//                onNavigateBack()
             }
 
             else -> {}
@@ -253,6 +257,16 @@ fun ProfileScreen(
                                 Text("Edit Profile")
                             }
                         }
+                    }
+
+                    Button(
+                        onClick = { onNavigateToTestBooking() },
+                        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.LightGray
+                        )
+                    ) {
+                        Text("Test Booking", color = Color.Black)
                     }
 
                     Button(

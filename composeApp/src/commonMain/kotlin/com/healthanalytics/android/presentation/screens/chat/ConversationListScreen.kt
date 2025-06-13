@@ -53,7 +53,7 @@ fun ConversationListScreen(
     onNavigateToChat: (String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = koinInject(),
+    viewModel: ChatViewModel,
 ) {
     BackHandler(enabled = true, onBack = { onNavigateBack() })
     val uiState by viewModel.conversationsState.collectAsState()
