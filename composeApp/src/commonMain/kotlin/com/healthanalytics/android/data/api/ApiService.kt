@@ -287,6 +287,7 @@ class ApiServiceImpl(
             }
         }
         val responseBody = response.bodyAsText()
+        println()
         val reportResponse =
             EncryptionUtils.handleDecryptionResponse<BiomarkerReportData>(responseBody)
         return reportResponse

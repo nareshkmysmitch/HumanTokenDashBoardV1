@@ -35,6 +35,14 @@ import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DE
 import com.healthanalytics.android.presentation.components.Screen.PROFILE
 import com.healthanalytics.android.presentation.components.Screen.SCHEDULE_TEST_BOOKING
 import com.healthanalytics.android.presentation.components.Screen.TEST_BOOKING
+import com.healthanalytics.android.presentation.components.Screen.BIOMARKERS_DETAIL
+import com.healthanalytics.android.presentation.components.Screen.BIOMARKER_FULL_REPORT
+import com.healthanalytics.android.presentation.components.Screen.CART
+import com.healthanalytics.android.presentation.components.Screen.CHAT
+import com.healthanalytics.android.presentation.components.Screen.CONVERSATION_LIST
+import com.healthanalytics.android.presentation.components.Screen.HOME
+import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DETAIL
+import com.healthanalytics.android.presentation.components.Screen.PROFILE
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.recommendations.RecommendationsScreen
@@ -61,6 +69,8 @@ import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTes
 import com.healthanalytics.android.presentation.screens.testbooking.ScheduleTestBookingScreen
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingScreen
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -93,6 +103,7 @@ fun HealthAnalyticsApp() {
     val marketPlaceViewModel: MarketPlaceViewModel = koinInject<MarketPlaceViewModel>()
     val testBookingViewModel: TestBookingViewModel = koinInject<TestBookingViewModel>()
     val chatViewModel: ChatViewModel = koinInject<ChatViewModel>()
+    val recommendationsViewModel: RecommendationsViewModel = koinInject<RecommendationsViewModel>()
     val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
     var localTestList by remember { mutableStateOf<List<Product>>(emptyList()) }
     when {
@@ -203,6 +214,24 @@ fun HealthAnalyticsApp() {
                         }, biomarker = biomarker
                     )
                 }
+
+                HOME -> {
+                    HomeScreen(onProfileClick = {
+                        navigateTo(PROFILE)
+                    }, onChatClick = {
+                        navigateTo(CONVERSATION_LIST)
+                    }, onMarketPlaceClick = { product ->
+                        navigateTo(MARKETPLACE_DETAIL(product))
+                    }, onCartClick = {
+                        navigateTo(CART)
+                    }, onBiomarkerFullReportClick = {
+                        biomarker = it ?: BloodData()
+                        navigateTo(BIOMARKER_FULL_REPORT)
+                    }, onBiomarker = {
+                        biomarker = it ?: BloodData()
+                        navigateTo(BIOMARKERS_DETAIL)
+                    }, recommendationsViewModel = recommendationsViewModel)
+                }
             }
         }
 
@@ -218,7 +247,7 @@ fun HealthAnalyticsApp() {
 
 @Composable
 private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
-    navController: NavController
+    navController: NavController,
 ): T {
     val navGraphRoute = destination.parent?.route ?: return koinViewModel<T>()
     val parentEntry = remember(this) {
@@ -231,7 +260,7 @@ private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel
 
 @Composable
 fun OnboardContainer(
-    isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel
+    isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel,
 ) {
     org.koin.compose.KoinContext {
         val navController = rememberNavController()
@@ -333,6 +362,7 @@ fun HomeScreen(
     onBiomarker: (BloodData?) -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
     onBiomarkerFullReportClick: (BloodData?) -> Unit = {},
+    recommendationsViewModel: RecommendationsViewModel,
 ) {
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
@@ -372,6 +402,11 @@ fun HomeScreen(
                         viewModel = recommendationsViewModel,
                     )
                 }
+
+                MainScreen.DASHBOARD -> HealthDataScreen(onNavigateToDetail = { onBiomarker(it) })
+                MainScreen.RECOMMENDATIONS -> RecommendationsTabScreen(navigateBack = {
+                    navigateBack()
+                }, viewModel = recommendationsViewModel)
 
                 MainScreen.MARKETPLACE -> {
                     MarketPlaceScreen(

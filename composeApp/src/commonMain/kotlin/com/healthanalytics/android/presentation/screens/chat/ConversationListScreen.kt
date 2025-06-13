@@ -57,48 +57,37 @@ fun ConversationListScreen(
     modifier: Modifier = Modifier,
     viewModel: ChatViewModel,
 ) {
-
-    Logger.e { "ConversationListScreen" }
     BackHandler(enabled = true, onBack = { onNavigateBack() })
     val uiState by viewModel.conversationsState.collectAsState()
     println("conversation list screen $uiState")
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Conversations",
-                        color = AppColors.White
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            Icons.Default.ArrowBack, 
-                            contentDescription = "Back",
-                            tint = AppColors.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.AppBackgroundColor,
-                    navigationIconContentColor = AppColors.Black,
-                    titleContentColor = AppColors.Black
+    Scaffold(modifier = modifier.fillMaxSize(), topBar = {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "Conversations", color = AppColors.Black
                 )
+            }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Black
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColors.AppBackgroundColor,
+                navigationIconContentColor = AppColors.Black,
+                titleContentColor = AppColors.Black
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { /* TODO: Create new conversation */ },
-                containerColor = AppColors.Pink,
-                contentColor = AppColors.White
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "New Chat")
-            }
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(
+            onClick = { /* TODO: Create new conversation */ },
+            containerColor = AppColors.Pink,
+            contentColor = AppColors.White
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "New Chat")
         }
-    ) { paddingValues ->
+    }) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {

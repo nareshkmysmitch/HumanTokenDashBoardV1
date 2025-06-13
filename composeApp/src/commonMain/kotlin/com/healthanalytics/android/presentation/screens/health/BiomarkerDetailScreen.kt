@@ -35,6 +35,7 @@ import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.presentation.components.FilledAppButton
+import com.healthanalytics.android.presentation.components.HorizontalBar
 import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.serialization.json.JsonNull.content
 
@@ -44,7 +45,7 @@ fun BiomarkerDetailScreen(
     biomarker: BloodData,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateFullReport: () -> Unit
+    onNavigateFullReport: () -> Unit,
 ) {
     BackHandler(enabled = true, onBack = onNavigateBack)
 
@@ -53,14 +54,14 @@ fun BiomarkerDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Biomarker Details", color = AppColors.White
+                        "Biomarker Details", color = AppColors.Black
                     )
                 }, navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = AppColors.White
+                            tint = AppColors.Black
                         )
                     }
                 },  colors = TopAppBarDefaults.topAppBarColors(
@@ -75,7 +76,10 @@ fun BiomarkerDetailScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             BiomarkerHeader(biomarker)
-            RangeGraph(biomarker)
+            if (biomarker.ranges?.isNotEmpty() == true && biomarker.value != null) {
+                HorizontalBar(biomarker.ranges, biomarker.value)
+            }
+            //RangeGraph(biomarker)
             BiomarkerDescription(biomarker)
 
             FilledAppButton(

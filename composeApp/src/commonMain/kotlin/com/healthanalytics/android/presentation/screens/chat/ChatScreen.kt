@@ -96,7 +96,7 @@ fun ChatScreen(
             }, navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
-                        Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.White
+                        Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Black
                     )
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(

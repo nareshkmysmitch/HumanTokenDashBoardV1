@@ -32,6 +32,7 @@ class HealthDataViewModel(
                 it.copy(
                     metrics = metrics ?: emptyList(),
                     isLoading = false,
+                    selectedFilter = "All",
                     lastUpdated = metrics?.maxByOrNull { bloodData ->
                         Instant.parse(bloodData?.createdAt.toString())
                     }
@@ -69,8 +70,12 @@ class HealthDataViewModel(
     }
 
     fun getAvailableFilters(): List<String?> {
-        return listOf("All") + _uiState.value.metrics
-            .map { it?.displayRating }
-            .distinct()
+        return if (_uiState.value.metrics.isNotEmpty()) {
+            listOf("All") + _uiState.value.metrics
+                .map { it?.displayRating }
+                .distinct()
+        } else {
+            listOf()
+        }
     }
 } 

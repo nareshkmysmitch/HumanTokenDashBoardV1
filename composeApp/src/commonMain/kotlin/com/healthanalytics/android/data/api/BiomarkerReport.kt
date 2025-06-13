@@ -26,7 +26,7 @@ data class MetricData(
     @SerialName("category") val category: String? = null,
     @SerialName("title") val title: String? = null,
     @SerialName("content") val content: String? = null,
-    @SerialName("key_points") val keyPoints: String? = null,
+    @SerialName("key_points") val keyPoints: List<String?> = listOf(),
     @SerialName("subgroups") val subgroups: Subgroups? = null,
     @SerialName("notes") val notes: String? = null,
     @SerialName("content_type") val contentType: String? = null,
