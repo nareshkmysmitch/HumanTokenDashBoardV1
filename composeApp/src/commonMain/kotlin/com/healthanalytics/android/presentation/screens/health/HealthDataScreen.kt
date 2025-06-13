@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -92,7 +91,7 @@ fun HealthDataScreen(
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp),
                 placeholder = { Text("Search health data") },
                 singleLine = true
             )
@@ -243,13 +242,13 @@ fun MetricCard(
 @Composable
 fun StatusChip(status: String) {
 
-    val (backgroundColor, textColor) = when (status.lowercase()) {
-        "normal" -> Color(0xFF1f7a4c) to MaterialTheme.colorScheme.onPrimary
-        "low" -> Color(0xFFf4978a) to MaterialTheme.colorScheme.onError
-        "high" -> Color(0xFFf4978a) to MaterialTheme.colorScheme.onError
-        "optimal" -> Color(0xFF1f7a4c) to MaterialTheme.colorScheme.onTertiary
-        "none" -> Color(0xFF4b5563) to MaterialTheme.colorScheme.onTertiary
-        else -> Color(0xFFf4c764) to MaterialTheme.colorScheme.onTertiary
+    val backgroundColor = when (status.lowercase()) {
+        "normal" -> Color(0xFF1f7a4c)
+        "low" -> Color(0xFFf4978a)
+        "high" -> Color(0xFFf4978a)
+        "optimal" -> Color(0xFF1f7a4c)
+        "none" -> Color(0xFF4b5563)
+        else -> Color(0xFFf4c764)
     }
 
     Surface(
@@ -257,7 +256,8 @@ fun StatusChip(status: String) {
     ) {
         Text(
             text = status,
-            modifier = Modifier.wrapContentWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.wrapContentWidth()
+                .padding(horizontal = Dimensions.size8dp, vertical = size4dp),
             fontSize = FontSize.textSize12sp,
             fontFamily = FontFamily.medium(),
             color = AppColors.textPrimary
