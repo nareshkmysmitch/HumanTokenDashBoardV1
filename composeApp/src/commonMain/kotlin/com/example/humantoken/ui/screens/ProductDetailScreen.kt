@@ -193,7 +193,6 @@ fun ProductDetailScreen(
                                 contentDescription = currentProduct.name,
                                 contentScale = ContentScale.FillWidth,
                                 modifier = Modifier.fillMaxWidth().height(300.dp)
-                                    .padding(top = 32.dp)
                             )
                         }
                     }

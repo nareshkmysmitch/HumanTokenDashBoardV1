@@ -64,7 +64,6 @@ fun ProfileScreen(
     onNavigateBack: () -> Unit,
     viewModel: MarketPlaceViewModel,
     onNavigateToTestBooking: () -> Unit,
-    onLogoutClick: () -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
@@ -77,20 +76,14 @@ fun ProfileScreen(
     val accessToken by viewModel.accessToken.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        if(logoutState is LogoutState.Success || logoutState is LogoutState.Error){
-            viewModel.clearLogoutState()
-        }
-    }
-
     // Handle logout state changes
     LaunchedEffect(logoutState) {
         when (logoutState) {
             is LogoutState.Success -> {
                 // User will be redirected to OnboardContainer automatically
                 // because hasAccessToken in HealthAnalyticsApp will become false
-                onLogoutClick()
                 onNavigateBack()
+                viewModel.clearLogoutState()
             }
 
             else -> {}

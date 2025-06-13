@@ -106,9 +106,6 @@ fun HealthAnalyticsApp() {
                         onNavigateToTestBooking = {
                             navigateTo(TEST_BOOKING)
                         },
-                        onLogoutClick = {
-                            currentScreen = HOME
-                        }
                     )
                 }
 
