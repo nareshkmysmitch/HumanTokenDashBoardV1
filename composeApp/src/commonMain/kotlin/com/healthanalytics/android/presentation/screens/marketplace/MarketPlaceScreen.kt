@@ -2,6 +2,7 @@ package com.healthanalytics.android.presentation.screens.marketplace
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +58,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -65,33 +69,38 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun MarketPlaceScreen(
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinInject()
+    viewModel: MarketPlaceViewModel = koinInject(),
+    onProductClick: (Product) -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedCategories by viewModel.selectedCategories.collectAsState()
     val currentSortOption by viewModel.sortOption.collectAsState()
     val filteredProducts by viewModel.filteredProducts.collectAsState(initial = emptyList())
-    
+
     var showSortMenu by remember { mutableStateOf(false) }
 
+    BackHandler { navigateBack() }
+    // Add LaunchedEffect to initialize marketplace when screen opens
+    LaunchedEffect(Unit) {
+        viewModel.initializeMarketplace()
+    }
+
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+        modifier = modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
     ) {
         // Search and Filter Row
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            tonalElevation = 1.dp,
-            color = MaterialTheme.colorScheme.surface
+            modifier = Modifier.fillMaxWidth(), tonalElevation = 1.dp,
+//            color = MaterialTheme.colorScheme.surface
+            color = Color.Transparent
+
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth().background(AppColors.AppBackgroundColor)) {
                 // Search Bar and Sort Button
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -104,7 +113,7 @@ fun MarketPlaceScreen(
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         shape = MaterialTheme.shapes.medium
                     )
-                    
+
                     FilledIconButton(
                         onClick = { showSortMenu = true },
                         colors = IconButtonDefaults.filledIconButtonColors(
@@ -113,31 +122,24 @@ fun MarketPlaceScreen(
                     ) {
                         Icon(Icons.Default.Sort, contentDescription = "Sort")
                     }
-                    
+
                     DropdownMenu(
-                        expanded = showSortMenu,
-                        onDismissRequest = { showSortMenu = false }
-                    ) {
-                        SortOption.values().forEach { option ->
+                        expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
+                        SortOption.entries.forEach { option ->
                             DropdownMenuItem(
-                                text = { Text(option.displayName) },
-                                onClick = {
+                                text = { Text(option.displayName) }, onClick = {
                                     viewModel.updateSortOption(option)
                                     showSortMenu = false
-                                },
-                                leadingIcon = if (currentSortOption == option) {
+                                }, leadingIcon = if (currentSortOption == option) {
                                     { Icon(Icons.Default.Check, contentDescription = null) }
-                                } else null
-                            )
+                                } else null)
                         }
                     }
                 }
 
                 // Category Chips
                 LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(MarketPlaceViewModel.PRODUCT_CATEGORIES) { category ->
@@ -146,9 +148,14 @@ fun MarketPlaceScreen(
                             onClick = { viewModel.toggleCategory(category) },
                             label = { Text(category) },
                             leadingIcon = if (category in selectedCategories) {
-                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
-                            } else null
-                        )
+                                {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            } else null)
                     }
                 }
             }
@@ -156,9 +163,7 @@ fun MarketPlaceScreen(
 
         // Products Grid
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp)
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp)
         ) {
             when (uiState) {
                 is MarketPlaceUiState.Loading -> {
@@ -166,6 +171,7 @@ fun MarketPlaceScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 is MarketPlaceUiState.Success -> {
                     if (filteredProducts.isEmpty()) {
                         EmptyState(
@@ -179,11 +185,15 @@ fun MarketPlaceScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(filteredProducts) { product ->
-                                ProductCard(product = product)
+                                ProductCard(product = product, onProductClick = {
+                                    onProductClick(product)
+                                    println("product -> mps2$product")
+                                })
                             }
                         }
                     }
                 }
+
                 is MarketPlaceUiState.Error -> {
                     ErrorView(
                         message = (uiState as MarketPlaceUiState.Error).message,
@@ -198,27 +208,24 @@ fun MarketPlaceScreen(
 
 @Composable
 private fun ProductCard(
-    product: Product,
-    modifier: Modifier = Modifier
+    product: Product, onProductClick: (Product) -> Unit, modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clickable {
+            onProductClick(product)
+        },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = AppColors.White
+        ),
     ) {
         Column {
             // Product Image or Placeholder
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(
-                        if (product.img_urls.isNullOrEmpty()) 
-                            MaterialTheme.colorScheme.surfaceVariant
-                        else MaterialTheme.colorScheme.surface
-                    )
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f).background(
+                    if (product.img_urls.isNullOrEmpty()) MaterialTheme.colorScheme.surfaceVariant
+                    else MaterialTheme.colorScheme.surface
+                )
             ) {
                 product.img_urls?.firstOrNull()?.let { imageUrl ->
                     Image(
@@ -228,14 +235,12 @@ private fun ProductCard(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-                
+
                 // Rating Badge
                 product.rating?.let { rating ->
                     Surface(
                         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f),
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.TopEnd),
+                        modifier = Modifier.padding(8.dp).align(Alignment.TopEnd),
                         shape = MaterialTheme.shapes.small
                     ) {
                         Row(
@@ -262,7 +267,7 @@ private fun ProductCard(
             // Product Details
             Column(
                 modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 product.name?.let {
                     Text(
@@ -272,7 +277,7 @@ private fun ProductCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                
+
                 product.vendor?.name?.let {
                     Text(
                         text = it,
@@ -351,9 +356,7 @@ private fun EmptyState(
 
 @Composable
 private fun ErrorView(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    message: String, onRetry: () -> Unit, modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.padding(16.dp),

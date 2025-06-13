@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ChatApiService
 import com.healthanalytics.android.data.models.Conversation
 import com.healthanalytics.android.data.models.Message
+import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.utils.KermitLogger
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -23,7 +24,6 @@ sealed class ConversationsUiState {
 sealed class ChatUiState {
     data object Loading : ChatUiState()
     data class Success(
-
         val messages: List<Message>,
         val isLoadingMore: Boolean = false,
         val canLoadMore: Boolean = false
@@ -33,11 +33,12 @@ sealed class ChatUiState {
 }
 
 class ChatViewModel(
-    private val chatApiService: ChatApiService, private val log: KermitLogger
+    private val chatApiService: ChatApiService,
+    private val preferencesRepository: PreferencesRepository,
+    private val log: KermitLogger
 ) : ViewModel() {
 
-    private val _conversationsState =
-        MutableStateFlow<ConversationsUiState>(ConversationsUiState.Loading)
+    private val _conversationsState = MutableStateFlow<ConversationsUiState>(ConversationsUiState.Loading)
     val conversationsState = _conversationsState.asStateFlow()
 
     private val _chatState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
@@ -46,27 +47,37 @@ class ChatViewModel(
     private val _messageInput = MutableStateFlow("")
     val messageInput = _messageInput.asStateFlow()
 
+    private val _accessToken = MutableStateFlow<String?>(null)
+    val accessToken = _accessToken.asStateFlow()
+
     private var currentConversationsPage = 1
     private var currentChatPage = 1
     private var totalConversationsPages = 1
     private var totalChatPages = 1
 
     init {
-        loadConversations()
+        viewModelScope.launch {
+            preferencesRepository.accessToken.collect { token ->
+                println("Access Token Updated in ChatViewModel: $token")
+                _accessToken.value = token
+                if (token != null) {
+                    loadConversations()
+                }
+            }
+        }
     }
-
-//    private val dummyAccessToken =
-//        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjI2ZTJhZWMzLWEwMGQtNDU0My05NWExLTNmZjk3YTVkMDQ3OCIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MTg4NTAwLCJleHAiOjE3NDk3OTMzMDB9.5B7JoGbwMuGLpUx6-PIK1rMloOusjtpYK6wxayHEFXo"
-//
-
-    private val dummyAccessToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDM3OGVlYzItYTM4YS00MjAyLTk1Y2EtZDQwNGYwM2I5ZjlmIiwic2Vzc2lvbl9pZCI6IjJhODEyNTI3LWZmM2MtNGEyZS05MDE4LTQxODNiYWIzOGViZSIsInVzZXJfaW50X2lkIjoiNzYiLCJwcm9maWxlX2lkIjoiNjUiLCJsZWFkX2lkIjoiY2QwOWJhOTAtMDI1ZC00OTI5LWI4MTMtNjI5MGUyNDU0NDI2IiwiaWF0IjoxNzQ5MTA4Nzc1LCJleHAiOjE3NDk3MTM1NzV9.KaZlT_JMKdsol2hzKBsOpwYiQjQTQfWaJrjNN5gsJnQ"
 
     fun loadConversations(isLoadingMore: Boolean = false) {
         if (isLoadingMore && currentConversationsPage >= totalConversationsPages) return
 
         viewModelScope.launch {
             try {
+                val token = _accessToken.value
+                if (token == null) {
+                    _conversationsState.value = ConversationsUiState.Error("Access token not available")
+                    return@launch
+                }
+
                 if (isLoadingMore) {
                     updateConversationsLoadingState(true)
                 } else {
@@ -74,7 +85,8 @@ class ChatViewModel(
                 }
 
                 val response = chatApiService.getConversations(
-                    dummyAccessToken, page = if (isLoadingMore) currentConversationsPage + 1 else 1
+                    token,
+                    page = if (isLoadingMore) currentConversationsPage + 1 else 1
                 )
 
                 if (isLoadingMore) {
@@ -106,6 +118,12 @@ class ChatViewModel(
 
         viewModelScope.launch {
             try {
+                val token = _accessToken.value
+                if (token == null) {
+                    _chatState.value = ChatUiState.Error("Access token not available")
+                    return@launch
+                }
+
                 if (isLoadingMore) {
                     updateChatLoadingState(true)
                 } else {
@@ -113,7 +131,7 @@ class ChatViewModel(
                 }
 
                 val chatResponse = chatApiService.getConversation(
-                    dummyAccessToken,
+                    token,
                     conversationId = conversationId,
                     page = if (isLoadingMore) currentChatPage + 1 else 1
                 )
@@ -121,18 +139,14 @@ class ChatViewModel(
                 if (isLoadingMore) {
                     val currentState = _chatState.value as? ChatUiState.Success ?: return@launch
                     _chatState.value = ChatUiState.Success(
-
                         messages = currentState.messages + chatResponse.messages,
-                        canLoadMore = (chatResponse.page?.toInt()
-                            ?: 0) < (chatResponse.pages?.toInt() ?: 0)
+                        canLoadMore = (chatResponse.page?.toInt() ?: 0) < (chatResponse.pages?.toInt() ?: 0)
                     )
                     currentChatPage = chatResponse.page?.toInt() ?: 0
                 } else {
                     _chatState.value = ChatUiState.Success(
-
                         messages = chatResponse.messages,
-                        canLoadMore = (chatResponse.page?.toInt()
-                            ?: 0) < (chatResponse.pages?.toInt() ?: 0)
+                        canLoadMore = (chatResponse.page?.toInt() ?: 0) < (chatResponse.pages?.toInt() ?: 0)
                     )
                     currentChatPage = 1
                 }
@@ -150,7 +164,13 @@ class ChatViewModel(
 
         viewModelScope.launch {
             try {
-                val response = chatApiService.sendMessage(dummyAccessToken, conversationId, content)
+                val token = _accessToken.value
+                if (token == null) {
+                    _chatState.value = ChatUiState.Error("Access token not available")
+                    return@launch
+                }
+
+                val response = chatApiService.sendMessage(token, conversationId, content)
                 val currentState = _chatState.value as? ChatUiState.Success ?: return@launch
 
                 _chatState.value = currentState.copy(

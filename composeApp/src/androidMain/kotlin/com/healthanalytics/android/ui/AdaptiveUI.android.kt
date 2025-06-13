@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -22,11 +23,11 @@ actual fun ShowAlertDialog(
 
     AlertDialog(
         shape = RoundedCornerShape(46f),
-        containerColor = AppColors.PurpleBackground,
+        containerColor = AppColors.PurpleCardBackground,
         title = {
             Text(
                 text = title,
-                color = AppColors.primary,
+                color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -34,7 +35,7 @@ actual fun ShowAlertDialog(
         text = {
             Text(
                 text = message,
-                color = AppColors.primary,
+                color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             )
@@ -44,7 +45,7 @@ actual fun ShowAlertDialog(
         confirmButton = {
             Text(
                 text = "OK",
-                color = AppColors.primary,
+                color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier
@@ -64,7 +65,7 @@ actual fun ShowAlertDialog(
         dismissButton = {
             Text(
                 text = "Cancel",
-                color = AppColors.primary,
+                color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier

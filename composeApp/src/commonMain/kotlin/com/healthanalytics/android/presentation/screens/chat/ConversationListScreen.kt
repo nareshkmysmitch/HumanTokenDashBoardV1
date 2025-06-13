@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,11 +42,12 @@ import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Conversation
+import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,34 +55,39 @@ fun ConversationListScreen(
     onNavigateToChat: (String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = koinViewModel(),
+    viewModel: ChatViewModel = koinInject(),
 ) {
-
-    Logger.e { "ConversationListScreen" }
     BackHandler(enabled = true, onBack = { onNavigateBack() })
     val uiState by viewModel.conversationsState.collectAsState()
     println("conversation list screen $uiState")
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Conversations")
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
+    Scaffold(modifier = modifier.fillMaxSize(), topBar = {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "Conversations", color = AppColors.Black
+                )
+            }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Black
+                    )
                 }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColors.AppBackgroundColor,
+                navigationIconContentColor = AppColors.Black,
+                titleContentColor = AppColors.Black
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { /* TODO: Create new conversation */ }) {
-                Icon(Icons.Default.Add, contentDescription = "New Chat")
-            }
-        }) { paddingValues ->
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(
+            onClick = { /* TODO: Create new conversation */ },
+            containerColor = AppColors.Pink,
+            contentColor = AppColors.White
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "New Chat")
+        }
+    }) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
@@ -109,9 +116,7 @@ fun ConversationListScreen(
 
                             if (state.isLoadingMore) {
                                 item {
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth().padding(16.dp)
-                                    ) {
+                                    Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                                         CircularProgressIndicator(
                                             modifier = Modifier.align(Alignment.Center).size(24.dp)
                                         )

@@ -184,9 +184,38 @@ class OnboardViewModel(
     fun saveProfileDetailsInDataStore(otpVerifiedResponse: OtpResponse?) {
         viewModelScope.launch {
             if (otpVerifiedResponse != null) {
+                // Save access token and login state
                 if (otpVerifiedResponse.access_token != null) {
                     preferencesRepository.saveAccessToken(otpVerifiedResponse.access_token)
                     preferencesRepository.saveIsLogin(true)
+                }
+
+                // Save user details from PiiUser
+                otpVerifiedResponse.pii_user?.let { user ->
+                    // Save basic user info
+                    user.name?.let { preferencesRepository.saveUserName(it) }
+                    user.email?.let { preferencesRepository.saveUserEmail(it) }
+                    user.mobile?.let { preferencesRepository.saveUserPhone(it) }
+
+                    // Save communication address if available
+                    user.communication_address?.let { address ->
+                        address.address_line_1?.let { preferencesRepository.saveUserAddress(it) }
+                        address.pincode?.let { preferencesRepository.saveUserPincode(it) }
+                        address.state?.let { preferencesRepository.saveUserState(it) }
+                        address.city?.let { preferencesRepository.saveUserDistrict(it) }
+                        address.country?.let { preferencesRepository.saveUserCountry(it) }
+                    }
+
+                    // If communication address is not available, try billing address
+                    if (user.communication_address == null) {
+                        user.billing_address?.let { address ->
+                            address.address_line_1?.let { preferencesRepository.saveUserAddress(it) }
+                            address.pincode?.let { preferencesRepository.saveUserPincode(it) }
+                            address.state?.let { preferencesRepository.saveUserState(it) }
+                            address.city?.let { preferencesRepository.saveUserDistrict(it) }
+                            address.country?.let { preferencesRepository.saveUserCountry(it) }
+                        }
+                    }
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.healthanalytics.android.presentation.health
+package com.healthanalytics.android.presentation.screens.health
 
 import androidx.lifecycle.ViewModel
 import com.healthanalytics.android.data.api.ApiService
@@ -27,6 +27,7 @@ class HealthDataViewModel(
                 it.copy(
                     metrics = metrics ?: emptyList(),
                     isLoading = false,
+                    selectedFilter = "All",
                     lastUpdated = metrics?.maxByOrNull { bloodData ->
                         Instant.parse(bloodData?.createdAt.toString())
                     }
@@ -64,8 +65,12 @@ class HealthDataViewModel(
     }
 
     fun getAvailableFilters(): List<String?> {
-        return listOf("All") + _uiState.value.metrics
-            .map { it?.displayRating }
-            .distinct()
+        return if (_uiState.value.metrics.isNotEmpty()) {
+            listOf("All") + _uiState.value.metrics
+                .map { it?.displayRating }
+                .distinct()
+        } else {
+            listOf()
+        }
     }
 } 
