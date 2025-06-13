@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,9 +23,11 @@ import com.healthanalytics.android.presentation.theme.AppColors
 fun TopAppBar(
     title: String,
     isEndIconVisible: Boolean = true,
+    isSymptomsIconVisible: Boolean = true,
     isChatVisible: Boolean = true,
     onEndIconClick: () -> Unit = {},
     onChatClick: () -> Unit = {},
+    onSymptomsClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val endIcon = if (isChatVisible) Icons.Default.AccountCircle else Icons.Default.ShoppingCart
@@ -34,6 +37,16 @@ fun TopAppBar(
                 text = title, fontWeight = FontWeight.Bold, color = AppColors.white
             )
         }, actions = {
+            if (isSymptomsIconVisible) {
+                IconButton(onClick = onSymptomsClick) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "symptoms",
+                        modifier = Modifier.size(24.dp),
+                        tint = AppColors.white
+                    )
+                }
+            }
             if (isChatVisible) {
                 IconButton(onClick = onChatClick) {
                     Icon(
@@ -44,6 +57,7 @@ fun TopAppBar(
                     )
                 }
             }
+
             if (isEndIconVisible) {
                 IconButton(onClick = onEndIconClick) {
                     Icon(

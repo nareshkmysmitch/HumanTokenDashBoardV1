@@ -177,8 +177,7 @@ fun HealthAnalyticsApp() {
                     HOME -> {
                         HomeScreen(
                             onProfileClick = {
-                                //                        navigateTo(PROFILE)
-                                navigateTo(Screen.SYMPTOMS)
+                                navigateTo(PROFILE)
                             },
                             onChatClick = {
                                 navigateTo(CONVERSATION_LIST)
@@ -188,6 +187,9 @@ fun HealthAnalyticsApp() {
                             },
                             onCartClick = {
                                 navigateTo(CART)
+                            },
+                            onSymptomsClick = {
+                                navigateTo(Screen.SYMPTOMS)
                             },
                             onBiomarkerFullReportClick = {
                                 biomarker = it ?: BloodData()
@@ -366,6 +368,7 @@ fun HomeScreen(
     preferenceViewModel: PreferencesViewModel,
     marketPlaceViewModel: MarketPlaceViewModel,
     onProfileClick: () -> Unit = {},
+    onSymptomsClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
     onBiomarker: (BloodData?) -> Unit = {},
@@ -387,6 +390,8 @@ fun HomeScreen(
     Scaffold(topBar = {
         TopAppBar(
             title = "Human Token",
+            isSymptomsIconVisible = currentScreen == MainScreen.DASHBOARD,
+            onSymptomsClick = {onSymptomsClick()},
             onEndIconClick = if (currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
             onChatClick = onChatClick,
             isChatVisible = currentScreen != MainScreen.MARKETPLACE,
@@ -403,14 +408,6 @@ fun HomeScreen(
                     healthDataViewModel,
                     preferenceViewModel,
                     onNavigateToDetail = { onBiomarker(it) })
-
-//                MainScreen.RECOMMENDATIONS -> {
-//                    RecommendationsScreen(
-//                        navigateBack = { navigateBack() },
-//                        preferencesViewModel = preferenceViewModel,
-//                        viewModel = recommendationsViewModel,
-//                    )
-//                }
 
                 MainScreen.RECOMMENDATIONS -> {
                     RecommendationsTabScreen(
