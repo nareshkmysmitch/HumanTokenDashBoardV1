@@ -105,6 +105,9 @@ fun HealthAnalyticsApp() {
                         viewModel = marketPlaceViewModel,
                         onNavigateToTestBooking = {
                             navigateTo(TEST_BOOKING)
+                        },
+                        onLogoutClick = {
+                            currentScreen = HOME
                         }
                     )
                 }
@@ -210,6 +213,7 @@ fun HealthAnalyticsApp() {
         }
 
         else -> {
+            currentScreen = HOME
             OnboardContainer(
                 onboardViewModel = onboardViewModel, isLoggedIn = {
                     onboardViewModel.updateOnBoardState()

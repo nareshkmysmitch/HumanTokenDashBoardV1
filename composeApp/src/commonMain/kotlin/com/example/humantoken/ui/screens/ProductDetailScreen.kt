@@ -184,8 +184,7 @@ fun ProductDetailScreen(
 
             is ProductDetailsState.Success -> {
                 val currentProduct = (productDetailsState as ProductDetailsState.Success).product
-                Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
-                    Spacer(modifier = Modifier.height(50.dp))
+                Column(modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(scrollState)) {
                     // Product Image
                     if (currentProduct.img_urls?.isNotEmpty() == true && currentProduct.img_urls.firstOrNull() != null) {
                         currentProduct.img_urls.firstOrNull()?.let {
