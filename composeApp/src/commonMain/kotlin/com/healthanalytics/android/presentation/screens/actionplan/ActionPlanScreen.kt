@@ -28,6 +28,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -40,7 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
@@ -48,6 +49,7 @@ import com.healthanalytics.android.presentation.screens.recommendations.MetricCh
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.utils.capitalizeFirst
@@ -75,7 +77,7 @@ fun ActionPlanScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size12dp))
 
         // Content Section
         if (uiState.isLoading) {
@@ -91,8 +93,8 @@ fun ActionPlanScreen(
         } else {
             // Category Row
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Dimensions.size16dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
             ) {
                 items(categoryList) { category ->
                     CategoryChip(
@@ -104,8 +106,8 @@ fun ActionPlanScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(Dimensions.size16dp),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.size16dp)
             ) {
                 items(filteredRecommendations) { recommendation ->
                     ActionPlanCard(
@@ -126,13 +128,21 @@ fun CategoryChip(
     val categoryEnum = RecommendationCategory.fromString(category)
 
     FilterChip(
-        selected = selected, onClick = onClick, label = {
+        selected = selected, onClick = onClick, colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = AppColors.DarkPink,
+        ), label = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size4dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(categoryEnum.icon)
-                Text(category.capitalizeFirst())
+                Text(
+                    category.capitalizeFirst(),
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textPrimary,
+                    textAlign = TextAlign.Center
+                )
             }
         })
 }
@@ -140,24 +150,24 @@ fun CategoryChip(
 @Composable
 fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(Dimensions.size16dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Surface(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(Dimensions.size80dp),
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Icon(
                 imageVector = Icons.Default.Assignment,
                 contentDescription = null,
-                modifier = Modifier.padding(16.dp).fillMaxSize(),
+                modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
         Text(
             text = "Your Action Plan is Empty",
@@ -167,7 +177,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Text(
             text = "Add recommendations to your action plan to start tracking your health goals",
@@ -177,16 +187,16 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
         Button(
             onClick = { viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS) }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(Dimensions.size20dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Dimensions.size8dp))
             Text(
                 "Browse Recommendations",
                 fontSize = FontSize.textSize16sp,
@@ -200,24 +210,24 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
 @Composable
 fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(Dimensions.size16dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Surface(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(Dimensions.size80dp),
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Icon(
                 imageVector = Icons.Default.FilterList,
                 contentDescription = null,
-                modifier = Modifier.padding(16.dp).fillMaxSize(),
+                modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
         Text(
             text = "No Items in This Category",
@@ -227,7 +237,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Text(
             text = "You don't have any action plan items in the selected category",
@@ -237,16 +247,16 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
         Button(
             onClick = { viewModel.updateActionCategory("All") }) {
             Icon(
                 imageVector = Icons.Default.Dashboard,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(Dimensions.size20dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Dimensions.size8dp))
             Text(
                 "Show All Items", fontSize = FontSize.textSize16sp,
                 color = AppColors.white,
@@ -268,13 +278,12 @@ fun ActionPlanCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.white
+            containerColor = AppColors.CardGrey
         ),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp)
         ) {
             // Header with icon and title
             Row(
@@ -283,7 +292,7 @@ fun ActionPlanCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
@@ -292,35 +301,40 @@ fun ActionPlanCard(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = recommendation.name, style = MaterialTheme.typography.titleMedium
+                        text = recommendation.name, fontSize = FontSize.textSize22sp,
+                        color = AppColors.white,
+                        fontFamily = FontFamily.bold(),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
 
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             // Potential Impact Section
             Text(
                 text = "Potential Impact",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = FontSize.textSize16sp,
+                color = AppColors.white,
+                fontFamily = FontFamily.medium()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
             // Metrics Grid
             recommendation.metric_recommendations?.let { metrics ->
                 if (metrics.isNotEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
                     ) {
                         metrics.chunked(2).forEach { rowMetrics ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
                             ) {
                                 rowMetrics.forEach { metricRecommendation ->
                                     MetricChip(
@@ -337,7 +351,7 @@ fun ActionPlanCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -347,8 +361,9 @@ fun ActionPlanCard(
                 // Added Date
                 Text(
                     text = "Added $formattedDate",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.TextGrey,
                 )
 
                 OutlinedButton(onClick = {
@@ -363,10 +378,14 @@ fun ActionPlanCard(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Remove",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(Dimensions.size20dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Remove")
+                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
+                    Text(
+                        "Remove",
+                        fontSize = FontSize.textSize16sp,
+                        fontFamily = FontFamily.bold(),
+                    )
                 }
             }
         }

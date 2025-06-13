@@ -56,6 +56,7 @@ fun RecommendationsScreen(
             viewModel.loadRecommendations(token)
         }
     }
+
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
@@ -70,7 +71,7 @@ fun RecommendationsScreen(
         } else {
             // Category Selector
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size8dp),
+                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size12dp),
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
                 contentPadding = PaddingValues(horizontal = Dimensions.size12dp)
             ) {
