@@ -43,18 +43,18 @@ import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailSc
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
+import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
 import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
-import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
-import com.healthanalytics.android.presentation.theme.AppColors
-import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
-import org.koin.compose.getKoin
+import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -143,9 +143,11 @@ fun HealthAnalyticsApp() {
 
         else -> {
             OnboardContainer(
-                onboardViewModel = onboardViewModel, isLoggedIn = {
+                onboardViewModel = onboardViewModel,
+                isLoggedIn = {
                     onboardViewModel.updateOnBoardState()
-                })
+                }
+            )
         }
     }
 }
@@ -183,7 +185,7 @@ fun OnboardContainer(
                     GetStartedScreen(
                         onGetStarted = { navController.navigate(OnboardRoute.Login) },
                         onLogin = { navController.navigate(OnboardRoute.Login) },
-                        onViewAllBiomarkers = { /* TODO: Implement navigation if needed */ }
+                        onViewAllBiomarkers = {}
                     )
                 }
                 composable<OnboardRoute.Login> {
@@ -191,7 +193,8 @@ fun OnboardContainer(
                         onboardViewModel = onboardViewModel,
                         navigateToOtpVerification = {
                             navController.navigate(OnboardRoute.OTPVerification)
-                        })
+                        }
+                    )
 
                 }
 
@@ -201,10 +204,10 @@ fun OnboardContainer(
                         onBackClick = {
                             navController.navigateUp()
 
-                       }, navigateToAccountCreation = {
+                        }, navigateToAccountCreation = {
                             navController.navigate(OnboardRoute.CreateAccount)
-                        })
-
+                        }
+                    )
                 }
 
                 composable<OnboardRoute.CreateAccount> {
@@ -227,8 +230,8 @@ fun OnboardContainer(
                         },
                         navigateToBloodTest = {
                             navController.navigate(OnboardRoute.ScheduleBloodTest)
-                        })
-
+                        }
+                    )
                 }
 
                 composable<OnboardRoute.ScheduleBloodTest> {
@@ -236,17 +239,14 @@ fun OnboardContainer(
                         onboardViewModel = onboardViewModel,
                         onBackClick = {
                             navController.navigateUp()
-
-                       }, navigateToPayment = {
+                        },
+                        navigateToPayment = {
                             navController.navigate(OnboardRoute.Payment)
-                        })
-
+                        }
+                    )
                 }
 
                 composable<OnboardRoute.Payment> {
-
-//                    onboardViewModel.generateOrderId()
-
                     PaymentScreenContainer(
                         onboardViewModel = onboardViewModel,
                         razorpayHandler = razorpayHandler,

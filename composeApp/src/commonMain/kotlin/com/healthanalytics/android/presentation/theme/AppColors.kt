@@ -6,7 +6,6 @@ object AppColors {
 
     // Primary colors
     val primary = Color(0xFF6366F1)
-    val White = Color(0xFFFFFFFF)
     val Black = Color(0xFF000000)
     val AppBackgroundColor = Color(0xF1F3F6)
     val backgroundDark = Color(0xFF1E1E2E)
@@ -46,5 +45,10 @@ object AppColors {
 
     val white = Color(0xFFFFFFFF)
 
+    // Additional surface and UI colors
+    val PurpleIconBackground = Color(0XFF393442)
+    val PurpleButtonBackground = Color(0XFF54414E)
+    val secondary = Color(0xFF8B5CF6)
+    val tertiary = Color(0xFF06B6D4)
 
 }

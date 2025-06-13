@@ -30,7 +30,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -47,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
-import com.healthanalytics.android.presentation.components.CardDefaults.defaultElevation
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
@@ -153,7 +151,7 @@ fun MetricCard(
     Card(
         modifier = Modifier.fillMaxWidth().clickable { metric?.let { onMetricClick(it) } },
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+            containerColor = AppColors.white
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

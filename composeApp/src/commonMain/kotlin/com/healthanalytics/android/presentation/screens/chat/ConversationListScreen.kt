@@ -39,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Conversation
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -47,7 +46,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +81,7 @@ fun ConversationListScreen(
         FloatingActionButton(
             onClick = { /* TODO: Create new conversation */ },
             containerColor = AppColors.Pink,
-            contentColor = AppColors.White
+            contentColor = AppColors.white
         ) {
             Icon(Icons.Default.Add, contentDescription = "New Chat")
         }
