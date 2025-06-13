@@ -36,6 +36,7 @@ import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenCon
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -115,15 +116,8 @@ fun HealthAnalyticsApp() {
         }
 
         onBoardUiState.hasAccessToken -> {
-//            HomeScreen(
-//                accessToken = "",
-//            )
-
-            OnboardContainer(
-                onboardViewModel = onboardViewModel,
-                isLoggedIn = {
-                    onboardViewModel.updateOnBoardState()
-                }
+            HomeScreen(
+                accessToken = "",
             )
         }
 
@@ -166,9 +160,16 @@ fun OnboardContainer(
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = OnboardRoute.Login,
+                startDestination = OnboardRoute.GetStarted,
                 modifier = Modifier.padding(innerPadding)
             ) {
+                composable<OnboardRoute.GetStarted> {
+                    GetStartedScreen(
+                        onGetStarted = { navController.navigate(OnboardRoute.Login) },
+                        onLogin = { navController.navigate(OnboardRoute.Login) },
+                        onViewAllBiomarkers = { /* TODO: Implement navigation if needed */ }
+                    )
+                }
                 composable<OnboardRoute.Login> {
                     LoginScreenContainer(
                         onboardViewModel = onboardViewModel,
