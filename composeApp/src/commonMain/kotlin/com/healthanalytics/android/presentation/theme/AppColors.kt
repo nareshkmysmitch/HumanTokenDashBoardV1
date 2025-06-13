@@ -53,5 +53,11 @@ object AppColors {
     val CardGrey = Color(0xFF1C1C1E)
     val DarkPink = Color(0xFFF524A1)
     val TextGrey = Color(0xFF888888)
+    val OptimalColor = Color(0xFF1f7a4c)
+    val HighColor = Color(0xFFf4978a)
+    val LowColor = Color(0xFFf4978a)
+    val NormalColor = Color(0xFF1f7a4c)
+    val NoneColor = Color(0xFF4b5563)
+    val YellowColor= Color(0xFFf4c764)
 
 }

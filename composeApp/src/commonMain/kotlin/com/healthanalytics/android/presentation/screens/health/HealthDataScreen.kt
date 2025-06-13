@@ -219,7 +219,7 @@ fun MetricCard(
                     ).padding(PaddingValues(vertical = size4dp, horizontal = Dimensions.size8dp))
             ) {
                 Text(
-                    text = "${metric?.symptomsReported} symptoms reported",
+                    text = "${metric.symptomsReported} symptoms reported",
                     fontSize = FontSize.textSize14sp,
                     fontFamily = FontFamily.medium(),
                     color = Color(0xFF60a5fa),
@@ -243,12 +243,12 @@ fun MetricCard(
 fun StatusChip(status: String) {
 
     val backgroundColor = when (status.lowercase()) {
-        "normal" -> Color(0xFF1f7a4c)
-        "low" -> Color(0xFFf4978a)
-        "high" -> Color(0xFFf4978a)
-        "optimal" -> Color(0xFF1f7a4c)
-        "none" -> Color(0xFF4b5563)
-        else -> Color(0xFFf4c764)
+        "normal" -> AppColors.NormalColor
+        "low" -> AppColors.LowColor
+        "high" -> AppColors.HighColor
+        "optimal" -> AppColors.OptimalColor
+        "none" -> AppColors.NoneColor
+        else -> AppColors.YellowColor
     }
 
     Surface(
