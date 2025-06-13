@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -41,11 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -121,23 +116,14 @@ fun SymptomsScreen(
                     .fillMaxSize()
                     .padding(Dimensions.screenPadding)
             ) {
-                val gradient = Brush.linearGradient(
-                    colors = listOf(AppColors.primary, AppColors.secondary, AppColors.tertiary),
-                    tileMode = TileMode.Clamp
-                )
 
-                BasicText(
+                Text(
                     text = "Select any symptoms you're currently experiencing",
-                    style = TextStyle(
-                        fontSize = FontSize.textSize20sp,
-                        fontFamily = FontFamily.bold(),
-                        brush = gradient,
-                        textAlign = TextAlign.Center,
-                        lineHeight = FontSize.textSize28sp
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .graphicsLayer(alpha = 0.99f)
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(vertical = Dimensions.size8dp),
+                    fontSize = FontSize.textSize20sp,
+                    fontFamily = FontFamily.semiBold(),
+                    color = AppColors.textPrimary
                 )
 
                 Text(
