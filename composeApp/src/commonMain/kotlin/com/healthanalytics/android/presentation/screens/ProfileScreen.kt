@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Man
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -54,14 +53,14 @@ import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onNavigateBack: () -> Unit, viewModel: MarketPlaceViewModel = koinInject()
+    onNavigateBack: () -> Unit,
+    viewModel: MarketPlaceViewModel,
+    onNavigateToTestBooking: () -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
@@ -74,13 +73,15 @@ fun ProfileScreen(
     val accessToken by viewModel.accessToken.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.clearLogoutState() }
     // Handle logout state changes
     LaunchedEffect(logoutState) {
         when (logoutState) {
             is LogoutState.Success -> {
                 // User will be redirected to OnboardContainer automatically
                 // because hasAccessToken in HealthAnalyticsApp will become false
-                onNavigateBack()
+//                onNavigateBack()
             }
 
             else -> {}
@@ -138,14 +139,14 @@ fun ProfileScreen(
 
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppColors.Black,
-                    navigationIconContentColor = AppColors.White,
-                    titleContentColor = AppColors.White
+                    navigationIconContentColor = AppColors.white,
+                    titleContentColor = AppColors.white
                 ),
 
                 title = {
                     Text(
                         text = if (isEditing) "Edit Profile" else "Your Profile",
-                        color = AppColors.White,
+                        color = AppColors.white,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -161,7 +162,7 @@ fun ProfileScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.White,
+                            tint = AppColors.white,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -256,6 +257,16 @@ fun ProfileScreen(
                                 Text("Edit Profile")
                             }
                         }
+                    }
+
+                    Button(
+                        onClick = { onNavigateToTestBooking() },
+                        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.LightGray
+                        )
+                    ) {
+                        Text("Test Booking", color = Color.Black)
                     }
 
                     Button(

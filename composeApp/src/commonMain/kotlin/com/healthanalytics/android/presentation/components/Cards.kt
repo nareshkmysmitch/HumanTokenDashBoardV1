@@ -22,10 +22,10 @@ fun AppCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        modifier = modifier.background(AppColors.White),
+        modifier = modifier.background(AppColors.white),
         shape = RoundedCornerShape(com.healthanalytics.android.presentation.components.CardDefaults.defaultCornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White,
+            containerColor = AppColors.white,
             contentColor = AppColors.DarkPurple
         ),
         elevation = CardDefaults.cardElevation(

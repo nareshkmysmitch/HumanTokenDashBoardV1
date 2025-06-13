@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.actionplan
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.screens.recommendations.MetricChip
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -52,12 +52,11 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ActionPlanScreen(
     viewModel: RecommendationsViewModel,
-    preferencesViewModel: PreferencesViewModel = koinInject(),
+    preferencesViewModel: PreferencesViewModel,
 ) {
     val uiState by viewModel.uiActionState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
@@ -75,36 +74,22 @@ fun ActionPlanScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         // Header Section
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Your Action Plan", style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = "$totalItems items",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        /* Row(
+             modifier = Modifier.fillMaxWidth().padding(16.dp),
+             horizontalArrangement = Arrangement.End,
+             verticalAlignment = Alignment.CenterVertically
+         ) {
+             Text(
+                 text = "$totalItems items",
+                 style = MaterialTheme.typography.titleMedium,
+                 color = MaterialTheme.colorScheme.onSurfaceVariant
+             )
+         }*/
 
         println("category--> ${viewModel.getActionCategories()}")
 
 
-        // Category Row
-        LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(categoryList) { category ->
-                CategoryChip(
-                    category = category,
-                    selected = category == uiState.selectedCategory,
-                    onClick = { viewModel.updateActionCategory(category) })
-            }
-        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -120,6 +105,19 @@ fun ActionPlanScreen(
         } else if (filteredRecommendations.isEmpty()) {
             EmptyCategoryView(viewModel)
         } else {
+            // Category Row
+            LazyRow(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categoryList) { category ->
+                    CategoryChip(
+                        category = category,
+                        selected = category == uiState.selectedCategory,
+                        onClick = { viewModel.updateActionCategory(category) })
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
@@ -271,8 +269,9 @@ fun ActionPlanCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),  colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.white
         ),
     ) {
         Column(
@@ -372,23 +371,6 @@ fun ActionPlanCard(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun MetricChip(
-    metric: String,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        color = AppColors.White, shape = MaterialTheme.shapes.extraSmall, modifier = modifier,
-    ) {
-        Text(
-            text = metric,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = AppColors.DarkPurple
-        )
     }
 }
 

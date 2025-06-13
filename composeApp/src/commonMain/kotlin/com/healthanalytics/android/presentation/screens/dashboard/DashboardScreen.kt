@@ -105,7 +105,7 @@ fun DashboardScreen(
 @Composable
 fun BiomarkerCard(biomarker: Biomarker) {
     AppCard(
-        modifier = Modifier.fillMaxWidth().background(AppColors.White),
+        modifier = Modifier.fillMaxWidth().background(AppColors.white),
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

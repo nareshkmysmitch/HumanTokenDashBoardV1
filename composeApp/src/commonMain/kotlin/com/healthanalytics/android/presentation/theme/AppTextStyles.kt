@@ -16,7 +16,7 @@ object AppTextStyles {
     val headingMedium = TextStyle(
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
-        lineHeight = 32.sp
+        lineHeight = 32.sp,
     )
     
     val headingSmall = TextStyle(

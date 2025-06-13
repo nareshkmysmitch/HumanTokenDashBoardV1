@@ -100,9 +100,13 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
     }
 
     fun getActionCategories(): List<String> {
-        return listOf("All") + _uiActionState.value.recommendations
-            .map { it.category ?: "" }
-            .distinct()
+        return if (_uiActionState.value.recommendations.isNotEmpty()) {
+            listOf("All") + _uiActionState.value.recommendations
+                .map { it.category ?: "" }
+                .distinct()
+        } else {
+            listOf()
+        }
     }
 
     fun getActionTotalItems(): Int {
@@ -145,9 +149,6 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
 
                 if (action != null && userAction != null) {
                     val request = RemoveRecommendationRequest(
-                        profile_id = "65", // TODO: Get from user profile
-                        health_profile_id = "65", // TODO: Get from user profile
-                        food_profile_id = "65", // TODO: Get from user profile
                         reminder_id = userAction.event_id ?: "",
                         occurrence_id = "1",
                         recommendation_id = recommendation.id,
@@ -190,7 +191,6 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
 
                 if (action != null && userAction != null) {
                     val request = RemoveSupplementsRequest(
-                        profile_id = "65", // TODO: Get from user profile
                         reminder_id = null,
                         occurrence_id = "1",
                         recommendation_id = recommendation.id,
@@ -251,7 +251,6 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                             days_of_the_week = evenConfig.days_of_the_week,
                             is_mock = false,
                             module = "recommendation",
-                            profile_id = "65",
                             shape = evenConfig.shape ?: "",
                             color = evenConfig.color ?: "",
                             time = listOf(evenConfig.scheduled_time),

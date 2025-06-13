@@ -21,16 +21,11 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.filled.Clear
-//import androidx.compose.material.icons.filled.Close
-//import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -47,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
-import com.healthanalytics.android.presentation.components.CardDefaults.defaultElevation
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
@@ -58,8 +52,8 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthDataScreen(
-    viewModel: HealthDataViewModel = koinInject(),
-    prefs: PreferencesViewModel = koinInject(),
+    viewModel: HealthDataViewModel,
+    prefs: PreferencesViewModel,
     onNavigateToDetail: (BloodData?) -> Unit
 ) {
     val preferencesState by prefs.uiState.collectAsState()
@@ -79,19 +73,6 @@ fun HealthDataScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
     ) {
-//        Text(
-//            text = "Health Data",
-//            style = MaterialTheme.typography.headlineMedium,
-//            modifier = Modifier.padding(horizontal = 16.dp)
-//        )
-
-        // Last Updated
-//        Text(
-//            text = "Last updated: ${formatDate(uiState.lastUpdated?.createdAt)}",
-//            style = MaterialTheme.typography.bodyMedium,
-//            modifier = Modifier.padding(horizontal = 16.dp)
-//        )
-
         // Search Bar (Conditionally Visible)
         AnimatedVisibility(
             visible = isSearchVisible,
@@ -153,7 +134,7 @@ fun MetricCard(
     Card(
         modifier = Modifier.fillMaxWidth().clickable { metric?.let { onMetricClick(it) } },
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+            containerColor = AppColors.white
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

@@ -21,6 +21,7 @@ import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -73,6 +74,7 @@ interface ApiService {
     suspend fun getCartList(accessToken: String): List<Cart?>?
     suspend fun getProductDetails(accessToken: String, productId: String): Product?
     suspend fun logout(accessToken: String): Boolean
+    suspend fun getTestBookings(accessToken: String): List<Product?>?
     suspend fun getBiomarkerReport(
         accessToken: String, type: String, metricId: String
     ): BiomarkerReportData?
@@ -149,7 +151,9 @@ class ApiServiceImpl(
 
         val requestObject = buildJsonObject {
             put("product_id", productId)
-            put("variant_id", variantId)
+            if(variantId.isNotEmpty()) {
+                put("variant_id", variantId)
+            }
         }
 
         val response = httpClient.post("v4/human-token/market-place/cart/add") {
@@ -252,6 +256,28 @@ class ApiServiceImpl(
         }
     }
 
+    override suspend fun getTestBookings(accessToken: String): List<Product?>? {
+        val response = httpClient.get("v4/human-token/market-place/products") {
+            header("access_token", accessToken)
+            parameter("category", "gene,gut,blood")
+            parameter("limit", "6")
+        }
+        val responseBody = response.bodyAsText()
+        println("Test Booking response --> Raw ${responseBody}")
+
+        try {
+            val encryptedResponse = json.decodeFromString<EncryptedResponse>(responseBody)
+            val productResponse = EncryptionUtils.handleDecryptionResponse<ProductData>(
+                """{"status":"${encryptedResponse.status}","message":"${encryptedResponse.message}","data":"${encryptedResponse.data}"}"""
+            )
+            println("Product response --> Decrypted ${productResponse}")
+            return productResponse?.products
+        } catch (e: Exception) {
+            println("Error handling test booking response: ${e.message}")
+            e.printStackTrace()
+            return null
+        }
+    }
 
     override suspend fun getBiomarkerReport(
         accessToken: String, type: String, metricId: String
@@ -266,6 +292,7 @@ class ApiServiceImpl(
             }
         }
         val responseBody = response.bodyAsText()
+        println()
         val reportResponse =
             EncryptionUtils.handleDecryptionResponse<BiomarkerReportData>(responseBody)
         return reportResponse

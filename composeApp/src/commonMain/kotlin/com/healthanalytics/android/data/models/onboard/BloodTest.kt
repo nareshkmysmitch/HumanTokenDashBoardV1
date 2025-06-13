@@ -26,3 +26,25 @@ data class UpdateSlot(
     val source: String,
     val lead_id: String,
 )
+
+@Serializable
+data class PaymentRequest(
+    val payment_order_id: String,
+    val lead_id: String,
+    val coupon_code: String,
+)
+
+@Serializable
+data class GenerateOrderId(
+    val lead_id: String,
+    val coupon_code: String?=null
+)
+
+@Serializable
+data class GenerateOrderIdResponse(
+    val payment_order_id: String?=null,
+    val amount: String?=null,
+    val payment_status: String?=null,
+    val currency: String?=null,
+    val description: String?=null
+)

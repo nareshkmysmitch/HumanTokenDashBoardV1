@@ -24,4 +24,7 @@ sealed class OnboardRoute {
 
     @Serializable
     data object Payment : OnboardRoute()
+
+    @Serializable
+    data object GetStarted : OnboardRoute()
 }

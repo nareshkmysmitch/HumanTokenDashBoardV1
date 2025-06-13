@@ -14,7 +14,6 @@ data class AddSupplementRequest(
     val module: String,
     val recommendation_id: String,
     val action_id: String,
-    val profile_id: String,
     val name: String,
     val shape: String,
     val color: String,
