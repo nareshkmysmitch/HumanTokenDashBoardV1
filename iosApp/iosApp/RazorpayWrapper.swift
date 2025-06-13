@@ -29,6 +29,7 @@ class RazorpayBridge: NSObject, RazorpayPaymentCompletionProtocol {
             "amount": amount,
             "currency": currency,
             "description": description,
+            "order_id": orderId,
         ]
 
         DispatchQueue.main.async {
