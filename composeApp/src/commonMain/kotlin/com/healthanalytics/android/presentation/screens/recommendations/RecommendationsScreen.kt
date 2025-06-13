@@ -1,5 +1,7 @@
 package com.healthanalytics.android.presentation.screens.recommendations
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,16 +13,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,8 +34,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
@@ -39,27 +46,35 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
-import com.healthanalytics.android.utils.capitalizeFirst
+import com.healthanalytics.android.presentation.theme.backgroundDark
+import com.healthanalytics.android.presentation.theme.backgroundLight
+import com.healthanalytics.android.presentation.theme.onSurfaceVariantLight
+import org.koin.compose.koinInject
 
 @Composable
 fun RecommendationsScreen(
     viewModel: RecommendationsViewModel,
-    preferencesViewModel: PreferencesViewModel,
+    preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filterList = viewModel.getFilteredRecommendations()
-
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
             viewModel.loadRecommendations(token)
         }
     }
-
     Column(
-        modifier = Modifier.fillMaxSize().background(AppColors.Black)
+        modifier = Modifier.fillMaxSize().background(Color(0xFF111318))
     ) {
+        // Header
+//        Text(
+//            text = "Recommendations",
+//            style = MaterialTheme.typography.headlineMedium,
+//            modifier = Modifier.padding(16.dp)
+//        )
+
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
@@ -69,11 +84,24 @@ fun RecommendationsScreen(
                 CircularProgressIndicator()
             }
         } else {
+            // Subtitle with selected category and count
+//            Text(
+//                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
+//                    uiState.selectedCategory?.let {
+//                        viewModel.getCategoryCount(
+//                            it
+//                        )
+//                    }
+//                })",
+//                style = MaterialTheme.typography.titleMedium,
+//                color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                modifier = Modifier.padding(horizontal = 16.dp))
+
             // Category Selector
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size12dp),
-                horizontalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
-                contentPadding = PaddingValues(horizontal = Dimensions.size12dp)
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp)
             ) {
                 items(viewModel.getRecommendationCategories()) { category ->
                     CategoryChip(
@@ -86,8 +114,8 @@ fun RecommendationsScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(Dimensions.size12dp),
-                verticalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 items(filterList) { recommendation ->
                     RecommendationCard(
@@ -109,25 +137,44 @@ fun CategoryChip(
     onClick: () -> Unit,
 ) {
     val categoryEnum = RecommendationCategory.fromString(category)
-
-    FilterChip(
-        selected = selected, onClick = onClick, colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = AppColors.DarkPink,
-        ), label = {
+    androidx.compose.material3.FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(Dimensions.size4dp),
+                modifier = Modifier.padding(
+                    vertical = Dimensions.size8dp,
+                    horizontal = Dimensions.size4dp
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(categoryEnum.icon)
                 Text(
-                    text = "${category.capitalizeFirst()} ($count)",
+                    text = categoryEnum.icon,
                     fontSize = FontSize.textSize14sp,
                     fontFamily = FontFamily.medium(),
-                    color = AppColors.textPrimary,
-                    textAlign = TextAlign.Center
+                    color = AppColors.tertiary
+                )
+                Spacer(modifier = Modifier.width(Dimensions.size4dp))
+                Text(
+                    text = "$category ($count)",
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textPrimary
                 )
             }
-        })
+        },
+        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(alpha = 0.1f),
+            labelColor = AppColors.textPrimary,
+            selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
+            selectedLabelColor = AppColors.white
+        ),
+        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected=selected,
+            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else  AppColors.Pink.copy(alpha = 0.2f)
+        )
+    )
 }
 
 @Composable
@@ -137,67 +184,83 @@ fun RecommendationCard(
     accessToken: String?,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = Dimensions.size16dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.CardGrey
+            containerColor = Color(0xFF1e2025)
         ),
+        shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(Dimensions.size12dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimensions.size20dp)
         ) {
+            // Title Row
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(AppColors.backgroundDark, shape = CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = RecommendationCategory.fromString(recommendation.category).icon,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        text = recommendation.name,
-                        fontSize = FontSize.textSize22sp,
-                        color = AppColors.white,
-                        fontFamily = FontFamily.bold(),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        fontSize = FontSize.textSize20sp,
+                        fontFamily = FontFamily.medium(),
+                        color = AppColors.secondary
                     )
                 }
+                Spacer(modifier = Modifier.width(Dimensions.size12dp))
+                Text(
+                    text = recommendation.name,
+                    fontSize = FontSize.textSize18sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textPrimary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.size16dp))
+            Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
             Text(
                 text = "Potential Impact",
-                fontSize = FontSize.textSize16sp,
-                color = AppColors.white,
+                fontSize = FontSize.textSize14sp,
                 fontFamily = FontFamily.medium(),
+                color = AppColors.textSecondary
             )
 
             Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
-            // Metrics Grid
+            // Metrics Grid (2 columns)
             recommendation.metric_recommendations?.let { metrics ->
                 if (metrics.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier.wrapContentWidth(),
+                    androidx.compose.foundation.layout.FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        maxItemsInEachRow = 2,
+                        horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
                         verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
                     ) {
-                        metrics.chunked(1).forEach { rowMetrics ->
-                            Row(
-                                modifier = Modifier.wrapContentWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                            ) {
-                                rowMetrics.forEach { metricRecommendation ->
-                                    MetricChip(
-                                        metric = metricRecommendation.metric.metric,
+                        metrics.forEach { metricRecommendation ->
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = AppColors.backgroundDark,
+                                        shape = RoundedCornerShape(10.dp)
                                     )
-                                }
+                                    .padding(vertical = Dimensions.size6dp, horizontal = Dimensions.size8dp),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Text(
+                                    text = metricRecommendation.metric.metric.uppercase(),
+                                    fontSize = FontSize.textSize12sp,
+                                    fontFamily = FontFamily.regular(),
+                                    color = AppColors.textPrimary
+                                )
                             }
                         }
                     }
@@ -207,22 +270,55 @@ fun RecommendationCard(
 
             val action = recommendation.actions?.firstOrNull()
             val userAction = action?.user_recommendation_actions?.firstOrNull()
-
             val isEnabled = userAction == null || userAction.is_completed == false
 
-            Button(
-                onClick = { accessToken?.let { viewModel.addToPlan(it, recommendation) } },
-                enabled = isEnabled,
-                modifier = Modifier.align(Alignment.End)
+            // Add to Plan Button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(
-                    text = "+ Add to Plan",
-                    fontSize = FontSize.textSize16sp,
-                    color = AppColors.white,
-                    fontFamily = FontFamily.bold(),
-                )
+                val buttonText = if (isEnabled) "+ Add to Plan" else "Added to plan"
+                val buttonColor = if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
+                androidx.compose.material3.Button(
+                    onClick = { if (isEnabled) accessToken?.let { viewModel.addToPlan(it, recommendation) } },
+                    enabled = true,
+                    shape = RoundedCornerShape(24.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = buttonColor,
+                        contentColor = AppColors.white
+                    ),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = buttonText,
+                        fontSize = FontSize.textSize14sp,
+                        fontFamily = FontFamily.medium(),
+                        color = AppColors.white
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun DifficultyChip(difficulty: String) {
+    val (backgroundColor, textColor) = when (difficulty.lowercase()) {
+        "easy" -> MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
+        "medium" -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.onSecondary
+        "hard" -> MaterialTheme.colorScheme.tertiary to MaterialTheme.colorScheme.onTertiary
+        else -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Surface(
+        color = backgroundColor, shape = MaterialTheme.shapes.small
+    ) {
+        Text(
+            text = difficulty.replaceFirstChar { it.uppercase() },
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = textColor
+        )
     }
 }
 
@@ -232,19 +328,15 @@ fun MetricChip(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = AppColors.SubGreyColor,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         shape = MaterialTheme.shapes.small,
         modifier = modifier
     ) {
         Text(
             text = metric,
-            modifier = Modifier.padding(
-                horizontal = Dimensions.size8dp,
-                vertical = Dimensions.size4dp
-            ),
-            fontSize = FontSize.textSize14sp,
-            color = AppColors.white,
-            fontFamily = FontFamily.medium(),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
 } 

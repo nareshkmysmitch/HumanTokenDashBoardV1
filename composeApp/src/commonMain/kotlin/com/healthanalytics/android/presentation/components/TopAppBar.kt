@@ -55,7 +55,7 @@ fun TopAppBar(
                 }
             }
         }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = AppColors.Black,
+            containerColor = AppColors.AppBackgroundColor,
             navigationIconContentColor = AppColors.white,
             titleContentColor = AppColors.white,
             actionIconContentColor = AppColors.white
