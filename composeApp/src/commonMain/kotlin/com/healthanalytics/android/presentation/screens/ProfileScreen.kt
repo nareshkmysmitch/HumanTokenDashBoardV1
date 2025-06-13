@@ -74,7 +74,8 @@ fun ProfileScreen(
     val logoutState by viewModel.logoutState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.clearLogoutState() }
+        viewModel.clearLogoutState()
+    }
     // Handle logout state changes
     LaunchedEffect(logoutState) {
         when (logoutState) {
@@ -178,7 +179,6 @@ fun ProfileScreen(
                 Column(
                     modifier = Modifier.fillMaxSize().padding(16.dp)
                 ) {
-
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
