@@ -17,6 +17,7 @@ import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceV
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiServiceImpl
+import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import com.healthanalytics.android.utils.KermitLogger
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -41,6 +42,7 @@ val sharedModules = module {
 
     factoryOf(::HealthDataViewModel)
     factoryOf(::MarketPlaceViewModel)
+    factoryOf(::TestBookingViewModel)
     factoryOf(::PreferencesViewModel)
     factoryOf(::ChatViewModel)
     factoryOf(::RecommendationsViewModel)

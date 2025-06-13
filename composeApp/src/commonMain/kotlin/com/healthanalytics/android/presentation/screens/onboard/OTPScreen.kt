@@ -154,9 +154,7 @@ fun OTPScreen(
 
             Text(
                 text = phoneNumber,
-                style = AppTextStyles.bodyMedium.copy(
-                    fontWeight = FontWeight.Medium
-                ),
+                style = AppTextStyles.bodyMedium.copy(fontWeight = FontWeight.Medium),
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )

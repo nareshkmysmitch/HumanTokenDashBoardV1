@@ -35,14 +35,20 @@ import com.healthanalytics.android.presentation.components.Screen.CONVERSATION_L
 import com.healthanalytics.android.presentation.components.Screen.HOME
 import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DETAIL
 import com.healthanalytics.android.presentation.components.Screen.PROFILE
+import com.healthanalytics.android.presentation.components.Screen.SCHEDULE_TEST_BOOKING
+import com.healthanalytics.android.presentation.components.Screen.TEST_BOOKING
 import com.healthanalytics.android.presentation.components.TopAppBar
+import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
+import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
 import com.healthanalytics.android.presentation.screens.health.BioMarkerFullReportScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailScreen
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
+import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
@@ -54,6 +60,9 @@ import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTes
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.testbooking.ScheduleTestBookingScreen
+import com.healthanalytics.android.presentation.screens.testbooking.TestBookingScreen
+import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTheme
 import org.koin.compose.getKoin
@@ -71,47 +80,122 @@ fun HealthAnalyticsApp() {
 
         fun navigateTo(screen: Screen) {
             // Remember the last main screen when navigating away from main screens
-            if (currentScreen is HOME || currentScreen is Screen.PROFILE || currentScreen is Screen.CONVERSATION_LIST) {
+            if (currentScreen is HOME || currentScreen is PROFILE || currentScreen is CONVERSATION_LIST) {
                 lastMainScreen = currentScreen
             }
             currentScreen = screen
         }
 
         fun navigateBack() {
-            currentScreen = lastMainScreen
+            currentScreen = if (lastMainScreen == currentScreen) {
+            HOME
+        } else {
+            lastMainScreen
+        }
         }
 
         val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
-        val recommendationsViewModel: RecommendationsViewModel =
+        val healthDataViewModel: HealthDataViewModel = koinInject<HealthDataViewModel>()
+    val preferencesViewModel: PreferencesViewModel = koinInject<PreferencesViewModel>()
+    val marketPlaceViewModel: MarketPlaceViewModel = koinInject<MarketPlaceViewModel>()
+    val testBookingViewModel: TestBookingViewModel = koinInject<TestBookingViewModel>()
+    val chatViewModel: ChatViewModel = koinInject<ChatViewModel>()
+    val recommendationsViewModel: RecommendationsViewModel =
             koinInject<RecommendationsViewModel>()
         val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
-        when {
+        var localTestList by remember { mutableStateOf<List<Product>>(emptyList()) }when {
             onBoardUiState.isLoading -> CircularProgressIndicator()
             onBoardUiState.hasAccessToken -> {
                 when (currentScreen) {
-                    PROFILE -> ProfileScreen(onNavigateBack = { navigateBack() })
+                    PROFILE -> {
+                    ProfileScreen(
+                        onNavigateBack = { navigateTo(HOME) },
+                        viewModel = marketPlaceViewModel,
+                        onNavigateToTestBooking = {
+                            navigateTo(TEST_BOOKING)
+                        },
+                    )
+                }
                     CONVERSATION_LIST -> {
                         ConversationListScreen(onNavigateToChat = { id ->
-                            navigateTo(CHAT(conversationId = id))
-                        }, onNavigateBack = { navigateTo(HOME) })
-                    }
+                            navigateTo(CHAT(conversationId = id))},
+                         onNavigateBack = { navigateTo(HOME) },
+                    viewModel = chatViewModel,
+                    )
+                }
 
                     is CHAT -> {
                         val chatScreen = currentScreen as CHAT
                         ChatScreen(
                             conversationId = chatScreen.conversationId,
-                            onNavigateBack = { navigateBack() })
-                    }
+                            onNavigateBack = { navigateBack() },
+                    viewModel = chatViewModel,
+                    )
+                }
 
                     is MARKETPLACE_DETAIL -> {
                         val marketplaceScreen = currentScreen as MARKETPLACE_DETAIL
                         ProductDetailScreen(
                             product = marketplaceScreen.product,
-                            onNavigateBack = { navigateBack() })
-                    }
+                            onNavigateBack = { navigateBack() },
+                    onNavigateToCart = { navigateTo(Screen.CART) },
+                        viewModel = marketPlaceViewModel,
+                    )
+                }
 
+                CART -> CartScreen(
+                    onCheckoutClick = { },
+                    onBackClick = { navigateBack() },
+                    viewModel = marketPlaceViewModel,
+                )
 
-                    CART -> CartScreen(onCheckoutClick = { }, onBackClick = { navigateBack() })
+                SCHEDULE_TEST_BOOKING -> {
+                    ScheduleTestBookingScreen(
+                        onNavigateBack = { navigateTo(TEST_BOOKING) },
+                        viewModel = marketPlaceViewModel,
+                    )
+                }
+
+                    TEST_BOOKING -> {
+                    TestBookingScreen(
+                        onNavigateBack = { navigateBack() },
+                        onNavigateToSchedule = {
+                            localTestList = localTestList + it
+                            navigateTo(SCHEDULE_TEST_BOOKING)
+                        },
+                        viewModel = testBookingViewModel,
+                        marketPlaceViewModel = marketPlaceViewModel,
+                    )
+                }
+
+                HOME -> {
+                    HomeScreen(
+                        onProfileClick = {
+                            navigateTo(PROFILE)
+                        },
+                        onChatClick = {
+                            navigateTo(CONVERSATION_LIST)
+                        },
+                        onMarketPlaceClick = { product ->
+                            navigateTo(MARKETPLACE_DETAIL(product))
+                        },
+                        onCartClick = {
+                            navigateTo(CART)
+                        },
+                        onBiomarkerFullReportClick = {
+                            biomarker = it ?: BloodData()
+                            navigateTo(BIOMARKER_FULL_REPORT)
+                        },
+                        onBiomarker = {
+                            biomarker = it ?: BloodData()
+                            navigateTo(BIOMARKERS_DETAIL)
+                        },
+                        healthDataViewModel = healthDataViewModel,
+                        preferenceViewModel = preferencesViewModel,
+                        recommendationsViewModel = recommendationsViewModel,
+                        marketPlaceViewModel = marketPlaceViewModel,
+                    )
+                }
 
                     BIOMARKERS_DETAIL -> {
                         BiomarkerDetailScreen(
@@ -127,29 +211,12 @@ fun HealthAnalyticsApp() {
                             }, biomarker = biomarker
                         )
                     }
+}
 
-                    HOME -> {
-                        HomeScreen(onProfileClick = {
-                            navigateTo(PROFILE)
-                        }, onChatClick = {
-                            navigateTo(CONVERSATION_LIST)
-                        }, onMarketPlaceClick = { product ->
-                            navigateTo(MARKETPLACE_DETAIL(product))
-                        }, onCartClick = {
-                            navigateTo(CART)
-                        }, onBiomarkerFullReportClick = {
-                            biomarker = it ?: BloodData()
-                            navigateTo(BIOMARKER_FULL_REPORT)
-                        }, onBiomarker = {
-                            biomarker = it ?: BloodData()
-                            navigateTo(BIOMARKERS_DETAIL)
-                        }, recommendationsViewModel = recommendationsViewModel)
-                    }
-                }
             }
 
             else -> {
-                OnboardContainer(
+                currentScreen = HOMEOnboardContainer(
                     onboardViewModel = onboardViewModel,
                     isLoggedIn = {
                         onboardViewModel.updateOnBoardState()
@@ -273,6 +340,9 @@ fun OnboardContainer(
 
 @Composable
 fun HomeScreen(
+    healthDataViewModel: HealthDataViewModel,
+    preferenceViewModel: PreferencesViewModel,
+    marketPlaceViewModel: MarketPlaceViewModel,
     onProfileClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
@@ -305,23 +375,42 @@ fun HomeScreen(
                 navigateTo(screen)
             })
     }) { paddingValues ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
-        ) {
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (currentScreen) {
+                MainScreen.DASHBOARD -> HealthDataScreen(
+                    healthDataViewModel,
+                    preferenceViewModel,
+                    onNavigateToDetail = { onBiomarker(it) })
 
-                MainScreen.DASHBOARD -> HealthDataScreen(onNavigateToDetail = { onBiomarker(it) })
-                MainScreen.RECOMMENDATIONS -> RecommendationsTabScreen(navigateBack = {
-                    navigateBack()
-                }, viewModel = recommendationsViewModel)
+//                MainScreen.RECOMMENDATIONS -> {
+//                    RecommendationsScreen(
+//                        navigateBack = { navigateBack() },
+//                        preferencesViewModel = preferenceViewModel,
+//                        viewModel = recommendationsViewModel,
+//                    )
+//                }
+
+                MainScreen.RECOMMENDATIONS -> {
+                    RecommendationsTabScreen(
+                        navigateBack = {
+                            navigateBack()
+                        },
+                        viewModel = recommendationsViewModel,
+                        preferencesViewModel = preferenceViewModel
+                    )
+                }
 
                 MainScreen.MARKETPLACE -> {
-                    MarketPlaceScreen(onProductClick = {
-                        onMarketPlaceClick(it)
-                        println("product -> Ha1$it")
-                    }, navigateBack = {
-                        navigateBack()
-                    })
+                    MarketPlaceScreen(
+                        onProductClick = {
+                            onMarketPlaceClick(it)
+                            println("product -> Ha1$it")
+                        },
+                        navigateBack = {
+                            navigateBack()
+                        },
+                        viewModel = marketPlaceViewModel,
+                    )
                 }
             }
         }

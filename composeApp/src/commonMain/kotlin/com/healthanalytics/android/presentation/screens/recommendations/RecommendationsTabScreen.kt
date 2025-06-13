@@ -11,9 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.BackHandler
+import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.actionplan.ActionPlanScreen
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
 
 enum class RecommendationsTab {
     RECOMMENDATIONS, ACTION_PLAN
@@ -22,6 +22,7 @@ enum class RecommendationsTab {
 @Composable
 fun RecommendationsTabScreen(
     viewModel: RecommendationsViewModel,
+    preferencesViewModel: PreferencesViewModel,
     navigateBack: () -> Unit,
 ) {
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
@@ -30,7 +31,10 @@ fun RecommendationsTabScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
-            selectedTabIndex = selectedTab.ordinal, modifier = Modifier.fillMaxWidth()
+            selectedTabIndex = selectedTab.ordinal,
+            containerColor = AppColors.Black,
+            contentColor=AppColors.white,
+            modifier = Modifier.fillMaxWidth()
         ) {
             RecommendationsTab.values().forEach { tab ->
                 Tab(selected = selectedTab == tab, onClick = {
@@ -47,8 +51,12 @@ fun RecommendationsTabScreen(
         }
 
         when (selectedTab) {
-            RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen(viewModel)
-            RecommendationsTab.ACTION_PLAN -> ActionPlanScreen(viewModel)
+            RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen(
+                viewModel = viewModel,
+                preferencesViewModel = preferencesViewModel,
+            )
+
+            RecommendationsTab.ACTION_PLAN -> ActionPlanScreen(viewModel, preferencesViewModel)
         }
     }
 } 

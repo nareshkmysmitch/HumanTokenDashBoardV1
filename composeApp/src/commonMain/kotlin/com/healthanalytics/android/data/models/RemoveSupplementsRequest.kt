@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RemoveSupplementsRequest(
     val medicine_id: String? = null,
-    val profile_id: String? = null,
     val action_id: String? = null,
     val recommendation_id: String? = null,
     val module: String? = null,

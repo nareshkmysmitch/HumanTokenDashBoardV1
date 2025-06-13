@@ -1,9 +1,11 @@
 package com.healthanalytics.android.presentation.screens.health
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.HealthDataUiState
+import io.ktor.util.reflect.instanceOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,13 +17,16 @@ import kotlin.time.Instant
 class HealthDataViewModel(
     private val apiService: ApiService,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(HealthDataUiState())
+    private val _uiState = MutableStateFlow(HealthDataUiState(isLoading = true))
     val uiState: StateFlow<HealthDataUiState> = _uiState.asStateFlow()
 
+    init {
+        println("view model initialized --> ${viewModelScope.hashCode()}, ${this.hashCode()}, ${this.instanceOf(HealthDataViewModel::class)}")
+    }
     @OptIn(ExperimentalTime::class)
     suspend fun loadHealthMetrics(accessToken: String) {
         try {
-            _uiState.update { it.copy(isLoading = true) }
+//            _uiState.update { it.copy(isLoading = true) }
             val metrics = apiService.getHealthMetrics(accessToken)
             _uiState.update {
                 it.copy(
