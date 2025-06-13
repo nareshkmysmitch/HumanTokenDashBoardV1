@@ -18,10 +18,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,6 +52,7 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.Dimensions.size12dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size16dp
+import com.healthanalytics.android.presentation.theme.Dimensions.size4dp
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 import kotlinx.datetime.Instant
@@ -155,6 +158,7 @@ fun HealthDataScreen(
 fun MetricCard(
     metric: BloodData?, onMetricClick: (BloodData) -> Unit = {},
 ) {
+    val symptomsReported = metric?.symptomsReported
     Column(
         modifier = Modifier.fillMaxWidth().padding(size12dp)
             .clickable { metric?.let { onMetricClick(it) } }
@@ -177,7 +181,7 @@ fun MetricCard(
             StatusChip(status = metric?.displayRating ?: "")
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -191,7 +195,7 @@ fun MetricCard(
                     color = AppColors.textPrimary,
                 )
                 Text(
-                    text = "  ${metric?.unit}",
+                    text = " ${metric?.unit}",
                     fontSize = FontSize.textSize14sp,
                     fontFamily = FontFamily.medium(),
                     color = AppColors.TextGrey,
@@ -201,11 +205,30 @@ fun MetricCard(
                 text = "Blood",
                 fontSize = FontSize.textSize14sp,
                 fontFamily = FontFamily.medium(),
+                textAlign = TextAlign.Center,
                 color = AppColors.textPrimary,
             )
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size8dp))
+        if (symptomsReported != null && symptomsReported > 0) {
+            Column(
+                modifier = Modifier.wrapContentSize()
+                    .background(
+                        color = Color(0xFF192D50),
+                        shape = RoundedCornerShape(50)
+                    ).padding(PaddingValues(vertical = size4dp, horizontal = Dimensions.size8dp))
+            ) {
+                Text(
+                    text = "${metric?.symptomsReported} symptoms reported",
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = Color(0xFF60a5fa),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Dimensions.size8dp))
+        }
 
         Text(
             text = "Last updated: ${formatDate(metric?.updatedAt ?: "")}",
