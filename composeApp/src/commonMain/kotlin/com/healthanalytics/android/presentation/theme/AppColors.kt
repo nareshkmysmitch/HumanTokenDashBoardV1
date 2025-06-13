@@ -50,5 +50,6 @@ object AppColors {
     val PurpleButtonBackground = Color(0XFF54414E)
     val secondary = Color(0xFF8B5CF6)
     val tertiary = Color(0xFF06B6D4)
+    val CardGrey = Color(0xFF1C1C1E)
 
 }

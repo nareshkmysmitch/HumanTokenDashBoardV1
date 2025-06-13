@@ -31,7 +31,7 @@ fun TopAppBar(
     TopAppBar(
         title = {
             Text(
-                text = title, fontWeight = FontWeight.Bold, color = AppColors.Black
+                text = title, fontWeight = FontWeight.Bold, color = AppColors.white
             )
         }, actions = {
             if (isChatVisible) {
@@ -40,7 +40,7 @@ fun TopAppBar(
                         imageVector = Icons.Default.Chat,
                         contentDescription = "Chat",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.Black
+                        tint = AppColors.white
                     )
                 }
             }
@@ -50,15 +50,15 @@ fun TopAppBar(
                         imageVector = endIcon,
                         contentDescription = "Profile",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.Black
+                        tint = AppColors.white
                     )
                 }
             }
         }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = AppColors.AppBackgroundColor,
-            navigationIconContentColor = AppColors.Black,
-            titleContentColor = AppColors.Black,
-            actionIconContentColor = AppColors.Black
+            containerColor = AppColors.Black,
+            navigationIconContentColor = AppColors.white,
+            titleContentColor = AppColors.white,
+            actionIconContentColor = AppColors.white
         ), modifier = modifier
     )
 }
