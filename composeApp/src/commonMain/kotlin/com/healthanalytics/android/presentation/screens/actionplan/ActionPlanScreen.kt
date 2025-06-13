@@ -271,7 +271,7 @@ fun ActionPlanCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+            containerColor = AppColors.white
         ),
     ) {
         Column(

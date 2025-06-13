@@ -1,31 +1,33 @@
-package com.healthanalytics.android.presentation.screens.onboard
+package com.healthanalytics.android.presentation.screens.onboard.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.models.onboard.AccountCreation
 import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
+import com.healthanalytics.android.data.models.onboard.AccountDetails
 import com.healthanalytics.android.data.models.onboard.AuthResponse
 import com.healthanalytics.android.data.models.onboard.CommunicationAddress
+import com.healthanalytics.android.data.models.onboard.GenerateOrderId
+import com.healthanalytics.android.data.models.onboard.GenerateOrderIdResponse
 import com.healthanalytics.android.data.models.onboard.OnboardUiState
 import com.healthanalytics.android.data.models.onboard.OtpResponse
+import com.healthanalytics.android.data.models.onboard.PaymentRequest
 import com.healthanalytics.android.data.models.onboard.Slot
 import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
 import com.healthanalytics.android.data.models.onboard.UpdateSlot
 import com.healthanalytics.android.data.models.onboard.VerifyOtp
 import com.healthanalytics.android.data.repositories.PreferencesRepository
+import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
 
 class OnboardViewModel(
@@ -35,18 +37,13 @@ class OnboardViewModel(
 
     private var phoneNumber: String = ""
     private var mh: String = ""
-    private var firstName: String = ""
-    private var lastName: String = ""
-    private var email: String = ""
-    private var dob: String = ""
-    private var selectedGender: String = ""
-    private var weight: String = ""
-    private var height: String = ""
     private var leadId = ""
     private var accessToken = ""
 
+    private var accountDetails: AccountDetails? = null
     private var communicationAddress: CommunicationAddress? = null
     private var otpVerifiedResponse: OtpResponse? = null
+    private var generateOrderIdResponse: GenerateOrderIdResponse? = null
 
     private val _loginState = MutableSharedFlow<Resource<AuthResponse?>>()
     val loginState: SharedFlow<Resource<AuthResponse?>> = _loginState
@@ -68,13 +65,18 @@ class OnboardViewModel(
     private val _onBoardUiState = MutableStateFlow(OnboardUiState())
     val onBoardUiState: StateFlow<OnboardUiState> = _onBoardUiState
 
+    private val _paymentStatus = MutableSharedFlow<Resource<OtpResponse?>>()
+    val paymentStatus: SharedFlow<Resource<OtpResponse?>> = _paymentStatus
+
     fun getPhoneNumber() = phoneNumber
+
+    fun getGeneratedOrderDetail() = generateOrderIdResponse
 
     init {
         getAccessTokenFromDataStore()
     }
 
-    fun updateOnBoardState(){
+    fun updateOnBoardState() {
         _onBoardUiState.update {
             it.copy(
                 isLoading = false,
@@ -122,22 +124,12 @@ class OnboardViewModel(
 
     fun getAccessToken() = accessToken
 
-    fun saveAccountDetails(firstName: String, lastName: String, email: String) {
-        this.firstName = firstName
-        this.lastName = lastName
-        this.email = email
-    }
+    fun getAccountDetails() = accountDetails
 
-    fun saveProfileDetails(
-        selectedDate: String,
-        selectedGender: String,
-        weight: String,
-        height: String
-    ) {
-        dob = selectedDate
-        this.selectedGender = selectedGender
-        this.weight = weight
-        this.height = height
+    fun getAddressDetails() = communicationAddress
+
+    fun saveAccountDetails(accountDetails: AccountDetails) {
+        this.accountDetails = accountDetails
     }
 
     fun sendOTP(phoneNumber: String) {
@@ -197,14 +189,14 @@ class OnboardViewModel(
                     preferencesRepository.saveAccessToken(otpVerifiedResponse.access_token)
                     preferencesRepository.saveIsLogin(true)
                 }
-                
+
                 // Save user details from PiiUser
                 otpVerifiedResponse.pii_user?.let { user ->
                     // Save basic user info
                     user.name?.let { preferencesRepository.saveUserName(it) }
                     user.email?.let { preferencesRepository.saveUserEmail(it) }
                     user.mobile?.let { preferencesRepository.saveUserPhone(it) }
-                    
+
                     // Save communication address if available
                     user.communication_address?.let { address ->
                         address.address_line_1?.let { preferencesRepository.saveUserAddress(it) }
@@ -213,7 +205,7 @@ class OnboardViewModel(
                         address.city?.let { preferencesRepository.saveUserDistrict(it) }
                         address.country?.let { preferencesRepository.saveUserCountry(it) }
                     }
-                    
+
                     // If communication address is not available, try billing address
                     if (user.communication_address == null) {
                         user.billing_address?.let { address ->
@@ -233,12 +225,12 @@ class OnboardViewModel(
         this.communicationAddress = communicationAddress
         val accountCreation = AccountCreation(
             mobile = phoneNumber,
-            first_name = firstName,
-            last_name = lastName,
-            email = email,
-            gender = selectedGender.lowercase(),
-            height = height,
-            weight = weight,
+            first_name = accountDetails?.firstName ?: "",
+            last_name = accountDetails?.lastName ?: "",
+            email = accountDetails?.email ?: "",
+            gender = accountDetails?.gender?.lowercase() ?: "",
+            height = accountDetails?.height ?: "",
+            weight = accountDetails?.weight ?: "",
             country_code = "91",
             communication_address = communicationAddress
         )
@@ -250,7 +242,6 @@ class OnboardViewModel(
                 _accountCreationState.emit(Resource.Success(response))
             } catch (_: Exception) {
                 _accountCreationState.emit(Resource.Error(errorMessage = "Something went wrong..."))
-
             }
         }
     }
@@ -260,7 +251,7 @@ class OnboardViewModel(
         val slotRequest = SlotRequest(
             date = selectedDate,
             lead_id = leadId,
-            user_timezone = TimeZone.currentSystemDefault().toString()
+            user_timezone = TimeZone.Companion.currentSystemDefault().toString()
         )
 
         viewModelScope.launch {
@@ -283,8 +274,47 @@ class OnboardViewModel(
             try {
                 val response = onboardApiService.updateSlot(updateSlot)
                 _updateSlot.emit(Resource.Success(response))
+                generateOrderId()
             } catch (_: Exception) {
                 _updateSlot.emit(Resource.Error(errorMessage = "Something went wrong..."))
+            }
+        }
+    }
+
+    fun generateOrderId() {
+        //todo remove hardcoded values
+        val generateOrderId = GenerateOrderId(
+            lead_id = leadId,
+            coupon_code = "null"
+        )
+
+//        "5d3c488f-db1f-445e-8054-8f161b28886f"
+
+        viewModelScope.launch {
+            try {
+                val response = onboardApiService.generateOrderId(generateOrderId)
+                if (response != null) {
+                    generateOrderIdResponse = response
+                    println("generateOrderId....$generateOrderIdResponse")
+                }
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    fun getPaymentStatus(orderId: String) {
+        val paymentRequest = PaymentRequest(
+            payment_order_id = orderId,
+            lead_id = leadId,
+            coupon_code = "null"
+        )
+
+        viewModelScope.launch {
+            try {
+                val response = onboardApiService.getPaymentStatus(paymentRequest)
+                _paymentStatus.emit(Resource.Success(response))
+            } catch (_: Exception) {
+                _paymentStatus.emit(Resource.Error(errorMessage = "Something went wrong..."))
             }
         }
     }

@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -56,6 +57,8 @@ kotlin {
 //        binaries.executable()
 //    }
 
+
+
     sourceSets {
 //        val desktopMain by getting
         androidMain.dependencies {
@@ -64,6 +67,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.razorpay.checkout)
         }
 
         commonMain.dependencies {
@@ -105,6 +109,9 @@ kotlin {
             api(libs.androidx.datastore.preferences)
             api(libs.androidx.datastore.preferences.core)
 
+            implementation(compose.components.resources)
+
+
         }
 
         nativeMain.dependencies {
@@ -119,6 +126,7 @@ kotlin {
 //            implementation(libs.kotlinx.coroutinesSwing)
 //        }
     }
+
 }
 
 android {
@@ -163,6 +171,16 @@ dependencies {
 //        }
 //    }
 //}
+
+compose.resources {
+    publicResClass = true
+    generateResClass = auto
+
+    customDirectory(
+        sourceSetName = "iosMain",
+        directoryProvider = provider { layout.projectDirectory.dir("composeResources") }
+    )
+}
 
 
 //            implementation("moe.tlaster:precompose:1.5.0-beta02")

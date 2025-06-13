@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Man
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -54,9 +53,7 @@ import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,14 +138,14 @@ fun ProfileScreen(
 
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppColors.Black,
-                    navigationIconContentColor = AppColors.White,
-                    titleContentColor = AppColors.White
+                    navigationIconContentColor = AppColors.white,
+                    titleContentColor = AppColors.white
                 ),
 
                 title = {
                     Text(
                         text = if (isEditing) "Edit Profile" else "Your Profile",
-                        color = AppColors.White,
+                        color = AppColors.white,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -164,7 +161,7 @@ fun ProfileScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.White,
+                            tint = AppColors.white,
                             modifier = Modifier.size(24.dp)
                         )
                     }

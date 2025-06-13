@@ -130,7 +130,7 @@ fun RecommendationCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White // Replace with your desired color
+            containerColor = AppColors.white // Replace with your desired color
         ),
     ) {
         Column(

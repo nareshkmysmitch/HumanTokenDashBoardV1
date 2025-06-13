@@ -6,21 +6,43 @@ object AppStrings {
     const val appName = "Deep Holistics"
     
     // Login screen
-    const val loginTitle = "Login to your"
+    const val LOGIN_TITLE = "Login to your"
     const val loginSubtitle = "Human Token Dashboard"
-    const val phoneNumberLabel = "PHONE NUMBER"
+    const val PHONE_NUMBER = "PHONE NUMBER"
     const val phoneNumberPlaceholder = "Enter your phone number"
     const val countryCode = "+91"
     const val continueButton = "Continue"
     
     // Common
     const val loading = "Loading..."
-    const val retry = "Retry"
-    const val cancel = "Cancel"
-    const val ok = "OK"
-    
-    // Error messages
-    const val errorGeneric = "Something went wrong. Please try again."
-    const val errorNetwork = "Network error. Please check your connection."
-    const val errorInvalidPhone = "Please enter a valid phone number."
+
+
+    const val LOGIN = "Login"
+    const val CONFIRM_YOUR_PHONE = "Confirm your phone"
+    const val WE_VE_SENT_A_SECURITY_CODE_TO = "We've sent a security code to"
+    const val CONTINUE = "Continue"
+    const val YOU_CAN_RESEND_THE_CODE_IN = "You can resend the code in"
+    const val RESEND_CODE = "Resend code"
+    const val CREATE_ACCOUNT = "Create account"
+    const val SAMPLE_COLLECTION_ADDRESS = "Sample collection address "
+    const val SCHEDULE = "Schedule"
+    const val PAYMENT = "Payment"
+    const val SCHEDULE_YOUR_BLOOD_TEST = "Schedule your blood test"
+    const val FASTING_TEST = "Fasting test"
+    const val SCHEDULE_YOUR_BLOOD_TEST_DESCRIPTION = "Get started with 100+ advanced biomarkers measuring everything from energy and mood-related markers to cancers, heart diseases and more. We connect the dots across your entire health profile."
+
+    const val CONFIRM = "Confirm"
+    const val CANCEL = "Cancel"
+
+    const val FIRST_NAME = "First name"
+    const val LAST_NAME = "Last name"
+    const val EMAIL = "Email"
+    const val DOB = "Date of birth"
+    const val GENDER = "Gender"
+    const val WEIGHT = "Weight (KG)"
+    const val HEIGHT = "Height (CM)"
+    const val STREET_ADDRESS = "Street address"
+    const val CITY = "City"
+    const val STATE = "State"
+    const val PIN_CODE = "Pincode"
 }

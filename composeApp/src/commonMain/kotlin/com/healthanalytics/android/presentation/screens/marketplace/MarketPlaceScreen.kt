@@ -63,7 +63,6 @@ import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,7 +215,7 @@ private fun ProductCard(
         },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+            containerColor = AppColors.white
         ),
     ) {
         Column {

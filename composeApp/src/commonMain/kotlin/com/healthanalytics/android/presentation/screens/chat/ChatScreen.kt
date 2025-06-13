@@ -204,7 +204,7 @@ private fun ChatMessage(
     }
 
     val contentColor = if (isUserMessage) {
-        AppColors.White
+        AppColors.white
     } else {
         AppColors.Black
     }
@@ -264,8 +264,8 @@ private fun ChatInput(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = AppColors.DarkPurple,
                     unfocusedBorderColor = AppColors.DarkPurple.copy(alpha = 0.5f),
-                    focusedContainerColor = AppColors.White,
-                    unfocusedContainerColor = AppColors.White
+                    focusedContainerColor = AppColors.white,
+                    unfocusedContainerColor = AppColors.white
                 )
             )
 
