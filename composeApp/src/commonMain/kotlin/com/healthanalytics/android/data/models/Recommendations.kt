@@ -81,7 +81,7 @@ data class UserRecommendationAction(
 enum class RecommendationCategory(val icon: String) {
     ACTIVITY("🏃"),
     NUTRITION("🍽️"),
-    SLEEP("🛌"),
+    SLEEP("💤"),
     STRESS("😰"),
     SUPPLEMENTS("💊"),
     RECOVERY("♻️");

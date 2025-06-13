@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.actionplan.ActionPlanScreen
+import com.healthanalytics.android.presentation.theme.AppColors
 
 enum class RecommendationsTab {
     RECOMMENDATIONS, ACTION_PLAN
@@ -30,7 +31,10 @@ fun RecommendationsTabScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
-            selectedTabIndex = selectedTab.ordinal, modifier = Modifier.fillMaxWidth()
+            selectedTabIndex = selectedTab.ordinal,
+            containerColor = AppColors.Black,
+            contentColor=AppColors.white,
+            modifier = Modifier.fillMaxWidth()
         ) {
             RecommendationsTab.values().forEach { tab ->
                 Tab(selected = selectedTab == tab, onClick = {
@@ -50,7 +54,6 @@ fun RecommendationsTabScreen(
             RecommendationsTab.RECOMMENDATIONS -> RecommendationsScreen(
                 viewModel = viewModel,
                 preferencesViewModel = preferencesViewModel,
-                navigateBack = navigateBack
             )
 
             RecommendationsTab.ACTION_PLAN -> ActionPlanScreen(viewModel, preferencesViewModel)
