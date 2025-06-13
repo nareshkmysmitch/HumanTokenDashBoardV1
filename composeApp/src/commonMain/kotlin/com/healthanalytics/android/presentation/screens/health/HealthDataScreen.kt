@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.Dimensions.size12dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size16dp
 import com.healthanalytics.android.presentation.theme.FontFamily
@@ -111,7 +112,7 @@ fun HealthDataScreen(
                         selected = uiState.selectedFilter == filter,
                         onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color(0xFFF524A1),
+                            selectedContainerColor = AppColors.DarkPink,
                         ),
                         label = {
                             Text(
@@ -133,8 +134,7 @@ fun HealthDataScreen(
                 colors = CardDefaults.cardColors(containerColor = AppColors.CardGrey),
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(Dimensions.size10dp)
                 ) {
                     val lastPosition = filteredMetrics.size.minus(1)
                     items(filteredMetrics) { metric ->

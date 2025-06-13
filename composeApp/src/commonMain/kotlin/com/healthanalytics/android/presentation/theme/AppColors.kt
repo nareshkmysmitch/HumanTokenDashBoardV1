@@ -51,5 +51,6 @@ object AppColors {
     val secondary = Color(0xFF8B5CF6)
     val tertiary = Color(0xFF06B6D4)
     val CardGrey = Color(0xFF1C1C1E)
+    val DarkPink = Color(0xFFF524A1)
 
 }
