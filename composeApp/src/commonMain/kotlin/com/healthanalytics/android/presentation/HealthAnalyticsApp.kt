@@ -133,6 +133,7 @@ fun HealthAnalyticsApp() {
                     ProductDetailScreen(
                         product = marketplaceScreen.product,
                         onNavigateBack = { navigateBack() },
+                        onNavigateToCart = { navigateTo(Screen.CART) },
                         viewModel = marketPlaceViewModel,
                     )
                 }

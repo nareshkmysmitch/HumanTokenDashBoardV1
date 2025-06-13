@@ -2,8 +2,6 @@ package com.example.humantoken.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +22,7 @@ import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Message
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
@@ -72,16 +71,17 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
-    product: Product, onNavigateBack: () -> Unit, viewModel: MarketPlaceViewModel,
+    product: Product, onNavigateBack: () -> Unit,onNavigateToCart: () -> Unit, viewModel: MarketPlaceViewModel,
 ) {
     val scrollState = rememberScrollState()
-    var quantity by remember { mutableStateOf(1) }
     var selectedTab by remember { mutableStateOf(1) }
 
     // Collect states
     val cartActionState by viewModel.cartActionState.collectAsState()
     val productDetailsState by viewModel.productDetailsState.collectAsState()
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
+
+    var buttonText by remember { mutableStateOf("Add to Cart") }
 
     // Fetch product details when the screen is first shown
     LaunchedEffect(Unit) {
@@ -92,10 +92,12 @@ fun ProductDetailScreen(
     LaunchedEffect(cartActionState) {
         when (cartActionState) {
             is CartActionState.Success -> {
+                buttonText = "Successfully added to cart"
                 snackbarMessage = (cartActionState as CartActionState.Success).message
             }
 
             is CartActionState.Error -> {
+                buttonText = "Failed to add to cart \n Try again"
                 snackbarMessage = (cartActionState as CartActionState.Error).message
             }
 
@@ -147,6 +149,16 @@ fun ProductDetailScreen(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = { onNavigateToCart() }) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "shopping cart",
+                            tint = AppColors.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
             )
         },
     ) { paddingValues ->
@@ -269,7 +281,8 @@ fun ProductDetailScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    /*
+                                        Spacer(modifier = Modifier.height(24.dp))
 
                     // Quantity Selector
                     Row(
@@ -284,7 +297,7 @@ fun ProductDetailScreen(
                             modifier = Modifier.clip(
                                 RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
                             ).clickable(onClick = { if (quantity > 1) quantity-- })
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                                    .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = "−",
@@ -305,7 +318,7 @@ fun ProductDetailScreen(
                         Box(
                             modifier = Modifier.clip(
                                 RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
-                            )
+                                                )
                                 .clickable(onClick = { currentProduct.stock?.let { if (quantity < it) quantity++ } })
                                 .padding(horizontal = 8.dp, vertical = 8.dp)
                         ) {
@@ -316,18 +329,20 @@ fun ProductDetailScreen(
                                 modifier = Modifier.padding(horizontal = 12.dp)
                             )
                         }
-                    }
+                    }*/
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Add to Cart Button
                     Button(
                         onClick = {
-                            val productId = currentProduct.product_id
-                            val variantId = currentProduct.variants?.firstOrNull()?.variant_id
-                            productId?.let { productId ->
-                                variantId?.let { variantId ->
-                                    viewModel.addToCart(productId, variantId)
+                            if (buttonText != "Successfully added to cart") {
+                                val productId = currentProduct.product_id
+                                val variantId = currentProduct.variants?.firstOrNull()?.variant_id
+                                productId?.let { productId ->
+                                    variantId?.let { variantId ->
+                                        viewModel.addToCart(productId, variantId)
+                                    }
                                 }
                             }
                         },
@@ -337,10 +352,23 @@ fun ProductDetailScreen(
                         )
                     ) {
                         Text(
-                            text = "Add to Cart", modifier = Modifier.padding(vertical = 8.dp)
+                            text = buttonText, modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 
+                    // Show snackbar if there's a message
+//                    snackbarMessage?.let { message ->
+//                        Snackbar(
+//                            modifier = Modifier.padding(16.dp),
+//                            action = {
+//                                TextButton(onClick = { snackbarMessage = null }) {
+//                                    Text("Dismiss")
+//                                }
+//                            }
+//                        ) {
+//                            Text(message)
+//                        }
+//                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 
