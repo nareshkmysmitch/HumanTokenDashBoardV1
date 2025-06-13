@@ -28,4 +28,16 @@ data class Symptom(
     val category: String? = null,
     val created_at: String? = null,
     val updated_at: String? = null
+)
+
+@Serializable
+data class SubmitSymptomsResponse(
+    val status: String? = null,
+    val message: String? = null,
+    val data: SubmitSymptomsData? = null
+)
+
+@Serializable
+data class SubmitSymptomsData(
+    val isAdded: Boolean? = null
 ) 

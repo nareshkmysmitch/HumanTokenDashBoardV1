@@ -211,7 +211,8 @@ fun HealthAnalyticsApp() {
                 Screen.SYMPTOMS -> {
                     SymptomsScreen(
                         onNavigateBack = { navigateBack() },
-                        viewModel = symptomsViewModel
+                        viewModel = symptomsViewModel,
+                        onNavigateHome = { navigateTo(HOME) }
                     )
                 }
             }

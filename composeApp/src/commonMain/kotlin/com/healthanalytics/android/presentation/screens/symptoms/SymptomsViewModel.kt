@@ -26,6 +26,8 @@ class SymptomsViewModel(
     val state: StateFlow<SymptomsState> = _state.asStateFlow()
 
     private val _accessToken = MutableStateFlow<String?>(null)
+    private val _submitSuccess = MutableStateFlow<Boolean?>(null)
+    val submitSuccess: StateFlow<Boolean?> = _submitSuccess
 
     init {
         viewModelScope.launch {
@@ -87,6 +89,17 @@ class SymptomsViewModel(
     fun clearSelectedSymptoms() {
         _state.update { currentState ->
             currentState.copy(selectedSymptoms = emptySet())
+        }
+    }
+
+    fun submitSelectedSymptoms() {
+        viewModelScope.launch {
+            val token = _accessToken.value ?: return@launch
+            val ids = state.value.selectedSymptoms.toList()
+            _state.update { it.copy(isLoading = true) }
+            val success = api.submitSymptoms(token, ids)
+            _state.update { it.copy(isLoading = false) }
+            _submitSuccess.value = success
         }
     }
 } 

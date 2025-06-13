@@ -55,9 +55,18 @@ import com.healthanalytics.android.presentation.theme.FontSize
 @Composable
 fun SymptomsScreen(
     viewModel: SymptomsViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateHome: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val submitSuccess by viewModel.submitSuccess.collectAsState()
+
+    LaunchedEffect(submitSuccess) {
+        if (submitSuccess == true) {
+            onNavigateHome()
+            viewModel.clearSelectedSymptoms()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadSymptoms()
@@ -174,13 +183,12 @@ fun SymptomsScreen(
                 // Bottom Bar with Submit Button
                 if (viewModel.getSelectedSymptomsCount() > 0) {
                     Column(
-//                        modifier = Modifier.padding(Dimensions.size20dp),
                         modifier = Modifier.background(AppColors.Transparent),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Button(
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = { /* Handle submit */ },
+                            onClick = { viewModel.submitSelectedSymptoms() },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = AppColors.primary
                             ),

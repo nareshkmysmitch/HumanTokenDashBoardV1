@@ -12,6 +12,7 @@ import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.data.models.RemoveRecommendationResponse
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
+import com.healthanalytics.android.data.models.SubmitSymptomsResponse
 import com.healthanalytics.android.data.models.Symptom
 import com.healthanalytics.android.data.models.SymptomResponse
 import com.healthanalytics.android.data.models.SymptomsWrapper
@@ -32,6 +33,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.encodeToJsonElement
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
@@ -80,6 +83,8 @@ interface ApiService {
     ): BiomarkerReportData?
 
     suspend fun getSymptoms(accessToken: String): List<Symptom>?
+
+    suspend fun submitSymptoms(accessToken: String, symptomIds: List<String>): Boolean
 }
 
 
@@ -366,6 +371,30 @@ class ApiServiceImpl(
             println("Error handling symptoms response: ${e.message}")
             e.printStackTrace()
             return null
+        }
+    }
+
+    override suspend fun submitSymptoms(accessToken: String, symptomIds: List<String>): Boolean {
+        val requestBody = buildJsonObject {
+            put("symptom_ids", Json.encodeToJsonElement(symptomIds))
+        }
+        val encryptedRequest = requestBody.toEncryptedRequestBody()
+        try {
+            val response = httpClient.post("v4/human-token/symptom") {
+                header("access_token", accessToken)
+                setBody(encryptedRequest)
+            }
+            val responseBody = response.bodyAsText()
+            val encryptedResponse = json.decodeFromString<EncryptedResponse>(responseBody)
+            val productResponse = EncryptionUtils.handleDecryptionResponse<SubmitSymptomsResponse>(
+                """{"status":"${encryptedResponse.status}","message":"${encryptedResponse.message}","data":"${encryptedResponse.data}"}"""
+            )
+            println("Symptoms response --> Raw $encryptedResponse ${productResponse}")
+            return encryptedResponse.status == "success"
+        } catch (e: Exception) {
+            println("Error handling symptoms response: ${e.message}")
+            e.printStackTrace()
+            return false
         }
     }
 }
