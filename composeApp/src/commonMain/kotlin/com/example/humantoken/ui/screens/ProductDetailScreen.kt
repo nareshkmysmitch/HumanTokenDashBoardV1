@@ -182,7 +182,7 @@ fun ProductDetailScreen(
                                 contentDescription = currentProduct.name,
                                 contentScale = ContentScale.FillWidth,
                                 modifier = Modifier.fillMaxWidth().height(300.dp)
-                                    .padding(top = 16.dp)
+                                    .padding(top = 32.dp)
                             )
                         }
                     }
@@ -257,8 +257,9 @@ fun ProductDetailScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Tags
+
                     Row(
+                        Modifier.padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         currentProduct.tags?.forEach { tag ->
@@ -272,18 +273,16 @@ fun ProductDetailScreen(
 
                     // Quantity Selector
                     Row(
-                        modifier = Modifier.border(
-                            width = 1.dp, color = Color(0xFF1C1B1F), shape = RoundedCornerShape(
-                                12.dp
-                            )
-                        ).clip(RoundedCornerShape(12.dp)).padding(horizontal = 16.dp),
+                        modifier = Modifier.padding(horizontal = 24.dp).border(
+                            width = 1.dp,
+                            color = Color(0xFF1C1B1F),
+                            shape = RoundedCornerShape(12.dp)
+                        ).clip(RoundedCornerShape(12.dp)),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier.clip(
-                                RoundedCornerShape(
-                                    topStart = 8.dp, bottomStart = 8.dp
-                                )
+                                RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
                             ).clickable(onClick = { if (quantity > 1) quantity-- })
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
@@ -291,7 +290,7 @@ fun ProductDetailScreen(
                                 text = "−",
                                 fontSize = 20.sp,
                                 color = Color.Black,
-                                modifier = Modifier.padding(horizontal = 12.dp)
+                                modifier = Modifier
                             )
                         }
                         Box(
@@ -305,12 +304,10 @@ fun ProductDetailScreen(
                         }
                         Box(
                             modifier = Modifier.clip(
-                                RoundedCornerShape(
-                                    topEnd = 8.dp, bottomEnd = 8.dp
-                                )
+                                RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
                             )
                                 .clickable(onClick = { currentProduct.stock?.let { if (quantity < it) quantity++ } })
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .padding(horizontal = 8.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = "+",
@@ -362,6 +359,7 @@ fun ProductDetailScreen(
                     currentProduct.stock?.let {
                         if (it > 0) {
                             Row(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
