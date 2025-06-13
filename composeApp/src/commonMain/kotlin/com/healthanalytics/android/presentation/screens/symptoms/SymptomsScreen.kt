@@ -229,7 +229,7 @@ private fun CategoryCard(
                 Icon(
                     imageVector = Icons.Default.MonitorHeart, // Replace with appropriate category icon
                     contentDescription = null,
-                    tint = Color(0xFF8B5CF6),
+                    tint = AppColors.BlueButton,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
