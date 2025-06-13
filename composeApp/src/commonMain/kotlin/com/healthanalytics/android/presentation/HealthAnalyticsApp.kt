@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -103,7 +102,7 @@ fun HealthAnalyticsApp() {
         val testBookingViewModel: TestBookingViewModel = koinInject<TestBookingViewModel>()
         val chatViewModel: ChatViewModel = koinInject<ChatViewModel>()
         val symptomsViewModel: SymptomsViewModel = koinInject<SymptomsViewModel>()
-    val recommendationsViewModel: RecommendationsViewModel =
+        val recommendationsViewModel: RecommendationsViewModel =
             koinInject<RecommendationsViewModel>()
         val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
         var localTestList by remember { mutableStateOf<List<Product>>(emptyList()) }
@@ -178,21 +177,27 @@ fun HealthAnalyticsApp() {
                     HOME -> {
                         HomeScreen(
                             onProfileClick = {
-        //                        navigateTo(PROFILE)
-                            navigateTo(Screen.SYMPTOMS)
-                    }, onChatClick = {
-                        navigateTo(CONVERSATION_LIST)
-                    }, onMarketPlaceClick = { product ->
-                        navigateTo(MARKETPLACE_DETAIL(product))
-                    }, onCartClick = {
-                        navigateTo(CART)
-                    }, onBiomarkerFullReportClick = {
-                        biomarker = it ?: BloodData()
-                        navigateTo(BIOMARKER_FULL_REPORT)
-                    }, onBiomarker = {
-                        biomarker = it ?: BloodData()
-                        navigateTo(BIOMARKERS_DETAIL)
-                    },healthDataViewModel = healthDataViewModel,
+                                //                        navigateTo(PROFILE)
+                                navigateTo(Screen.SYMPTOMS)
+                            },
+                            onChatClick = {
+                                navigateTo(CONVERSATION_LIST)
+                            },
+                            onMarketPlaceClick = { product ->
+                                navigateTo(MARKETPLACE_DETAIL(product))
+                            },
+                            onCartClick = {
+                                navigateTo(CART)
+                            },
+                            onBiomarkerFullReportClick = {
+                                biomarker = it ?: BloodData()
+                                navigateTo(BIOMARKER_FULL_REPORT)
+                            },
+                            onBiomarker = {
+                                biomarker = it ?: BloodData()
+                                navigateTo(BIOMARKERS_DETAIL)
+                            },
+                            healthDataViewModel = healthDataViewModel,
                             preferenceViewModel = preferencesViewModel,
                             recommendationsViewModel = recommendationsViewModel,
                             marketPlaceViewModel = marketPlaceViewModel,
@@ -206,23 +211,22 @@ fun HealthAnalyticsApp() {
                             onNavigateFullReport = { navigateTo(BIOMARKER_FULL_REPORT) })
                     }
 
-                BIOMARKER_FULL_REPORT -> {
-                    BioMarkerFullReportScreen(
-                        onNavigateBack = {
-                            navigateBack()
-                        }, biomarker = biomarker
-                    )
-                }
+                    BIOMARKER_FULL_REPORT -> {
+                        BioMarkerFullReportScreen(
+                            onNavigateBack = {
+                                navigateBack()
+                            }, biomarker = biomarker
+                        )
+                    }
 
-                Screen.SYMPTOMS -> {
-                    SymptomsScreen(
-                        onNavigateBack = { navigateBack() },
-                        viewModel = symptomsViewModel,
-                        onNavigateHome = { navigateTo(HOME) }
-                    )
-                }
-            }
-        }
+                    Screen.SYMPTOMS -> {
+                        SymptomsScreen(
+                            onNavigateBack = { navigateBack() },
+                            viewModel = symptomsViewModel,
+                            onNavigateHome = { navigateTo(HOME) }
+                        )
+                    }
+
                     BIOMARKER_FULL_REPORT -> {
                         BioMarkerFullReportScreen(
                             onNavigateBack = {
@@ -231,10 +235,10 @@ fun HealthAnalyticsApp() {
                         )
                     }
                 }
-
             }
+
             else -> {
-            OnboardContainer(
+                OnboardContainer(
                     onboardViewModel = onboardViewModel,
                     isLoggedIn = {
                         onboardViewModel.updateOnBoardState()
