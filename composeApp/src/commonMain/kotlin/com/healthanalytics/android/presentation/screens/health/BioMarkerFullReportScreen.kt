@@ -149,7 +149,7 @@ fun BioMarkerFullReportScreen(
 @Composable
 private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
     AppCard(
-        modifier = Modifier.fillMaxWidth().padding(16.dp).background(AppColors.White),
+        modifier = Modifier.fillMaxWidth().padding(16.dp).background(AppColors.white),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp)
@@ -353,7 +353,7 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = AppColors.White
+                    containerColor = AppColors.white
                 ),
             ) {
                 Row(
@@ -392,7 +392,7 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = AppColors.White
+                    containerColor = AppColors.white
                 ),
             ) {
                 Row(

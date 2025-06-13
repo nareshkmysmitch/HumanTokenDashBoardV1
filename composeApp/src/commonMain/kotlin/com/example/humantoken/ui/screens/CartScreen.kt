@@ -54,6 +54,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Variant
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
@@ -61,7 +62,6 @@ import com.healthanalytics.android.presentation.screens.marketplace.CartActionSt
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
@@ -85,7 +85,7 @@ data class Product(
     val is_active: Boolean? = null,
     val type: String? = null,
     val created_at: String? = null,
-    val updated_at: String? = null
+    val updated_at: String? = null,
 )
 
 @Serializable
@@ -111,7 +111,7 @@ data class Cart(
     val type: String? = null,
     val created_at: String? = null,
     val updated_at: String? = null,
-    val cart_items: List<CartItem>? = null
+    val cart_items: List<CartItem>? = null,
 )
 
 @Serializable
@@ -134,53 +134,46 @@ fun CartScreen(
     onBackClick: () -> Unit,
     onCheckoutClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel = koinInject(),
+    viewModel: MarketPlaceViewModel,
 ) {
     var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
+    val cartListFlow by viewModel.cartListFlow.collectAsStateWithLifecycle()
+    val cartActionState by viewModel.cartActionState.collectAsStateWithLifecycle()
 
     BackHandler(enabled = true) {
         onBackClick()
     }
     LaunchedEffect(Unit) {
         viewModel.getCartList()
-        viewModel.cartListFlow.collectLatest { state ->
-            when (state) {
-                is CartListState.Success -> {
-                    cartItems = state.cartList.flatMap { cart ->
-                        cart.cart_items ?: emptyList()
-                    }
-                    isLoading = false
-                }
-                is CartListState.Error -> {
-                    error = state.message
-                    isLoading = false
-                }
-                is CartListState.Loading -> {
-                    isLoading = true
-                }
+    }
+    when(cartListFlow){
+        is CartListState.Success -> {
+            cartItems = (cartListFlow as CartListState.Success).cartList.flatMap { cart ->
+                cart.cart_items ?: emptyList()
             }
+            isLoading = false
+        }
+        is CartListState.Error -> {
+            error = (cartListFlow as CartListState.Error).message
+            isLoading = false
+        }
+        is CartListState.Loading -> {
+            isLoading = true
         }
     }
 
-    // Collect cart action state for showing feedback
-    LaunchedEffect(Unit) {
-        viewModel.cartActionState.collectLatest { state ->
-            when (state) {
-                is CartActionState.Success -> {
-                    if (state.message.isNotEmpty()) {
-                        snackbarMessage = state.message
-                    }
-                }
-                is CartActionState.Error -> {
-                    snackbarMessage = state.message
-                }
-                is CartActionState.Loading -> {
-                    // Handle loading if needed
-                }
-            }
+    when(cartActionState){
+        is CartActionState.Success -> {
+            snackbarMessage = (cartActionState as CartActionState.Success).message
+        }
+        is CartActionState.Error -> {
+            snackbarMessage = (cartActionState as CartActionState.Error).message
+        }
+        is CartActionState.Loading -> {
+            // Handle loading if needed
         }
     }
 
@@ -326,13 +319,14 @@ private fun CartItemCard(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val quantity = item.quantity ?: 1
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White // Replace with your desired color
+            containerColor = AppColors.white // Replace with your desired color
         ),
     ) {
         Row(
@@ -372,18 +366,18 @@ private fun CartItemCard(
             // Quantity Controls
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 IconButton(
                     onClick = onQuantityDecrease,
                     modifier = Modifier
-                        .size(32.dp)
-                        .background(Color(0xFF1C1B1F), CircleShape)
+                        .size(24.dp)
+                        .background(if(quantity > 1) Color.Black else Color.LightGray, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
                         contentDescription = "Decrease quantity",
-                        tint = Color.White,
+                        tint = if (quantity > 1) Color.White else Color.Gray,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -398,7 +392,7 @@ private fun CartItemCard(
                 IconButton(
                     onClick = onQuantityIncrease,
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(24.dp)
                         .background(Color(0xFF1C1B1F), CircleShape)
                 ) {
                     Icon(
@@ -442,7 +436,7 @@ private fun OrderSummary(
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+            containerColor = AppColors.white
         ),
     ) {
         Column(

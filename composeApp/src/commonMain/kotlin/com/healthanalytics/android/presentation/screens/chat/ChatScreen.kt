@@ -56,7 +56,7 @@ fun ChatScreen(
     conversationId: String,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = koinInject()
+    viewModel: ChatViewModel,
 ) {
     val uiState by viewModel.chatState.collectAsState()
     val messageInput by viewModel.messageInput.collectAsState()
@@ -96,7 +96,7 @@ fun ChatScreen(
             }, navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
-                        Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.White
+                        Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Black
                     )
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
@@ -204,7 +204,7 @@ private fun ChatMessage(
     }
 
     val contentColor = if (isUserMessage) {
-        AppColors.White
+        AppColors.white
     } else {
         AppColors.Black
     }
@@ -264,8 +264,8 @@ private fun ChatInput(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = AppColors.DarkPurple,
                     unfocusedBorderColor = AppColors.DarkPurple.copy(alpha = 0.5f),
-                    focusedContainerColor = AppColors.White,
-                    unfocusedContainerColor = AppColors.White
+                    focusedContainerColor = AppColors.white,
+                    unfocusedContainerColor = AppColors.white
                 )
             )
 

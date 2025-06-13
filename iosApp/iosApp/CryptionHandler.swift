@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import CommonCrypto
 
+
 // MARK: - AES Cryption for String-based Encryption & Decryption
 //class CryptionHandler: NSObject {
 //    private let aesKey = "4xlmO9YC71qv28qfWHJ4LVEYm6gNNuYi"  // 32-byte key for AES-256

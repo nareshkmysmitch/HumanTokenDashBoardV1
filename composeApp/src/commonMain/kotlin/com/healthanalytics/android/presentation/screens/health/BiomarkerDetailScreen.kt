@@ -54,14 +54,14 @@ fun BiomarkerDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Biomarker Details", color = AppColors.White
+                        "Biomarker Details", color = AppColors.Black
                     )
                 }, navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = AppColors.White
+                            tint = AppColors.Black
                         )
                     }
                 },  colors = TopAppBarDefaults.topAppBarColors(

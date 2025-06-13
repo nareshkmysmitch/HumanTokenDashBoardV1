@@ -126,6 +126,10 @@ class MarketPlaceViewModel(
     private val _logoutState = MutableStateFlow<LogoutState>(LogoutState.Initial)
     val logoutState: StateFlow<LogoutState> = _logoutState.asStateFlow()
 
+    fun clearLogoutState() {
+        _logoutState.value = LogoutState.Initial
+    }
+
     // Helper function to convert UpdateAddressListResponse to Address
     private fun createAddress(response: UpdateAddressListResponse): Address {
         return Address(

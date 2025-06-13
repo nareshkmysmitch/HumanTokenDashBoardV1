@@ -56,7 +56,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ActionPlanScreen(
     viewModel: RecommendationsViewModel,
-    preferencesViewModel: PreferencesViewModel = koinInject(),
+    preferencesViewModel: PreferencesViewModel,
 ) {
     val uiState by viewModel.uiActionState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
@@ -271,7 +271,7 @@ fun ActionPlanCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.White
+            containerColor = AppColors.white
         ),
     ) {
         Column(
