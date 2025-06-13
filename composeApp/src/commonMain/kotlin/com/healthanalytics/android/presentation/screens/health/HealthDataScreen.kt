@@ -167,7 +167,7 @@ fun MetricCard(
             Text(
                 text = metric?.displayName ?: "",
                 maxLines = 2,
-                fontSize = FontSize.textSize16sp,
+                fontSize = FontSize.textSize22sp,
                 fontFamily = FontFamily.bold(),
                 color = AppColors.textPrimary,
                 overflow = TextOverflow.Ellipsis,
@@ -186,15 +186,15 @@ fun MetricCard(
             Row(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${metric?.value}",
-                    fontSize = FontSize.textSize14sp,
-                    fontFamily = FontFamily.medium(),
+                    fontSize = FontSize.textSize18sp,
+                    fontFamily = FontFamily.semiBold(),
                     color = AppColors.textPrimary,
                 )
                 Text(
-                    text = " ${metric?.unit}",
+                    text = "  ${metric?.unit}",
                     fontSize = FontSize.textSize14sp,
                     fontFamily = FontFamily.medium(),
-                    color = AppColors.textSecondary,
+                    color = AppColors.TextGrey,
                 )
             }
             Text(
@@ -209,9 +209,9 @@ fun MetricCard(
 
         Text(
             text = "Last updated: ${formatDate(metric?.updatedAt ?: "")}",
-            fontSize = FontSize.textSize12sp,
+            fontSize = FontSize.textSize14sp,
             fontFamily = FontFamily.medium(),
-            color = AppColors.textPrimary,
+            color = AppColors.TextGrey,
         )
     }
 
