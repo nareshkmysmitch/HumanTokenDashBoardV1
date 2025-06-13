@@ -36,32 +36,33 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppTextStyles
+import com.healthanalytics.android.presentation.theme.FontFamily
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthDataScreen(
     viewModel: HealthDataViewModel,
     prefs: PreferencesViewModel,
-    onNavigateToDetail: (BloodData?) -> Unit
+    onNavigateToDetail: (BloodData?) -> Unit,
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
     val filteredMetrics = viewModel.getFilteredMetrics()
     val availableFilters = viewModel.getAvailableFilters()
-    var isSearchVisible by remember { mutableStateOf(false) }
+    val isSearchVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -89,7 +90,6 @@ fun HealthDataScreen(
         }
 
 
-
         // Metrics List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
@@ -108,7 +108,15 @@ fun HealthDataScreen(
                     FilterChip(
                         selected = uiState.selectedFilter == filter,
                         onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
-                        label = { Text(filter ?: "") })
+                        label = {
+                            Text(
+                                text = filter ?: "",
+                                style = AppTextStyles.bodySmall,
+                                fontFamily = FontFamily.medium(),
+                                color = AppColors.Black,
+                                textAlign = TextAlign.Center
+                            )
+                        })
                 }
             }
 
@@ -129,7 +137,7 @@ fun HealthDataScreen(
 
 @Composable
 fun MetricCard(
-    metric: BloodData?, onMetricClick: (BloodData) -> Unit = {}
+    metric: BloodData?, onMetricClick: (BloodData) -> Unit = {},
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { metric?.let { onMetricClick(it) } },
