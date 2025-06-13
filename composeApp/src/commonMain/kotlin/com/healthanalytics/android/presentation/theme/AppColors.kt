@@ -36,6 +36,7 @@ object AppColors {
     val BlueCardBackground = Color(0XFF1C202A)
     val BlueStroke = Color(0XFF3C82F6)
     val BlueButton = Color(0XFF2463EB)
+    val PinkButton = Color(0XFFF523A1)
     val BlueBackground = Color(0XFF18181B)
 
     // Additional surface and UI colors
