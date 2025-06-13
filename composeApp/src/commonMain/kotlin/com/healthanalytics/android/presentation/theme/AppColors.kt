@@ -48,9 +48,18 @@ object AppColors {
     val white = Color(0xFFFFFFFF)
 
     // Additional surface and UI colors
-    val PurpleIconBackground = Color(0XFF393442)
     val PurpleButtonBackground = Color(0XFF54414E)
     val secondary = Color(0xFF8B5CF6)
     val tertiary = Color(0xFF06B6D4)
+    val CardGrey = Color(0xFF1C1C1E)
+    val DarkPink = Color(0xFFF524A1)
+    val TextGrey = Color(0xFF888888)
+    val OptimalColor = Color(0xFF1f7a4c)
+    val HighColor = Color(0xFFf4978a)
+    val LowColor = Color(0xFFf4978a)
+    val NormalColor = Color(0xFF1f7a4c)
+    val NoneColor = Color(0xFF4b5563)
+    val YellowColor= Color(0xFFf4c764)
+    val SubGreyColor = Color(0xFF141416)
 
 }

@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,34 +30,35 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
-import org.koin.compose.koinInject
+import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.utils.capitalizeFirst
 
 @Composable
 fun RecommendationsScreen(
     viewModel: RecommendationsViewModel,
     preferencesViewModel: PreferencesViewModel,
-    navigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val preferencesState by preferencesViewModel.uiState.collectAsState()
     val filterList = viewModel.getFilteredRecommendations()
 
-    BackHandler { navigateBack() }
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
             viewModel.loadRecommendations(token)
         }
     }
+
     Column(
-        modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor)
+        modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
@@ -69,9 +71,9 @@ fun RecommendationsScreen(
         } else {
             // Category Selector
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size12dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
+                contentPadding = PaddingValues(horizontal = Dimensions.size12dp)
             ) {
                 items(viewModel.getRecommendationCategories()) { category ->
                     CategoryChip(
@@ -84,8 +86,8 @@ fun RecommendationsScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(Dimensions.size12dp),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
             ) {
                 items(filterList) { recommendation ->
                     RecommendationCard(
@@ -109,13 +111,21 @@ fun CategoryChip(
     val categoryEnum = RecommendationCategory.fromString(category)
 
     FilterChip(
-        selected = selected, onClick = onClick, label = {
+        selected = selected, onClick = onClick, colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = AppColors.DarkPink,
+        ), label = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size4dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(categoryEnum.icon)
-                Text("$category ($count)")
+                Text(
+                    text = "${category.capitalizeFirst()} ($count)",
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textPrimary,
+                    textAlign = TextAlign.Center
+                )
             }
         })
 }
@@ -128,22 +138,20 @@ fun RecommendationCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.white // Replace with your desired color
+            containerColor = AppColors.CardGrey
         ),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.size12dp)
         ) {
-            // Title and Difficulty
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
@@ -153,49 +161,47 @@ fun RecommendationCard(
                     )
                     Text(
                         text = recommendation.name,
-                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = FontSize.textSize22sp,
+                        color = AppColors.white,
+                        fontFamily = FontFamily.bold(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             Text(
                 text = "Potential Impact",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = FontSize.textSize16sp,
+                color = AppColors.white,
+                fontFamily = FontFamily.medium(),
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
             // Metrics Grid
             recommendation.metric_recommendations?.let { metrics ->
                 if (metrics.isNotEmpty()) {
                     Column(
                         modifier = Modifier.wrapContentWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
                     ) {
                         metrics.chunked(1).forEach { rowMetrics ->
                             Row(
                                 modifier = Modifier.wrapContentWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
                             ) {
                                 rowMetrics.forEach { metricRecommendation ->
                                     MetricChip(
                                         metric = metricRecommendation.metric.metric,
-//                                        modifier = Modifier.weight(1f)
                                     )
                                 }
-                                // Add empty space if odd number of metrics
-//                                if (rowMetrics.size == 1) {
-//                                    Spacer(modifier = Modifier.weight(1f))
-//                                }
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Dimensions.size16dp))
                 }
             }
 
@@ -204,36 +210,19 @@ fun RecommendationCard(
 
             val isEnabled = userAction == null || userAction.is_completed == false
 
-            // Add to Plan Button
             Button(
                 onClick = { accessToken?.let { viewModel.addToPlan(it, recommendation) } },
                 enabled = isEnabled,
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text("+ Add to Plan")
+                Text(
+                    text = "+ Add to Plan",
+                    fontSize = FontSize.textSize16sp,
+                    color = AppColors.white,
+                    fontFamily = FontFamily.bold(),
+                )
             }
         }
-    }
-}
-
-@Composable
-fun DifficultyChip(difficulty: String) {
-    val (backgroundColor, textColor) = when (difficulty.lowercase()) {
-        "easy" -> MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
-        "medium" -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.onSecondary
-        "hard" -> MaterialTheme.colorScheme.tertiary to MaterialTheme.colorScheme.onTertiary
-        else -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
-    }
-
-    Surface(
-        color = backgroundColor, shape = MaterialTheme.shapes.small
-    ) {
-        Text(
-            text = difficulty.replaceFirstChar { it.uppercase() },
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = textColor
-        )
     }
 }
 
@@ -243,15 +232,19 @@ fun MetricChip(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = AppColors.SubGreyColor,
         shape = MaterialTheme.shapes.small,
         modifier = modifier
     ) {
         Text(
             text = metric,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSecondaryContainer
+            modifier = Modifier.padding(
+                horizontal = Dimensions.size8dp,
+                vertical = Dimensions.size4dp
+            ),
+            fontSize = FontSize.textSize14sp,
+            color = AppColors.white,
+            fontFamily = FontFamily.medium(),
         )
     }
 } 
