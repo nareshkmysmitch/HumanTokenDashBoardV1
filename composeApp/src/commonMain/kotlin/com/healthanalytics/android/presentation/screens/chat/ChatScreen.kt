@@ -1,5 +1,9 @@
 package com.healthanalytics.android.presentation.screens.chat
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,16 +23,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.PeopleOutline
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Person3
+import androidx.compose.material.icons.filled.PersonOutline
+import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,18 +52,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.key.Key.Companion.R
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Message
-import com.healthanalytics.android.presentation.components.FilledAppButton
 import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,12 +79,15 @@ fun ChatScreen(
         viewModel.loadChat(conversationId)
     }
     BackHandler(enabled = true, onBack = { onNavigateBack() })
+
     // Scroll to bottom when messages are loaded or updated
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is ChatUiState.Success -> {
                 if (state.messages.isNotEmpty()) {
-                    listState.scrollToItem(state.messages.size - 1)
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(0) // Scroll to first item (bottom) with animation
+                    }
                 }
             }
 
@@ -97,28 +98,28 @@ fun ChatScreen(
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
         TopAppBar(
             title = {
-            when (val state = uiState) {
-                is ChatUiState.Success -> Text(
-                    text = "Chat", color = AppColors.textPrimary
-                )
+                when (val state = uiState) {
+                    is ChatUiState.Success -> Text(
+                        text = "Chat", color = AppColors.textPrimary
+                    )
 
-                else -> Text(
-                    text = "Chat", color = AppColors.textPrimary
-                )
-            }
-        }, navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = AppColors.textPrimary
-                )
-            }
-        }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = AppColors.Black,
-            navigationIconContentColor = AppColors.textPrimary,
-            titleContentColor = AppColors.textPrimary
-        )
+                    else -> Text(
+                        text = "Chat", color = AppColors.textPrimary
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.textPrimary
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColors.Black,
+                navigationIconContentColor = AppColors.textPrimary,
+                titleContentColor = AppColors.textPrimary
+            )
         )
     }, bottomBar = {
         ChatInput(
@@ -177,7 +178,7 @@ private fun ChatMessages(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        reverseLayout = false,
+        reverseLayout = true,
         state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -194,12 +195,12 @@ private fun ChatMessages(
             }
         }
 
-        items(messages) { message ->
-            ChatMessage(message = message)
+        items(
+            items = messages, key = { it.id ?: it.created_at.toString() }) { message ->
+            AnimatedMessage(message = message)
         }
     }
 
-    // Check for pagination when scrolling up (near the top)
     LaunchedEffect(listState.firstVisibleItemIndex) {
         if (listState.firstVisibleItemIndex < 5 && messages.isNotEmpty() && canLoadMore) {
             onLoadMore()
@@ -207,6 +208,20 @@ private fun ChatMessages(
     }
 }
 
+@Composable
+private fun AnimatedMessage(
+    message: Message, modifier: Modifier = Modifier
+) {
+    val alpha by animateFloatAsState(
+        targetValue = 1f, label = "message_alpha"
+    )
+
+    AnimatedVisibility(
+        visible = true, enter = fadeIn(), exit = fadeOut(), modifier = modifier.alpha(alpha)
+    ) {
+        ChatMessage(message = message)
+    }
+}
 
 @Composable
 private fun ChatMessage(
@@ -261,10 +276,9 @@ private fun ChatMessage(
     }
 }
 
-
 @Composable
 private fun ChatAvatar(isUser: Boolean) {
-    val avatar = if (isUser) Icons.Default.ChatBubbleOutline else Icons.Default.PeopleOutline
+    val avatar = if (isUser) Icons.Default.PersonOutline else Icons.Default.QrCode2
     val surfaceColor = if (isUser) AppColors.success else AppColors.Pink
 
     Surface(
@@ -280,7 +294,6 @@ private fun ChatAvatar(isUser: Boolean) {
         )
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -338,55 +351,3 @@ private fun ChatInput(
     }
 }
 
-
-//
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//private fun ChatInput(
-//    value: String,
-//    onValueChange: (String) -> Unit,
-//    onSend: () -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-//    Surface(
-//        modifier = modifier, tonalElevation = 2.dp, color = AppColors.Transparent
-//    ) {
-//        Row(
-//            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            OutlinedTextField(
-//                value = value,
-//                onValueChange = onValueChange,
-//                modifier = Modifier.weight(1f),
-//                placeholder = {
-//                    Text("Ask you asdsddfsf...")
-//                },
-//                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-//                keyboardActions = KeyboardActions(onSend = { onSend() }),
-//                maxLines = 1,
-//                colors = OutlinedTextFieldDefaults.colors(
-//                    focusedBorderColor = AppColors.DarkPurple,
-//                    unfocusedBorderColor = AppColors.DarkPurple.copy(alpha = 0.5f),
-//                    focusedContainerColor = AppColors.white,
-//                    unfocusedContainerColor = AppColors.white
-//                )
-//            )
-//
-//            Spacer(modifier = Modifier.width(8.dp))
-//
-//            FilledAppButton(
-//                onClick = onSend,
-//                enabled = value.isNotBlank(),
-//                modifier = Modifier.size(40.dp),
-//                contentPadding = PaddingValues(8.dp)
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Send,
-//                    contentDescription = "Send",
-//                    modifier = Modifier.size(20.dp)
-//                )
-//            }
-//        }
-//    }
-//}
