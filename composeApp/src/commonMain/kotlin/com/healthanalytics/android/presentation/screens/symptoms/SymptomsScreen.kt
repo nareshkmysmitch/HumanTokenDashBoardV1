@@ -108,7 +108,7 @@ fun SymptomsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.backgroundDark
+                    containerColor = AppColors.BlueBackground
                 )
             )
         },
@@ -117,7 +117,7 @@ fun SymptomsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppColors.backgroundDark)
+                .background(AppColors.BlueBackground)
                 .padding(paddingValues)
         ) {
             Column(
@@ -190,7 +190,7 @@ fun SymptomsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { viewModel.submitSelectedSymptoms() },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = AppColors.primary
+                                containerColor = AppColors.BlueButton
                             ),
                             enabled = state.selectedSymptoms.isNotEmpty()
                         ) {
@@ -215,7 +215,7 @@ private fun CategoryCard(
     onSymptomClick: (String) -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = AppColors.PurpleCardBackground),
+        colors = CardDefaults.cardColors(containerColor = AppColors.BlueCardBackground),
         shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
         modifier = Modifier.fillMaxWidth().animateContentSize()
     ) {
@@ -270,8 +270,16 @@ private fun SymptomItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        color = if (isSelected) Color(0xFF8B5CF6).copy(alpha = 0.2f) else Color(0xFF2A2A2A),
-        shape = RoundedCornerShape(8.dp)
+        color = if (isSelected) AppColors.BlueContainer.copy(alpha = 0.5f) else AppColors.BlueCardBackground,
+        shape = RoundedCornerShape(8.dp),
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = if (isSelected) {
+                AppColors.BlueStroke
+            } else {
+                Color.Gray.copy(alpha = 0.5f)
+            }
+        )
     ) {
         Row(
             modifier = Modifier

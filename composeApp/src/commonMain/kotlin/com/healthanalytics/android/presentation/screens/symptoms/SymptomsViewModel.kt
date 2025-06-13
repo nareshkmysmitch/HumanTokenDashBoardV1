@@ -90,6 +90,7 @@ class SymptomsViewModel(
         _state.update { currentState ->
             currentState.copy(selectedSymptoms = emptySet())
         }
+        _submitSuccess.value = null
     }
 
     fun submitSelectedSymptoms() {
@@ -98,7 +99,7 @@ class SymptomsViewModel(
             val ids = state.value.selectedSymptoms.toList()
             _state.update { it.copy(isLoading = true) }
             val success = api.submitSymptoms(token, ids)
-            _state.update { it.copy(isLoading = false) }
+//            _state.update { it.copy(isLoading = false) }
             _submitSuccess.value = success
         }
     }
