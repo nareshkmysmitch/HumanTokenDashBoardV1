@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,6 +59,8 @@ import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTes
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.symptoms.SymptomsScreen
+import com.healthanalytics.android.presentation.screens.symptoms.SymptomsViewModel
 import com.healthanalytics.android.presentation.screens.testbooking.ScheduleTestBookingScreen
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingScreen
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
@@ -100,6 +101,7 @@ fun HealthAnalyticsApp() {
         val marketPlaceViewModel: MarketPlaceViewModel = koinInject<MarketPlaceViewModel>()
         val testBookingViewModel: TestBookingViewModel = koinInject<TestBookingViewModel>()
         val chatViewModel: ChatViewModel = koinInject<ChatViewModel>()
+        val symptomsViewModel: SymptomsViewModel = koinInject<SymptomsViewModel>()
         val recommendationsViewModel: RecommendationsViewModel =
             koinInject<RecommendationsViewModel>()
         val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
@@ -186,6 +188,9 @@ fun HealthAnalyticsApp() {
                             onCartClick = {
                                 navigateTo(CART)
                             },
+                            onSymptomsClick = {
+                                navigateTo(Screen.SYMPTOMS)
+                            },
                             onBiomarkerFullReportClick = {
                                 biomarker = it ?: BloodData()
                                 navigateTo(BIOMARKER_FULL_REPORT)
@@ -215,11 +220,27 @@ fun HealthAnalyticsApp() {
                             }, biomarker = biomarker
                         )
                     }
-                }
 
+                    Screen.SYMPTOMS -> {
+                        SymptomsScreen(
+                            onNavigateBack = { navigateBack() },
+                            viewModel = symptomsViewModel,
+                            onNavigateHome = { navigateTo(HOME) }
+                        )
+                    }
+
+                    BIOMARKER_FULL_REPORT -> {
+                        BioMarkerFullReportScreen(
+                            onNavigateBack = {
+                                navigateBack()
+                            }, biomarker = biomarker
+                        )
+                    }
+                }
             }
+
             else -> {
-            OnboardContainer(
+                OnboardContainer(
                     onboardViewModel = onboardViewModel,
                     isLoggedIn = {
                         onboardViewModel.updateOnBoardState()
@@ -347,6 +368,7 @@ fun HomeScreen(
     preferenceViewModel: PreferencesViewModel,
     marketPlaceViewModel: MarketPlaceViewModel,
     onProfileClick: () -> Unit = {},
+    onSymptomsClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
     onBiomarker: (BloodData?) -> Unit = {},
@@ -368,6 +390,8 @@ fun HomeScreen(
     Scaffold(topBar = {
         TopAppBar(
             title = "Human Token",
+            isSymptomsIconVisible = currentScreen == MainScreen.DASHBOARD,
+            onSymptomsClick = {onSymptomsClick()},
             onEndIconClick = if (currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
             onChatClick = onChatClick,
             isChatVisible = currentScreen != MainScreen.MARKETPLACE,
@@ -384,14 +408,6 @@ fun HomeScreen(
                     healthDataViewModel,
                     preferenceViewModel,
                     onNavigateToDetail = { onBiomarker(it) })
-
-//                MainScreen.RECOMMENDATIONS -> {
-//                    RecommendationsScreen(
-//                        navigateBack = { navigateBack() },
-//                        preferencesViewModel = preferenceViewModel,
-//                        viewModel = recommendationsViewModel,
-//                    )
-//                }
 
                 MainScreen.RECOMMENDATIONS -> {
                     RecommendationsTabScreen(

@@ -32,6 +32,12 @@ object AppColors {
     val TiffanyBlue = Color(0XFFA0E7E5)
     val SpearMint = Color(0XFFb6e2d3) //#b6e2d3
     val Yellow = Color(0XFFFBE7C6)
+    val BlueContainer = Color(0XFF1F2E50)
+    val BlueCardBackground = Color(0XFF1C202A)
+    val BlueStroke = Color(0XFF3C82F6)
+    val BlueButton = Color(0XFF2463EB)
+    val PinkButton = Color(0XFFF523A1)
+    val BlueBackground = Color(0XFF18181B)
 
     // Additional surface and UI colors
     val surfaceVariant = Color(0xFF2A2A3E)
