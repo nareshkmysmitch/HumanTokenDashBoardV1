@@ -267,7 +267,7 @@ fun ScheduleBloodTestScreen(
 }
 
 @Composable
-private fun TimeSlotCard(
+fun TimeSlotCard(
     time: String,
     isSelected: Boolean,
     onClick: () -> Unit
