@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,14 +23,11 @@ import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -182,13 +178,13 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
         Surface(
             modifier = Modifier.size(Dimensions.size80dp),
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceVariant
+            color = AppColors.Teal
         ) {
             Icon(
                 imageVector = Icons.Default.Assignment,
                 contentDescription = null,
                 modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = AppColors.white
             )
         }
 
@@ -208,27 +204,18 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             text = AppStrings.ADD_RECOMMENDATIONS,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.medium(),
-            color = AppColors.TextGrey,
+            color = AppColors.white,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
-        Button(
-            onClick = { viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS) }) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.size(Dimensions.size20dp)
-            )
-            Spacer(modifier = Modifier.width(Dimensions.size8dp))
-            Text(
-                AppStrings.BROWSE_RECOMMENDATIONS,
-                fontSize = FontSize.textSize16sp,
-                color = AppColors.white,
-                fontFamily = FontFamily.bold(),
-            )
-        }
+        TransparentButton(
+            icon = Icons.Default.ArrowBack,
+            txt = AppStrings.BROWSE_RECOMMENDATIONS,
+            onClicked = {
+                viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS)
+            })
     }
 }
 
@@ -242,13 +229,13 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
         Surface(
             modifier = Modifier.size(Dimensions.size80dp),
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceVariant
+            color = AppColors.Teal
         ) {
             Icon(
                 imageVector = Icons.Default.FilterAlt,
                 contentDescription = null,
                 modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = AppColors.white
             )
         }
 
@@ -274,20 +261,12 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
 
         Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
-        Button(
-            onClick = { viewModel.updateActionCategory(AppConstants.ALL) }) {
-            Icon(
-                imageVector = Icons.Default.Dashboard,
-                contentDescription = null,
-                modifier = Modifier.size(Dimensions.size20dp)
-            )
-            Spacer(modifier = Modifier.width(Dimensions.size8dp))
-            Text(
-                AppStrings.SHOW_ALL_ITEMS, fontSize = FontSize.textSize16sp,
-                color = AppColors.white,
-                fontFamily = FontFamily.bold(),
-            )
-        }
+        TransparentButton(
+            icon = Icons.Default.Dashboard,
+            txt = AppStrings.SHOW_ALL_ITEMS,
+            onClicked = {
+                viewModel.updateActionCategory(AppConstants.ALL)
+            })
     }
 }
 
@@ -369,20 +348,6 @@ fun ActionPlanCard(
                             }
                         }
                     })
-
-               /* OutlinedButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove",
-                        modifier = Modifier.size(Dimensions.size20dp)
-                    )
-                    Spacer(modifier = Modifier.width(Dimensions.size8dp))
-                    Text(
-                        AppStrings.REMOVE,
-                        fontSize = FontSize.textSize16sp,
-                        fontFamily = FontFamily.bold(),
-                    )
-                }*/
             }
         }
     }
