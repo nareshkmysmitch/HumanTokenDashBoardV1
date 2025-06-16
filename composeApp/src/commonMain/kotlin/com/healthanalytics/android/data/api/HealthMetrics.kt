@@ -31,6 +31,7 @@ data class BloodData(
     @SerialName("updated_at") val updatedAt: String? = null,
     @SerialName("user_id") val userId: String? = null,
     @SerialName("value") val value: Double? = null,
+    @SerialName("is_latest") val isLatest: Boolean = false,
     @SerialName("ranges") val ranges: List<Range>? = null,
     @SerialName("correlation") val correlation: List<Correlation?>? = null,
     @SerialName("short_description") val shortDescription: String? = null,

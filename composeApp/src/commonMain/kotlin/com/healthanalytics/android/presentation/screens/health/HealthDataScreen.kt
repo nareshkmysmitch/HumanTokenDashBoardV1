@@ -57,6 +57,9 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+
+const val NEW_DATA_FILTER = "new_data"
+
 @Composable
 fun HealthDataScreen(
     viewModel: HealthDataViewModel,
@@ -70,6 +73,11 @@ fun HealthDataScreen(
     val availableFilters = viewModel.getAvailableFilters()
     val isSearchVisible by remember { mutableStateOf(false) }
 
+    val filterGroups = viewModel.getAvailableFilterGroups(availableFilters)
+    val filterLabels = listOf("All") +
+            filterGroups.map { it.replaceFirstChar { it.uppercase() } } +
+            listOf("New Data")
+
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
             prefs.saveAccessToken(token)
@@ -78,10 +86,11 @@ fun HealthDataScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(AppColors.Black)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.Black)
             .padding(top = size16dp)
     ) {
-
         AnimatedVisibility(
             visible = isSearchVisible,
             enter = expandVertically() + fadeIn(),
@@ -90,16 +99,16 @@ fun HealthDataScreen(
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(size16dp),
                 placeholder = { Text("Search health data") },
                 singleLine = true
             )
         }
 
         if (uiState.isLoading || preferencesState.data == null) {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         } else {
@@ -108,54 +117,65 @@ fun HealthDataScreen(
                 horizontalArrangement = Arrangement.spacedBy(size16dp),
                 contentPadding = PaddingValues(horizontal = size12dp)
             ) {
-                items(availableFilters) { filter ->
-                    val selected = uiState.selectedFilter == filter
+                items(filterLabels) { filterLabel ->
+                    val key = when (filterLabel.lowercase()) {
+                        "all" -> null
+                        "new data" -> NEW_DATA_FILTER
+                        else -> filterLabel.lowercase()
+                    }
+
+                    val isSelected = uiState.selectedFilter == key || (filterLabel == "All" && uiState.selectedFilter == null)
+
                     FilterChip(
-                        selected = selected,
-                        onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
+                        selected = isSelected,
+                        onClick = {
+                            val newFilter = if (filterLabel == "All") null else key
+                            viewModel.updateFilter(newFilter)
+                        },
                         colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-                            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
-                                alpha = 0.1f
-                            ),
+                            containerColor = if (isSelected) AppColors.Pink.copy(alpha = 0.5f)
+                            else AppColors.Pink.copy(alpha = 0.1f),
                             labelColor = AppColors.textPrimary,
                             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
                             selectedLabelColor = AppColors.white
                         ),
                         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
                             enabled = true,
-                            selected = selected,
-                            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
-                                alpha = 0.2f
-                            )
+                            selected = isSelected,
+                            borderColor = if (isSelected) Color.Transparent else AppColors.Pink.copy(alpha = 0.2f)
                         ),
                         label = {
                             Text(
-                                text = filter ?: "",
+                                text = filterLabel,
                                 fontSize = FontSize.textSize14sp,
                                 fontFamily = FontFamily.medium(),
                                 color = AppColors.textPrimary,
                                 textAlign = TextAlign.Center
                             )
-                        })
+                        }
+                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(size16dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                     .padding(horizontal = size12dp),
                 colors = CardDefaults.cardColors(containerColor = AppColors.CardGrey),
             ) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(Dimensions.size10dp)
                 ) {
-                    val lastPosition = filteredMetrics.size.minus(1)
+                    val lastPosition = filteredMetrics.size - 1
                     items(filteredMetrics) { metric ->
                         MetricCard(
-                            metric = metric, onMetricClick = { onNavigateToDetail(metric) })
-
-                        if (lastPosition != filteredMetrics.indexOf(metric)) {
+                            metric = metric,
+                            onMetricClick = { onNavigateToDetail(metric) }
+                        )
+                        if (filteredMetrics.indexOf(metric) != lastPosition) {
                             HorizontalDivider(modifier = Modifier.padding(start = size12dp))
                         }
                     }

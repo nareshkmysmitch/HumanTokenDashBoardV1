@@ -13,6 +13,7 @@ data class BiomarkerReportData(
     @SerialName("value") val value: Double? = null,
     @SerialName("unit") val unit: String? = null,
     @SerialName("type") val type: String? = null,
+    @SerialName("is_latest") val isLatest: Boolean = false,
     @SerialName("metric_id") val metricId: String? = null,
     @SerialName("metric_data") val metricData: List<MetricData>? = null,
     @SerialName("wellness_categories") val wellnessCategories: List<WellnessCategory>? = null,
