@@ -38,7 +38,7 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, mod
         Icon(
             imageVector = icon,
             contentDescription = "Remove",
-            modifier = Modifier.size(Dimensions.size20dp),
+            modifier = Modifier.size(Dimensions.size16dp),
             tint = AppColors.white
         )
         Spacer(modifier = Modifier.width(Dimensions.size8dp))

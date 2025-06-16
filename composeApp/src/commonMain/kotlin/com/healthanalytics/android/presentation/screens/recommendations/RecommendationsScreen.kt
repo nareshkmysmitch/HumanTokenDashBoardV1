@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.recommendations
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,11 +31,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
-import com.healthanalytics.android.data.models.RecommendationCategory
+import com.healthanalytics.android.data.models.RecommendationCategoryes
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.actionplan.MetricsGrid
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -44,6 +42,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.RecommendationIcon
 import com.healthanalytics.android.utils.AppConstants
 import org.koin.compose.koinInject
 
@@ -113,7 +112,7 @@ fun CategoryChip(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val categoryEnum = RecommendationCategory.fromString(category)
+    val categoryEnum = RecommendationCategoryes.fromString(category)
     androidx.compose.material3.FilterChip(
         selected = selected, onClick = onClick, label = {
             Row(
@@ -121,11 +120,7 @@ fun CategoryChip(
                     vertical = Dimensions.size8dp, horizontal = Dimensions.size4dp
                 ), verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    imageVector = categoryEnum.icon,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(AppColors.white)
-                )
+                RecommendationIcon(categoryEnum, Modifier.size(Dimensions.size14dp))
                 Spacer(modifier = Modifier.width(Dimensions.size4dp))
                 Text(
                     text = "$category ($count)",
@@ -247,6 +242,7 @@ fun PotentialImpact() {
 
 @Composable
 fun RecommendationTitle(recommendation: Recommendation) {
+    val icon = RecommendationCategoryes.fromString(recommendation.category)
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -255,11 +251,7 @@ fun RecommendationTitle(recommendation: Recommendation) {
                 .background(AppColors.backgroundDark, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                imageVector = RecommendationCategory.fromString(recommendation.category).icon,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(AppColors.white)
-            )
+            RecommendationIcon(icon, modifier = Modifier.size(Dimensions.size16dp))
         }
         Spacer(modifier = Modifier.width(Dimensions.size12dp))
         Text(

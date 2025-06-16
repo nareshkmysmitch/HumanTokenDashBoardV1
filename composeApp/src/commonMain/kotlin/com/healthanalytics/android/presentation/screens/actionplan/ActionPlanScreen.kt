@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.actionplan
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,11 +36,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import com.healthanalytics.android.data.models.MetricRecommendation
 import com.healthanalytics.android.data.models.Recommendation
-import com.healthanalytics.android.data.models.RecommendationCategory
+import com.healthanalytics.android.data.models.RecommendationCategoryes
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.MetricChip
 import com.healthanalytics.android.presentation.screens.recommendations.PotentialImpact
@@ -53,6 +51,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.RecommendationIcon
 import com.healthanalytics.android.ui.TransparentButton
 import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.capitalizeFirst
@@ -128,7 +127,7 @@ fun CategoryChip(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val categoryEnum = RecommendationCategory.fromString(category)
+    val categoryEnum = RecommendationCategoryes.fromString(category)
 
     FilterChip(
         selected = selected,
@@ -153,11 +152,7 @@ fun CategoryChip(
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.size4dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    imageVector = categoryEnum.icon,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(AppColors.white)
-                )
+                RecommendationIcon(categoryEnum, modifier = Modifier.size(Dimensions.size14dp))
                 Text(
                     category.capitalizeFirst(),
                     fontSize = FontSize.textSize14sp,
