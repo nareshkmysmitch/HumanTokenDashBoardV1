@@ -408,7 +408,7 @@ fun HomeScreen(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "symptoms",
                                 modifier = Modifier.size(24.dp),
-                                tint = AppColors.white
+                                tint = AppColors.White
                             )
                         }
                         IconButton(onClick = onChatClick) {
@@ -416,7 +416,7 @@ fun HomeScreen(
                                 imageVector = Icons.Default.Chat,
                                 contentDescription = "Chat",
                                 modifier = Modifier.size(24.dp),
-                                tint = AppColors.white
+                                tint = AppColors.White
                             )
                         }
                     }
@@ -426,7 +426,7 @@ fun HomeScreen(
                                 imageVector = Icons.Default.AccountCircle,
                                 contentDescription = "symptoms",
                                 modifier = Modifier.size(24.dp),
-                                tint = AppColors.white
+                                tint = AppColors.White
                             )
                         }
                     }
@@ -436,7 +436,7 @@ fun HomeScreen(
                                 imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = "Chat",
                                 modifier = Modifier.size(24.dp),
-                                tint = AppColors.white
+                                tint = AppColors.White
                             )
                         }
                     }

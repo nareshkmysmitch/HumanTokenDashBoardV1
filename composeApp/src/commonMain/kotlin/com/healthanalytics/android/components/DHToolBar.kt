@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -43,7 +42,7 @@ fun DHToolBar(
                     .padding(end = 12.dp)
                     .size(32.dp)
                     .background(
-                        color = AppColors.white,
+                        color = AppColors.White,
                         shape = CircleShape
                     )
                     .onBoxClick(
@@ -67,7 +66,7 @@ fun DHToolBar(
                 text = title,
                 fontFamily = FontFamily.semiBold(),
                 fontSize = 22.sp,
-                color = AppColors.white,
+                color = AppColors.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

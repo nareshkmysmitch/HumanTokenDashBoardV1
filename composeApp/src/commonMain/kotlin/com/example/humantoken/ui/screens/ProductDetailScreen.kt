@@ -114,8 +114,8 @@ fun ProductDetailScreen(
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppColors.Black,
-                    navigationIconContentColor = AppColors.white,
-                    titleContentColor = AppColors.white
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
                 ),
                 title = {
                     when (productDetailsState) {
@@ -123,7 +123,7 @@ fun ProductDetailScreen(
                             (productDetailsState as ProductDetailsState.Success).product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.white,
+                                    color = AppColors.White,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -134,7 +134,7 @@ fun ProductDetailScreen(
                             product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.white,
+                                    color = AppColors.White,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -147,7 +147,7 @@ fun ProductDetailScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.white,
+                            tint = AppColors.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -157,7 +157,7 @@ fun ProductDetailScreen(
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
                             contentDescription = "shopping cart",
-                            tint = AppColors.white,
+                            tint = AppColors.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -223,7 +223,7 @@ fun ProductDetailScreen(
                             text = it,
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
-                            color = AppColors.white
+                            color = AppColors.White
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -238,7 +238,7 @@ fun ProductDetailScreen(
                         text = price,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.white,
+                        color = AppColors.White,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -291,7 +291,7 @@ fun ProductDetailScreen(
                                     tag?.replaceFirstChar { it.uppercase() }?.let { Text(it) }
                                 }, colors = SuggestionChipDefaults.suggestionChipColors(
                                     containerColor = AppColors.Black,
-                                    labelColor = AppColors.white,
+                                    labelColor = AppColors.White,
                                 )
                             )
                         }
@@ -374,12 +374,12 @@ fun ProductDetailScreen(
                             Icon(
                                 imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = null,
-                                tint = AppColors.white
+                                tint = AppColors.White
                             )
                             Text(
                                 text = buttonText, modifier = Modifier.padding(vertical = 8.dp),
                                 fontFamily = FontFamily.semiBold(),
-                                color = AppColors.white
+                                color = AppColors.White
                             )
                         }
                     }
@@ -411,7 +411,7 @@ fun ProductDetailScreen(
                                     tint = Color.Green
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Only ${currentProduct.stock} left", color = AppColors.white)
+                                Text("Only ${currentProduct.stock} left", color = AppColors.White)
                             }
                         }
                     }
@@ -423,12 +423,12 @@ fun ProductDetailScreen(
                         ScrollableTabRow(
                             selectedTabIndex = selectedTab, edgePadding = 16.dp,
                             containerColor = AppColors.BlueCardBackground,
-                            contentColor = AppColors.white,
+                            contentColor = AppColors.White,
                             indicator = { tabPositions ->
                                 TabRowDefaults.Indicator(
                                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
                                     height = 2.dp,
-                                    color = AppColors.white
+                                    color = AppColors.White
                                 )
                             }) {
                             listOf(
@@ -448,9 +448,9 @@ fun ProductDetailScreen(
                                                 }
                                             ),
                                             color = if (selectedTab == index) {
-                                                AppColors.white
+                                                AppColors.White
                                             } else {
-                                                AppColors.white.copy(alpha = 0.6f)
+                                                AppColors.White.copy(alpha = 0.6f)
                                             }
                                         )
                                     })
@@ -470,7 +470,7 @@ fun ProductDetailScreen(
                                         text = "Product Information",
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = AppColors.white
+                                        color = AppColors.White
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
                                     ProductInfoRow("SKU:", currentProduct.sku ?: "")
@@ -491,7 +491,7 @@ fun ProductDetailScreen(
                                     Text(
                                         text = "Product ingredients information will be available soon.",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = AppColors.white
+                                        color = AppColors.White
                                     )
                                 }
                             }
@@ -504,7 +504,7 @@ fun ProductDetailScreen(
                                     Text(
                                         text = "Usage directions will be available soon.",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = AppColors.white
+                                        color = AppColors.White
                                     )
                                 }
                             }
@@ -523,11 +523,11 @@ fun ProductDetailScreen(
                                             text = "Customer Reviews",
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = AppColors.white
+                                            color = AppColors.White
                                         )
                                         OutlinedButton(
                                             onClick = { },
-                                            border = BorderStroke(1.dp, AppColors.white),
+                                            border = BorderStroke(1.dp, AppColors.White),
                                             shape = RoundedCornerShape(8.dp)
                                         ) {
                                             Text(
@@ -566,13 +566,13 @@ fun ProductDetailScreen(
                                             Icon(
                                                 imageVector = Icons.Default.Message,
                                                 contentDescription = null,
-                                                tint = AppColors.white.copy(alpha = 0.6f),
+                                                tint = AppColors.White.copy(alpha = 0.6f),
                                                 modifier = Modifier.size(48.dp)
                                             )
                                             Text(
                                                 text = "No reviews yet. Be the first to review this product.",
                                                 style = MaterialTheme.typography.bodyLarge,
-                                                color = AppColors.white.copy(alpha = 0.6f),
+                                                color = AppColors.White.copy(alpha = 0.6f),
                                                 textAlign = TextAlign.Center
                                             )
                                         }

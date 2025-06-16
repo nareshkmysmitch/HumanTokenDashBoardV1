@@ -108,10 +108,7 @@ kotlin {
 
             api(libs.androidx.datastore.preferences)
             api(libs.androidx.datastore.preferences.core)
-
             implementation(compose.components.resources)
-
-
         }
 
         nativeMain.dependencies {

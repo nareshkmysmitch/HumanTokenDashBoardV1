@@ -52,7 +52,6 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +94,7 @@ fun ConversationListScreen(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 48.dp),
             onClick = { },
             containerColor = AppColors.Pink,
-            contentColor = AppColors.white
+            contentColor = AppColors.White
         ) {
             Icon(Icons.Default.Add, contentDescription = "New Chat")
         }
@@ -179,7 +178,7 @@ private fun ConversationItem(
                         imageVector = Icons.Default.Chat,
                         contentDescription = null,
                         modifier = Modifier.padding(8.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
 
