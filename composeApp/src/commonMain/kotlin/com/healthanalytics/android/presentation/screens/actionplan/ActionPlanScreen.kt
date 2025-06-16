@@ -334,7 +334,6 @@ fun ActionPlanCard(
                     fontFamily = FontFamily.medium(),
                     color = AppColors.TextGrey,
                 )
-
                 TransparentButton(
                     modifier = Modifier.wrapContentWidth(),
                     icon = Icons.Default.Delete,

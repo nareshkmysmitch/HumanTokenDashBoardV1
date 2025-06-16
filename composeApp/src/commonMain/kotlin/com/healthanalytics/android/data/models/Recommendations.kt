@@ -1,7 +1,6 @@
 package com.healthanalytics.android.data.models
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.outlined.Help
@@ -88,7 +87,7 @@ data class UserRecommendationAction(
 enum class RecommendationCategory(val icon: ImageVector) {
     ACTIVITY(Icons.Filled.DirectionsRun),
     NUTRITION(Icons.Outlined.Restaurant),
-    SLEEP(Icons.Default.AccountCircle),
+    SLEEP(Icons.Outlined.Restaurant),
     STRESS(Icons.Outlined.PsychologyAlt),
     SUPPLEMENTS(Icons.Default.Medication),
     RECOVERY(Icons.Outlined.Help);

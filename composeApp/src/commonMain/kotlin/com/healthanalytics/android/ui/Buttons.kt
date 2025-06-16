@@ -54,7 +54,7 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, mod
 @Composable
 fun PrimaryButton(
     modifier: Modifier = Modifier,
-    buttonName: String,
+    txt: String,
     enable: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -69,7 +69,7 @@ fun PrimaryButton(
         shape = RoundedCornerShape(Dimensions.size12dp)
     ) {
         Text(
-            text = buttonName,
+            text = txt,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.bold(),
             color = AppColors.white

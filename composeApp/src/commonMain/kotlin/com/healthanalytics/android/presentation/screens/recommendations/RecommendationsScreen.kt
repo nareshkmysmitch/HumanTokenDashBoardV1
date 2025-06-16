@@ -209,9 +209,11 @@ fun RecommendationCard(
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
             ) {
+
                 val buttonText = if (isEnabled) AppStrings.ADD_TO_PLAN else AppStrings.ADDED_TO_PLAN
                 val buttonColor =
                     if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
+
                 Button(
                     onClick = {
                         if (isEnabled) accessToken?.let {
