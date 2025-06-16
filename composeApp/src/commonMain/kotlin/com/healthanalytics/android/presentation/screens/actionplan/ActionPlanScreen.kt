@@ -23,7 +23,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,6 +56,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.TransparentButton
 import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
@@ -244,7 +245,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Icon(
-                imageVector = Icons.Default.FilterList,
+                imageVector = Icons.Default.FilterAlt,
                 contentDescription = null,
                 modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -267,7 +268,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             text = AppStrings.NOT_HAVE_ANY_ACTION_PLAN,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.medium(),
-            color = AppColors.TextGrey,
+            color = AppColors.white,
             textAlign = TextAlign.Center
         )
 
@@ -352,19 +353,24 @@ fun ActionPlanCard(
                     color = AppColors.TextGrey,
                 )
 
-                OutlinedButton(onClick = {
-                    accessToken?.let {
-                        if (recommendation.category.equals(
-                                AppConstants.SUPPLEMENTS,
-                                ignoreCase = true
-                            )
-                        ) {
-                            viewModel.removeSupplements(it, recommendation)
-                        } else {
-                            viewModel.removeRecommendation(it, recommendation)
+                TransparentButton(
+                    icon = Icons.Default.Delete,
+                    txt = AppStrings.REMOVE,
+                    onClicked = {
+                        accessToken?.let {
+                            if (recommendation.category.equals(
+                                    AppConstants.SUPPLEMENTS,
+                                    ignoreCase = true
+                                )
+                            ) {
+                                viewModel.removeSupplements(it, recommendation)
+                            } else {
+                                viewModel.removeRecommendation(it, recommendation)
+                            }
                         }
-                    }
-                }) {
+                    })
+
+               /* OutlinedButton(onClick = {}) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Remove",
@@ -376,7 +382,7 @@ fun ActionPlanCard(
                         fontSize = FontSize.textSize16sp,
                         fontFamily = FontFamily.bold(),
                     )
-                }
+                }*/
             }
         }
     }
