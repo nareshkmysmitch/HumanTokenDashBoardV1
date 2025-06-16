@@ -444,7 +444,7 @@ private fun ProfileTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     OutlinedTextField(
         value = value,

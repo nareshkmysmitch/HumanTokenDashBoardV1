@@ -1,7 +1,17 @@
 package com.healthanalytics.android.data.models
 
-import kotlinx.serialization.SerialName
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.outlined.Help
+import androidx.compose.material.icons.outlined.PsychologyAlt
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.healthanalytics.android.utils.AppConstants
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.ic_sleep
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.DrawableResource
 
 @Serializable
 data class Recommendations(
@@ -59,9 +69,9 @@ data class EventConfig(
     val sub_type: String,
     val frequency: String,
     val scheduled_time: String,
-    val shape: String?=null,
-    val color: String?=null,
-    val duration: Int?=null,
+    val shape: String? = null,
+    val color: String? = null,
+    val duration: Int? = null,
     val days_of_the_week: List<Int>,
 )
 
@@ -78,17 +88,59 @@ data class UserRecommendationAction(
     val user_id: String? = null,
 )
 
-enum class RecommendationCategory(val icon: String) {
-    ACTIVITY("🏃"),
-    NUTRITION("🍽️"),
-    SLEEP("💤"),
-    STRESS("😰"),
-    SUPPLEMENTS("💊"),
-    RECOVERY("♻️");
+sealed class RecommendationIcon {
+    data class Vector(val imageVector: ImageVector) : RecommendationIcon()
+    data class Painter(val resource: DrawableResource) : RecommendationIcon()
+}
+
+sealed class RecommendationCategoryes{
+    abstract val icon: RecommendationIcon
+
+    data object Activity : RecommendationCategoryes() {
+        override val icon = RecommendationIcon.Vector(Icons.Filled.DirectionsRun)
+    }
+
+    data object Nutrition : RecommendationCategoryes() {
+        override val icon = RecommendationIcon.Vector(Icons.Outlined.Restaurant)
+    }
+
+    data object Sleep : RecommendationCategoryes() {
+        override val icon = RecommendationIcon.Painter(Res.drawable.ic_sleep)
+    }
+
+    data object Stress : RecommendationCategoryes() {
+        override val icon = RecommendationIcon.Vector(Icons.Outlined.PsychologyAlt)
+    }
+
+    data object Supplements : RecommendationCategoryes() {
+        override val icon = RecommendationIcon.Vector(Icons.Filled.Medication)
+    }
+
+    data object Recovery : RecommendationCategoryes() {
+        override val icon = RecommendationIcon.Vector(Icons.Outlined.Help)
+    }
 
     companion object {
-        fun fromString(value: String?): RecommendationCategory {
-            return values().find { it.name.equals(value, ignoreCase = true) } ?: ACTIVITY
+        fun fromString(value: String?): RecommendationCategoryes = when (value?.lowercase()) {
+            AppConstants.ACTIVITY -> Activity
+            AppConstants.NUTRITION -> Nutrition
+            AppConstants.SLEEP -> Sleep
+            AppConstants.STRESS -> Stress
+            AppConstants.SUPPLEMENTS -> Supplements
+            AppConstants.RECOVERY -> Recovery
+            else -> Recovery
         }
+
     }
 }
+
+
+
+
+
+
+
+
+
+
+
