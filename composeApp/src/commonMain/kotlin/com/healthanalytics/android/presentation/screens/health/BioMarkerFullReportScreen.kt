@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.Cause
 import com.healthanalytics.android.data.api.MetricData
@@ -67,6 +68,8 @@ fun BioMarkerFullReportScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     var selectedTab by rememberSaveable { mutableStateOf(0) } // 👈 Use rememberSaveable for resilience
+
+    BackHandler(enabled = true, onBack = { onNavigateBack() })
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->

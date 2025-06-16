@@ -208,7 +208,7 @@ fun HealthAnalyticsApp() {
 
                     BIOMARKERS_DETAIL -> {
                         BiomarkerDetailScreen(
-                            onNavigateBack = { navigateBack() },
+                            onNavigateBack = { navigateTo(HOME) },
                             biomarker = biomarker,
                             onNavigateFullReport = { navigateTo(BIOMARKER_FULL_REPORT) })
                     }
@@ -216,7 +216,7 @@ fun HealthAnalyticsApp() {
                     BIOMARKER_FULL_REPORT -> {
                         BioMarkerFullReportScreen(
                             onNavigateBack = {
-                                navigateBack()
+                                navigateTo(BIOMARKERS_DETAIL)
                             }, biomarker = biomarker
                         )
                     }
@@ -225,8 +225,7 @@ fun HealthAnalyticsApp() {
                         SymptomsScreen(
                             onNavigateBack = { navigateBack() },
                             viewModel = symptomsViewModel,
-                            onNavigateHome = { navigateTo(HOME) }
-                        )
+                            onNavigateHome = { navigateTo(HOME) })
                     }
 
                     BIOMARKER_FULL_REPORT -> {
@@ -241,11 +240,9 @@ fun HealthAnalyticsApp() {
 
             else -> {
                 OnboardContainer(
-                    onboardViewModel = onboardViewModel,
-                    isLoggedIn = {
+                    onboardViewModel = onboardViewModel, isLoggedIn = {
                         onboardViewModel.updateOnBoardState()
-                    }
-                )
+                    })
             }
         }
     }
@@ -284,41 +281,31 @@ fun OnboardContainer(
                     GetStartedScreen(
                         onGetStarted = { navController.navigate(OnboardRoute.Login) },
                         onLogin = { navController.navigate(OnboardRoute.Login) },
-                        onViewAllBiomarkers = {}
-                    )
+                        onViewAllBiomarkers = {})
                 }
                 composable<OnboardRoute.Login> {
                     LoginScreenContainer(
-                        onboardViewModel = onboardViewModel,
-                        navigateToOtpVerification = {
+                        onboardViewModel = onboardViewModel, navigateToOtpVerification = {
                             navController.navigate(OnboardRoute.OTPVerification)
-                        }
-                    )
+                        })
 
                 }
 
                 composable<OnboardRoute.OTPVerification> {
-                    OTPContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
+                    OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                        navController.navigateUp()
 
-                        }, navigateToAccountCreation = {
-                            navController.navigate(OnboardRoute.CreateAccount)
-                        }
-                    )
+                    }, navigateToAccountCreation = {
+                        navController.navigate(OnboardRoute.CreateAccount)
+                    })
                 }
 
                 composable<OnboardRoute.CreateAccount> {
-                    CreateAccountContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
-                        },
-                        navigateToAddress = {
-                            navController.navigate(OnboardRoute.SampleCollectionAddress)
-                        }
-                    )
+                    CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                        navController.navigateUp()
+                    }, navigateToAddress = {
+                        navController.navigate(OnboardRoute.SampleCollectionAddress)
+                    })
                 }
 
                 composable<OnboardRoute.SampleCollectionAddress> {
@@ -329,20 +316,15 @@ fun OnboardContainer(
                         },
                         navigateToBloodTest = {
                             navController.navigate(OnboardRoute.ScheduleBloodTest)
-                        }
-                    )
+                        })
                 }
 
                 composable<OnboardRoute.ScheduleBloodTest> {
-                    ScheduleBloodTestContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
-                        },
-                        navigateToPayment = {
-                            navController.navigate(OnboardRoute.Payment)
-                        }
-                    )
+                    ScheduleBloodTestContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                        navController.navigateUp()
+                    }, navigateToPayment = {
+                        navController.navigate(OnboardRoute.Payment)
+                    })
                 }
 
                 composable<OnboardRoute.Payment> {
@@ -354,8 +336,7 @@ fun OnboardContainer(
                         },
                         isPaymentCompleted = {
                             isLoggedIn()
-                        }
-                    )
+                        })
                 }
             }
         }
@@ -391,7 +372,7 @@ fun HomeScreen(
         TopAppBar(
             title = "Human Token",
             isSymptomsIconVisible = currentScreen == MainScreen.DASHBOARD,
-            onSymptomsClick = {onSymptomsClick()},
+            onSymptomsClick = { onSymptomsClick() },
             onEndIconClick = if (currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
             onChatClick = onChatClick,
             isChatVisible = currentScreen != MainScreen.MARKETPLACE,
