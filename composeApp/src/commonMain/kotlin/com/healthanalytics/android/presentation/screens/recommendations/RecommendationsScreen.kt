@@ -282,9 +282,12 @@ fun MetricChip(
     ) {
         Text(
             text = metric,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(
+                horizontal = Dimensions.size8dp,
+                vertical = Dimensions.size4dp
+            ),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSecondaryContainer
+            color = AppColors.white
         )
     }
 } 
