@@ -89,17 +89,6 @@ class HealthDataViewModel(
         }
     }
 
-
-    /*  fun getAvailableFilters(): List<String?> {
-          return if (_uiState.value.metrics.isNotEmpty()) {
-              listOf(AppConstants.ALL) + _uiState.value.metrics
-                  .map { it?.displayRating }
-                  .distinct()
-          } else {
-              listOf()
-          }
-      }*/
-
     fun getAvailableFilters(): List<String?> {
         return if (_uiState.value.metrics.isNotEmpty()) {
             listOf(
