@@ -53,7 +53,6 @@ import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +73,8 @@ fun ProfileScreen(
     val logoutState by viewModel.logoutState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.clearLogoutState() }
+        viewModel.clearLogoutState()
+    }
     // Handle logout state changes
     LaunchedEffect(logoutState) {
         when (logoutState) {
@@ -178,7 +178,6 @@ fun ProfileScreen(
                 Column(
                     modifier = Modifier.fillMaxSize().padding(16.dp)
                 ) {
-
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -254,7 +253,7 @@ fun ProfileScreen(
                                     containerColor = Color(0xFF8B5CF6)
                                 )
                             ) {
-                                Text("Edit Profile")
+                                Text("Edit Profile", color = Color.White)
                             }
                         }
                     }
@@ -445,7 +444,7 @@ private fun ProfileTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     OutlinedTextField(
         value = value,

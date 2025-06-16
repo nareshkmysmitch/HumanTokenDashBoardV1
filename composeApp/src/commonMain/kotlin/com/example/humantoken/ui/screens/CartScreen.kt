@@ -57,13 +57,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Variant
-import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.CartActionState
+import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import kotlinx.serialization.Serializable
-import org.koin.compose.koinInject
 
 @Serializable
 data class Product(
@@ -95,6 +94,7 @@ data class CartItem(
     val product_id: String? = null,
     val variant_id: String? = null,
     val quantity: Int? = null,
+    val type: String? = null,
     val metadata: Map<String, String>? = emptyMap(),
     val created_at: String? = null,
     val updated_at: String? = null,
@@ -149,29 +149,33 @@ fun CartScreen(
     LaunchedEffect(Unit) {
         viewModel.getCartList()
     }
-    when(cartListFlow){
+    when (cartListFlow) {
         is CartListState.Success -> {
             cartItems = (cartListFlow as CartListState.Success).cartList.flatMap { cart ->
                 cart.cart_items ?: emptyList()
             }
             isLoading = false
         }
+
         is CartListState.Error -> {
             error = (cartListFlow as CartListState.Error).message
             isLoading = false
         }
+
         is CartListState.Loading -> {
             isLoading = true
         }
     }
 
-    when(cartActionState){
+    when (cartActionState) {
         is CartActionState.Success -> {
             snackbarMessage = (cartActionState as CartActionState.Success).message
         }
+
         is CartActionState.Error -> {
             snackbarMessage = (cartActionState as CartActionState.Error).message
         }
+
         is CartActionState.Loading -> {
             // Handle loading if needed
         }
@@ -181,9 +185,9 @@ fun CartScreen(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.AppBackgroundColor,
-                    navigationIconContentColor = AppColors.Black,
-                    titleContentColor = AppColors.Black
+                    containerColor = AppColors.Black,
+                    navigationIconContentColor = AppColors.white,
+                    titleContentColor = AppColors.white
                 ),
                 title = {
                     Text(
@@ -202,6 +206,7 @@ fun CartScreen(
                 }
             )
         },
+        containerColor = AppColors.Black,
         snackbarHost = {
             snackbarMessage?.let { message ->
                 Snackbar(
@@ -228,6 +233,7 @@ fun CartScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 error != null -> {
                     Text(
                         text = error ?: "An error occurred",
@@ -237,9 +243,11 @@ fun CartScreen(
                             .padding(16.dp)
                     )
                 }
+
                 cartItems.isEmpty() -> {
                     EmptyCartMessage()
                 }
+
                 else -> {
                     LazyColumn(
                         modifier = modifier.fillMaxSize(),
@@ -255,9 +263,12 @@ fun CartScreen(
 //                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
 //                                        }
                                         if (newQuantity > 0) {
-                                            product.product_id?.let { viewModel.updateCartItem(it,
-                                                newQuantity.toString()
-                                            ) }
+                                            product.product_id?.let {
+                                                viewModel.updateCartItem(
+                                                    it,
+                                                    newQuantity.toString()
+                                                )
+                                            }
                                         }
                                     }
                                 },
@@ -265,9 +276,12 @@ fun CartScreen(
                                     item.product?.let { product ->
                                         val newQuantity = (item.quantity ?: 1) + 1
                                         if (newQuantity > 0) {
-                                            product.product_id?.let { viewModel.updateCartItem(it,
-                                                newQuantity.toString()
-                                            ) }
+                                            product.product_id?.let {
+                                                viewModel.updateCartItem(
+                                                    it,
+                                                    newQuantity.toString()
+                                                )
+                                            }
                                         }
                                     }
 
@@ -306,7 +320,7 @@ private fun EmptyCartMessage(modifier: Modifier = Modifier) {
         Text(
             text = "Your cart is empty",
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = AppColors.white
         )
     }
 }
@@ -326,7 +340,7 @@ private fun CartItemCard(
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.white // Replace with your desired color
+            containerColor = AppColors.BlueCardBackground // Replace with your desired color
         ),
     ) {
         Row(
@@ -334,7 +348,7 @@ private fun CartItemCard(
                 .fillMaxWidth()
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // Product Image
             Image(
@@ -354,12 +368,13 @@ private fun CartItemCard(
                 Text(
                     text = item.product?.name ?: "",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = AppColors.white
                 )
                 Text(
                     text = "₹${item.product?.price ?: "--"}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF2196F3)
+                    color = AppColors.white
                 )
             }
 
@@ -372,7 +387,7 @@ private fun CartItemCard(
                     onClick = onQuantityDecrease,
                     modifier = Modifier
                         .size(24.dp)
-                        .background(if(quantity > 1) Color.Black else Color.LightGray, CircleShape)
+                        .background(if (quantity > 1) Color.Black else Color.LightGray, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
@@ -385,20 +400,21 @@ private fun CartItemCard(
                 Text(
                     text = item.quantity.toString(),
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.widthIn(min = 24.dp),
-                    textAlign = TextAlign.Center
+                    modifier = Modifier.widthIn(min = 24.dp).padding(horizontal = 12.dp),
+                    textAlign = TextAlign.Center,
+                    color = AppColors.white
                 )
 
                 IconButton(
                     onClick = onQuantityIncrease,
                     modifier = Modifier
                         .size(24.dp)
-                        .background(Color(0xFF1C1B1F), CircleShape)
+                        .background(AppColors.white, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Increase quantity",
-                        tint = Color.White,
+                        tint = AppColors.Black,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -436,7 +452,7 @@ private fun OrderSummary(
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.white
+            containerColor = AppColors.BlueCardBackground
         ),
     ) {
         Column(
@@ -446,18 +462,28 @@ private fun OrderSummary(
             Text(
                 text = "ORDER SUMMARY",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = AppColors.white
             )
 
-            OrderSummaryRow("Subtotal", "₹${formatPrice(subtotal)}")
-            OrderSummaryRow("Tax (18%)", "₹${formatPrice(tax)}")
+            OrderSummaryRow(
+                "Subtotal",
+                "₹${formatPrice(subtotal)}",
+                valueColor = AppColors.textSecondary
+            )
+            OrderSummaryRow(
+                "Tax (18%)",
+                "₹${formatPrice(tax)}",
+                valueColor = AppColors.textSecondary
+            )
             OrderSummaryRow("Shipping", "Free", valueColor = Color.Green)
             HorizontalDivider()
             OrderSummaryRow(
                 "Grand Total",
                 "₹${formatPrice(total)}",
                 titleStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                valueStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                valueStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                valueColor = AppColors.textSecondary,
             )
         }
     }
@@ -483,7 +509,10 @@ private fun OrderSummaryRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = title, style = titleStyle)
+        Text(
+            text = title, style = titleStyle,
+            color = AppColors.white
+        )
         Text(text = value, style = valueStyle, color = valueColor)
     }
 }
@@ -497,7 +526,7 @@ private fun CheckoutButton(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF2196F3)
+            containerColor = AppColors.PinkButton
         ),
         shape = RoundedCornerShape(12.dp),
         contentPadding = PaddingValues(vertical = 16.dp)

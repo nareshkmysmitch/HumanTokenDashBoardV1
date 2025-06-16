@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.actionplan
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,15 +22,12 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,19 +37,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import com.healthanalytics.android.data.models.MetricRecommendation
 import com.healthanalytics.android.data.models.Recommendation
-import com.healthanalytics.android.data.models.RecommendationCategory
+import com.healthanalytics.android.data.models.RecommendationCategoryes
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.MetricChip
+import com.healthanalytics.android.presentation.screens.recommendations.PotentialImpact
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationTitle
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
+import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.RecommendationIcon
+import com.healthanalytics.android.ui.TransparentButton
+import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.koinInject
 
 @Composable
 fun ActionPlanScreen(
@@ -71,32 +77,13 @@ fun ActionPlanScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
-        // Header Section
-        /* Row(
-             modifier = Modifier.fillMaxWidth().padding(16.dp),
-             horizontalArrangement = Arrangement.End,
-             verticalAlignment = Alignment.CenterVertically
-         ) {
-             Text(
-                 text = "$totalItems items",
-                 style = MaterialTheme.typography.titleMedium,
-                 color = MaterialTheme.colorScheme.onSurfaceVariant
-             )
-         }*/
-
-        println("category--> ${viewModel.getActionCategories()}")
-
-
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         // Content Section
         if (uiState.isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -107,8 +94,9 @@ fun ActionPlanScreen(
         } else {
             // Category Row
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size8dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
+                contentPadding = PaddingValues(horizontal = Dimensions.size12dp)
             ) {
                 items(categoryList) { category ->
                     CategoryChip(
@@ -120,8 +108,8 @@ fun ActionPlanScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(Dimensions.size16dp),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.size16dp)
             ) {
                 items(filteredRecommendations) { recommendation ->
                     ActionPlanCard(
@@ -139,16 +127,39 @@ fun CategoryChip(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val categoryEnum = RecommendationCategory.fromString(category)
+    val categoryEnum = RecommendationCategoryes.fromString(category)
 
     FilterChip(
-        selected = selected, onClick = onClick, label = {
+        selected = selected,
+        onClick = onClick,
+        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
+                alpha = 0.1f
+            ),
+            labelColor = AppColors.textPrimary,
+            selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
+            selectedLabelColor = AppColors.white
+        ),
+        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = selected,
+            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+                alpha = 0.2f
+            )
+        ),
+        label = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size4dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(categoryEnum.icon)
-                Text(category.capitalizeFirst())
+                RecommendationIcon(categoryEnum, modifier = Modifier.size(Dimensions.size14dp))
+                Text(
+                    category.capitalizeFirst(),
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textPrimary,
+                    textAlign = TextAlign.Center
+                )
             }
         })
 }
@@ -156,104 +167,104 @@ fun CategoryChip(
 @Composable
 fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(Dimensions.size16dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Surface(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(Dimensions.size80dp),
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceVariant
+            color = AppColors.Teal
         ) {
             Icon(
                 imageVector = Icons.Default.Assignment,
                 contentDescription = null,
-                modifier = Modifier.padding(16.dp).fillMaxSize(),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
+                tint = AppColors.white
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
         Text(
-            text = "Your Action Plan is Empty",
-            style = MaterialTheme.typography.headlineSmall,
+            text = AppStrings.YOUR_ACTION_PLAN_IS_EMPTY,
+            fontSize = FontSize.textSize24sp,
+            fontFamily = FontFamily.bold(),
+            color = AppColors.white,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Text(
-            text = "Add recommendations to your action plan to start tracking your health goals",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            text = AppStrings.ADD_RECOMMENDATIONS,
+            fontSize = FontSize.textSize16sp,
+            fontFamily = FontFamily.medium(),
+            color = AppColors.white,
+            textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
-        Button(
-            onClick = { viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS) }) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Browse Recommendations")
-        }
+        TransparentButton(
+            modifier = Modifier.wrapContentWidth(),
+            icon = Icons.Default.ArrowBack,
+            txt = AppStrings.BROWSE_RECOMMENDATIONS,
+            onClicked = {
+                viewModel.setSelectedTab(RecommendationsTab.RECOMMENDATIONS)
+            })
     }
 }
 
 @Composable
 fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(Dimensions.size16dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Surface(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(Dimensions.size80dp),
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceVariant
+            color = AppColors.Teal
         ) {
             Icon(
-                imageVector = Icons.Default.FilterList,
+                imageVector = Icons.Default.FilterAlt,
                 contentDescription = null,
-                modifier = Modifier.padding(16.dp).fillMaxSize(),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
+                tint = AppColors.white
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
         Text(
-            text = "No Items in This Category",
-            style = MaterialTheme.typography.headlineSmall,
+            text = AppStrings.NO_ITEMS_IN_THIS_CATEGORY,
+            fontSize = FontSize.textSize24sp,
+            fontFamily = FontFamily.bold(),
+            color = AppColors.white,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Text(
-            text = "You don't have any action plan items in the selected category",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            text = AppStrings.NOT_HAVE_ANY_ACTION_PLAN,
+            fontSize = FontSize.textSize16sp,
+            fontFamily = FontFamily.medium(),
+            color = AppColors.white,
+            textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
-        Button(
-            onClick = { viewModel.updateActionCategory("All") }) {
-            Icon(
-                imageVector = Icons.Default.Dashboard,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Show All Items")
-        }
+        TransparentButton(
+            modifier = Modifier.wrapContentWidth(),
+            icon = Icons.Default.Dashboard,
+            txt = AppStrings.SHOW_ALL_ITEMS,
+            onClicked = {
+                viewModel.updateActionCategory(AppConstants.ALL)
+            })
     }
 }
 
@@ -267,78 +278,44 @@ fun ActionPlanCard(
         recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
     val formattedDate = formatDate(createAt)
 
+    val metricRecommendation = recommendation.metric_recommendations
+
+    val isSupplements = recommendation.category.equals(
+        AppConstants.SUPPLEMENTS,
+        ignoreCase = true
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.white
+            containerColor = AppColors.CardGrey
         ),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.size12dp)
         ) {
             // Header with icon and title
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = RecommendationCategory.fromString(recommendation.category).icon,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        text = recommendation.name, style = MaterialTheme.typography.titleMedium
-                    )
-                }
+            RecommendationTitle(recommendation)
 
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
+            if (isSupplements) {
+                Text(
+                    text = recommendation.description ?: "",
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textSecondary
+                )
+            } else {
+                PotentialImpact()
+
+                Spacer(modifier = Modifier.height(Dimensions.size8dp))
+
+                // Metrics Grid
+                MetricsGrid(metricRecommendation)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Potential Impact Section
-            Text(
-                text = "Potential Impact",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Metrics Grid
-            recommendation.metric_recommendations?.let { metrics ->
-                if (metrics.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        metrics.chunked(2).forEach { rowMetrics ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                rowMetrics.forEach { metricRecommendation ->
-                                    MetricChip(
-                                        metric = metricRecommendation.metric.metric,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-                                if (rowMetrics.size == 1) {
-                                    Spacer(modifier = Modifier.weight(1f))
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -348,26 +325,55 @@ fun ActionPlanCard(
                 // Added Date
                 Text(
                     text = "Added $formattedDate",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.TextGrey,
                 )
+                TransparentButton(
+                    modifier = Modifier.wrapContentWidth(),
+                    icon = Icons.Default.Delete,
+                    txt = AppStrings.REMOVE,
+                    onClicked = {
+                        accessToken?.let {
+                            if (recommendation.category.equals(
+                                    AppConstants.SUPPLEMENTS,
+                                    ignoreCase = true
+                                )
+                            ) {
+                                viewModel.removeSupplements(it, recommendation)
+                            } else {
+                                viewModel.removeRecommendation(it, recommendation)
+                            }
+                        }
+                    })
+            }
+        }
+    }
+}
 
-                OutlinedButton(onClick = {
-                    accessToken?.let {
-                        if (recommendation.category == "supplements") {
-                            viewModel.removeSupplements(it, recommendation)
-                        } else {
-                            viewModel.removeRecommendation(it, recommendation)
+@Composable
+fun MetricsGrid(metricRecommendation: List<MetricRecommendation>?) {
+    metricRecommendation.let { metrics ->
+        if (metrics?.isNotEmpty() == true) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+            ) {
+                metrics.chunked(2).forEach { rowMetrics ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+                    ) {
+                        rowMetrics.forEach { metricRecommendation ->
+                            MetricChip(
+                                metric = metricRecommendation.metric.metric,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (rowMetrics.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Remove")
                 }
             }
         }
@@ -382,7 +388,8 @@ fun formatDate(isoString: String?): String {
         val localDateTime = instant.toLocalDateTime(systemTz)
 
         val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
-        val month = localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+        val month =
+            localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
         val year = localDateTime.year
         "$day/$month/$year"
     } ?: ""

@@ -14,6 +14,7 @@ import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.screens.health.BioMarkerReportViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
+import com.healthanalytics.android.presentation.screens.symptoms.SymptomsViewModel
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiServiceImpl
@@ -47,6 +48,7 @@ val sharedModules = module {
     factoryOf(::ChatViewModel)
     factoryOf(::RecommendationsViewModel)
     viewModelOf(::OnboardViewModel)
+    viewModelOf(::SymptomsViewModel)
     factoryOf(::BioMarkerReportViewModel)
 
 }

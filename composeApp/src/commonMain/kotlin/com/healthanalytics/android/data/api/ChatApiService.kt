@@ -1,5 +1,6 @@
 package com.healthanalytics.android.data.api
 
+import co.touchlab.kermit.Logger
 import com.healthanalytics.android.data.models.ChatResponse
 import com.healthanalytics.android.data.models.ConversationResponse
 import io.ktor.client.*
@@ -29,6 +30,9 @@ class ChatApiServiceImpl(
     override suspend fun getConversations(
         accessToken: String, page: Int, perPage: Int
     ): ConversationResponse {
+
+        Logger.e { "Get Conversation Response.. " }
+
         return httpClient.get("$baseUrl/conversations") {
 
             parameter("page", page)
