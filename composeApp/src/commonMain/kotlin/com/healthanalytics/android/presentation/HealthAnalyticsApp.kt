@@ -398,15 +398,6 @@ fun HomeScreen(
     }
 
     Scaffold(topBar = {
-//        TopAppBar(
-//            title = "Human Token",
-//            isSymptomsIconVisible = currentScreen == MainScreen.DASHBOARD,
-//            onSymptomsClick = {onSymptomsClick()},
-//            onEndIconClick = if (currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
-//            onChatClick = onChatClick,
-//            isChatVisible = currentScreen != MainScreen.MARKETPLACE,
-//        )
-
         TopAppBar(
             title = "Human Token",
             actions = {
