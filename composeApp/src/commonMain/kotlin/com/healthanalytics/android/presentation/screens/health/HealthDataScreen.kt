@@ -89,7 +89,7 @@ fun HealthDataScreen(
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp),
+                modifier = Modifier.fillMaxWidth().padding(size16dp),
                 placeholder = { Text("Search health data") },
                 singleLine = true
             )
@@ -108,6 +108,7 @@ fun HealthDataScreen(
                 contentPadding = PaddingValues(horizontal = size12dp)
             ) {
                 items(availableFilters) { filter ->
+                    val count = viewModel.getHealthDataCount(filter ?: "")
                     val selected = uiState.selectedFilter == filter
                     FilterChip(
                         selected = selected,
@@ -123,13 +124,13 @@ fun HealthDataScreen(
                         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = selected,
-                            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+                            borderColor = if (selected) Color.Transparent else AppColors.Pink.copy(
                                 alpha = 0.2f
                             )
                         ),
                         label = {
                             Text(
-                                text = filter ?: "",
+                                text = "$filter ($count)",
                                 fontSize = FontSize.textSize14sp,
                                 fontFamily = FontFamily.medium(),
                                 color = AppColors.textPrimary,

@@ -70,7 +70,7 @@ class HealthDataViewModel(
         val uiState = _uiState.value
         val currentFilter = uiState.selectedFilter
         val searchQuery = uiState.searchQuery
-        val filterList = healthDataMap[currentFilter]
+        val filterMap = healthDataMap[currentFilter]
         val isNewData = currentFilter == AppConstants.NEW_DATA
 
         return uiState.metrics.filter { metric ->
@@ -79,7 +79,7 @@ class HealthDataViewModel(
             val matchesFilter = when {
                 isNewData -> metric.isLatest == true
                 currentFilter == null || currentFilter == AppConstants.ALL -> true
-                else -> filterList?.contains(metric.displayRating?.lowercase()) == true
+                else -> filterMap?.contains(metric.displayRating?.lowercase()) == true
             }
 
             val matchesSearch = searchQuery.isEmpty() ||
@@ -124,4 +124,24 @@ class HealthDataViewModel(
         )
         return ratingMap
     }
+
+    fun getHealthDataCount(currentFilter: String): Int {
+        val metrics = _uiState.value.metrics
+
+        if (currentFilter == AppConstants.ALL) {
+            return metrics.size
+        }
+
+        if (currentFilter == AppConstants.NEW_DATA) {
+            return metrics.count { it?.isLatest == true }
+        }
+
+        val filterList = healthDataMap[currentFilter] ?: return 0
+
+        return metrics.count { metric ->
+            val rating = metric?.displayRating?.lowercase()
+            rating != null && filterList.contains(rating)
+        }
+    }
+
 } 
