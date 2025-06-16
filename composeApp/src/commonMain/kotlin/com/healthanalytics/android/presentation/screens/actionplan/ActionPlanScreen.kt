@@ -49,9 +49,11 @@ import com.healthanalytics.android.presentation.screens.recommendations.MetricCh
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.capitalizeFirst
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -170,7 +172,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
         Text(
-            text = "Your Action Plan is Empty",
+            text = AppStrings.YOUR_ACTION_PLAN_IS_EMPTY,
             fontSize = FontSize.textSize24sp,
             fontFamily = FontFamily.bold(),
             color = AppColors.white,
@@ -180,7 +182,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Text(
-            text = "Add recommendations to your action plan to start tracking your health goals",
+            text = AppStrings.ADD_RECOMMENDATIONS,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.medium(),
             color = AppColors.TextGrey,
@@ -198,7 +200,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             )
             Spacer(modifier = Modifier.width(Dimensions.size8dp))
             Text(
-                "Browse Recommendations",
+                AppStrings.BROWSE_RECOMMENDATIONS,
                 fontSize = FontSize.textSize16sp,
                 color = AppColors.white,
                 fontFamily = FontFamily.bold(),
@@ -230,7 +232,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
         Text(
-            text = "No Items in This Category",
+            text = AppStrings.NO_ITEMS_IN_THIS_CATEGORY,
             fontSize = FontSize.textSize24sp,
             fontFamily = FontFamily.bold(),
             color = AppColors.white,
@@ -240,7 +242,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Text(
-            text = "You don't have any action plan items in the selected category",
+            text = AppStrings.NOT_HAVE_ANY_ACTION_PLAN,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.medium(),
             color = AppColors.TextGrey,
@@ -250,7 +252,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
         Button(
-            onClick = { viewModel.updateActionCategory("All") }) {
+            onClick = { viewModel.updateActionCategory(AppConstants.ALL) }) {
             Icon(
                 imageVector = Icons.Default.Dashboard,
                 contentDescription = null,
@@ -258,7 +260,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             )
             Spacer(modifier = Modifier.width(Dimensions.size8dp))
             Text(
-                "Show All Items", fontSize = FontSize.textSize16sp,
+                AppStrings.SHOW_ALL_ITEMS, fontSize = FontSize.textSize16sp,
                 color = AppColors.white,
                 fontFamily = FontFamily.bold(),
             )
@@ -308,15 +310,13 @@ fun ActionPlanCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-
-
             }
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             // Potential Impact Section
             Text(
-                text = "Potential Impact",
+                text = AppStrings.POTENTIAL_IMPACT,
                 fontSize = FontSize.textSize16sp,
                 color = AppColors.white,
                 fontFamily = FontFamily.medium()
@@ -368,7 +368,11 @@ fun ActionPlanCard(
 
                 OutlinedButton(onClick = {
                     accessToken?.let {
-                        if (recommendation.category == "supplements") {
+                        if (recommendation.category.equals(
+                                AppConstants.SUPPLEMENTS,
+                                ignoreCase = true
+                            )
+                        ) {
                             viewModel.removeSupplements(it, recommendation)
                         } else {
                             viewModel.removeRecommendation(it, recommendation)

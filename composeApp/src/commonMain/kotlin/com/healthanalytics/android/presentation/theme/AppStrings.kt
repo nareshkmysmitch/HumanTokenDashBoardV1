@@ -45,4 +45,13 @@ object AppStrings {
     const val CITY = "City"
     const val STATE = "State"
     const val PIN_CODE = "Pincode"
+    const val POTENTIAL_IMPACT = "Potential Impact"
+    const val YOUR_ACTION_PLAN_IS_EMPTY = "Your Action Plan is Empty"
+    const val ADD_RECOMMENDATIONS = "Add recommendations to your action plan to start tracking your health goals"
+    const val BROWSE_RECOMMENDATIONS = "Browse Recommendations"
+    const val NO_ITEMS_IN_THIS_CATEGORY = "No Items in This Category"
+    const val NOT_HAVE_ANY_ACTION_PLAN = "You don't have any action plan items in the selected category"
+    const val SHOW_ALL_ITEMS = "Show All Items"
+
+
 }

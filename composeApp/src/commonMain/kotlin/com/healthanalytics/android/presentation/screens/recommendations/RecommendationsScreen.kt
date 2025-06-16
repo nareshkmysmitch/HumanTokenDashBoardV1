@@ -38,6 +38,7 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
@@ -60,13 +61,6 @@ fun RecommendationsScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0xFF111318))
     ) {
-        // Header
-//        Text(
-//            text = "Recommendations",
-//            style = MaterialTheme.typography.headlineMedium,
-//            modifier = Modifier.padding(16.dp)
-//        )
-
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
@@ -76,19 +70,6 @@ fun RecommendationsScreen(
                 CircularProgressIndicator()
             }
         } else {
-            // Subtitle with selected category and count
-//            Text(
-//                text = "${uiState.selectedCategory?.capitalizeFirst()} Recommendations (${
-//                    uiState.selectedCategory?.let {
-//                        viewModel.getCategoryCount(
-//                            it
-//                        )
-//                    }
-//                })",
-//                style = MaterialTheme.typography.titleMedium,
-//                color = MaterialTheme.colorScheme.onSurfaceVariant,
-//                modifier = Modifier.padding(horizontal = 16.dp))
-
             // Category Selector
             LazyRow(
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
@@ -213,7 +194,7 @@ fun RecommendationCard(
             Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
             Text(
-                text = "Potential Impact",
+                text = AppStrings.POTENTIAL_IMPACT,
                 fontSize = FontSize.textSize14sp,
                 fontFamily = FontFamily.medium(),
                 color = AppColors.textSecondary
@@ -233,12 +214,11 @@ fun RecommendationCard(
                         metrics.forEach { metricRecommendation ->
                             Box(
                                 modifier = Modifier.background(
-                                        color = AppColors.SubGreyColor,
-                                        shape = RoundedCornerShape(10.dp)
-                                    ).padding(
-                                        vertical = Dimensions.size6dp,
-                                        horizontal = Dimensions.size8dp
-                                    ), contentAlignment = Alignment.CenterStart
+                                    color = AppColors.SubGreyColor,
+                                    shape = RoundedCornerShape(10.dp)
+                                ).padding(
+                                    vertical = Dimensions.size6dp, horizontal = Dimensions.size8dp
+                                ), contentAlignment = Alignment.CenterStart
                             ) {
                                 Text(
                                     text = metricRecommendation.metric.metric.uppercase(),

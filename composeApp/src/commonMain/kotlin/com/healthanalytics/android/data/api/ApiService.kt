@@ -14,7 +14,6 @@ import com.healthanalytics.android.data.models.RemoveRecommendationResponse
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
 import com.healthanalytics.android.data.models.SubmitSymptomsResponse
 import com.healthanalytics.android.data.models.Symptom
-import com.healthanalytics.android.data.models.SymptomResponse
 import com.healthanalytics.android.data.models.SymptomsWrapper
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.utils.EncryptionUtils
@@ -29,12 +28,10 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.put
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
@@ -62,16 +59,16 @@ interface ApiService {
     ): Boolean?
 
     suspend fun updateProfile(
-        accessToken: String, request: UpdateProfileRequest
+        accessToken: String, request: UpdateProfileRequest,
     ): ProfileUpdateResponse?
 
     suspend fun getAddresses(accessToken: String): AddressData?
     suspend fun addProduct(
-        accessToken: String, productId: String, variantId: String
+        accessToken: String, productId: String, variantId: String,
     ): EncryptedResponse?
 
     suspend fun updateProduct(
-        accessToken: String, productId: String, quantity: String
+        accessToken: String, productId: String, quantity: String,
     ): EncryptedResponse?
 
     suspend fun getCartList(accessToken: String): List<Cart?>?
@@ -79,7 +76,7 @@ interface ApiService {
     suspend fun logout(accessToken: String): Boolean
     suspend fun getTestBookings(accessToken: String): List<Product?>?
     suspend fun getBiomarkerReport(
-        accessToken: String, type: String, metricId: String
+        accessToken: String, type: String, metricId: String,
     ): BiomarkerReportData?
 
     suspend fun getSymptoms(accessToken: String): List<Symptom>?
@@ -89,7 +86,7 @@ interface ApiService {
 
 
 class ApiServiceImpl(
-    private val httpClient: HttpClient, private val json: Json = Json { ignoreUnknownKeys = true }
+    private val httpClient: HttpClient, private val json: Json = Json { ignoreUnknownKeys = true },
 ) : ApiService {
     override suspend fun getProducts(accessToken: String): List<Product?>? {
         val response = httpClient.get("v4/human-token/market-place/products") {
@@ -113,7 +110,7 @@ class ApiServiceImpl(
     }
 
     override suspend fun updateProfile(
-        accessToken: String, request: UpdateProfileRequest
+        accessToken: String, request: UpdateProfileRequest,
     ): ProfileUpdateResponse? {
         val response = httpClient.put("v4/human-token/lead/update-profile") {
             header("access_token", accessToken)
@@ -150,13 +147,13 @@ class ApiServiceImpl(
     }
 
     override suspend fun addProduct(
-        accessToken: String, productId: String, variantId: String
+        accessToken: String, productId: String, variantId: String,
     ): EncryptedResponse? {
         println("Adding product: $productId, variantId: $variantId")
 
         val requestObject = buildJsonObject {
             put("product_id", productId)
-            if(variantId.isNotEmpty()) {
+            if (variantId.isNotEmpty()) {
                 put("variant_id", variantId)
             }
         }
@@ -179,7 +176,7 @@ class ApiServiceImpl(
     }
 
     override suspend fun updateProduct(
-        accessToken: String, productId: String, quantity: String
+        accessToken: String, productId: String, quantity: String,
     ): EncryptedResponse? {
         println("Updating product: $productId, quantity: $quantity")
         val requestObject = buildJsonObject {
@@ -285,7 +282,7 @@ class ApiServiceImpl(
     }
 
     override suspend fun getBiomarkerReport(
-        accessToken: String, type: String, metricId: String
+        accessToken: String, type: String, metricId: String,
     ): BiomarkerReportData? {
         val response = httpClient.get("v4/human-token/health-data/metric") {
             header("access_token", accessToken)
@@ -365,7 +362,8 @@ class ApiServiceImpl(
             }
             val responseBody = response.bodyAsText()
             println("Symptoms response --> Raw ${responseBody}")
-            val symptomsWrapper = EncryptionUtils.handleDecryptionResponse<SymptomsWrapper>(responseBody)
+            val symptomsWrapper =
+                EncryptionUtils.handleDecryptionResponse<SymptomsWrapper>(responseBody)
             return symptomsWrapper?.symptoms
         } catch (e: Exception) {
             println("Error handling symptoms response: ${e.message}")
