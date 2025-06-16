@@ -93,23 +93,6 @@ sealed class RecommendationIcon {
     data class Painter(val resource: DrawableResource) : RecommendationIcon()
 }
 
-
-/*enum class RecommendationCategory(val icon: RecommendationIcon) {
-    ACTIVITY(RecommendationIcon.Vector(Icons.Filled.DirectionsRun)),
-    NUTRITION(RecommendationIcon.Vector(Icons.Outlined.Restaurant)),
-    SLEEP(RecommendationIcon.Painter(Res.drawable.ic_sleep)),
-    STRESS(RecommendationIcon.Vector(Icons.Outlined.PsychologyAlt)),
-    SUPPLEMENTS(RecommendationIcon.Vector(Icons.Default.Medication)),
-    RECOVERY(RecommendationIcon.Vector(Icons.Outlined.Help));
-
-    companion object {
-        fun fromString(value: String?): RecommendationCategory {
-            return values().find { it.name.equals(value, ignoreCase = true) } ?: ACTIVITY
-        }
-    }
-}*/
-
-
 sealed class RecommendationCategoryes{
     abstract val icon: RecommendationIcon
 
@@ -145,7 +128,7 @@ sealed class RecommendationCategoryes{
             AppConstants.STRESS -> Stress
             AppConstants.SUPPLEMENTS -> Supplements
             AppConstants.RECOVERY -> Recovery
-            else -> Activity
+            else -> Recovery
         }
 
     }
