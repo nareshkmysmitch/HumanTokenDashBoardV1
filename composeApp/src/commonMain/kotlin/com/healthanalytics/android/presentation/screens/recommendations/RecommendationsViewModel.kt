@@ -19,10 +19,6 @@ import kotlinx.coroutines.launch
 
 class RecommendationsViewModel(private val apiService: ApiService) : ViewModel() {
 
-    init {
-        println("New Instances -->")
-    }
-
     private val _uiState = MutableStateFlow(RecommendationsUiState())
     val uiState: StateFlow<RecommendationsUiState> = _uiState.asStateFlow()
 

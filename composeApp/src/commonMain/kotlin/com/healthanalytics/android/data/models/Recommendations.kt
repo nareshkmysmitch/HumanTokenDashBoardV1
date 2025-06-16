@@ -1,6 +1,12 @@
 package com.healthanalytics.android.data.models
 
-import kotlinx.serialization.SerialName
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.outlined.Help
+import androidx.compose.material.icons.outlined.PsychologyAlt
+import androidx.compose.material.icons.outlined.Restaurant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -59,9 +65,9 @@ data class EventConfig(
     val sub_type: String,
     val frequency: String,
     val scheduled_time: String,
-    val shape: String?=null,
-    val color: String?=null,
-    val duration: Int?=null,
+    val shape: String? = null,
+    val color: String? = null,
+    val duration: Int? = null,
     val days_of_the_week: List<Int>,
 )
 
@@ -92,3 +98,14 @@ enum class RecommendationCategory(val icon: String) {
         }
     }
 }
+
+
+class RecommendationIcons {
+    val activity = Icons.Filled.DirectionsRun
+    val nutrition = Icons.Outlined.Restaurant
+    val sleep = Icons.Default.AccountCircle
+    val stress = Icons.Outlined.PsychologyAlt
+    val supplements = Icons.Default.Medication
+    val recovery = Icons.Outlined.Help
+}
+
