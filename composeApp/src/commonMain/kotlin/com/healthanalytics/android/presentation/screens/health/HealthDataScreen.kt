@@ -28,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -110,11 +109,24 @@ fun HealthDataScreen(
                 contentPadding = PaddingValues(horizontal = size12dp)
             ) {
                 items(availableFilters) { filter ->
+                    val selected = uiState.selectedFilter == filter
                     FilterChip(
-                        selected = uiState.selectedFilter == filter,
+                        selected = selected,
                         onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = AppColors.DarkPink,
+                        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
+                                alpha = 0.1f
+                            ),
+                            labelColor = AppColors.textPrimary,
+                            selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
+                            selectedLabelColor = AppColors.white
+                        ),
+                        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = selected,
+                            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+                                alpha = 0.2f
+                            )
                         ),
                         label = {
                             Text(
