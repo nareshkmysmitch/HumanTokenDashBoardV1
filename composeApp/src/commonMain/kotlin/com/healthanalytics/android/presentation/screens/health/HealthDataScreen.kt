@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -51,6 +53,7 @@ import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.Dimensions.size12dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size16dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size4dp
+import com.healthanalytics.android.presentation.theme.Dimensions.size8dp
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 import kotlinx.datetime.Instant
@@ -170,23 +173,34 @@ fun MetricCard(
     metric: BloodData?, onMetricClick: (BloodData) -> Unit = {},
 ) {
     val symptomsReported = metric?.symptomsReported
+    val isLatest = metric?.isLatest == true
     Column(
         modifier = Modifier.fillMaxWidth().padding(size12dp)
             .clickable { metric?.let { onMetricClick(it) } }) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = metric?.displayName ?: "",
-                maxLines = 2,
-                fontSize = FontSize.textSize22sp,
-                fontFamily = FontFamily.bold(),
-                color = AppColors.textPrimary,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
+            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                if (isLatest) {
+                    Box(
+                        modifier = Modifier.size(size8dp)
+                            .background(color = AppColors.error, shape = RoundedCornerShape(50))
+                    )
+                    Spacer(modifier = Modifier.width(size4dp))
+                }
+                Text(
+                    text = metric?.displayName ?: "",
+                    maxLines = 2,
+                    fontSize = FontSize.textSize22sp,
+                    fontFamily = FontFamily.bold(),
+                    color = AppColors.textPrimary,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             StatusChip(status = metric?.displayRating ?: "")
         }
