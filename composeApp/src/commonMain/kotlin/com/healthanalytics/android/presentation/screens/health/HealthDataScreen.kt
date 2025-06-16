@@ -249,13 +249,13 @@ fun MetricCard(
 @Composable
 fun StatusChip(status: String) {
 
-    val backgroundColor = when (status.lowercase()) {
-        "normal" -> (AppColors.NormalColor)
-        "low" -> AppColors.LowColor
-        "high" -> AppColors.HighColor
-        "optimal" -> AppColors.OptimalColor
-        "none" -> AppColors.NoneColor
-        else -> AppColors.YellowColor
+    val (backgroundColor, textColor) = when (status.lowercase()) {
+        "normal" -> (AppColors.NormalColor to AppColors.White)
+        "low" -> (AppColors.LowColor to AppColors.Black)
+        "high" -> (AppColors.HighColor to AppColors.Black)
+        "optimal" -> (AppColors.OptimalColor to AppColors.White)
+        "none" -> (AppColors.NoneColor to AppColors.White)
+        else -> (AppColors.YellowColor to AppColors.Black)
     }
 
     Surface(
@@ -267,7 +267,7 @@ fun StatusChip(status: String) {
                 .padding(horizontal = Dimensions.size8dp, vertical = size4dp),
             fontSize = FontSize.textSize12sp,
             fontFamily = FontFamily.medium(),
-            color = AppColors.textPrimary
+            color = textColor
         )
     }
 }
