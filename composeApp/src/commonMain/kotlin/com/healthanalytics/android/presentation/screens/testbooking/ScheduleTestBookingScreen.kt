@@ -338,7 +338,7 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
             Button(
                 onClick = { /* Confirm action */ },
                 modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5CF6))
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.PinkButton)
             ) {
                 Text(
                     "Confirm Appointment",
