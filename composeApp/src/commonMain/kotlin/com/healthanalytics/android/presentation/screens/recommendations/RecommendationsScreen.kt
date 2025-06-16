@@ -61,12 +61,12 @@ fun RecommendationsScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF111318))
+        modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
         // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
-                modifier = Modifier.fillMaxSize().background(AppColors.AppBackgroundColor),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
@@ -74,9 +74,9 @@ fun RecommendationsScreen(
         } else {
             // Category Selector
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size8dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
+                contentPadding = PaddingValues(horizontal = Dimensions.size12dp)
             ) {
                 items(viewModel.getRecommendationCategories()) { category ->
                     CategoryChip(
@@ -89,7 +89,7 @@ fun RecommendationsScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
+                contentPadding = PaddingValues(Dimensions.size12dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 items(filterList) { recommendation ->

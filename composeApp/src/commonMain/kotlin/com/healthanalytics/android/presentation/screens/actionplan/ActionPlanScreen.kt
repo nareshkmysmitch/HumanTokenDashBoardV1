@@ -28,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -79,12 +78,11 @@ fun ActionPlanScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
-        Spacer(modifier = Modifier.height(Dimensions.size12dp))
-
         // Content Section
         if (uiState.isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -95,8 +93,9 @@ fun ActionPlanScreen(
         } else {
             // Category Row
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = Dimensions.size16dp),
-                horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size8dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
+                contentPadding = PaddingValues(horizontal = Dimensions.size12dp)
             ) {
                 items(categoryList) { category ->
                     CategoryChip(
@@ -130,9 +129,24 @@ fun CategoryChip(
     val categoryEnum = RecommendationCategory.fromString(category)
 
     FilterChip(
-        selected = selected, onClick = onClick, colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = AppColors.DarkPink,
-        ), label = {
+        selected = selected,
+        onClick = onClick,
+        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
+                alpha = 0.1f
+            ),
+            labelColor = AppColors.textPrimary,
+            selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
+            selectedLabelColor = AppColors.white
+        ),
+        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = selected,
+            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+                alpha = 0.2f
+            )
+        ),
+        label = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.size4dp),
                 verticalAlignment = Alignment.CenterVertically
