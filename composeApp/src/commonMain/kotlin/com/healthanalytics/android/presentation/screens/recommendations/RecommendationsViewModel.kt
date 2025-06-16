@@ -10,6 +10,7 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationsUiState
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
+import com.healthanalytics.android.utils.AppConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,9 +19,6 @@ import kotlinx.coroutines.launch
 
 class RecommendationsViewModel(private val apiService: ApiService) : ViewModel() {
 
-    init {
-        println("New Instances -->")
-    }
     private val _uiState = MutableStateFlow(RecommendationsUiState())
     val uiState: StateFlow<RecommendationsUiState> = _uiState.asStateFlow()
 
@@ -91,7 +89,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
             recommendation.actions?.any { action ->
                 action.user_recommendation_actions.isNotEmpty()
             } == true && recommendation.actions.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.is_completed == true
-                    && (_uiActionState.value.selectedCategory == "All" ||
+                    && (_uiActionState.value.selectedCategory == AppConstants.ALL ||
                     recommendation.category?.equals(
                         _uiActionState.value.selectedCategory,
                         ignoreCase = true
@@ -101,7 +99,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
 
     fun getActionCategories(): List<String> {
         return if (_uiActionState.value.recommendations.isNotEmpty()) {
-            listOf("All") + _uiActionState.value.recommendations
+            listOf(AppConstants.ALL) + _uiActionState.value.recommendations
                 .map { it.category ?: "" }
                 .distinct()
         } else {
@@ -235,7 +233,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
 
                 if (action != null && evenConfig != null) {
                     val success = if (recommendation.category?.equals(
-                            "SUPPLEMENTS",
+                            AppConstants.SUPPLEMENTS,
                             ignoreCase = true
                         ) == true
                     ) {
