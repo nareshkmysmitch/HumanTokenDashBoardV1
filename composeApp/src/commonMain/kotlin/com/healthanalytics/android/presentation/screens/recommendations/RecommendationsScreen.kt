@@ -42,6 +42,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.utils.AppConstants
 import org.koin.compose.koinInject
 
 @Composable
@@ -58,6 +59,7 @@ fun RecommendationsScreen(
             viewModel.loadRecommendations(token)
         }
     }
+
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0xFF111318))
     ) {
@@ -154,6 +156,15 @@ fun RecommendationCard(
     viewModel: RecommendationsViewModel,
     accessToken: String?,
 ) {
+    val metricRecommendation = recommendation.metric_recommendations
+    val action = recommendation.actions?.firstOrNull()
+    val userAction = action?.user_recommendation_actions?.firstOrNull()
+    val isEnabled = userAction == null || userAction.is_completed == false
+    val isSupplements = (recommendation.category?.equals(
+        AppConstants.SUPPLEMENTS,
+        ignoreCase = true
+    ) == true)
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.size16dp),
         colors = CardDefaults.cardColors(
@@ -191,57 +202,64 @@ fun RecommendationCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.size8dp))
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
-            Text(
-                text = AppStrings.POTENTIAL_IMPACT,
-                fontSize = FontSize.textSize14sp,
-                fontFamily = FontFamily.medium(),
-                color = AppColors.textSecondary
-            )
+            if (isSupplements) {
+                Text(
+                    text = recommendation.description ?: "",
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textSecondary
+                )
+            } else {
+                Text(
+                    text = AppStrings.POTENTIAL_IMPACT,
+                    fontSize = FontSize.textSize14sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textSecondary
+                )
 
-            Spacer(modifier = Modifier.height(Dimensions.size8dp))
+                Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
-            // Metrics Grid (2 columns)
-            recommendation.metric_recommendations?.let { metrics ->
-                if (metrics.isNotEmpty()) {
-                    androidx.compose.foundation.layout.FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        maxItemsInEachRow = 2,
-                        horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
-                        verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                    ) {
-                        metrics.forEach { metricRecommendation ->
-                            Box(
-                                modifier = Modifier.background(
-                                    color = AppColors.SubGreyColor,
-                                    shape = RoundedCornerShape(10.dp)
-                                ).padding(
-                                    vertical = Dimensions.size6dp, horizontal = Dimensions.size8dp
-                                ), contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    text = metricRecommendation.metric.metric.uppercase(),
-                                    fontSize = FontSize.textSize12sp,
-                                    fontFamily = FontFamily.regular(),
-                                    color = AppColors.textPrimary
-                                )
+                // Metrics Grid (2 columns)
+                metricRecommendation.let { metrics ->
+                    if (metrics?.isNotEmpty() == true) {
+                        androidx.compose.foundation.layout.FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            maxItemsInEachRow = 2,
+                            horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
+                            verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+                        ) {
+                            metrics.forEach { metricRecommendation ->
+                                Box(
+                                    modifier = Modifier.background(
+                                        color = AppColors.SubGreyColor,
+                                        shape = RoundedCornerShape(10.dp)
+                                    ).padding(
+                                        vertical = Dimensions.size6dp,
+                                        horizontal = Dimensions.size8dp
+                                    ), contentAlignment = Alignment.CenterStart
+                                ) {
+                                    Text(
+                                        text = metricRecommendation.metric.metric.uppercase(),
+                                        fontSize = FontSize.textSize12sp,
+                                        fontFamily = FontFamily.regular(),
+                                        color = AppColors.textPrimary
+                                    )
+                                }
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(Dimensions.size16dp))
                 }
             }
 
-            val action = recommendation.actions?.firstOrNull()
-            val userAction = action?.user_recommendation_actions?.firstOrNull()
-            val isEnabled = userAction == null || userAction.is_completed == false
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             // Add to Plan Button
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
             ) {
-                val buttonText = if (isEnabled) "+ Add to Plan" else "Added to plan"
+                val buttonText = if (isEnabled) AppStrings.ADD_TO_PLAN else AppStrings.ADDED_TO_PLAN
                 val buttonColor =
                     if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
                 Button(

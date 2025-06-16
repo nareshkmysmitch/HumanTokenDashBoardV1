@@ -52,6 +52,8 @@ object AppStrings {
     const val NO_ITEMS_IN_THIS_CATEGORY = "No Items in This Category"
     const val NOT_HAVE_ANY_ACTION_PLAN = "You don't have any action plan items in the selected category"
     const val SHOW_ALL_ITEMS = "Show All Items"
+    const val ADD_TO_PLAN="+ Add to Plan"
+    const val ADDED_TO_PLAN= "Added to plan"
 
 
 }

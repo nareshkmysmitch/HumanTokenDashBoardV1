@@ -277,6 +277,7 @@ fun ActionPlanCard(
     val createAt =
         recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
     val formattedDate = formatDate(createAt)
+    val metricRecommendation = recommendation.metric_recommendations
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -314,44 +315,46 @@ fun ActionPlanCard(
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
-            // Potential Impact Section
-            Text(
-                text = AppStrings.POTENTIAL_IMPACT,
-                fontSize = FontSize.textSize16sp,
-                color = AppColors.white,
-                fontFamily = FontFamily.medium()
-            )
+            if (metricRecommendation?.isNotEmpty() == true) {
+                // Potential Impact Section
+                Text(
+                    text = AppStrings.POTENTIAL_IMPACT,
+                    fontSize = FontSize.textSize16sp,
+                    color = AppColors.white,
+                    fontFamily = FontFamily.medium()
+                )
 
-            Spacer(modifier = Modifier.height(Dimensions.size8dp))
+                Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
-            // Metrics Grid
-            recommendation.metric_recommendations?.let { metrics ->
-                if (metrics.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                    ) {
-                        metrics.chunked(2).forEach { rowMetrics ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                            ) {
-                                rowMetrics.forEach { metricRecommendation ->
-                                    MetricChip(
-                                        metric = metricRecommendation.metric.metric,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-                                if (rowMetrics.size == 1) {
-                                    Spacer(modifier = Modifier.weight(1f))
+                // Metrics Grid
+                recommendation.metric_recommendations.let { metrics ->
+                    if (metrics.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+                        ) {
+                            metrics.chunked(2).forEach { rowMetrics ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+                                ) {
+                                    rowMetrics.forEach { metricRecommendation ->
+                                        MetricChip(
+                                            metric = metricRecommendation.metric.metric,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                    if (rowMetrics.size == 1) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(Dimensions.size16dp))
+                Spacer(modifier = Modifier.height(Dimensions.size16dp))
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
