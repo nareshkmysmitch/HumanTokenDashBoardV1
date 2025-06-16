@@ -372,7 +372,7 @@ fun ActionPlanCard(
                     )
                     Spacer(modifier = Modifier.width(Dimensions.size8dp))
                     Text(
-                        "Remove",
+                        AppStrings.REMOVE,
                         fontSize = FontSize.textSize16sp,
                         fontFamily = FontFamily.bold(),
                     )

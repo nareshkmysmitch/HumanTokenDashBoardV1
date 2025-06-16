@@ -54,6 +54,7 @@ object AppStrings {
     const val SHOW_ALL_ITEMS = "Show All Items"
     const val ADD_TO_PLAN="+ Add to Plan"
     const val ADDED_TO_PLAN= "Added to plan"
+    const val REMOVE= "Remove"
 
 
 }
