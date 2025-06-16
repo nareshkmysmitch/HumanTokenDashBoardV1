@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material.icons.outlined.PsychologyAlt
 import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -84,13 +85,13 @@ data class UserRecommendationAction(
     val user_id: String? = null,
 )
 
-enum class RecommendationCategory(val icon: String) {
-    ACTIVITY("🏃"),
-    NUTRITION("🍽️"),
-    SLEEP("💤"),
-    STRESS("😰"),
-    SUPPLEMENTS("💊"),
-    RECOVERY("♻️");
+enum class RecommendationCategory(val icon: ImageVector) {
+    ACTIVITY(Icons.Filled.DirectionsRun),
+    NUTRITION(Icons.Outlined.Restaurant),
+    SLEEP(Icons.Default.AccountCircle),
+    STRESS(Icons.Outlined.PsychologyAlt),
+    SUPPLEMENTS(Icons.Default.Medication),
+    RECOVERY(Icons.Outlined.Help);
 
     companion object {
         fun fromString(value: String?): RecommendationCategory {
@@ -100,12 +101,5 @@ enum class RecommendationCategory(val icon: String) {
 }
 
 
-class RecommendationIcons {
-    val activity = Icons.Filled.DirectionsRun
-    val nutrition = Icons.Outlined.Restaurant
-    val sleep = Icons.Default.AccountCircle
-    val stress = Icons.Outlined.PsychologyAlt
-    val supplements = Icons.Default.Medication
-    val recovery = Icons.Outlined.Help
-}
+
 

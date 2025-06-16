@@ -1,6 +1,11 @@
 package com.healthanalytics.android.utils
 
 object AppConstants {
-    const val SUPPLEMENTS="SUPPLEMENTS"
     const val ALL = "All"
+    const val ACTIVITY = "activity"
+    const val NUTRITION = "nutrition"
+    const val SLEEP = "sleep"
+    const val STRESS = "stress"
+    const val SUPPLEMENTS = "supplements"
+    const val RECOVERY = "recovery"
 }

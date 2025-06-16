@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.recommendations
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
@@ -119,12 +121,17 @@ fun CategoryChip(
                     vertical = Dimensions.size8dp, horizontal = Dimensions.size4dp
                 ), verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = categoryEnum.icon,
-                    fontSize = FontSize.textSize14sp,
-                    fontFamily = FontFamily.medium(),
-                    color = AppColors.tertiary
+                Image(
+                    imageVector = categoryEnum.icon,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(AppColors.white)
                 )
+                /* Text(
+                     text = categoryEnum.icon,
+                     fontSize = FontSize.textSize14sp,
+                     fontFamily = FontFamily.medium(),
+                     color = AppColors.tertiary
+                 )*/
                 Spacer(modifier = Modifier.width(Dimensions.size4dp))
                 Text(
                     text = "$category ($count)",
@@ -252,11 +259,10 @@ fun RecommendationTitle(recommendation: Recommendation) {
                 .background(AppColors.backgroundDark, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = RecommendationCategory.fromString(recommendation.category).icon,
-                fontSize = FontSize.textSize20sp,
-                fontFamily = FontFamily.medium(),
-                color = AppColors.secondary
+            Image(
+                imageVector = RecommendationCategory.fromString(recommendation.category).icon,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(AppColors.white)
             )
         }
         Spacer(modifier = Modifier.width(Dimensions.size12dp))

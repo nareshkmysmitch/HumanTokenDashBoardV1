@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.actionplan
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import com.healthanalytics.android.data.models.MetricRecommendation
 import com.healthanalytics.android.data.models.Recommendation
@@ -153,7 +155,11 @@ fun CategoryChip(
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.size4dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(categoryEnum.icon)
+                Image(
+                    imageVector = categoryEnum.icon,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(AppColors.white)
+                )
                 Text(
                     category.capitalizeFirst(),
                     fontSize = FontSize.textSize14sp,
