@@ -3,14 +3,24 @@ package com.healthanalytics.android.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -388,13 +398,60 @@ fun HomeScreen(
     }
 
     Scaffold(topBar = {
+//        TopAppBar(
+//            title = "Human Token",
+//            isSymptomsIconVisible = currentScreen == MainScreen.DASHBOARD,
+//            onSymptomsClick = {onSymptomsClick()},
+//            onEndIconClick = if (currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
+//            onChatClick = onChatClick,
+//            isChatVisible = currentScreen != MainScreen.MARKETPLACE,
+//        )
+
         TopAppBar(
             title = "Human Token",
-            isSymptomsIconVisible = currentScreen == MainScreen.DASHBOARD,
-            onSymptomsClick = {onSymptomsClick()},
-            onEndIconClick = if (currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
-            onChatClick = onChatClick,
-            isChatVisible = currentScreen != MainScreen.MARKETPLACE,
+            actions = {
+                when(currentScreen){
+                    MainScreen.DASHBOARD -> {
+                        IconButton(onClick = onSymptomsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "symptoms",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                        IconButton(onClick = onChatClick) {
+                            Icon(
+                                imageVector = Icons.Default.Chat,
+                                contentDescription = "Chat",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                    }
+                    MainScreen.RECOMMENDATIONS -> {
+                        IconButton(onClick = onProfileClick) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "symptoms",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                    }
+                    MainScreen.MARKETPLACE -> {
+                        IconButton(onClick = onCartClick) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Chat",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                    }
+                }
+            }
+
         )
     }, bottomBar = {
         BottomNavBar(

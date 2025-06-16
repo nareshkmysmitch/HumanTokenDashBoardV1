@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.components
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -18,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.presentation.theme.AppColors
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
     title: String,
@@ -74,5 +75,31 @@ fun TopAppBar(
             titleContentColor = AppColors.white,
             actionIconContentColor = AppColors.white
         ), modifier = modifier
+    )
+}*/
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.white
+            )
+        },
+        actions = actions,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = AppColors.AppBackgroundColor,
+            navigationIconContentColor = AppColors.white,
+            titleContentColor = AppColors.white,
+            actionIconContentColor = AppColors.white
+        ),
+        modifier = modifier
     )
 }
