@@ -94,6 +94,7 @@ data class CartItem(
     val product_id: String? = null,
     val variant_id: String? = null,
     val quantity: Int? = null,
+    val type: String? = null,
     val metadata: Map<String, String>? = emptyMap(),
     val created_at: String? = null,
     val updated_at: String? = null,

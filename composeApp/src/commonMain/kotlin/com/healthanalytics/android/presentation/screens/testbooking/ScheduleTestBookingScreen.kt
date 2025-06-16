@@ -1,14 +1,18 @@
 package com.healthanalytics.android.presentation.screens.testbooking
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
@@ -41,8 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.humantoken.ui.screens.CartItem
 import com.healthanalytics.android.BackHandler
+import com.healthanalytics.android.modifier.onColumnClick
+import com.healthanalytics.android.presentation.components.ShowDatePicker
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
+import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppTextStyles
+import com.healthanalytics.android.presentation.theme.Dimensions
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -84,34 +93,18 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
 
     var totalPrice by remember { mutableStateOf(0.0) }
 
+    var showDatePicker by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.getCartList()
         viewModel.loadAddresses()
-        viewModel.cartListFlow.collect { state ->
-            when (state) {
-                is CartListState.Success -> {
-                    cartItems = state.cartList.flatMap { cart ->
-                        cart.cart_items?.filter { it.product?.type == "non_product" } ?: emptyList()
-                    }
-                    isLoading = false
-                }
-
-                is CartListState.Error -> {
-                    error = state.message
-                    isLoading = false
-                }
-
-                is CartListState.Loading -> {
-                    isLoading = true
-                }
-            }
-        }
     }
 
     LaunchedEffect(getCartList) {
         when (getCartList) {
             is CartListState.Success -> {
-                cartItems = (getCartList as CartListState.Success).cartList.flatMap { cart ->
+                val localCartList = (getCartList as CartListState.Success).cartList.filter { it.type == "non_product" }
+                cartItems = localCartList.flatMap { cart ->
                     cart.cart_items ?: emptyList()
                 }
                 isLoading = false
@@ -268,22 +261,36 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                             OutlinedTextField(
                                 value = selectedDate.toString(),
                                 onValueChange = { },
-                                readOnly = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { showDatePicker = true },
+                                enabled = false,
+                                placeholder = {
+                                    Text(
+                                        text = "Select date",
+                                        color = AppColors.inputHint,
+                                        style = AppTextStyles.bodyMedium
+                                    )
+                                },
                                 trailingIcon = {
-                                    Icon(
-                                        Icons.Default.CalendarToday,
-                                        contentDescription = "Select Date",
-                                        tint = Color.White
+                                    Text(
+                                        text = "📅",
+                                        style = AppTextStyles.bodyMedium,
+                                        color = AppColors.inputHint
                                     )
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                                    focusedBorderColor = Color.White,
-                                    unfocusedTextColor = Color.White,
-                                    focusedTextColor = Color.White
+                                    focusedBorderColor = AppColors.inputBorder,
+                                    unfocusedBorderColor = AppColors.outline,
+                                    disabledBorderColor = AppColors.outline,
+                                    focusedTextColor = AppColors.inputText,
+                                    unfocusedTextColor = AppColors.inputText,
+                                    disabledTextColor = AppColors.inputText,
+                                    cursorColor = AppColors.inputText
                                 ),
-                                modifier = Modifier.fillMaxWidth()
+                                shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
                             )
+
                         }
                     }
                 }
@@ -355,6 +362,25 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
                         }
                     }
                 }
+
+                item {
+                    Spacer(modifier = Modifier.height(50.dp))
+                }
+            }
+            if (showDatePicker) {
+                ShowDatePicker(
+                    selectedDate = selectedDate,
+                    onDismiss = {
+                        showDatePicker = false
+                    },
+                    onCancel = {
+                        showDatePicker = false
+                    },
+                    onConfirm = {
+                        selectedDate = it
+                        showDatePicker = false
+                    }
+                )
             }
 
             // Confirm Button
@@ -370,7 +396,8 @@ fun ScheduleTestBookingScreen(onNavigateBack: () -> Unit, viewModel: MarketPlace
             ) {
                 Text(
                     text = "Confirm Appointment",
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    color = Color.White
                 )
             }
         }

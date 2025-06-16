@@ -225,7 +225,7 @@ fun TestBookingScreen(
                                 containerColor = Color(0xFF8B5CF6)
                             ),
                         ) {
-                            Text("Schedule Tests")
+                            Text("Schedule Tests", color = Color.White)
                         }
                     }
                 }

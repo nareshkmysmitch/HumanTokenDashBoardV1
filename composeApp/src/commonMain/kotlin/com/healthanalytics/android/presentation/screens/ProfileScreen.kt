@@ -254,7 +254,7 @@ fun ProfileScreen(
                                     containerColor = Color(0xFF8B5CF6)
                                 )
                             ) {
-                                Text("Edit Profile")
+                                Text("Edit Profile", color = Color.White)
                             }
                         }
                     }
