@@ -278,6 +278,10 @@ fun ActionPlanCard(
         recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
     val formattedDate = formatDate(createAt)
     val metricRecommendation = recommendation.metric_recommendations
+    val isSupplements = recommendation.category.equals(
+        AppConstants.SUPPLEMENTS,
+        ignoreCase = true
+    )
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -304,7 +308,7 @@ fun ActionPlanCard(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = recommendation.name, fontSize = FontSize.textSize22sp,
+                        text = recommendation.name, fontSize = FontSize.textSize18sp,
                         color = AppColors.white,
                         fontFamily = FontFamily.bold(),
                         maxLines = 2,
@@ -315,7 +319,14 @@ fun ActionPlanCard(
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
-            if (metricRecommendation?.isNotEmpty() == true) {
+            if (isSupplements) {
+                Text(
+                    text = recommendation.description ?: "",
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.textSecondary
+                )
+            } else {
                 // Potential Impact Section
                 Text(
                     text = AppStrings.POTENTIAL_IMPACT,
@@ -328,7 +339,7 @@ fun ActionPlanCard(
 
                 // Metrics Grid
                 recommendation.metric_recommendations.let { metrics ->
-                    if (metrics.isNotEmpty()) {
+                    if (metrics?.isNotEmpty() == true) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
@@ -352,9 +363,9 @@ fun ActionPlanCard(
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(Dimensions.size16dp))
             }
+
+            Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -407,7 +418,8 @@ fun formatDate(isoString: String?): String {
         val localDateTime = instant.toLocalDateTime(systemTz)
 
         val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
-        val month = localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+        val month =
+            localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
         val year = localDateTime.year
         "$day/$month/$year"
     } ?: ""
