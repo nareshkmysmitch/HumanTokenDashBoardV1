@@ -1,7 +1,5 @@
 package com.healthanalytics.android.presentation.screens.recommendations
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,11 +18,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,9 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
@@ -46,9 +40,6 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
-import com.healthanalytics.android.presentation.theme.backgroundDark
-import com.healthanalytics.android.presentation.theme.backgroundLight
-import com.healthanalytics.android.presentation.theme.onSurfaceVariantLight
 import org.koin.compose.koinInject
 
 @Composable
@@ -164,15 +155,19 @@ fun CategoryChip(
             }
         },
         colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(alpha = 0.1f),
+            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
+                alpha = 0.1f
+            ),
             labelColor = AppColors.textPrimary,
             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
             selectedLabelColor = AppColors.white
         ),
         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
-            selected=selected,
-            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else  AppColors.Pink.copy(alpha = 0.2f)
+            selected = selected,
+            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+                alpha = 0.2f
+            )
         )
     )
 }
@@ -249,10 +244,13 @@ fun RecommendationCard(
                             Box(
                                 modifier = Modifier
                                     .background(
-                                        color = AppColors.backgroundDark,
+                                        color = AppColors.SubGreyColor,
                                         shape = RoundedCornerShape(10.dp)
                                     )
-                                    .padding(vertical = Dimensions.size6dp, horizontal = Dimensions.size8dp),
+                                    .padding(
+                                        vertical = Dimensions.size6dp,
+                                        horizontal = Dimensions.size8dp
+                                    ),
                                 contentAlignment = Alignment.CenterStart
                             ) {
                                 Text(
@@ -278,9 +276,17 @@ fun RecommendationCard(
                 horizontalArrangement = Arrangement.End
             ) {
                 val buttonText = if (isEnabled) "+ Add to Plan" else "Added to plan"
-                val buttonColor = if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
+                val buttonColor =
+                    if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
                 androidx.compose.material3.Button(
-                    onClick = { if (isEnabled) accessToken?.let { viewModel.addToPlan(it, recommendation) } },
+                    onClick = {
+                        if (isEnabled) accessToken?.let {
+                            viewModel.addToPlan(
+                                it,
+                                recommendation
+                            )
+                        }
+                    },
                     enabled = true,
                     shape = RoundedCornerShape(24.dp),
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
@@ -301,26 +307,6 @@ fun RecommendationCard(
     }
 }
 
-@Composable
-fun DifficultyChip(difficulty: String) {
-    val (backgroundColor, textColor) = when (difficulty.lowercase()) {
-        "easy" -> MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
-        "medium" -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.onSecondary
-        "hard" -> MaterialTheme.colorScheme.tertiary to MaterialTheme.colorScheme.onTertiary
-        else -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
-    }
-
-    Surface(
-        color = backgroundColor, shape = MaterialTheme.shapes.small
-    ) {
-        Text(
-            text = difficulty.replaceFirstChar { it.uppercase() },
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = textColor
-        )
-    }
-}
 
 @Composable
 fun MetricChip(
@@ -328,7 +314,7 @@ fun MetricChip(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = AppColors.SubGreyColor,
         shape = MaterialTheme.shapes.small,
         modifier = modifier
     ) {
