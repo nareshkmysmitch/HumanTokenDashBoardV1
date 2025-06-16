@@ -255,7 +255,7 @@ fun MetricCard(
 fun StatusChip(status: String) {
 
     val backgroundColor = when (status.lowercase()) {
-        "normal" -> AppColors.NormalColor
+        "normal" -> (AppColors.NormalColor)
         "low" -> AppColors.LowColor
         "high" -> AppColors.HighColor
         "optimal" -> AppColors.OptimalColor
