@@ -57,6 +57,7 @@ fun PrimaryButton(
     txt: String,
     enable: Boolean = true,
     onClick: () -> Unit,
+    buttonColor: Color,
 ) {
     Button(
         enabled = enable,
@@ -64,7 +65,7 @@ fun PrimaryButton(
         modifier = modifier.height(Dimensions.size50dp),
         colors = ButtonDefaults.buttonColors(
             contentColor = AppColors.white,
-            containerColor = AppColors.primary
+            containerColor = buttonColor
         ),
         shape = RoundedCornerShape(Dimensions.size12dp)
     ) {

@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -42,6 +42,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.PrimaryButton
 import com.healthanalytics.android.ui.RecommendationIcon
 import com.healthanalytics.android.utils.AppConstants
 import org.koin.compose.koinInject
@@ -203,28 +204,18 @@ fun RecommendationCard(
                 val buttonColor =
                     if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
 
-                Button(
+                PrimaryButton(
+                    modifier = Modifier.wrapContentWidth(),
+                    txt = buttonText,
+                    buttonColor = buttonColor,
                     onClick = {
                         if (isEnabled) accessToken?.let {
                             viewModel.addToPlan(
                                 it, recommendation
                             )
                         }
-                    },
-                    enabled = true,
-                    shape = RoundedCornerShape(24.dp),
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = buttonColor, contentColor = AppColors.white
-                    ),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-                ) {
-                    Text(
-                        text = buttonText,
-                        fontSize = FontSize.textSize14sp,
-                        fontFamily = FontFamily.medium(),
-                        color = AppColors.white
-                    )
-                }
+                    }
+                )
             }
         }
     }
