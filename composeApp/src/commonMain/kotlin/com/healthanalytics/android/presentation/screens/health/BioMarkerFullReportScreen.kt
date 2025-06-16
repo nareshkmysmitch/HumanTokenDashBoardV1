@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.health
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,161 +34,25 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import co.touchlab.kermit.Logger
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.Cause
-import com.healthanalytics.android.data.api.Correlation
 import com.healthanalytics.android.data.api.MetricData
 import com.healthanalytics.android.data.api.ReportedSymptom
 import com.healthanalytics.android.data.api.WellnessCategory
-import com.healthanalytics.android.presentation.components.AppCard
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.FontFamily
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.io.discardingSink
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
-
-@Preview()
-@Composable
-fun PreviewBioMarkerFullReportScreen() {
-
-
-    val dummyBloodData = BloodData(
-        createdAt = "2024-12-02T13:05:20.615Z",
-        displayDescription = "This biomarker measures the level of hemoglobin in your blood.",
-        displayName = "Hemoglobin",
-        displayRating = "Normal",
-        id = "bd_001",
-        identifier = "HEMOGLOBIN",
-        metricId = "BD10020",
-        range = "13.0 - 17.0",
-        releasedAt = "2024-12-01T08:00:00.000Z",
-        unit = "g/dL",
-        updatedAt = "2024-12-02T13:10:00.000Z",
-        userId = "user_123",
-        value = 13.5,
-
-        correlation = listOf(
-            Correlation(
-
-                description = "Low hemoglobin levels may be linked to iron deficiency."
-            )
-        ),
-        shortDescription = "Indicator of red blood cell health",
-        symptomsReported = 2
-    )
-
-    val prefs: PreferencesViewModel = koinInject()
-    val viewModel: BioMarkerReportViewModel = koinInject()
-
-    BioMarkerFullReportScreen(
-        biomarker = dummyBloodData, onNavigateBack = {}, modifier = Modifier, prefs, viewModel
-    )
-}
-
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun BioMarkerFullReportScreen(
-//    biomarker: BloodData,
-//    onNavigateBack: () -> Unit,
-//    modifier: Modifier = Modifier,
-//    prefs: PreferencesViewModel = koinInject(),
-//    viewModel: BioMarkerReportViewModel = koinInject(),
-//) {
-//
-//    val preferencesState by prefs.uiState.collectAsState()
-//    val uiState by viewModel.uiState.collectAsState()
-//
-//    LaunchedEffect(preferencesState.data) {
-//        preferencesState.data?.let { token ->
-//            prefs.saveAccessToken(token)
-//            viewModel.fetchBiomarkerReport("blood", biomarker.metricId ?: "", token)
-//        }
-//    }
-//
-//    BackHandler(enabled = true, onBack = onNavigateBack)
-//    Logger.e { "BiomarkerDetailScreen $biomarker" }
-//
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Text(
-//                        text = biomarker.displayName ?: "", color = AppColors.White
-//                    )
-//                }, navigationIcon = {
-//                    IconButton(onClick = onNavigateBack) {
-//                        Icon(
-//                            Icons.Default.ArrowBack,
-//                            contentDescription = "Back",
-//                            tint = AppColors.White
-//                        )
-//                    }
-//                }, colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = AppColors.AppBackgroundColor,
-//                    navigationIconContentColor = AppColors.White,
-//                    titleContentColor = AppColors.White
-//                )
-//            )
-//        }) { paddingValues ->
-//        when (val state = uiState) {
-//            is BioMarkerReportUiState.Loading -> {
-//                Box(
-//                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-//                ) {
-//                    CircularProgressIndicator()
-//                }
-//            }
-//
-//            is BioMarkerReportUiState.Success -> {
-//                LazyColumn(
-//                    modifier = modifier.fillMaxSize().padding(paddingValues),
-//                    verticalArrangement = Arrangement.spacedBy(16.dp)
-//                ) {
-//                    item {
-//                        HeaderCard(biomarker, state.data?.releasedAt)
-//                    }
-//
-//                    item {
-//                        TabSection(
-//                            state.data?.metricData?.firstOrNull()?.causes ?: emptyList(),
-//                            state.data?.metricData
-//                        )
-//                    }
-//
-//                    item {
-//                        CorrelationsSection(
-//                            wellnessCategories = state.data?.wellnessCategories,
-//                            reportedSymptoms = state.data?.reportedSymptoms
-//                        )
-//                    }
-//                }
-//            }
-//
-//            is BioMarkerReportUiState.Error -> {
-//                Box(
-//                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-//                ) {
-//                    Text(state.message)
-//                }
-//            }
-//        }
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -247,7 +109,8 @@ fun BioMarkerFullReportScreen(
                             selectedTab = selectedTab,
                             onTabSelected = { selectedTab = it },
                             causes = state.data?.metricData?.firstOrNull()?.causes ?: emptyList(),
-                            metricData = state.data?.metricData
+                            metricData = state.data?.metricData,
+                            biomarker.displayName.toString()
                         )
                     }
 
@@ -272,7 +135,8 @@ private fun TabSection(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     causes: List<Cause>,
-    metricData: List<MetricData>?
+    metricData: List<MetricData>?,
+    name: String
 ) {
     val tabs = listOf("Why It Matters?", "Causes")
     val whyItMattersData = metricData?.firstOrNull { it.category == "why_it_matters" }
@@ -290,7 +154,7 @@ private fun TabSection(
         Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             when (selectedTab) {
                 0 -> WhyItMattersContent(whyItMattersData)
-                1 -> CausesContent(causes)
+                1 -> CausesContent(causes, name)
             }
         }
     }
@@ -350,34 +214,6 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TabSection(causes: List<Cause>, metricData: List<MetricData>?) {
-    var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("Why It Matters?", "Causes")
-
-    val whyItMattersData = metricData?.firstOrNull { it.category == "why_it_matters" }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        TabRow(selectedTabIndex = selectedTab) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = { Text(title) })
-            }
-        }
-
-        Box(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            when (selectedTab) {
-                0 -> WhyItMattersContent(whyItMattersData)
-                1 -> CausesContent(causes)
-            }
-        }
-    }
-}
 
 @Composable
 private fun WhyItMattersContent(metricData: MetricData?) {
@@ -414,7 +250,7 @@ private fun WhyItMattersContent(metricData: MetricData?) {
 }
 
 @Composable
-private fun CausesContent(causes: List<Cause>) {
+private fun CausesContent(causes: List<Cause>, name: String) {
     Column(
         modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
@@ -479,7 +315,7 @@ private fun CausesContent(causes: List<Cause>) {
         }
 
         Text(
-            text = "Note: These are general factors that may influence your Eosinophils %. Individual responses can vary based on your unique genetic makeup and overall health.",
+            text = "Note: These are general factors that may influence your ${name}. Individual responses can vary based on your unique genetic makeup and overall health.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
