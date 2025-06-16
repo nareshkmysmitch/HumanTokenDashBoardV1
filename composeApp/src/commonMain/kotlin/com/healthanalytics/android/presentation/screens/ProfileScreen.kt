@@ -53,7 +53,6 @@ import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.ui.ShowAlertDialog
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,14 +139,14 @@ fun ProfileScreen(
 
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppColors.Black,
-                    navigationIconContentColor = AppColors.white,
-                    titleContentColor = AppColors.white
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
                 ),
 
                 title = {
                     Text(
                         text = if (isEditing) "Edit Profile" else "Your Profile",
-                        color = AppColors.white,
+                        color = AppColors.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -163,7 +162,7 @@ fun ProfileScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.white,
+                            tint = AppColors.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }

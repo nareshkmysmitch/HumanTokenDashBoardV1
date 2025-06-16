@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.health
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,18 +23,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
+import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.presentation.components.FilledAppButton
 import com.healthanalytics.android.presentation.components.HorizontalBar
 import com.healthanalytics.android.presentation.theme.AppColors
-import kotlinx.serialization.json.JsonNull.content
+import com.healthanalytics.android.presentation.theme.FontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,23 +46,22 @@ fun BiomarkerDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Biomarker Details", color = AppColors.Black
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = AppColors.Black
-                        )
-                    }
-                },  colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.AppBackgroundColor,
-                    navigationIconContentColor = AppColors.Black,
-                    titleContentColor = AppColors.Black
+                Text(
+                    "Biomarker Details", color = AppColors.White, fontFamily = FontFamily.bold()
                 )
-            )
+            }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.White
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColors.AppBackgroundColor,
+                navigationIconContentColor = AppColors.White,
+                titleContentColor = AppColors.White
+            ))
         }) { paddingValues ->
         Column(
             modifier = modifier.fillMaxSize().padding(paddingValues)
@@ -86,8 +78,8 @@ fun BiomarkerDetailScreen(
                 onClick = onNavigateFullReport,
                 modifier = Modifier.fillMaxWidth().padding(top = 24.dp, start = 20.dp, end = 20.dp),
 
-            ) {
-                Text("View Full Report")
+                ) {
+                Text("View Full Report", fontFamily = FontFamily.bold(), fontSize = 18.sp)
             }
         }
     }
@@ -107,12 +99,14 @@ private fun BiomarkerHeader(biomarker: BloodData) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = biomarker.displayName ?: "",
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontFamily = FontFamily.bold()
                 )
                 Text(
                     text = "Blood Biomarker",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.medium()
                 )
             }
             StatusChip(status = biomarker.displayRating ?: "")
@@ -121,104 +115,36 @@ private fun BiomarkerHeader(biomarker: BloodData) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Current Value", style = MaterialTheme.typography.titleMedium
+            text = "Current Value",
+            style = MaterialTheme.typography.titleMedium,
+            fontFamily = FontFamily.bold()
         )
         Text(
             text = "${biomarker.value} ${biomarker.unit}",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge,
+            fontFamily = FontFamily.pilBold()
         )
     }
 }
 
-@Composable
-private fun RangeGraph(biomarker: BloodData) {
-    val ranges = biomarker.ranges?.sortedBy { it.ratingRank } ?: emptyList()
-
-    Logger.e { "BiomarkerDetailScreen ranges $ranges" }
-
-    if (ranges.isEmpty()) return
-
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
-    ) {
-        Canvas(
-            modifier = Modifier.fillMaxWidth().height(40.dp)
-        ) {
-            val width = size.width
-            val height = size.height
-            val segmentWidth = width / ranges.size
-
-            // Draw range segments
-            ranges.forEachIndexed { index, range ->
-                val color = when (range.displayRating?.lowercase()) {
-                    "low" -> Color.Red.copy(alpha = 0.7f)
-                    "normal" -> Color.Green.copy(alpha = 0.7f)
-                    "high" -> Color.Red.copy(alpha = 0.7f)
-                    "optimal" -> Color.Green.copy(alpha = 0.7f)
-                    "borderline high" -> Color.Yellow.copy(alpha = 0.7f)
-                    else -> Color.Gray.copy(alpha = 0.7f)
-                }
-
-                drawLine(
-                    color = color,
-                    start = Offset(index * segmentWidth, height / 2),
-                    end = Offset((index + 1) * segmentWidth, height / 2),
-                    strokeWidth = height,
-                    cap = StrokeCap.Round
-                )
-            }
-
-            // Draw current value marker
-            val currentValue = biomarker.value ?: 0.0
-            val minValue = ranges.first().range?.split(" ")?.first()?.toDoubleOrNull() ?: 0.0
-            val maxValue = ranges.last().range?.split(" ")?.last()?.toDoubleOrNull() ?: 100.0
-            val position = ((currentValue - minValue) / (maxValue - minValue) * width).coerceIn(
-                "0".toDouble(), width.toDouble()
-            )
-
-            drawCircle(
-                color = Color.White, radius = 12f, center = Offset(position.toFloat(), height / 2)
-            )
-            drawCircle(
-                color = Color.Green, radius = 8f, center = Offset(position.toFloat(), height / 2)
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            ranges.forEach { range ->
-                Text(
-                    text = range.displayRating ?: "",
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun BiomarkerDescription(biomarker: BloodData) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
-        Text(
-            text = "Description", style = MaterialTheme.typography.titleLarge
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = biomarker.displayDescription ?: "", style = MaterialTheme.typography.bodyLarge
-        )
-
         if (!biomarker.shortDescription.isNullOrBlank()) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Description",
+                style = MaterialTheme.typography.titleMedium,
+                fontFamily = FontFamily.bold()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = biomarker.shortDescription,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black
+                color = AppColors.White,
+                fontFamily = FontFamily.medium()
             )
         }
     }

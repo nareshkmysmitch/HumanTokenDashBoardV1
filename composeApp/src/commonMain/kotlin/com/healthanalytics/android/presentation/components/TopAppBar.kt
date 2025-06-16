@@ -34,7 +34,7 @@ fun TopAppBar(
     TopAppBar(
         title = {
             Text(
-                text = title, fontWeight = FontWeight.Bold, color = AppColors.white
+                text = title, fontWeight = FontWeight.Bold, color = AppColors.White
             )
         }, actions = {
             if (isSymptomsIconVisible) {
@@ -43,7 +43,7 @@ fun TopAppBar(
                         imageVector = Icons.Default.Warning,
                         contentDescription = "symptoms",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
             }
@@ -53,7 +53,7 @@ fun TopAppBar(
                         imageVector = Icons.Default.Chat,
                         contentDescription = "Chat",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
             }
@@ -64,15 +64,15 @@ fun TopAppBar(
                         imageVector = endIcon,
                         contentDescription = "Profile",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
             }
         }, colors = TopAppBarDefaults.topAppBarColors(
             containerColor = AppColors.AppBackgroundColor,
-            navigationIconContentColor = AppColors.white,
-            titleContentColor = AppColors.white,
-            actionIconContentColor = AppColors.white
+            navigationIconContentColor = AppColors.White,
+            titleContentColor = AppColors.White,
+            actionIconContentColor = AppColors.White
         ), modifier = modifier
     )
 }

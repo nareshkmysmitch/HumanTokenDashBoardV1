@@ -1,7 +1,5 @@
 package com.healthanalytics.android.presentation.screens.recommendations
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,11 +18,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,9 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
@@ -46,9 +40,6 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
-import com.healthanalytics.android.presentation.theme.backgroundDark
-import com.healthanalytics.android.presentation.theme.backgroundLight
-import com.healthanalytics.android.presentation.theme.onSurfaceVariantLight
 import org.koin.compose.koinInject
 
 @Composable
@@ -167,7 +158,7 @@ fun CategoryChip(
             containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(alpha = 0.1f),
             labelColor = AppColors.textPrimary,
             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
-            selectedLabelColor = AppColors.white
+            selectedLabelColor = AppColors.White
         ),
         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
@@ -285,7 +276,7 @@ fun RecommendationCard(
                     shape = RoundedCornerShape(24.dp),
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                         containerColor = buttonColor,
-                        contentColor = AppColors.white
+                        contentColor = AppColors.White
                     ),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                 ) {
@@ -293,7 +284,7 @@ fun RecommendationCard(
                         text = buttonText,
                         fontSize = FontSize.textSize14sp,
                         fontFamily = FontFamily.medium(),
-                        color = AppColors.white
+                        color = AppColors.White
                     )
                 }
             }

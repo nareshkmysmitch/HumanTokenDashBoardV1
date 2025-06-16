@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.api.Range
+import com.healthanalytics.android.presentation.theme.FontFamily
 
 // Global spacing configuration for HorizontalBar
 data class HorizontalBarSpacing(
@@ -39,27 +40,21 @@ fun HorizontalBar(
     spacing: HorizontalBarSpacing = HorizontalBarSpacing(),
 ) {
     val sortedRanges = ranges.sortedBy { it.id }
-    val barHeight = 14.dp
+    val barHeight = 12.dp
     val arrowHeight = 12.dp
     val density = LocalDensity.current
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)
     ) {
         // Arrow and Bars
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .height(barHeight + arrowHeight + spacing.arrowBarSpacing)
         ) {
             // Draw value arrow first (so it appears behind the bars)
             Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(arrowHeight)
-                    .align(Alignment.TopCenter)
+                modifier = Modifier.fillMaxWidth().height(arrowHeight).align(Alignment.TopCenter)
             ) {
                 val valuePosition = calculateValuePosition(
                     value, sortedRanges, size.width, density, spacing.barSpacing
@@ -78,10 +73,7 @@ fun HorizontalBar(
 
             // Draw bars
             Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(barHeight)
-                    .align(Alignment.BottomCenter)
+                modifier = Modifier.fillMaxWidth().height(barHeight).align(Alignment.BottomCenter)
             ) {
                 val barSpacingPx = with(density) { spacing.barSpacing.toPx() }
                 val totalSpacing = barSpacingPx * (sortedRanges.size - 1)
@@ -104,8 +96,7 @@ fun HorizontalBar(
 
         // Range Labels (centered in white space between bars)
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -118,6 +109,7 @@ fun HorizontalBar(
                         text = label,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
+                        fontFamily = FontFamily.pilMedium()
                     )
                 }
             }
@@ -127,16 +119,15 @@ fun HorizontalBar(
 
         // Rating Labels
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             sortedRanges.forEach { range ->
                 Text(
                     text = range.displayRating ?: "",
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    fontFamily = FontFamily.regular()
                 )
             }
         }

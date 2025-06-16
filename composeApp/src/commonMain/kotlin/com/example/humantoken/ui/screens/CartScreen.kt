@@ -185,8 +185,8 @@ fun CartScreen(
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppColors.Black,
-                    navigationIconContentColor = AppColors.white,
-                    titleContentColor = AppColors.white
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
                 ),
                 title = {
                     Text(
@@ -319,7 +319,7 @@ private fun EmptyCartMessage(modifier: Modifier = Modifier) {
         Text(
             text = "Your cart is empty",
             style = MaterialTheme.typography.titleLarge,
-            color = AppColors.white
+            color = AppColors.White
         )
     }
 }
@@ -368,12 +368,12 @@ private fun CartItemCard(
                     text = item.product?.name ?: "",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
-                    color = AppColors.white
+                    color = AppColors.White
                 )
                 Text(
                     text = "₹${item.product?.price ?: "--"}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.white
+                    color = AppColors.White
                 )
             }
 
@@ -401,14 +401,14 @@ private fun CartItemCard(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.widthIn(min = 24.dp).padding(horizontal = 12.dp),
                     textAlign = TextAlign.Center,
-                    color = AppColors.white
+                    color = AppColors.White
                 )
 
                 IconButton(
                     onClick = onQuantityIncrease,
                     modifier = Modifier
                         .size(24.dp)
-                        .background(AppColors.white, CircleShape)
+                        .background(AppColors.White, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -462,7 +462,7 @@ private fun OrderSummary(
                 text = "ORDER SUMMARY",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColors.white
+                color = AppColors.White
             )
 
             OrderSummaryRow(
@@ -510,7 +510,7 @@ private fun OrderSummaryRow(
     ) {
         Text(
             text = title, style = titleStyle,
-            color = AppColors.white
+            color = AppColors.White
         )
         Text(text = value, style = valueStyle, color = valueColor)
     }

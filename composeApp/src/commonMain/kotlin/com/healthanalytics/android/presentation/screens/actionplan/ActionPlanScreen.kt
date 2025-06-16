@@ -173,7 +173,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             text = "Your Action Plan is Empty",
             fontSize = FontSize.textSize24sp,
             fontFamily = FontFamily.bold(),
-            color = AppColors.white,
+            color = AppColors.White,
             textAlign = TextAlign.Center
         )
 
@@ -200,7 +200,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             Text(
                 "Browse Recommendations",
                 fontSize = FontSize.textSize16sp,
-                color = AppColors.white,
+                color = AppColors.White,
                 fontFamily = FontFamily.bold(),
             )
         }
@@ -233,7 +233,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             text = "No Items in This Category",
             fontSize = FontSize.textSize24sp,
             fontFamily = FontFamily.bold(),
-            color = AppColors.white,
+            color = AppColors.White,
             textAlign = TextAlign.Center
         )
 
@@ -259,7 +259,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             Spacer(modifier = Modifier.width(Dimensions.size8dp))
             Text(
                 "Show All Items", fontSize = FontSize.textSize16sp,
-                color = AppColors.white,
+                color = AppColors.White,
                 fontFamily = FontFamily.bold(),
             )
         }
@@ -302,7 +302,7 @@ fun ActionPlanCard(
                     )
                     Text(
                         text = recommendation.name, fontSize = FontSize.textSize22sp,
-                        color = AppColors.white,
+                        color = AppColors.White,
                         fontFamily = FontFamily.bold(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -318,7 +318,7 @@ fun ActionPlanCard(
             Text(
                 text = "Potential Impact",
                 fontSize = FontSize.textSize16sp,
-                color = AppColors.white,
+                color = AppColors.White,
                 fontFamily = FontFamily.medium()
             )
 
