@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.outlined.Help
+import androidx.compose.material.icons.outlined.Hotel
 import androidx.compose.material.icons.outlined.PsychologyAlt
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -87,7 +88,7 @@ data class UserRecommendationAction(
 enum class RecommendationCategory(val icon: ImageVector) {
     ACTIVITY(Icons.Filled.DirectionsRun),
     NUTRITION(Icons.Outlined.Restaurant),
-    SLEEP(Icons.Outlined.Restaurant),
+    SLEEP(Icons.Outlined.Hotel),
     STRESS(Icons.Outlined.PsychologyAlt),
     SUPPLEMENTS(Icons.Default.Medication),
     RECOVERY(Icons.Outlined.Help);

@@ -126,12 +126,6 @@ fun CategoryChip(
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(AppColors.white)
                 )
-                /* Text(
-                     text = categoryEnum.icon,
-                     fontSize = FontSize.textSize14sp,
-                     fontFamily = FontFamily.medium(),
-                     color = AppColors.tertiary
-                 )*/
                 Spacer(modifier = Modifier.width(Dimensions.size4dp))
                 Text(
                     text = "$category ($count)",
