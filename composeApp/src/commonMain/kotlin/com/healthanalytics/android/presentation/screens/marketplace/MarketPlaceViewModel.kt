@@ -9,12 +9,17 @@ import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.data.models.AddressItem
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
+import com.healthanalytics.android.data.models.onboard.SlotRequest
+import com.healthanalytics.android.data.models.onboard.SlotsAvailability
 import com.healthanalytics.android.data.repositories.PreferencesRepository
+import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
+import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 
 sealed class MarketPlaceUiState {
     data object Loading : MarketPlaceUiState()
@@ -57,6 +62,7 @@ sealed class LogoutState {
 class MarketPlaceViewModel(
     private val apiService: ApiService,
     private val preferencesRepository: PreferencesRepository,
+    private val onboardApiService: OnboardApiService,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MarketPlaceUiState>(MarketPlaceUiState.Loading)
@@ -90,6 +96,9 @@ class MarketPlaceViewModel(
 
     private val _productDetailsState = MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
+
+    private val _leadId = MutableStateFlow<String?>(null)
+    val leadId: StateFlow<String?> = _leadId.asStateFlow()
 
     // User Profile States
     private val _userName = MutableStateFlow<String?>(null)
@@ -232,6 +241,13 @@ class MarketPlaceViewModel(
         }
         viewModelScope.launch {
             preferencesRepository.addressId.collect { _cachedAddressId.value = it }
+        }
+
+        viewModelScope.launch {
+            preferencesRepository.leadId.collect { leadId ->
+                println("Lead ID Updated: $leadId")
+                _leadId.value = leadId
+            }
         }
     }
 
@@ -506,4 +522,28 @@ class MarketPlaceViewModel(
     companion object {
         val PRODUCT_CATEGORIES = listOf("Product", "Blood", "Gene", "Gut")
     }
+
+
+    private val _slotAvailability =
+        MutableStateFlow<Resource<SlotsAvailability?>>(Resource.Loading())
+    val slotAvailability: StateFlow<Resource<SlotsAvailability?>> = _slotAvailability
+
+    fun getSlotAvailability(selectedDate: String) {
+
+        val slotRequest = SlotRequest(
+            date = selectedDate,
+            lead_id = leadId.value ?:"",
+            user_timezone = TimeZone.Companion.currentSystemDefault().toString()
+        )
+
+        viewModelScope.launch {
+            try {
+                val response = onboardApiService.getSlotsAvailability(slotRequest)
+                _slotAvailability.value = Resource.Success(response)
+            } catch (_: Exception) {
+                _slotAvailability.value = Resource.Error(errorMessage = "Something went wrong...")
+            }
+        }
+    }
+
 } 

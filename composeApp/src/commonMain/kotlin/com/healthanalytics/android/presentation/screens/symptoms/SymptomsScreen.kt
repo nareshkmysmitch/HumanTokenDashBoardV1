@@ -197,7 +197,8 @@ fun SymptomsScreen(
                             Text(
                                 "Submit Symptoms",
                                 fontSize = FontSize.textSize16sp,
-                                fontFamily = FontFamily.bold()
+                                fontFamily = FontFamily.bold(),
+                                color = AppColors.white,
                             )
                         }
                     }

@@ -3,14 +3,24 @@ package com.healthanalytics.android.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -208,7 +218,7 @@ fun HealthAnalyticsApp() {
 
                     BIOMARKERS_DETAIL -> {
                         BiomarkerDetailScreen(
-                            onNavigateBack = { navigateTo(HOME) },
+                            onNavigateBack = { navigateBack() },
                             biomarker = biomarker,
                             onNavigateFullReport = { navigateTo(BIOMARKER_FULL_REPORT) })
                     }
@@ -216,7 +226,7 @@ fun HealthAnalyticsApp() {
                     BIOMARKER_FULL_REPORT -> {
                         BioMarkerFullReportScreen(
                             onNavigateBack = {
-                                navigateTo(BIOMARKERS_DETAIL)
+                                navigateBack()
                             }, biomarker = biomarker
                         )
                     }
@@ -225,7 +235,8 @@ fun HealthAnalyticsApp() {
                         SymptomsScreen(
                             onNavigateBack = { navigateBack() },
                             viewModel = symptomsViewModel,
-                            onNavigateHome = { navigateTo(HOME) })
+                            onNavigateHome = { navigateTo(HOME) }
+                        )
                     }
 
                     BIOMARKER_FULL_REPORT -> {
@@ -240,9 +251,11 @@ fun HealthAnalyticsApp() {
 
             else -> {
                 OnboardContainer(
-                    onboardViewModel = onboardViewModel, isLoggedIn = {
+                    onboardViewModel = onboardViewModel,
+                    isLoggedIn = {
                         onboardViewModel.updateOnBoardState()
-                    })
+                    }
+                )
             }
         }
     }
@@ -281,31 +294,41 @@ fun OnboardContainer(
                     GetStartedScreen(
                         onGetStarted = { navController.navigate(OnboardRoute.Login) },
                         onLogin = { navController.navigate(OnboardRoute.Login) },
-                        onViewAllBiomarkers = {})
+                        onViewAllBiomarkers = {}
+                    )
                 }
                 composable<OnboardRoute.Login> {
                     LoginScreenContainer(
-                        onboardViewModel = onboardViewModel, navigateToOtpVerification = {
+                        onboardViewModel = onboardViewModel,
+                        navigateToOtpVerification = {
                             navController.navigate(OnboardRoute.OTPVerification)
-                        })
+                        }
+                    )
 
                 }
 
                 composable<OnboardRoute.OTPVerification> {
-                    OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                        navController.navigateUp()
+                    OTPContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
 
-                    }, navigateToAccountCreation = {
-                        navController.navigate(OnboardRoute.CreateAccount)
-                    })
+                        }, navigateToAccountCreation = {
+                            navController.navigate(OnboardRoute.CreateAccount)
+                        }
+                    )
                 }
 
                 composable<OnboardRoute.CreateAccount> {
-                    CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                        navController.navigateUp()
-                    }, navigateToAddress = {
-                        navController.navigate(OnboardRoute.SampleCollectionAddress)
-                    })
+                    CreateAccountContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        navigateToAddress = {
+                            navController.navigate(OnboardRoute.SampleCollectionAddress)
+                        }
+                    )
                 }
 
                 composable<OnboardRoute.SampleCollectionAddress> {
@@ -316,15 +339,20 @@ fun OnboardContainer(
                         },
                         navigateToBloodTest = {
                             navController.navigate(OnboardRoute.ScheduleBloodTest)
-                        })
+                        }
+                    )
                 }
 
                 composable<OnboardRoute.ScheduleBloodTest> {
-                    ScheduleBloodTestContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                        navController.navigateUp()
-                    }, navigateToPayment = {
-                        navController.navigate(OnboardRoute.Payment)
-                    })
+                    ScheduleBloodTestContainer(
+                        onboardViewModel = onboardViewModel,
+                        onBackClick = {
+                            navController.navigateUp()
+                        },
+                        navigateToPayment = {
+                            navController.navigate(OnboardRoute.Payment)
+                        }
+                    )
                 }
 
                 composable<OnboardRoute.Payment> {
@@ -336,7 +364,8 @@ fun OnboardContainer(
                         },
                         isPaymentCompleted = {
                             isLoggedIn()
-                        })
+                        }
+                    )
                 }
             }
         }
@@ -371,11 +400,49 @@ fun HomeScreen(
     Scaffold(topBar = {
         TopAppBar(
             title = "Human Token",
-            isSymptomsIconVisible = currentScreen == MainScreen.DASHBOARD,
-            onSymptomsClick = { onSymptomsClick() },
-            onEndIconClick = if (currentScreen == MainScreen.MARKETPLACE) onCartClick else onProfileClick,
-            onChatClick = onChatClick,
-            isChatVisible = currentScreen != MainScreen.MARKETPLACE,
+            actions = {
+                when(currentScreen){
+                    MainScreen.DASHBOARD -> {
+                        IconButton(onClick = onSymptomsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "symptoms",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                        IconButton(onClick = onChatClick) {
+                            Icon(
+                                imageVector = Icons.Default.Chat,
+                                contentDescription = "Chat",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                    }
+                    MainScreen.RECOMMENDATIONS -> {
+                        IconButton(onClick = onProfileClick) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "symptoms",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                    }
+                    MainScreen.MARKETPLACE -> {
+                        IconButton(onClick = onCartClick) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Chat",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.white
+                            )
+                        }
+                    }
+                }
+            }
+
         )
     }, bottomBar = {
         BottomNavBar(
