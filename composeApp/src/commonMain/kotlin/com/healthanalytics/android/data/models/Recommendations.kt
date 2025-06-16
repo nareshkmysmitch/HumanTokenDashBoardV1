@@ -4,12 +4,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.outlined.Help
-import androidx.compose.material.icons.outlined.PsychologyAlt
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.healthanalytics.android.utils.AppConstants
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.ic_sleep
+import humantokendashboardv1.composeapp.generated.resources.ic_stress
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -93,7 +93,7 @@ sealed class RecommendationIcon {
     data class Painter(val resource: DrawableResource) : RecommendationIcon()
 }
 
-sealed class RecommendationCategoryes{
+sealed class RecommendationCategoryes {
     abstract val icon: RecommendationIcon
 
     data object Activity : RecommendationCategoryes() {
@@ -109,7 +109,7 @@ sealed class RecommendationCategoryes{
     }
 
     data object Stress : RecommendationCategoryes() {
-        override val icon = RecommendationIcon.Vector(Icons.Outlined.PsychologyAlt)
+        override val icon = RecommendationIcon.Painter(Res.drawable.ic_stress)
     }
 
     data object Supplements : RecommendationCategoryes() {
