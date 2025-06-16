@@ -96,7 +96,7 @@ fun TestBookingScreen(
                 title = {
                     Text(
                         text = "Test Booking",
-                        color = AppColors.white,
+                        color = AppColors.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -106,7 +106,7 @@ fun TestBookingScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.white,
+                            tint = AppColors.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -155,7 +155,7 @@ fun TestBookingScreen(
                                 cartItem.product?.product_id == test.product_id
                             }
                             val updatedTest = test.copy(isAdded = isInCart)
-                            
+
                             LaunchedEffect(isInCart) {
                                 if (isInCart && !state.selectedTests.any { it.product_id == updatedTest.product_id }) {
                                     viewModel.toggleTestSelection(updatedTest)
@@ -164,7 +164,7 @@ fun TestBookingScreen(
                                 }
                                 println("isInCart --> $isInCart, selectedTests --> ${state.selectedTests}")
                             }
-                            
+
                             TestCard(
                                 test = updatedTest,
                                 onSelect = {
@@ -184,7 +184,7 @@ fun TestBookingScreen(
                             )
                         }
                     }
-                    if (state.selectedTests.isNotEmpty()){
+                    if (state.selectedTests.isNotEmpty()) {
 //                        Spacer(modifier = Modifier.height(50.dp))
                         Spacer(modifier = Modifier.padding(paddingValues))
                     }
@@ -222,10 +222,10 @@ fun TestBookingScreen(
                         Button(
                             onClick = { onNavigateToSchedule(state.selectedTests) },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF8B5CF6)
+                                containerColor = AppColors.PinkButton
                             ),
                         ) {
-                            Text("Schedule Tests")
+                            Text("Schedule Tests", color = Color.White)
                         }
                     }
                 }

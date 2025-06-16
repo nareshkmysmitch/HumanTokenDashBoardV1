@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.components
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -18,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.presentation.theme.AppColors
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
     title: String,
@@ -34,7 +35,7 @@ fun TopAppBar(
     TopAppBar(
         title = {
             Text(
-                text = title, fontWeight = FontWeight.Bold, color = AppColors.white
+                text = title, fontWeight = FontWeight.Bold, color = AppColors.White
             )
         }, actions = {
             if (isSymptomsIconVisible) {
@@ -43,7 +44,7 @@ fun TopAppBar(
                         imageVector = Icons.Default.Warning,
                         contentDescription = "symptoms",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
             }
@@ -53,7 +54,7 @@ fun TopAppBar(
                         imageVector = Icons.Default.Chat,
                         contentDescription = "Chat",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
             }
@@ -64,15 +65,41 @@ fun TopAppBar(
                         imageVector = endIcon,
                         contentDescription = "Profile",
                         modifier = Modifier.size(24.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
             }
         }, colors = TopAppBarDefaults.topAppBarColors(
             containerColor = AppColors.AppBackgroundColor,
-            navigationIconContentColor = AppColors.white,
-            titleContentColor = AppColors.white,
-            actionIconContentColor = AppColors.white
+            navigationIconContentColor = AppColors.White,
+            titleContentColor = AppColors.White,
+            actionIconContentColor = AppColors.White
         ), modifier = modifier
+    )
+}*/
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.White
+            )
+        },
+        actions = actions,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = AppColors.AppBackgroundColor,
+            navigationIconContentColor = AppColors.White,
+            titleContentColor = AppColors.White,
+            actionIconContentColor = AppColors.White
+        ),
+        modifier = modifier
     )
 }

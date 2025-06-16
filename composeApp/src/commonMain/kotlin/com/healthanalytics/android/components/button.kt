@@ -39,7 +39,7 @@ fun PrimaryButton(
             text = buttonName,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.bold(),
-            color = if (isEnable) AppColors.white else AppColors.textSecondary
+            color = if (isEnable) AppColors.White else AppColors.textSecondary
         )
     }
 }

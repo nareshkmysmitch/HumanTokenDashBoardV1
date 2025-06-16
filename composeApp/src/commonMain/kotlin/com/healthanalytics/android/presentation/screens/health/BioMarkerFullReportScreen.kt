@@ -1,6 +1,5 @@
 package com.healthanalytics.android.presentation.screens.health
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,25 +34,26 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
+import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.Cause
 import com.healthanalytics.android.data.api.MetricData
 import com.healthanalytics.android.data.api.ReportedSymptom
 import com.healthanalytics.android.data.api.WellnessCategory
-import com.healthanalytics.android.presentation.components.AppCard
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.FontFamily
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,9 +64,12 @@ fun BioMarkerFullReportScreen(
     prefs: PreferencesViewModel = koinInject(),
     viewModel: BioMarkerReportViewModel = koinInject(),
 ) {
-
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+
+    var selectedTab by rememberSaveable { mutableStateOf(0) } // 👈 Use rememberSaveable for resilience
+
+    BackHandler(enabled = true, onBack = { onNavigateBack() })
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -76,38 +78,26 @@ fun BioMarkerFullReportScreen(
         }
     }
 
-    BackHandler(enabled = true, onBack = onNavigateBack)
-    Logger.e { "BiomarkerDetailScreen $biomarker" }
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = biomarker.displayName ?: "", color = AppColors.Black
-                    )
+                    Text(text = biomarker.displayName ?: "", color = AppColors.White)
                 }, navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = AppColors.Black
+                            tint = AppColors.White
                         )
                     }
                 }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.AppBackgroundColor,
-                    navigationIconContentColor = AppColors.Black,
-                    titleContentColor = AppColors.Black
+                    containerColor = AppColors.AppBackgroundColor
                 )
             )
         }) { paddingValues ->
         when (val state = uiState) {
-            is BioMarkerReportUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+            is BioMarkerReportUiState.Loading -> { /* show loader */
             }
 
             is BioMarkerReportUiState.Success -> {
@@ -115,14 +105,15 @@ fun BioMarkerFullReportScreen(
                     modifier = modifier.fillMaxSize().padding(paddingValues),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    item {
-                        HeaderCard(biomarker, state.data?.releasedAt)
-                    }
+                    item { HeaderCard(biomarker, state.data?.releasedAt) }
 
                     item {
                         TabSection(
-                            state.data?.metricData?.firstOrNull()?.causes ?: emptyList(),
-                            state.data?.metricData
+                            selectedTab = selectedTab,
+                            onTabSelected = { selectedTab = it },
+                            causes = state.data?.metricData?.firstOrNull()?.causes ?: emptyList(),
+                            metricData = state.data?.metricData,
+                            biomarker.displayName.toString()
                         )
                     }
 
@@ -135,12 +126,38 @@ fun BioMarkerFullReportScreen(
                 }
             }
 
-            is BioMarkerReportUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    Text(state.message)
-                }
+            is BioMarkerReportUiState.Error -> { /* show error */
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun TabSection(
+    selectedTab: Int,
+    onTabSelected: (Int) -> Unit,
+    causes: List<Cause>,
+    metricData: List<MetricData>?,
+    name: String
+) {
+    val tabs = listOf("Why It Matters?", "Causes")
+    val whyItMattersData = metricData?.firstOrNull { it.category == "why_it_matters" }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        TabRow(selectedTabIndex = selectedTab) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { onTabSelected(index) },
+                    text = { Text(title) })
+            }
+        }
+
+        Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            when (selectedTab) {
+                0 -> WhyItMattersContent(whyItMattersData)
+                1 -> CausesContent(causes, name)
             }
         }
     }
@@ -148,8 +165,11 @@ fun BioMarkerFullReportScreen(
 
 @Composable
 private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
-    AppCard(
-        modifier = Modifier.fillMaxWidth().padding(16.dp).background(AppColors.white),
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.CardGrey
+        ),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp)
@@ -162,7 +182,8 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
                 Text(
                     text = biomarker.displayName ?: "",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = AppColors.DarkPurple
+                    color = AppColors.White,
+                    fontFamily = FontFamily.bold()
                 )
                 StatusChip(status = biomarker.displayRating ?: "")
             }
@@ -172,13 +193,15 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
             Text(
                 text = "${biomarker.value} ${biomarker.unit}",
                 style = MaterialTheme.typography.headlineLarge,
-                color = AppColors.DarkPurple
+                color = AppColors.White,
+                fontFamily = FontFamily.pilBold()
             )
 
             Text(
                 text = "Last Updated: ${formatDate(releasedAt ?: "")}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.DarkPurple.copy(alpha = 0.7f)
+                color = AppColors.White.copy(alpha = 0.7f),
+                fontFamily = FontFamily.regular()
             )
 
             if (!biomarker.shortDescription.isNullOrBlank()) {
@@ -186,41 +209,14 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
                 Text(
                     text = biomarker.shortDescription,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.DarkPurple
+                    color = AppColors.White,
+                    fontFamily = FontFamily.regular()
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TabSection(causes: List<Cause>, metricData: List<MetricData>?) {
-    var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("Why It Matters?", "Causes")
-
-    val whyItMattersData = metricData?.firstOrNull { it.category == "why_it_matters" }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        TabRow(selectedTabIndex = selectedTab) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = { Text(title) })
-            }
-        }
-
-        Box(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            when (selectedTab) {
-                0 -> WhyItMattersContent(whyItMattersData)
-                1 -> CausesContent(causes)
-            }
-        }
-    }
-}
 
 @Composable
 private fun WhyItMattersContent(metricData: MetricData?) {
@@ -230,14 +226,16 @@ private fun WhyItMattersContent(metricData: MetricData?) {
         if (metricData?.content != null) {
             Text(
                 text = metricData.content,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                fontSize = 14.sp,
+                color = AppColors.White,
+                fontFamily = FontFamily.regular()
             )
         } else {
             Text(
                 text = "Elevated ALT is a key indicator of liver inflammation or damage.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                fontSize = 14.sp,
+                fontFamily = FontFamily.regular(),
+                color = AppColors.White,
             )
         }
 
@@ -245,8 +243,9 @@ private fun WhyItMattersContent(metricData: MetricData?) {
             if (points?.isNotBlank() == true) {
                 Text(
                     text = points,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.regular(),
+                    color = AppColors.White,
                 )
             }
         }
@@ -254,7 +253,7 @@ private fun WhyItMattersContent(metricData: MetricData?) {
 }
 
 @Composable
-private fun CausesContent(causes: List<Cause>) {
+private fun CausesContent(causes: List<Cause>, name: String) {
     Column(
         modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
@@ -263,7 +262,8 @@ private fun CausesContent(causes: List<Cause>) {
             Text(
                 text = "Factors That May Increase Levels",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
+                fontFamily = FontFamily.regular()
             )
             Spacer(modifier = Modifier.height(8.dp))
             causes.filter { it.type == "increase" }.forEach { cause ->
@@ -279,7 +279,9 @@ private fun CausesContent(causes: List<Cause>) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = cause.name ?: "", style = MaterialTheme.typography.bodyMedium
+                        text = cause.name ?: "",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = FontFamily.regular()
                     )
                 }
             }
@@ -290,7 +292,8 @@ private fun CausesContent(causes: List<Cause>) {
             Text(
                 text = "Factors That May Decrease Levels",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                fontFamily = FontFamily.regular()
             )
             Spacer(modifier = Modifier.height(8.dp))
             causes.filter { it.type == "decrease" }.forEach { cause ->
@@ -306,14 +309,16 @@ private fun CausesContent(causes: List<Cause>) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = cause.name ?: "", style = MaterialTheme.typography.bodyMedium
+                        text = cause.name ?: "",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = FontFamily.regular()
                     )
                 }
             }
         }
 
         Text(
-            text = "Note: These are general factors that may influence your Eosinophils %. Individual responses can vary based on your unique genetic makeup and overall health.",
+            text = "Note: These are general factors that may influence your ${name}. Individual responses can vary based on your unique genetic makeup and overall health.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -353,7 +358,7 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = AppColors.white
+                    containerColor = AppColors.CardGrey
                 ),
             ) {
                 Row(
@@ -363,11 +368,16 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = category.name ?: "", style = MaterialTheme.typography.titleMedium
+                            text = category.name ?: "",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = AppColors.White,
+                            fontFamily = FontFamily.medium()
                         )
                         Text(
                             text = category.description ?: "",
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = AppColors.White,
+                            fontFamily = FontFamily.regular()
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
@@ -392,7 +402,7 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = AppColors.white
+                    containerColor = AppColors.CardGrey
                 ),
             ) {
                 Row(
@@ -402,12 +412,16 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
                 ) {
                     Text(
                         text = symptom.name ?: "",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.weight(1f)
+                        fontSize = 14.sp,
+                        modifier = Modifier.weight(1f),
+                        fontFamily = FontFamily.bold(),
+                        color = AppColors.White
                     )
                     Text(
                         text = "${symptom.count ?: 0} times",
-                        style = MaterialTheme.typography.bodyMedium
+                        color = AppColors.White,
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.regular()
                     )
                 }
             }
@@ -431,7 +445,8 @@ private fun ImpactChip(impact: String) {
             text = "$impact Impact",
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             style = MaterialTheme.typography.labelMedium,
-            color = textColor
+            color = textColor,
+            fontFamily = FontFamily.regular()
         )
     }
 }

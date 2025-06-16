@@ -27,7 +27,7 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, mod
         modifier = modifier.height(Dimensions.size50dp),
         onClick = onClicked,
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.white,
+            contentColor = AppColors.White,
             containerColor = AppColors.Black
         ),
         border = BorderStroke(
@@ -39,7 +39,7 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, mod
             imageVector = icon,
             contentDescription = "Remove",
             modifier = Modifier.size(Dimensions.size16dp),
-            tint = AppColors.white
+            tint = AppColors.White
         )
         Spacer(modifier = Modifier.width(Dimensions.size8dp))
         Text(
@@ -64,7 +64,7 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier.height(Dimensions.size50dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.white,
+            contentColor = AppColors.White,
             containerColor = buttonColor
         ),
         shape = RoundedCornerShape(Dimensions.size12dp)
@@ -73,7 +73,7 @@ fun PrimaryButton(
             text = txt,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.bold(),
-            color = AppColors.white
+            color = AppColors.White
         )
     }
 }

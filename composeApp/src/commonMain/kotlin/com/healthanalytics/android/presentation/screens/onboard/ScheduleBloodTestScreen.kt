@@ -57,7 +57,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
@@ -151,7 +150,7 @@ fun ScheduleBloodTestScreen(
                     text = AppStrings.SCHEDULE_YOUR_BLOOD_TEST_DESCRIPTION,
                     fontSize = FontSize.textSize16sp,
                     fontFamily = FontFamily.regular(),
-                    color = AppColors.white,
+                    color = AppColors.White,
                 )
 
                 Spacer(Modifier.height(Dimensions.size30dp))
@@ -268,7 +267,7 @@ fun ScheduleBloodTestScreen(
 }
 
 @Composable
-private fun TimeSlotCard(
+fun TimeSlotCard(
     time: String,
     isSelected: Boolean,
     onClick: () -> Unit

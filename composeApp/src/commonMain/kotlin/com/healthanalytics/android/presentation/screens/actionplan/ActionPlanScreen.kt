@@ -138,7 +138,7 @@ fun CategoryChip(
             ),
             labelColor = AppColors.textPrimary,
             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
-            selectedLabelColor = AppColors.white
+            selectedLabelColor = AppColors.White
         ),
         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
@@ -180,7 +180,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
                 imageVector = Icons.Default.Assignment,
                 contentDescription = null,
                 modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
-                tint = AppColors.white
+                tint = AppColors.White
             )
         }
 
@@ -190,7 +190,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             text = AppStrings.YOUR_ACTION_PLAN_IS_EMPTY,
             fontSize = FontSize.textSize24sp,
             fontFamily = FontFamily.bold(),
-            color = AppColors.white,
+            color = AppColors.White,
             textAlign = TextAlign.Center
         )
 
@@ -200,7 +200,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
             text = AppStrings.ADD_RECOMMENDATIONS,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.medium(),
-            color = AppColors.white,
+            color = AppColors.White,
             textAlign = TextAlign.Center
         )
 
@@ -232,7 +232,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
                 imageVector = Icons.Default.FilterAlt,
                 contentDescription = null,
                 modifier = Modifier.padding(Dimensions.size16dp).fillMaxSize(),
-                tint = AppColors.white
+                tint = AppColors.White
             )
         }
 
@@ -242,7 +242,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             text = AppStrings.NO_ITEMS_IN_THIS_CATEGORY,
             fontSize = FontSize.textSize24sp,
             fontFamily = FontFamily.bold(),
-            color = AppColors.white,
+            color = AppColors.White,
             textAlign = TextAlign.Center
         )
 
@@ -252,7 +252,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
             text = AppStrings.NOT_HAVE_ANY_ACTION_PLAN,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.medium(),
-            color = AppColors.white,
+            color = AppColors.White,
             textAlign = TextAlign.Center
         )
 

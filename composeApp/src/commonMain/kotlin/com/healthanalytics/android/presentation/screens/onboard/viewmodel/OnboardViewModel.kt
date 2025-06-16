@@ -196,6 +196,7 @@ class OnboardViewModel(
                     user.name?.let { preferencesRepository.saveUserName(it) }
                     user.email?.let { preferencesRepository.saveUserEmail(it) }
                     user.mobile?.let { preferencesRepository.saveUserPhone(it) }
+                    user.lead_id?.let {preferencesRepository.saveLeadId(it)}
 
                     // Save communication address if available
                     user.communication_address?.let { address ->
@@ -239,6 +240,7 @@ class OnboardViewModel(
             try {
                 val response = onboardApiService.createAccount(accountCreation)
                 leadId = response?.lead_id ?: ""
+                preferencesRepository.saveLeadId(leadId)
                 _accountCreationState.emit(Resource.Success(response))
             } catch (_: Exception) {
                 _accountCreationState.emit(Resource.Error(errorMessage = "Something went wrong..."))
