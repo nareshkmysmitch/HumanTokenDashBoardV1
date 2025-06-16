@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -129,15 +130,11 @@ fun CategoryChip(
 ) {
     val categoryEnum = RecommendationCategory.fromString(category)
     androidx.compose.material3.FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = {
+        selected = selected, onClick = onClick, label = {
             Row(
                 modifier = Modifier.padding(
-                    vertical = Dimensions.size8dp,
-                    horizontal = Dimensions.size4dp
-                ),
-                verticalAlignment = Alignment.CenterVertically
+                    vertical = Dimensions.size8dp, horizontal = Dimensions.size4dp
+                ), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = categoryEnum.icon,
@@ -153,16 +150,14 @@ fun CategoryChip(
                     color = AppColors.textPrimary
                 )
             }
-        },
-        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+        }, colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
             containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
                 alpha = 0.1f
             ),
             labelColor = AppColors.textPrimary,
             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
             selectedLabelColor = AppColors.white
-        ),
-        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+        ), border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
             selected = selected,
             borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
@@ -179,26 +174,21 @@ fun RecommendationCard(
     accessToken: String?,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = Dimensions.size16dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.size16dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF1e2025)
         ),
         shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimensions.size20dp)
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.size20dp)
         ) {
             // Title Row
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(36.dp)
+                    modifier = Modifier.size(36.dp)
                         .background(AppColors.backgroundDark, shape = CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
@@ -242,16 +232,13 @@ fun RecommendationCard(
                     ) {
                         metrics.forEach { metricRecommendation ->
                             Box(
-                                modifier = Modifier
-                                    .background(
+                                modifier = Modifier.background(
                                         color = AppColors.SubGreyColor,
                                         shape = RoundedCornerShape(10.dp)
-                                    )
-                                    .padding(
+                                    ).padding(
                                         vertical = Dimensions.size6dp,
                                         horizontal = Dimensions.size8dp
-                                    ),
-                                contentAlignment = Alignment.CenterStart
+                                    ), contentAlignment = Alignment.CenterStart
                             ) {
                                 Text(
                                     text = metricRecommendation.metric.metric.uppercase(),
@@ -272,26 +259,23 @@ fun RecommendationCard(
 
             // Add to Plan Button
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
             ) {
                 val buttonText = if (isEnabled) "+ Add to Plan" else "Added to plan"
                 val buttonColor =
                     if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
-                androidx.compose.material3.Button(
+                Button(
                     onClick = {
                         if (isEnabled) accessToken?.let {
                             viewModel.addToPlan(
-                                it,
-                                recommendation
+                                it, recommendation
                             )
                         }
                     },
                     enabled = true,
                     shape = RoundedCornerShape(24.dp),
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = buttonColor,
-                        contentColor = AppColors.white
+                        containerColor = buttonColor, contentColor = AppColors.white
                     ),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                 ) {
@@ -314,9 +298,7 @@ fun MetricChip(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = AppColors.SubGreyColor,
-        shape = MaterialTheme.shapes.small,
-        modifier = modifier
+        color = AppColors.SubGreyColor, shape = MaterialTheme.shapes.small, modifier = modifier
     ) {
         Text(
             text = metric,
