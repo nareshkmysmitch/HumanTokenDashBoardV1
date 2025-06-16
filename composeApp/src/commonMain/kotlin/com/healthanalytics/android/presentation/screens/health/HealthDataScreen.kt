@@ -78,8 +78,7 @@ fun HealthDataScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(AppColors.Black)
-            .padding(top = size16dp)
+        modifier = Modifier.fillMaxSize().background(AppColors.Black).padding(top = size16dp)
     ) {
 
         AnimatedVisibility(
@@ -119,7 +118,7 @@ fun HealthDataScreen(
                             ),
                             labelColor = AppColors.textPrimary,
                             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
-                            selectedLabelColor = AppColors.white
+                            selectedLabelColor = AppColors.White
                         ),
                         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
                             enabled = true,
@@ -172,8 +171,7 @@ fun MetricCard(
     val symptomsReported = metric?.symptomsReported
     Column(
         modifier = Modifier.fillMaxWidth().padding(size12dp)
-            .clickable { metric?.let { onMetricClick(it) } }
-    ) {
+            .clickable { metric?.let { onMetricClick(it) } }) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -195,8 +193,7 @@ fun MetricCard(
         Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Row(modifier = Modifier.weight(1f)) {
                 Text(
@@ -224,11 +221,9 @@ fun MetricCard(
         Spacer(modifier = Modifier.height(Dimensions.size8dp))
         if (symptomsReported != null && symptomsReported > 0) {
             Column(
-                modifier = Modifier.wrapContentSize()
-                    .background(
-                        color = Color(0xFF192D50),
-                        shape = RoundedCornerShape(50)
-                    ).padding(PaddingValues(vertical = size4dp, horizontal = Dimensions.size8dp))
+                modifier = Modifier.wrapContentSize().background(
+                    color = Color(0xFF192D50), shape = RoundedCornerShape(50)
+                ).padding(PaddingValues(vertical = size4dp, horizontal = Dimensions.size8dp))
             ) {
                 Text(
                     text = "${metric.symptomsReported} symptoms reported",

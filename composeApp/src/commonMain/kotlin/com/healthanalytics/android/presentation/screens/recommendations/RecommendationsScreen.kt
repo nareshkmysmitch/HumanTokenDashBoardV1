@@ -136,7 +136,7 @@ fun CategoryChip(
             ),
             labelColor = AppColors.textPrimary,
             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
-            selectedLabelColor = AppColors.white
+            selectedLabelColor = AppColors.White
         ), border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
             selected = selected,
@@ -227,7 +227,7 @@ fun PotentialImpact() {
         text = AppStrings.POTENTIAL_IMPACT,
         fontSize = FontSize.textSize14sp,
         fontFamily = FontFamily.medium(),
-        color = AppColors.white
+        color = AppColors.White
     )
 }
 
@@ -272,7 +272,7 @@ fun MetricChip(
                 vertical = Dimensions.size4dp
             ),
             style = MaterialTheme.typography.bodySmall,
-            color = AppColors.white
+            color = AppColors.White
         )
     }
 } 

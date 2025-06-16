@@ -90,15 +90,15 @@ fun TopAppBar(
             Text(
                 text = title,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.white
+                color = AppColors.White
             )
         },
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = AppColors.AppBackgroundColor,
-            navigationIconContentColor = AppColors.white,
-            titleContentColor = AppColors.white,
-            actionIconContentColor = AppColors.white
+            navigationIconContentColor = AppColors.White,
+            titleContentColor = AppColors.White,
+            actionIconContentColor = AppColors.White
         ),
         modifier = modifier
     )
