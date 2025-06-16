@@ -2,8 +2,11 @@ package com.healthanalytics.android.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -19,8 +22,9 @@ import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 
 @Composable
-fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit) {
+fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, modifier: Modifier) {
     OutlinedButton(
+        modifier = modifier.height(Dimensions.size50dp),
         onClick = onClicked,
         colors = ButtonDefaults.buttonColors(
             contentColor = AppColors.white,
@@ -42,6 +46,33 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit) {
             txt,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.bold(),
+        )
+    }
+}
+
+
+@Composable
+fun PrimaryButton(
+    modifier: Modifier = Modifier,
+    buttonName: String,
+    enable: Boolean = true,
+    onClick: () -> Unit,
+) {
+    Button(
+        enabled = enable,
+        onClick = onClick,
+        modifier = modifier.height(Dimensions.size50dp),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = AppColors.white,
+            containerColor = AppColors.primary
+        ),
+        shape = RoundedCornerShape(Dimensions.size12dp)
+    ) {
+        Text(
+            text = buttonName,
+            fontSize = FontSize.textSize16sp,
+            fontFamily = FontFamily.bold(),
+            color = AppColors.white
         )
     }
 }

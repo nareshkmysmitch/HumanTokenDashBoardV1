@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -211,6 +212,7 @@ fun EmptyActionPlan(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
         TransparentButton(
+            modifier = Modifier.wrapContentWidth(),
             icon = Icons.Default.ArrowBack,
             txt = AppStrings.BROWSE_RECOMMENDATIONS,
             onClicked = {
@@ -262,6 +264,7 @@ fun EmptyCategoryView(viewModel: RecommendationsViewModel) {
         Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
         TransparentButton(
+            modifier = Modifier.wrapContentWidth(),
             icon = Icons.Default.Dashboard,
             txt = AppStrings.SHOW_ALL_ITEMS,
             onClicked = {
@@ -333,6 +336,7 @@ fun ActionPlanCard(
                 )
 
                 TransparentButton(
+                    modifier = Modifier.wrapContentWidth(),
                     icon = Icons.Default.Delete,
                     txt = AppStrings.REMOVE,
                     onClicked = {
