@@ -31,12 +31,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.screens.actionplan.MetricsGrid
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
@@ -160,47 +160,24 @@ fun RecommendationCard(
     val action = recommendation.actions?.firstOrNull()
     val userAction = action?.user_recommendation_actions?.firstOrNull()
     val isEnabled = userAction == null || userAction.is_completed == false
+
     val isSupplements = (recommendation.category?.equals(
         AppConstants.SUPPLEMENTS,
         ignoreCase = true
     ) == true)
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.size16dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.size8dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1e2025)
+            containerColor = AppColors.CardGrey
         ),
         shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(Dimensions.size20dp)
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.size12dp)
         ) {
             // Title Row
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier.size(36.dp)
-                        .background(AppColors.backgroundDark, shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = RecommendationCategory.fromString(recommendation.category).icon,
-                        fontSize = FontSize.textSize20sp,
-                        fontFamily = FontFamily.medium(),
-                        color = AppColors.secondary
-                    )
-                }
-                Spacer(modifier = Modifier.width(Dimensions.size12dp))
-                Text(
-                    text = recommendation.name,
-                    fontSize = FontSize.textSize18sp,
-                    fontFamily = FontFamily.medium(),
-                    color = AppColors.textPrimary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            RecommendationTitle(recommendation)
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
@@ -212,45 +189,11 @@ fun RecommendationCard(
                     color = AppColors.textSecondary
                 )
             } else {
-                Text(
-                    text = AppStrings.POTENTIAL_IMPACT,
-                    fontSize = FontSize.textSize14sp,
-                    fontFamily = FontFamily.medium(),
-                    color = AppColors.textSecondary
-                )
+                PotentialImpact()
 
                 Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
-                // Metrics Grid (2 columns)
-                metricRecommendation.let { metrics ->
-                    if (metrics?.isNotEmpty() == true) {
-                        androidx.compose.foundation.layout.FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            maxItemsInEachRow = 2,
-                            horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
-                            verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                        ) {
-                            metrics.forEach { metricRecommendation ->
-                                Box(
-                                    modifier = Modifier.background(
-                                        color = AppColors.SubGreyColor,
-                                        shape = RoundedCornerShape(10.dp)
-                                    ).padding(
-                                        vertical = Dimensions.size6dp,
-                                        horizontal = Dimensions.size8dp
-                                    ), contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Text(
-                                        text = metricRecommendation.metric.metric.uppercase(),
-                                        fontSize = FontSize.textSize12sp,
-                                        fontFamily = FontFamily.regular(),
-                                        color = AppColors.textPrimary
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                MetricsGrid(metricRecommendation)
             }
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
@@ -286,6 +229,45 @@ fun RecommendationCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun PotentialImpact() {
+    Text(
+        text = AppStrings.POTENTIAL_IMPACT,
+        fontSize = FontSize.textSize14sp,
+        fontFamily = FontFamily.medium(),
+        color = AppColors.white
+    )
+}
+
+@Composable
+fun RecommendationTitle(recommendation: Recommendation) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier.size(Dimensions.size36dp)
+                .background(AppColors.backgroundDark, shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = RecommendationCategory.fromString(recommendation.category).icon,
+                fontSize = FontSize.textSize20sp,
+                fontFamily = FontFamily.medium(),
+                color = AppColors.secondary
+            )
+        }
+        Spacer(modifier = Modifier.width(Dimensions.size12dp))
+        Text(
+            text = recommendation.name,
+            fontSize = FontSize.textSize18sp,
+            fontFamily = FontFamily.medium(),
+            color = AppColors.textPrimary,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 

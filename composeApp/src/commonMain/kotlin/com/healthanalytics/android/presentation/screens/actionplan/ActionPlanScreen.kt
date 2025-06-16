@@ -40,11 +40,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
+import com.healthanalytics.android.data.models.MetricRecommendation
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.MetricChip
+import com.healthanalytics.android.presentation.screens.recommendations.PotentialImpact
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationTitle
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -291,7 +293,9 @@ fun ActionPlanCard(
     val createAt =
         recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
     val formattedDate = formatDate(createAt)
+
     val metricRecommendation = recommendation.metric_recommendations
+
     val isSupplements = recommendation.category.equals(
         AppConstants.SUPPLEMENTS,
         ignoreCase = true
@@ -304,32 +308,10 @@ fun ActionPlanCard(
         ),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp)
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.size12dp)
         ) {
             // Header with icon and title
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = RecommendationCategory.fromString(recommendation.category).icon,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        text = recommendation.name, fontSize = FontSize.textSize18sp,
-                        color = AppColors.white,
-                        fontFamily = FontFamily.bold(),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
+            RecommendationTitle(recommendation)
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
@@ -341,42 +323,12 @@ fun ActionPlanCard(
                     color = AppColors.textSecondary
                 )
             } else {
-                // Potential Impact Section
-                Text(
-                    text = AppStrings.POTENTIAL_IMPACT,
-                    fontSize = FontSize.textSize16sp,
-                    color = AppColors.white,
-                    fontFamily = FontFamily.medium()
-                )
+                PotentialImpact()
 
                 Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
                 // Metrics Grid
-                recommendation.metric_recommendations.let { metrics ->
-                    if (metrics?.isNotEmpty() == true) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                        ) {
-                            metrics.chunked(2).forEach { rowMetrics ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                                ) {
-                                    rowMetrics.forEach { metricRecommendation ->
-                                        MetricChip(
-                                            metric = metricRecommendation.metric.metric,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                    }
-                                    if (rowMetrics.size == 1) {
-                                        Spacer(modifier = Modifier.weight(1f))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                MetricsGrid(metricRecommendation)
             }
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
@@ -418,6 +370,35 @@ fun ActionPlanCard(
                         fontSize = FontSize.textSize16sp,
                         fontFamily = FontFamily.bold(),
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MetricsGrid(metricRecommendation: List<MetricRecommendation>?) {
+    metricRecommendation.let { metrics ->
+        if (metrics?.isNotEmpty() == true) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+            ) {
+                metrics.chunked(2).forEach { rowMetrics ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+                    ) {
+                        rowMetrics.forEach { metricRecommendation ->
+                            MetricChip(
+                                metric = metricRecommendation.metric.metric,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (rowMetrics.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
                 }
             }
         }
