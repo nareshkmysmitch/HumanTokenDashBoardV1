@@ -21,9 +21,12 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,9 +90,18 @@ sealed class CommunicationStyle(
 @Composable
 fun CommunicationPreference(
     onStyleSelected: (CommunicationStyle) -> Unit,
-    onSaveClicked: () -> Unit,
+    onSaveClicked: (selectedPreference: CommunicationStyle?) -> Unit,
     viewModel: MarketPlaceViewModel,
 ) {
+    val accessToken by viewModel.accessToken.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiCommunicationPreference.collectAsState()
+
+    LaunchedEffect(accessToken) {
+        if (accessToken != null) {
+            viewModel.loadCommunicationPreference(accessToken)
+        }
+    }
+
     val selectedPreference by viewModel.communicationSelected.collectAsStateWithLifecycle()
 
     Column(
@@ -97,78 +109,87 @@ fun CommunicationPreference(
             .background(AppColors.BlueBackground, shape = RoundedCornerShape(Dimensions.size12dp))
             .padding(Dimensions.size16dp)
     ) {
-        Text(
-            text = stringResource(Res.string.communication_preferences),
-            fontSize = FontSize.textSize18sp,
-            fontFamily = FontFamily.medium(),
-            color = AppColors.White
-        )
-
-        Spacer(modifier = Modifier.height(Dimensions.size6dp))
-
-        Text(
-            text = stringResource(Res.string.communication_preferences_subtitle),
-            fontSize = FontSize.textSize14sp,
-            fontFamily = FontFamily.medium(),
-            color = AppColors.descriptionColor
-        )
-
-        Spacer(modifier = Modifier.height(Dimensions.size24dp))
-
-        Text(
-            text = stringResource(Res.string.information_delivery_style),
-            fontSize = FontSize.textSize14sp,
-            fontFamily = FontFamily.medium(),
-            color = AppColors.White
-        )
-
-        Spacer(modifier = Modifier.height(Dimensions.size12dp))
-
-        Text(
-            text = stringResource(Res.string.information_delivery_style_subtitle),
-            fontSize = FontSize.textSize14sp,
-            fontFamily = FontFamily.regular(),
-            color = AppColors.White
-        )
-
-        Spacer(modifier = Modifier.height(Dimensions.size12dp))
-
-        CommunicationStyleCard(
-            style = CommunicationStyle.Biohacker,
-            selected = selectedPreference == CommunicationStyle.Biohacker,
-            onClick = { onStyleSelected(CommunicationStyle.Biohacker) })
-
-        Spacer(modifier = Modifier.height(Dimensions.size12dp))
-
-        CommunicationStyleCard(
-            style = CommunicationStyle.Doctor,
-            selected = selectedPreference == CommunicationStyle.Doctor,
-            onClick = { onStyleSelected(CommunicationStyle.Doctor) })
-
-        Spacer(modifier = Modifier.height(Dimensions.size12dp))
-
-        CommunicationStyleCard(
-            style = CommunicationStyle.CloseFriend,
-            selected = selectedPreference == CommunicationStyle.CloseFriend,
-            onClick = { onStyleSelected(CommunicationStyle.CloseFriend) })
-
-
-        Spacer(modifier = Modifier.height(Dimensions.size28dp))
-
-
-        val isEnabled = viewModel.initialPreferenceValue != selectedPreference
-        val buttonColor =
-            if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
-
-
-        PrimaryButton(
-            modifier = Modifier.wrapContentWidth(),
-            txt = stringResource(Res.string.save_preferences),
-            buttonColor = buttonColor,
-            onClick = {
-
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxWidth().height(Dimensions.size180dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-        )
+        } else {
+            Text(
+                text = stringResource(Res.string.communication_preferences),
+                fontSize = FontSize.textSize18sp,
+                fontFamily = FontFamily.medium(),
+                color = AppColors.White
+            )
+
+            Spacer(modifier = Modifier.height(Dimensions.size6dp))
+
+            Text(
+                text = stringResource(Res.string.communication_preferences_subtitle),
+                fontSize = FontSize.textSize14sp,
+                fontFamily = FontFamily.medium(),
+                color = AppColors.descriptionColor
+            )
+
+            Spacer(modifier = Modifier.height(Dimensions.size24dp))
+
+            Text(
+                text = stringResource(Res.string.information_delivery_style),
+                fontSize = FontSize.textSize14sp,
+                fontFamily = FontFamily.medium(),
+                color = AppColors.White
+            )
+
+            Spacer(modifier = Modifier.height(Dimensions.size12dp))
+
+            Text(
+                text = stringResource(Res.string.information_delivery_style_subtitle),
+                fontSize = FontSize.textSize14sp,
+                fontFamily = FontFamily.regular(),
+                color = AppColors.White
+            )
+
+            Spacer(modifier = Modifier.height(Dimensions.size12dp))
+
+            CommunicationStyleCard(
+                style = CommunicationStyle.Biohacker,
+                selected = selectedPreference == CommunicationStyle.Biohacker,
+                onClick = { onStyleSelected(CommunicationStyle.Biohacker) })
+
+            Spacer(modifier = Modifier.height(Dimensions.size12dp))
+
+            CommunicationStyleCard(
+                style = CommunicationStyle.Doctor,
+                selected = selectedPreference == CommunicationStyle.Doctor,
+                onClick = { onStyleSelected(CommunicationStyle.Doctor) })
+
+            Spacer(modifier = Modifier.height(Dimensions.size12dp))
+
+            CommunicationStyleCard(
+                style = CommunicationStyle.CloseFriend,
+                selected = selectedPreference == CommunicationStyle.CloseFriend,
+                onClick = { onStyleSelected(CommunicationStyle.CloseFriend) })
+
+
+            Spacer(modifier = Modifier.height(Dimensions.size28dp))
+
+
+            val isEnabled = viewModel.initialPreferenceValue != selectedPreference
+            val buttonColor =
+                if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
+
+
+            PrimaryButton(
+                modifier = Modifier.wrapContentWidth(),
+                txt = stringResource(Res.string.save_preferences),
+                buttonColor = buttonColor,
+                onClick = {
+                    onSaveClicked(selectedPreference)
+                }
+            )
+        }
     }
 }
 

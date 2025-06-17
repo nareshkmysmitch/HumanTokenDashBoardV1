@@ -7,6 +7,7 @@ import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.data.models.AddressItem
+import com.healthanalytics.android.data.models.LoadingState
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.onboard.SlotRequest
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 
@@ -45,6 +47,12 @@ enum class SortOption(val displayName: String) {
         "A to Z (Name)"
     ),
     NAME_Z_TO_A("Z to A (Name)"), PRICE_LOW_TO_HIGH("Low to High (Price)"), PRICE_HIGH_TO_LOW("High to Low (Price)")
+}
+
+sealed class CommunicationPreferenceType(val type: String) {
+    object Biohacker : CommunicationPreferenceType("bio_hacker")
+    object Doctor : CommunicationPreferenceType("doctor")
+    object CloseFriend : CommunicationPreferenceType("friend")
 }
 
 sealed class ProductDetailsState {
@@ -567,8 +575,56 @@ class MarketPlaceViewModel(
         }
     }
 
-    fun setInitialPreference(preference: CommunicationStyle) {
+    private fun setInitialPreference(preference: CommunicationStyle) {
         initialPreferenceValue = preference
+    }
+
+    private val _uiCommunicationPreference = MutableStateFlow(LoadingState())
+    val uiCommunicationPreference: StateFlow<LoadingState> =
+        _uiCommunicationPreference.asStateFlow()
+
+
+    fun loadCommunicationPreference(accessToken: String?) {
+        viewModelScope.launch {
+            try {
+                _uiCommunicationPreference.update { it.copy(isLoading = true) }
+                val preferenceResponse =
+                    accessToken?.let { apiService.getCommunicationPreference(it) }
+                val preference = preferenceResponse?.preference?.communication_preference
+                    ?: CommunicationPreferenceType.Doctor.type //default
+                when (preference) {
+                    CommunicationPreferenceType.Biohacker.type -> {
+                        val responsePreference = CommunicationStyle.Biohacker
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+
+                    CommunicationPreferenceType.Doctor.type -> {
+                        val responsePreference = CommunicationStyle.Doctor
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+
+                    CommunicationPreferenceType.CloseFriend.type -> {
+                        val responsePreference = CommunicationStyle.CloseFriend
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+                }
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load recommendations"
+                    )
+                }
+            }
+        }
     }
 
 } 

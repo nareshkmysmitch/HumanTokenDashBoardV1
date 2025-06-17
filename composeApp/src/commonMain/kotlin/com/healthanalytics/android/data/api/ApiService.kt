@@ -6,6 +6,7 @@ import com.healthanalytics.android.data.models.AddActivityRequest
 import com.healthanalytics.android.data.models.AddActivityResponse
 import com.healthanalytics.android.data.models.AddSupplementRequest
 import com.healthanalytics.android.data.models.AddressData
+import com.healthanalytics.android.data.models.CommunicationPreference
 import com.healthanalytics.android.data.models.ProfileUpdateResponse
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.Recommendations
@@ -82,6 +83,10 @@ interface ApiService {
     suspend fun getSymptoms(accessToken: String): List<Symptom>?
 
     suspend fun submitSymptoms(accessToken: String, symptomIds: List<String>): Boolean
+
+    suspend fun getCommunicationPreference(
+        accessToken: String,
+    ): CommunicationPreference?
 }
 
 
@@ -395,4 +400,19 @@ class ApiServiceImpl(
             return false
         }
     }
+
+
+    override suspend fun getCommunicationPreference(
+        accessToken: String,
+    ): CommunicationPreference? {
+        val response = httpClient.get("v4/human-token/preference") {
+            header("access_token", accessToken)
+            parameter("fields", "communication_preference")
+        }
+        val responseBody = response.bodyAsText()
+        val preference =
+            EncryptionUtils.handleDecryptionResponse<CommunicationPreference>(responseBody)
+        return preference
+    }
+
 }
