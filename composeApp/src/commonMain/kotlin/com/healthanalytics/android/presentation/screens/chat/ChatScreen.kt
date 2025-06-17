@@ -53,7 +53,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Message
 import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.coroutines.delay

@@ -5,7 +5,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Recommend
 import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
@@ -14,51 +15,77 @@ import com.healthanalytics.android.presentation.screens.recommendations.Recommen
 import com.healthanalytics.android.presentation.theme.AppStrings
 import org.koin.compose.koinInject
 
-sealed class BottomNavScreen : Tab {
-    object Health : BottomNavScreen() {
-        override val options: TabOptions
-            @Composable get() = TabOptions(
-                index = 0u,
-                title = AppStrings.HEALTH_DATA,
-                icon = { Icons.Default.Home } as Painter?)
 
+
+
+sealed class BottomNavScreen : Tab {
+
+    protected lateinit var _options: TabOptions
+
+    override val options: TabOptions
+        get() = _options
+
+    object Health : BottomNavScreen() {
         @Composable
         override fun Content() {
+            val icon = rememberVectorPainter(Icons.Default.Home)
+            _options = remember {
+                TabOptions(
+                    index = 0u,
+                    title = AppStrings.HEALTH_DATA,
+                    icon = icon
+                )
+            }
+
             HealthDataScreen(
                 viewModel = koinInject(),
                 prefs = koinInject(),
-                onNavigateToDetail = { /* Handle navigation */ })
+                onNavigateToDetail = { /* Handle navigation */ }
+            )
         }
     }
 
     object Recommendations : BottomNavScreen() {
-        override val options: TabOptions
-            @Composable get() = TabOptions(
-                index = 1u,
-                title = AppStrings.RECOMMENDATIONS,
-                icon = { Icons.Default.Recommend } as Painter?)
-
         @Composable
         override fun Content() {
+            val icon = rememberVectorPainter(Icons.Default.Recommend)
+            _options = remember {
+                TabOptions(
+                    index = 1u,
+                    title = AppStrings.RECOMMENDATIONS,
+                    icon = icon
+                )
+            }
+
             RecommendationsScreen(
-                viewModel = koinInject(), preferencesViewModel = koinInject()
+                viewModel = koinInject(),
+                preferencesViewModel = koinInject()
             )
         }
     }
 
     object Marketplace : BottomNavScreen() {
-        override val options: TabOptions
-            @Composable get() = TabOptions(
-                index = 2u,
-                title = AppStrings.MARKET_PLACE,
-                icon = { Icons.Default.ShoppingBasket } as Painter?)
-
         @Composable
         override fun Content() {
+            val icon = rememberVectorPainter(Icons.Default.ShoppingBasket)
+            _options = remember {
+                TabOptions(
+                    index = 2u,
+                    title = AppStrings.MARKET_PLACE,
+                    icon = icon
+                )
+            }
+
             MarketPlaceScreen(
                 viewModel = koinInject(),
                 onProductClick = { /* Handle product click */ },
-                navigateBack = { /* Handle back navigation */ })
+                navigateBack = { /* Handle back navigation */ }
+            )
         }
     }
-} 
+
+    companion object {
+        val items = listOf(Health, Recommendations, Marketplace)
+    }
+}
+
