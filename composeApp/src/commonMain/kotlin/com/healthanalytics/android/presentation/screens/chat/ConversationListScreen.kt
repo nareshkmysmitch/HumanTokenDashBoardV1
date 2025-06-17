@@ -57,7 +57,6 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun ConversationListScreen(
     onNavigateToChat: (String) -> Unit,
-
     modifier: Modifier = Modifier,
     viewModel: ChatViewModel,
     navigator: cafe.adriel.voyager.navigator.Navigator

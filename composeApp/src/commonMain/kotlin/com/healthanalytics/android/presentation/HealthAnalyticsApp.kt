@@ -27,7 +27,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
@@ -50,8 +49,10 @@ import com.healthanalytics.android.presentation.components.Pages.TEST_BOOKING
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.ProfileScreen
+import com.healthanalytics.android.presentation.screens.chat.ChatScreenNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen as VoyagerChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
+import com.healthanalytics.android.presentation.screens.chat.ConversationListNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen as VoyagerConversationListScreen
 import com.healthanalytics.android.presentation.screens.health.BioMarkerFullReportScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailScreen
@@ -134,12 +135,12 @@ fun HealthAnalyticsApp() {
                     }
 
                     CONVERSATION_LIST -> {
-                        Navigator(VoyagerConversationListScreen())
+                        Navigator(ConversationListNavWrapper())
                     }
 
                     is CHAT -> {
                         val chatScreen = currentPages as CHAT
-                        Navigator(VoyagerChatScreen(conversationId = chatScreen.conversationId))
+                        Navigator(ChatScreenNavWrapper(conversationId = chatScreen.conversationId))
                     }
 
                     is MARKETPLACE_DETAIL -> {
