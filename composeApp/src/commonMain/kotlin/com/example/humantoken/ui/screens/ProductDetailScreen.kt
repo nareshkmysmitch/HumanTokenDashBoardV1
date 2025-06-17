@@ -18,13 +18,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.LocalShipping
+import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -51,7 +52,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -65,13 +65,16 @@ import com.healthanalytics.android.presentation.screens.marketplace.CartActionSt
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.ProductDetailsState
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.FontFamily
 import com.seiko.imageloader.rememberImagePainter
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
-    product: Product, onNavigateBack: () -> Unit,onNavigateToCart: () -> Unit, viewModel: MarketPlaceViewModel,
+    product: Product,
+    onNavigateBack: () -> Unit,
+    onNavigateToCart: () -> Unit,
+    viewModel: MarketPlaceViewModel,
 ) {
     val scrollState = rememberScrollState()
     var selectedTab by remember { mutableStateOf(1) }
@@ -110,9 +113,9 @@ fun ProductDetailScreen(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.AppBackgroundColor,
-                    navigationIconContentColor = AppColors.Black,
-                    titleContentColor = AppColors.Black
+                    containerColor = AppColors.Black,
+                    navigationIconContentColor = AppColors.white,
+                    titleContentColor = AppColors.white
                 ),
                 title = {
                     when (productDetailsState) {
@@ -120,7 +123,7 @@ fun ProductDetailScreen(
                             (productDetailsState as ProductDetailsState.Success).product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.Black,
+                                    color = AppColors.white,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -131,7 +134,7 @@ fun ProductDetailScreen(
                             product.name?.let {
                                 Text(
                                     text = it,
-                                    color = AppColors.Black,
+                                    color = AppColors.white,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -144,7 +147,7 @@ fun ProductDetailScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = AppColors.Black,
+                            tint = AppColors.white,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -154,13 +157,14 @@ fun ProductDetailScreen(
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
                             contentDescription = "shopping cart",
-                            tint = AppColors.primary,
+                            tint = AppColors.white,
                             modifier = Modifier.size(24.dp)
                         )
                     }
-                }
+                },
             )
         },
+        containerColor = AppColors.Black,
     ) { paddingValues ->
         when (productDetailsState) {
             is ProductDetailsState.Loading -> {
@@ -184,7 +188,10 @@ fun ProductDetailScreen(
 
             is ProductDetailsState.Success -> {
                 val currentProduct = (productDetailsState as ProductDetailsState.Success).product
-                Column(modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(scrollState)) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues)
+                        .verticalScroll(scrollState)
+                ) {
                     // Product Image
                     if (currentProduct.img_urls?.isNotEmpty() == true && currentProduct.img_urls.firstOrNull() != null) {
                         currentProduct.img_urls.firstOrNull()?.let {
@@ -200,24 +207,25 @@ fun ProductDetailScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Product Info Section
+
+                    currentProduct.vendor?.name?.let {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppColors.textSecondary
+                        )
+                    }
+
                     currentProduct.name?.let {
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             text = it,
                             style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = AppColors.white
                         )
                     }
-
-                    currentProduct.description?.let {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            text = it,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
                     Spacer(modifier = Modifier.height(16.dp))
 
                     val price = if (currentProduct.price != null) {
@@ -230,7 +238,7 @@ fun ProductDetailScreen(
                         text = price,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = AppColors.white,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -244,7 +252,7 @@ fun ProductDetailScreen(
                             Icon(
                                 imageVector = Icons.Default.StarBorder,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = AppColors.Yellow
                             )
                         }
                         val rating = if (currentProduct.rating != null) {
@@ -261,21 +269,31 @@ fun ProductDetailScreen(
                         Text(
                             text = ratingText,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = AppColors.textSecondary,
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-
+                    Text(
+                        text = "Tags:",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppColors.textSecondary,
+                    )
                     Row(
                         Modifier.padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         currentProduct.tags?.forEach { tag ->
-                            SuggestionChip(onClick = { }, label = {
-                                tag?.replaceFirstChar { it.uppercase() }?.let { Text(it) }
-                            })
+                            SuggestionChip(
+                                onClick = { }, label = {
+                                    tag?.replaceFirstChar { it.uppercase() }?.let { Text(it) }
+                                }, colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = AppColors.Black,
+                                    labelColor = AppColors.white,
+                                )
+                            )
                         }
                     }
 
@@ -346,27 +364,26 @@ fun ProductDetailScreen(
                         },
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE91E63)
+                            containerColor = AppColors.PinkButton
                         )
                     ) {
-                        Text(
-                            text = buttonText, modifier = Modifier.padding(vertical = 8.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = null,
+                                tint = AppColors.white
+                            )
+                            Text(
+                                text = buttonText, modifier = Modifier.padding(vertical = 8.dp),
+                                fontFamily = FontFamily.semiBold(),
+                                color = AppColors.white
+                            )
+                        }
                     }
 
-                    // Show snackbar if there's a message
-//                    snackbarMessage?.let { message ->
-//                        Snackbar(
-//                            modifier = Modifier.padding(16.dp),
-//                            action = {
-//                                TextButton(onClick = { snackbarMessage = null }) {
-//                                    Text("Dismiss")
-//                                }
-//                            }
-//                        ) {
-//                            Text(message)
-//                        }
-//                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -374,9 +391,9 @@ fun ProductDetailScreen(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        InfoRow(Icons.Default.LocalShipping, "Free shipping over $50")
-                        InfoRow(Icons.Default.Verified, "Quality guaranteed")
-                        InfoRow(Icons.Default.Assignment, "60-day return policy")
+                        InfoRow(Icons.Outlined.LocalShipping, "Free shipping over $50")
+                        InfoRow(Icons.Outlined.Verified, "Quality guaranteed")
+                        InfoRow(Icons.Outlined.Assignment, "60-day return policy")
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -389,12 +406,12 @@ fun ProductDetailScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    Icons.Default.CheckCircle,
+                                    Icons.Outlined.CheckCircle,
                                     contentDescription = null,
                                     tint = Color.Green
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Only ${currentProduct.stock} left")
+                                Text("Only ${currentProduct.stock} left", color = AppColors.white)
                             }
                         }
                     }
@@ -405,13 +422,13 @@ fun ProductDetailScreen(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         ScrollableTabRow(
                             selectedTabIndex = selectedTab, edgePadding = 16.dp,
-                            //                    containerColor = Color(0xFF1C1B1F),
-                            //                    contentColor = Color.Black,
+                            containerColor = AppColors.BlueCardBackground,
+                            contentColor = AppColors.white,
                             indicator = { tabPositions ->
                                 TabRowDefaults.Indicator(
                                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
                                     height = 2.dp,
-                                    color = Color.Black
+                                    color = AppColors.white
                                 )
                             }) {
                             listOf(
@@ -431,9 +448,9 @@ fun ProductDetailScreen(
                                                 }
                                             ),
                                             color = if (selectedTab == index) {
-                                                Color.Black
+                                                AppColors.white
                                             } else {
-                                                Color.Black.copy(alpha = 0.6f)
+                                                AppColors.white.copy(alpha = 0.6f)
                                             }
                                         )
                                     })
@@ -453,7 +470,7 @@ fun ProductDetailScreen(
                                         text = "Product Information",
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color.Black
+                                        color = AppColors.white
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
                                     ProductInfoRow("SKU:", currentProduct.sku ?: "")
@@ -474,7 +491,7 @@ fun ProductDetailScreen(
                                     Text(
                                         text = "Product ingredients information will be available soon.",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = Color.Black.copy(alpha = 0.8f)
+                                        color = AppColors.white
                                     )
                                 }
                             }
@@ -487,7 +504,7 @@ fun ProductDetailScreen(
                                     Text(
                                         text = "Usage directions will be available soon.",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = Color.Black.copy(alpha = 0.8f)
+                                        color = AppColors.white
                                     )
                                 }
                             }
@@ -506,15 +523,15 @@ fun ProductDetailScreen(
                                             text = "Customer Reviews",
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = Color.Black
+                                            color = AppColors.white
                                         )
                                         OutlinedButton(
                                             onClick = { },
-                                            border = BorderStroke(1.dp, Color.Black),
+                                            border = BorderStroke(1.dp, AppColors.white),
                                             shape = RoundedCornerShape(8.dp)
                                         ) {
                                             Text(
-                                                text = "Write a Review", color = Color.Black
+                                                text = "Write a Review", color = AppColors.textSecondary
                                             )
                                         }
                                     }
@@ -527,14 +544,14 @@ fun ProductDetailScreen(
                                             Icon(
                                                 imageVector = Icons.Default.StarBorder,
                                                 contentDescription = null,
-                                                tint = Color.Black,
+                                                tint = Color.Yellow,
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }
                                         Text(
                                             text = " Based on 0 reviews",
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = Color.Black.copy(alpha = 0.8f)
+                                            color = AppColors.textSecondary
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(32.dp))
@@ -549,13 +566,13 @@ fun ProductDetailScreen(
                                             Icon(
                                                 imageVector = Icons.Default.Message,
                                                 contentDescription = null,
-                                                tint = Color.Black.copy(alpha = 0.6f),
+                                                tint = AppColors.white.copy(alpha = 0.6f),
                                                 modifier = Modifier.size(48.dp)
                                             )
                                             Text(
                                                 text = "No reviews yet. Be the first to review this product.",
                                                 style = MaterialTheme.typography.bodyLarge,
-                                                color = Color.Black.copy(alpha = 0.6f),
+                                                color = AppColors.white.copy(alpha = 0.6f),
                                                 textAlign = TextAlign.Center
                                             )
                                         }
@@ -579,13 +596,13 @@ private fun InfoRow(icon: ImageVector, text: String) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = Color.Green,
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            fontFamily = FontFamily.medium(),
+            color = AppColors.textSecondary
         )
     }
 }
@@ -599,10 +616,10 @@ private fun ProductInfoRow(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black.copy(alpha = 0.6f)
+            color = AppColors.textSecondary
         )
         Text(
-            text = value, style = MaterialTheme.typography.bodyLarge, color = Color.Black
+            text = value, style = MaterialTheme.typography.bodyLarge, color = AppColors.textSecondary
         )
     }
 } 

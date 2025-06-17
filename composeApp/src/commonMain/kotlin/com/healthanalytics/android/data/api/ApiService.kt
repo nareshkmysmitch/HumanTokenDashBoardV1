@@ -12,6 +12,9 @@ import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.data.models.RemoveRecommendationResponse
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
+import com.healthanalytics.android.data.models.SubmitSymptomsResponse
+import com.healthanalytics.android.data.models.Symptom
+import com.healthanalytics.android.data.models.SymptomsWrapper
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
@@ -25,9 +28,9 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 
 interface ApiService {
@@ -56,16 +59,16 @@ interface ApiService {
     ): Boolean?
 
     suspend fun updateProfile(
-        accessToken: String, request: UpdateProfileRequest
+        accessToken: String, request: UpdateProfileRequest,
     ): ProfileUpdateResponse?
 
     suspend fun getAddresses(accessToken: String): AddressData?
     suspend fun addProduct(
-        accessToken: String, productId: String, variantId: String
+        accessToken: String, productId: String, variantId: String,
     ): EncryptedResponse?
 
     suspend fun updateProduct(
-        accessToken: String, productId: String, quantity: String
+        accessToken: String, productId: String, quantity: String,
     ): EncryptedResponse?
 
     suspend fun getCartList(accessToken: String): List<Cart?>?
@@ -73,13 +76,17 @@ interface ApiService {
     suspend fun logout(accessToken: String): Boolean
     suspend fun getTestBookings(accessToken: String): List<Product?>?
     suspend fun getBiomarkerReport(
-        accessToken: String, type: String, metricId: String
+        accessToken: String, type: String, metricId: String,
     ): BiomarkerReportData?
+
+    suspend fun getSymptoms(accessToken: String): List<Symptom>?
+
+    suspend fun submitSymptoms(accessToken: String, symptomIds: List<String>): Boolean
 }
 
 
 class ApiServiceImpl(
-    private val httpClient: HttpClient, private val json: Json = Json { ignoreUnknownKeys = true }
+    private val httpClient: HttpClient, private val json: Json = Json { ignoreUnknownKeys = true },
 ) : ApiService {
     override suspend fun getProducts(accessToken: String): List<Product?>? {
         val response = httpClient.get("v4/human-token/market-place/products") {
@@ -103,7 +110,7 @@ class ApiServiceImpl(
     }
 
     override suspend fun updateProfile(
-        accessToken: String, request: UpdateProfileRequest
+        accessToken: String, request: UpdateProfileRequest,
     ): ProfileUpdateResponse? {
         val response = httpClient.put("v4/human-token/lead/update-profile") {
             header("access_token", accessToken)
@@ -140,13 +147,13 @@ class ApiServiceImpl(
     }
 
     override suspend fun addProduct(
-        accessToken: String, productId: String, variantId: String
+        accessToken: String, productId: String, variantId: String,
     ): EncryptedResponse? {
         println("Adding product: $productId, variantId: $variantId")
 
         val requestObject = buildJsonObject {
             put("product_id", productId)
-            if(variantId.isNotEmpty()) {
+            if (variantId.isNotEmpty()) {
                 put("variant_id", variantId)
             }
         }
@@ -169,7 +176,7 @@ class ApiServiceImpl(
     }
 
     override suspend fun updateProduct(
-        accessToken: String, productId: String, quantity: String
+        accessToken: String, productId: String, quantity: String,
     ): EncryptedResponse? {
         println("Updating product: $productId, quantity: $quantity")
         val requestObject = buildJsonObject {
@@ -275,7 +282,7 @@ class ApiServiceImpl(
     }
 
     override suspend fun getBiomarkerReport(
-        accessToken: String, type: String, metricId: String
+        accessToken: String, type: String, metricId: String,
     ): BiomarkerReportData? {
         val response = httpClient.get("v4/human-token/health-data/metric") {
             header("access_token", accessToken)
@@ -346,5 +353,46 @@ class ApiServiceImpl(
         val result = EncryptionUtils.handleDecryptionResponse<AddActivityResponse>(responseBody)
         return result != null
 
+    }
+
+    override suspend fun getSymptoms(accessToken: String): List<Symptom>? {
+        try {
+            val response = httpClient.get("v4/human-token/symptom") {
+                header("access_token", accessToken)
+            }
+            val responseBody = response.bodyAsText()
+            println("Symptoms response --> Raw ${responseBody}")
+            val symptomsWrapper =
+                EncryptionUtils.handleDecryptionResponse<SymptomsWrapper>(responseBody)
+            return symptomsWrapper?.symptoms
+        } catch (e: Exception) {
+            println("Error handling symptoms response: ${e.message}")
+            e.printStackTrace()
+            return null
+        }
+    }
+
+    override suspend fun submitSymptoms(accessToken: String, symptomIds: List<String>): Boolean {
+        val requestBody = buildJsonObject {
+            put("symptom_ids", Json.encodeToJsonElement(symptomIds))
+        }
+        val encryptedRequest = requestBody.toEncryptedRequestBody()
+        try {
+            val response = httpClient.post("v4/human-token/symptom") {
+                header("access_token", accessToken)
+                setBody(encryptedRequest)
+            }
+            val responseBody = response.bodyAsText()
+            val encryptedResponse = json.decodeFromString<EncryptedResponse>(responseBody)
+            val productResponse = EncryptionUtils.handleDecryptionResponse<SubmitSymptomsResponse>(
+                """{"status":"${encryptedResponse.status}","message":"${encryptedResponse.message}","data":"${encryptedResponse.data}"}"""
+            )
+            println("Symptoms response --> Raw $encryptedResponse ${productResponse}")
+            return encryptedResponse.status == "success"
+        } catch (e: Exception) {
+            println("Error handling symptoms response: ${e.message}")
+            e.printStackTrace()
+            return false
+        }
     }
 }
