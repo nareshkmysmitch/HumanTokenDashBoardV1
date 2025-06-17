@@ -33,7 +33,7 @@ fun RecommendationsTabScreen(
         TabRow(
             selectedTabIndex = selectedTab.ordinal,
             containerColor = AppColors.Black,
-            contentColor=AppColors.white,
+            contentColor=AppColors.White,
             modifier = Modifier.fillMaxWidth()
         ) {
             RecommendationsTab.values().forEach { tab ->

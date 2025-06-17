@@ -150,7 +150,7 @@ fun ScheduleBloodTestScreen(
                     text = AppStrings.SCHEDULE_YOUR_BLOOD_TEST_DESCRIPTION,
                     fontSize = FontSize.textSize16sp,
                     fontFamily = FontFamily.regular(),
-                    color = AppColors.white,
+                    color = AppColors.White,
                 )
 
                 Spacer(Modifier.height(Dimensions.size30dp))

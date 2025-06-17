@@ -8,12 +8,12 @@ data class HealthMetrics(
     @SerialName("blood") val blood: Blood? = Blood(),
     @SerialName("gene") val gene: Gene? = Gene(),
     @SerialName("gut") val gut: Gut? = Gut(),
-    @SerialName("supplement_ct") val supplementCt: SupplementCt? = SupplementCt()
+    @SerialName("supplement_ct") val supplementCt: SupplementCt? = SupplementCt(),
 )
 
 @Serializable
 data class Blood(
-    @SerialName("data") val bloodData: List<BloodData?>? = null
+    @SerialName("data") val bloodData: List<BloodData?>? = null,
 )
 
 @Serializable
@@ -35,7 +35,8 @@ data class BloodData(
     @SerialName("ranges") val ranges: List<Range>? = null,
     @SerialName("correlation") val correlation: List<Correlation?>? = null,
     @SerialName("short_description") val shortDescription: String? = null,
-    @SerialName("n_symptoms_reported") val symptomsReported: Int? = null
+    @SerialName("n_symptoms_reported") val symptomsReported: Int? = null,
+    @SerialName("is_latest") val isLatest: Boolean? = null
 )
 
 @Serializable
@@ -48,7 +49,7 @@ data class Correlation(
     @SerialName("source_metric_name") val sourceMetricName: String? = null,
     @SerialName("target_inference") val targetInference: String? = null,
     @SerialName("target_metric_id") val targetMetricId: String? = null,
-    @SerialName("updated_at") val updatedAt: String? = null
+    @SerialName("updated_at") val updatedAt: String? = null,
 )
 
 
@@ -66,12 +67,12 @@ data class Range(
     @SerialName("rating_rank") val ratingRank: Int? = null,
     @SerialName("symbol") val symbol: String? = null,
     @SerialName("unit") val unit: String? = null,
-    @SerialName("display_description") val displayDescription: String? = null
+    @SerialName("display_description") val displayDescription: String? = null,
 )
 
 @Serializable
 data class Gene(
-    @SerialName("data") val geneData: List<GeneData>? = listOf()
+    @SerialName("data") val geneData: List<GeneData>? = listOf(),
 )
 
 @Serializable
@@ -80,12 +81,12 @@ data class GeneData(
     @SerialName("display_rating") val displayRating: String? = null,
     @SerialName("identifier") val identifier: String? = null,
     @SerialName("primary_display_description") val primaryDisplayDescription: String? = null,
-    @SerialName("secondary_display_description") val secondaryDisplayDescription: String? = null
+    @SerialName("secondary_display_description") val secondaryDisplayDescription: String? = null,
 )
 
 @Serializable
 data class Gut(
-    @SerialName("data") val gutData: List<GutData>? = listOf()
+    @SerialName("data") val gutData: List<GutData>? = listOf(),
 )
 
 @Serializable
@@ -95,12 +96,12 @@ data class GutData(
     @SerialName("identifier") val identifier: String? = null,
     @SerialName("outcome") val outcome: String? = null,
     @SerialName("primary_display_description") val primaryDisplayDescription: String? = null,
-    @SerialName("secondary_display_description") val secondaryDisplayDescription: String? = null
+    @SerialName("secondary_display_description") val secondaryDisplayDescription: String? = null,
 )
 
 @Serializable
 data class SupplementCt(
-    @SerialName("data") val `data`: List<SupplementData>? = listOf()
+    @SerialName("data") val `data`: List<SupplementData>? = listOf(),
 )
 
 @Serializable
@@ -113,5 +114,5 @@ data class SupplementData(
     @SerialName("intraday_frequency") val intradayFrequency: Int? = null,
     @SerialName("supplement") val supplement: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
-    @SerialName("user_id") val userId: String? = null
+    @SerialName("user_id") val userId: String? = null,
 )

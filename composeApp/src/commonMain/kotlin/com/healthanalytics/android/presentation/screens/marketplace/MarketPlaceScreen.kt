@@ -37,7 +37,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -59,13 +58,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.App
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.seiko.imageloader.rememberImagePainter
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -276,7 +273,7 @@ private fun ProductCard(
                         style = MaterialTheme.typography.titleSmall,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        color = AppColors.white
+                        color = AppColors.White
                     )
                 }
 
@@ -284,7 +281,7 @@ private fun ProductCard(
                     Text(
                         text = it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = AppColors.white
+                        color = AppColors.White
                     )
                 }
 
@@ -297,7 +294,7 @@ private fun ProductCard(
                         Text(
                             text = "₹$price",
                             style = MaterialTheme.typography.titleMedium,
-                            color = AppColors.white,
+                            color = AppColors.White,
                             fontFamily = FontFamily.bold()
                         )
                     }

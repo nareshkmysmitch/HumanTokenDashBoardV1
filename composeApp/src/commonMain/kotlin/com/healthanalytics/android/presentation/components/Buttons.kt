@@ -33,15 +33,14 @@ fun FilledAppButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppColors.DarkPurple,
-            contentColor = AppColors.white,
-            disabledContainerColor = AppColors.DarkPurple.copy(alpha = 0.6f),
-            disabledContentColor = AppColors.white.copy(alpha = 0.6f)
+            containerColor = AppColors.Pink,
+            contentColor = AppColors.White,
+            disabledContainerColor = AppColors.Pink.copy(alpha = 0.6f),
+            disabledContentColor = AppColors.White.copy(alpha = 0.6f)
         ),
         contentPadding = contentPadding,
         content = content,
-
-        )
+    )
 }
 
 @Composable
@@ -57,9 +56,9 @@ fun OutlinedAppButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = AppColors.white,
+            containerColor = AppColors.White,
             contentColor = AppColors.DarkPurple,
-            disabledContainerColor = AppColors.white.copy(alpha = 0.6f),
+            disabledContainerColor = AppColors.White.copy(alpha = 0.6f),
             disabledContentColor = AppColors.DarkPurple.copy(alpha = 0.6f)
         ),
         border = BorderStroke(1.dp, AppColors.DarkPurple),
