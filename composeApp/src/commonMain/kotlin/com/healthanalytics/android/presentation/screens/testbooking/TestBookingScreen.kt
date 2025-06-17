@@ -46,19 +46,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.humantoken.ui.screens.CartItem
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.launch
+
 
 class TestBookingScreen(
     private val viewModel: TestBookingViewModel,
-    private val marketPlaceViewModel: MarketPlaceViewModel
+    private val marketPlaceViewModel: MarketPlaceViewModel,
+    //   onNavigateBack: () -> Unit,
 ) : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -116,7 +118,19 @@ class TestBookingScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navigator.pop() }) {
+                    IconButton(onClick = {
+                        try {
+                            navigator.pop()
+                        } catch (e: Exception) {
+                            // Handle navigation error
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = "Navigation error: ${e.message}",
+                                    duration = androidx.compose.material3.SnackbarDuration.Short
+                                )
+                            }
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back arrow",
@@ -243,7 +257,20 @@ class TestBookingScreen(
                             }
                             Button(
                                 onClick = {
-                                    navigator.push(ScheduleTestBookingScreen(marketPlaceViewModel))
+                                    try {
+                                        navigator.push(
+                                            ScheduleTestBookingScreen(
+                                                marketPlaceViewModel
+                                            )
+                                        )
+                                    } catch (e: Exception) {
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                message = "Navigation error: ${e.message}",
+                                                duration = androidx.compose.material3.SnackbarDuration.Short
+                                            )
+                                        }
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = AppColors.PinkButton

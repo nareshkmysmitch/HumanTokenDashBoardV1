@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
@@ -174,14 +175,12 @@ fun HealthAnalyticsApp() {
                     }
 
                     TEST_BOOKING -> {
-
                         Navigator(
                             TestBookingScreen(
                                 viewModel = testBookingViewModel,
-                                marketPlaceViewModel = marketPlaceViewModel
+                                marketPlaceViewModel = marketPlaceViewModel,
                             )
                         )
-
 
 //                        TestBookingScreen(
 //                            onNavigateBack = { navigateBack() },

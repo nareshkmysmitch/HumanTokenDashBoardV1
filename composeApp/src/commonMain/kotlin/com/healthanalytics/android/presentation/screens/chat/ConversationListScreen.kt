@@ -57,26 +57,28 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun ConversationListScreen(
     onNavigateToChat: (String) -> Unit,
-    onNavigateBack: () -> Unit,
+
     modifier: Modifier = Modifier,
     viewModel: ChatViewModel,
+    navigator: cafe.adriel.voyager.navigator.Navigator
 ) {
-    BackHandler(enabled = true, onBack = { onNavigateBack() })
+
+    BackHandler(enabled = true, onBack = { navigator.pop() })
 
     val uiState by viewModel.conversationsState.collectAsState()
     println("conversation list screen $uiState")
-
 
 //    viewModel.loadConversations()
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
         TopAppBar(
             title = {
-                Text(
-                    text = "Conversations", color = AppColors.textPrimary
-                )
+                Text(text = "Conversations", color = AppColors.textPrimary)
             }, navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
+                IconButton(onClick = {
+                    Logger.e { "Back button clicked" }
+                    navigator.pop()
+                }) {
                     Icon(
                         Icons.Default.ArrowBack,
                         contentDescription = "Back",
