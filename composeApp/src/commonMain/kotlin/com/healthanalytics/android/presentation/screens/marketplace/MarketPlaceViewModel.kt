@@ -15,7 +15,7 @@ import com.healthanalytics.android.data.models.onboard.SlotsAvailability
 import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
-import com.healthanalytics.android.presentation.screens.profile.CommunicationStyle
+import com.healthanalytics.android.presentation.screens.profile.CommunicationUIDatat
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -147,10 +147,10 @@ class MarketPlaceViewModel(
     val logoutState: StateFlow<LogoutState> = _logoutState.asStateFlow()
 
     private val _communicationSelected =
-        MutableStateFlow<CommunicationStyle>(CommunicationStyle.Doctor)
-    val communicationSelected: StateFlow<CommunicationStyle?> = _communicationSelected.asStateFlow()
+        MutableStateFlow<CommunicationUIDatat>(CommunicationUIDatat.Doctor)
+    val communicationSelected: StateFlow<CommunicationUIDatat?> = _communicationSelected.asStateFlow()
 
-    var initialPreferenceValue: CommunicationStyle = CommunicationStyle.Doctor
+    var initialPreferenceValue: CommunicationUIDatat = CommunicationUIDatat.Doctor
 
     fun clearLogoutState() {
         _logoutState.value = LogoutState.Initial
@@ -570,13 +570,13 @@ class MarketPlaceViewModel(
         }
     }
 
-    fun setCommunicationPreference(preference: CommunicationStyle) {
+    fun setCommunicationPreference(preference: CommunicationUIDatat) {
         viewModelScope.launch {
             _communicationSelected.emit(preference)
         }
     }
 
-    private fun setInitialPreference(preference: CommunicationStyle) {
+    private fun setInitialPreference(preference: CommunicationUIDatat) {
         initialPreferenceValue = preference
     }
 
@@ -595,19 +595,19 @@ class MarketPlaceViewModel(
                     ?: CommunicationPreferenceType.Doctor.type //default
                 when (preference) {
                     CommunicationPreferenceType.Biohacker.type -> {
-                        val responsePreference = CommunicationStyle.Biohacker
+                        val responsePreference = CommunicationUIDatat.Biohacker
                         setCommunicationPreference(responsePreference)
                         setInitialPreference(responsePreference)
                     }
 
                     CommunicationPreferenceType.Doctor.type -> {
-                        val responsePreference = CommunicationStyle.Doctor
+                        val responsePreference = CommunicationUIDatat.Doctor
                         setCommunicationPreference(responsePreference)
                         setInitialPreference(responsePreference)
                     }
 
                     CommunicationPreferenceType.CloseFriend.type -> {
-                        val responsePreference = CommunicationStyle.CloseFriend
+                        val responsePreference = CommunicationUIDatat.CloseFriend
                         setCommunicationPreference(responsePreference)
                         setInitialPreference(responsePreference)
                     }
@@ -628,7 +628,7 @@ class MarketPlaceViewModel(
         }
     }
 
-    fun saveCommunicationPreference(accessToken: String, preference: CommunicationStyle) {
+    fun saveCommunicationPreference(accessToken: String, preference: CommunicationUIDatat) {
         viewModelScope.launch {
             try {
                 _uiCommunicationPreference.update { it.copy(isLoading = true) }
