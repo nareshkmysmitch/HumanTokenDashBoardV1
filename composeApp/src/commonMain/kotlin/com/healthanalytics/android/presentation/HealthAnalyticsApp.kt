@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
@@ -198,6 +199,9 @@ fun HealthAnalyticsApp() {
                             onCartClick = {
                                 navigateTo(CART)
                             },
+                            onCsvDownload = {
+
+                            },
                             onSymptomsClick = {
                                 navigateTo(Screen.SYMPTOMS)
                             },
@@ -381,6 +385,7 @@ fun HomeScreen(
     onSymptomsClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
+    onCsvDownload: () -> Unit = {},
     onBiomarker: (BloodData?) -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
     onBiomarkerFullReportClick: (BloodData?) -> Unit = {},
@@ -415,6 +420,14 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Chat,
                                 contentDescription = "Chat",
+                                modifier = Modifier.size(24.dp),
+                                tint = AppColors.White
+                            )
+                        }
+                        IconButton(onClick = onCsvDownload) {
+                            Icon(
+                                imageVector = Icons.Default.ImportExport,
+                                contentDescription = "Csv",
                                 modifier = Modifier.size(24.dp),
                                 tint = AppColors.White
                             )
