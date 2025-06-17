@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Icon
@@ -35,17 +34,17 @@ import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.payment.RazorpayHandler
 import com.healthanalytics.android.presentation.components.BottomNavBar
 import com.healthanalytics.android.presentation.components.MainScreen
-import com.healthanalytics.android.presentation.components.Screen
-import com.healthanalytics.android.presentation.components.Screen.BIOMARKERS_DETAIL
-import com.healthanalytics.android.presentation.components.Screen.BIOMARKER_FULL_REPORT
-import com.healthanalytics.android.presentation.components.Screen.CART
-import com.healthanalytics.android.presentation.components.Screen.CHAT
-import com.healthanalytics.android.presentation.components.Screen.CONVERSATION_LIST
-import com.healthanalytics.android.presentation.components.Screen.HOME
-import com.healthanalytics.android.presentation.components.Screen.MARKETPLACE_DETAIL
-import com.healthanalytics.android.presentation.components.Screen.PROFILE
-import com.healthanalytics.android.presentation.components.Screen.SCHEDULE_TEST_BOOKING
-import com.healthanalytics.android.presentation.components.Screen.TEST_BOOKING
+import com.healthanalytics.android.presentation.components.Pages
+import com.healthanalytics.android.presentation.components.Pages.BIOMARKERS_DETAIL
+import com.healthanalytics.android.presentation.components.Pages.BIOMARKER_FULL_REPORT
+import com.healthanalytics.android.presentation.components.Pages.CART
+import com.healthanalytics.android.presentation.components.Pages.CHAT
+import com.healthanalytics.android.presentation.components.Pages.CONVERSATION_LIST
+import com.healthanalytics.android.presentation.components.Pages.HOME
+import com.healthanalytics.android.presentation.components.Pages.MARKETPLACE_DETAIL
+import com.healthanalytics.android.presentation.components.Pages.PROFILE
+import com.healthanalytics.android.presentation.components.Pages.SCHEDULE_TEST_BOOKING
+import com.healthanalytics.android.presentation.components.Pages.TEST_BOOKING
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.ProfileScreen
@@ -80,28 +79,29 @@ import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
+
 @Composable
 fun HealthAnalyticsApp() {
 
     AppTheme {
 
-        var currentScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
-        var lastMainScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
+        var currentPages by remember { mutableStateOf<Pages>(Pages.HOME) }
+        var lastMainPages by remember { mutableStateOf<Pages>(Pages.HOME) }
         var biomarker by remember { mutableStateOf(BloodData()) }
 
-        fun navigateTo(screen: Screen) {
+        fun navigateTo(pages: Pages) {
             // Remember the last main screen when navigating away from main screens
-            if (currentScreen is HOME || currentScreen is PROFILE || currentScreen is CONVERSATION_LIST) {
-                lastMainScreen = currentScreen
+            if (currentPages is HOME || currentPages is PROFILE || currentPages is CONVERSATION_LIST) {
+                lastMainPages = currentPages
             }
-            currentScreen = screen
+            currentPages = pages
         }
 
         fun navigateBack() {
-            currentScreen = if (lastMainScreen == currentScreen) {
+            currentPages = if (lastMainPages == currentPages) {
                 HOME
             } else {
-                lastMainScreen
+                lastMainPages
             }
         }
 
@@ -119,7 +119,7 @@ fun HealthAnalyticsApp() {
         when {
             onBoardUiState.isLoading -> CircularProgressIndicator()
             onBoardUiState.hasAccessToken -> {
-                when (currentScreen) {
+                when (currentPages) {
                     PROFILE -> {
                         ProfileScreen(
                             onNavigateBack = { navigateTo(HOME) },
@@ -141,7 +141,7 @@ fun HealthAnalyticsApp() {
                     }
 
                     is CHAT -> {
-                        val chatScreen = currentScreen as CHAT
+                        val chatScreen = currentPages as CHAT
                         ChatScreen(
                             conversationId = chatScreen.conversationId,
                             onNavigateBack = { navigateBack() },
@@ -150,11 +150,11 @@ fun HealthAnalyticsApp() {
                     }
 
                     is MARKETPLACE_DETAIL -> {
-                        val marketplaceScreen = currentScreen as MARKETPLACE_DETAIL
+                        val marketplaceScreen = currentPages as MARKETPLACE_DETAIL
                         ProductDetailScreen(
                             product = marketplaceScreen.product,
                             onNavigateBack = { navigateBack() },
-                            onNavigateToCart = { navigateTo(Screen.CART) },
+                            onNavigateToCart = { navigateTo(Pages.CART) },
                             viewModel = marketPlaceViewModel,
                         )
                     }
@@ -199,7 +199,7 @@ fun HealthAnalyticsApp() {
                                 navigateTo(CART)
                             },
                             onSymptomsClick = {
-                                navigateTo(Screen.SYMPTOMS)
+                                navigateTo(Pages.SYMPTOMS)
                             },
                             onBiomarkerFullReportClick = {
                                 biomarker = it ?: BloodData()
@@ -231,7 +231,7 @@ fun HealthAnalyticsApp() {
                         )
                     }
 
-                    Screen.SYMPTOMS -> {
+                    Pages.SYMPTOMS -> {
                         SymptomsScreen(
                             onNavigateBack = { navigateBack() },
                             viewModel = symptomsViewModel,
