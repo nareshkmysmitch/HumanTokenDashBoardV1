@@ -113,7 +113,7 @@ kotlin {
             api(libs.androidx.datastore.preferences.core)
             implementation(compose.components.resources)
 
-            val voyagerVersion = "1.1.0-beta02"
+            val voyagerVersion = "1.1.0-beta03"
 
             // Navigator
             implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")

@@ -26,6 +26,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,15 +46,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.humantoken.ui.screens.CartItem
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import kotlinx.coroutines.launch
 
 class TestBookingScreen(
     private val viewModel: TestBookingViewModel,
@@ -68,6 +71,8 @@ class TestBookingScreen(
         var isLoading by remember { mutableStateOf(true) }
         var error by remember { mutableStateOf<String?>(null) }
         val getCartList by marketPlaceViewModel.cartListFlow.collectAsState()
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope = rememberCoroutineScope()
 
         LaunchedEffect(Unit) {
             marketPlaceViewModel.getCartList()
@@ -86,6 +91,12 @@ class TestBookingScreen(
                 is CartListState.Error -> {
                     error = (getCartList as CartListState.Error).message
                     isLoading = false
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = error ?: "An error occurred",
+                            duration = androidx.compose.material3.SnackbarDuration.Short
+                        )
+                    }
                 }
 
                 is CartListState.Loading -> {
@@ -93,34 +104,32 @@ class TestBookingScreen(
                 }
             }
         }
-        BackHandler(enabled = true, onBack = { navigator.pop() })
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "Test Booking",
-                            color = AppColors.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
+
+        Scaffold(topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Test Booking",
+                        color = AppColors.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.pop() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "back arrow",
+                            tint = AppColors.White,
+                            modifier = Modifier.size(24.dp)
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navigator.pop() }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "back arrow",
-                                tint = AppColors.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Black
-                    ),
-                )
-            },
-        ) { paddingValues ->
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                ),
+            )
+        }, snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
             Box(
                 modifier = Modifier.fillMaxSize().background(Color.Black)
             ) {
@@ -136,11 +145,21 @@ class TestBookingScreen(
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
 
-                    if (state.isLoading || state.error != null) {
+                    if (state.isLoading) {
                         Box(
                             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(color = Color(0xFFF50057))
+                        }
+                    } else if (state.error != null) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = state.error ?: "An error occurred",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
                     } else {
                         LazyVerticalGrid(
@@ -161,7 +180,6 @@ class TestBookingScreen(
                                     } else if (!isInCart) {
                                         viewModel.removeTest(updatedTest)
                                     }
-                                    println("isInCart --> $isInCart, selectedTests --> ${state.selectedTests}")
                                 }
 
                                 TestCard(
@@ -172,11 +190,23 @@ class TestBookingScreen(
                                                 updatedTest.variants?.firstOrNull()?.variant_id
                                                     ?: ""
                                             )
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar(
+                                                    message = "Test added to cart",
+                                                    duration = androidx.compose.material3.SnackbarDuration.Short
+                                                )
+                                            }
                                         } else {
                                             marketPlaceViewModel.updateCartItem(
                                                 updatedTest.product_id ?: "", "0"
                                             )
                                             viewModel.removeTest(updatedTest)
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar(
+                                                    message = "Test removed from cart",
+                                                    duration = androidx.compose.material3.SnackbarDuration.Short
+                                                )
+                                            }
                                         }
                                     })
                             }
