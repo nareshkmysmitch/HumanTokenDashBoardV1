@@ -12,6 +12,7 @@ import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
+import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.presentation.screens.profile.CommunicationStyle
@@ -50,9 +51,9 @@ enum class SortOption(val displayName: String) {
 }
 
 sealed class CommunicationPreferenceType(val type: String) {
-    object Biohacker : CommunicationPreferenceType("bio_hacker")
-    object Doctor : CommunicationPreferenceType("doctor")
-    object CloseFriend : CommunicationPreferenceType("friend")
+    data object Biohacker : CommunicationPreferenceType("bio_hacker")
+    data object Doctor : CommunicationPreferenceType("doctor")
+    data object CloseFriend : CommunicationPreferenceType("friend")
 }
 
 sealed class ProductDetailsState {
@@ -620,7 +621,37 @@ class MarketPlaceViewModel(
                 _uiCommunicationPreference.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Failed to load recommendations"
+                        error = e.message ?: "Failed to load preference"
+                    )
+                }
+            }
+        }
+    }
+
+    fun saveCommunicationPreference(accessToken: String, preference: CommunicationStyle) {
+        viewModelScope.launch {
+            try {
+                _uiCommunicationPreference.update { it.copy(isLoading = true) }
+                val communicationPreference = UploadCommunicationPreference(
+                    fields = listOf("communication_preference"),
+                    communication_preference = preference.type
+                )
+                val preferenceResponse =
+                    apiService.saveCommunicationPreference(accessToken, communicationPreference)
+
+                if (preferenceResponse) {
+                    setInitialPreference(preference)
+                }
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to uploaded preference"
                     )
                 }
             }

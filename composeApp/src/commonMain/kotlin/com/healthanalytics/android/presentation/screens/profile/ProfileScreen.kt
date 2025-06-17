@@ -264,14 +264,16 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
-                        CommunicationPreference(
-                            viewModel=viewModel,
-                            onStyleSelected = {
-                                viewModel.setCommunicationPreference(it)
-                            },
-                            onSaveClicked = {
-
-                            })
+                        CommunicationPreference(viewModel = viewModel, onStyleSelected = {
+                            viewModel.setCommunicationPreference(it)
+                        }, onSaveClicked = { communication ->
+                            if (!accessToken.isNullOrEmpty() && communication != null) {
+                                viewModel.saveCommunicationPreference(
+                                    accessToken!!,
+                                    communication
+                                )
+                            }
+                        })
 
                         Button(
                             onClick = { onNavigateToTestBooking() },

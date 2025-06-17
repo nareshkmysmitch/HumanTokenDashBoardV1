@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.presentation.screens.marketplace.CommunicationPreferenceType
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
@@ -63,26 +64,30 @@ sealed class CommunicationStyle(
     val titleRes: StringResource,
     val descriptionRes: StringResource,
     val exampleRes: StringResource,
+    val type: String,
 ) {
-    object Biohacker : CommunicationStyle(
+    data object Biohacker : CommunicationStyle(
         icon = Icons.Filled.Analytics,
         titleRes = Res.string.biohacker_title,
         descriptionRes = Res.string.biohacker_description,
-        exampleRes = Res.string.biohacker_example
+        exampleRes = Res.string.biohacker_example,
+        type = CommunicationPreferenceType.Biohacker.type
     )
 
-    object Doctor : CommunicationStyle(
+    data object Doctor : CommunicationStyle(
         icon = Icons.Filled.MedicalServices,
         titleRes = Res.string.doctor_title,
         descriptionRes = Res.string.doctor_description,
-        exampleRes = Res.string.doctor_example
+        exampleRes = Res.string.doctor_example,
+        type = CommunicationPreferenceType.Doctor.type
     )
 
-    object CloseFriend : CommunicationStyle(
+    data object CloseFriend : CommunicationStyle(
         icon = Icons.Filled.ChatBubbleOutline,
         titleRes = Res.string.close_friend_title,
         descriptionRes = Res.string.close_friend_description,
-        exampleRes = Res.string.close_friend_example
+        exampleRes = Res.string.close_friend_example,
+        type = CommunicationPreferenceType.CloseFriend.type
     )
 }
 
