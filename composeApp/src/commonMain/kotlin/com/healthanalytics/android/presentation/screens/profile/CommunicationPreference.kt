@@ -60,27 +60,27 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-sealed class CommunicationUIDatat(
+sealed class CommunicationUIData(
     val titleRes: StringResource,
     val descriptionRes: StringResource,
     val exampleRes: StringResource,
     val type: String,
 ) {
-    data object Biohacker : CommunicationUIDatat(
+    data object Biohacker : CommunicationUIData(
         titleRes = Res.string.biohacker_title,
         descriptionRes = Res.string.biohacker_description,
         exampleRes = Res.string.biohacker_example,
         type = CommunicationPreferenceType.Biohacker.type
     )
 
-    data object Doctor : CommunicationUIDatat(
+    data object Doctor : CommunicationUIData(
         titleRes = Res.string.doctor_title,
         descriptionRes = Res.string.doctor_description,
         exampleRes = Res.string.doctor_example,
         type = CommunicationPreferenceType.Doctor.type
     )
 
-    data object CloseFriend : CommunicationUIDatat(
+    data object CloseFriend : CommunicationUIData(
         titleRes = Res.string.close_friend_title,
         descriptionRes = Res.string.close_friend_description,
         exampleRes = Res.string.close_friend_example,
@@ -91,8 +91,8 @@ sealed class CommunicationUIDatat(
 
 @Composable
 fun CommunicationPreference(
-    onStyleSelected: (CommunicationUIDatat) -> Unit,
-    onSaveClicked: (selectedPreference: CommunicationUIDatat?) -> Unit,
+    onStyleSelected: (CommunicationUIData) -> Unit,
+    onSaveClicked: (selectedPreference: CommunicationUIData?) -> Unit,
     viewModel: MarketPlaceViewModel,
 ) {
     val accessToken by viewModel.accessToken.collectAsStateWithLifecycle()
@@ -156,27 +156,27 @@ fun CommunicationPreference(
             Spacer(modifier = Modifier.height(Dimensions.size12dp))
 
             CommunicationStyleCard(
-                style = CommunicationUIDatat.Biohacker,
-                selected = selectedPreference == CommunicationUIDatat.Biohacker,
-                onClick = { onStyleSelected(CommunicationUIDatat.Biohacker) },
+                style = CommunicationUIData.Biohacker,
+                selected = selectedPreference == CommunicationUIData.Biohacker,
+                onClick = { onStyleSelected(CommunicationUIData.Biohacker) },
                 icon = RecommendationIcon.Painter(Res.drawable.ic_vital_signs)
             )
 
             Spacer(modifier = Modifier.height(Dimensions.size12dp))
 
             CommunicationStyleCard(
-                style = CommunicationUIDatat.Doctor,
-                selected = selectedPreference == CommunicationUIDatat.Doctor,
-                onClick = { onStyleSelected(CommunicationUIDatat.Doctor) },
+                style = CommunicationUIData.Doctor,
+                selected = selectedPreference == CommunicationUIData.Doctor,
+                onClick = { onStyleSelected(CommunicationUIData.Doctor) },
                 icon = RecommendationIcon.Painter(Res.drawable.ic_stethoscope)
             )
 
             Spacer(modifier = Modifier.height(Dimensions.size12dp))
 
             CommunicationStyleCard(
-                style = CommunicationUIDatat.CloseFriend,
-                selected = selectedPreference == CommunicationUIDatat.CloseFriend,
-                onClick = { onStyleSelected(CommunicationUIDatat.CloseFriend) },
+                style = CommunicationUIData.CloseFriend,
+                selected = selectedPreference == CommunicationUIData.CloseFriend,
+                onClick = { onStyleSelected(CommunicationUIData.CloseFriend) },
                 icon = RecommendationIcon.Vector(Icons.Default.ChatBubble)
             )
 
@@ -203,7 +203,7 @@ fun CommunicationPreference(
 
 @Composable
 fun CommunicationStyleCard(
-    style: CommunicationUIDatat,
+    style: CommunicationUIData,
     selected: Boolean,
     onClick: () -> Unit,
     icon: RecommendationIcon,
