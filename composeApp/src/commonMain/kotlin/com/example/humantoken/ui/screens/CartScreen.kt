@@ -63,6 +63,9 @@ import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceV
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import kotlinx.serialization.Serializable
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 
 @Serializable
 data class Product(
@@ -128,181 +131,177 @@ data class CartResponse(
     val data: List<Cart>? = null
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CartScreen(
-    onBackClick: () -> Unit,
-    onCheckoutClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel,
-) {
-    var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf<String?>(null) }
-    var snackbarMessage by remember { mutableStateOf<String?>(null) }
-    val cartListFlow by viewModel.cartListFlow.collectAsStateWithLifecycle()
-    val cartActionState by viewModel.cartActionState.collectAsStateWithLifecycle()
+class CartScreen(
+    private val viewModel: MarketPlaceViewModel
+) : Screen {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
+        var isLoading by remember { mutableStateOf(true) }
+        var error by remember { mutableStateOf<String?>(null) }
+        var snackbarMessage by remember { mutableStateOf<String?>(null) }
+        val cartListFlow by viewModel.cartListFlow.collectAsStateWithLifecycle()
+        val cartActionState by viewModel.cartActionState.collectAsStateWithLifecycle()
 
-    BackHandler(enabled = true) {
-        onBackClick()
-    }
-    LaunchedEffect(Unit) {
-        viewModel.getCartList()
-    }
-    when (cartListFlow) {
-        is CartListState.Success -> {
-            cartItems = (cartListFlow as CartListState.Success).cartList.flatMap { cart ->
-                cart.cart_items ?: emptyList()
+        BackHandler(enabled = true) {
+            navigator.pop()
+        }
+        LaunchedEffect(Unit) {
+            viewModel.getCartList()
+        }
+        when (cartListFlow) {
+            is CartListState.Success -> {
+                cartItems = (cartListFlow as CartListState.Success).cartList.flatMap { cart ->
+                    cart.cart_items ?: emptyList()
+                }
+                isLoading = false
             }
-            isLoading = false
+
+            is CartListState.Error -> {
+                error = (cartListFlow as CartListState.Error).message
+                isLoading = false
+            }
+
+            is CartListState.Loading -> {
+                isLoading = true
+            }
         }
 
-        is CartListState.Error -> {
-            error = (cartListFlow as CartListState.Error).message
-            isLoading = false
+        when (cartActionState) {
+            is CartActionState.Success -> {
+                snackbarMessage = (cartActionState as CartActionState.Success).message
+            }
+
+            is CartActionState.Error -> {
+                snackbarMessage = (cartActionState as CartActionState.Error).message
+            }
+
+            is CartActionState.Loading -> {
+                // Handle loading if needed
+            }
         }
 
-        is CartListState.Loading -> {
-            isLoading = true
-        }
-    }
-
-    when (cartActionState) {
-        is CartActionState.Success -> {
-            snackbarMessage = (cartActionState as CartActionState.Success).message
-        }
-
-        is CartActionState.Error -> {
-            snackbarMessage = (cartActionState as CartActionState.Error).message
-        }
-
-        is CartActionState.Loading -> {
-            // Handle loading if needed
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColors.Black,
-                    navigationIconContentColor = AppColors.White,
-                    titleContentColor = AppColors.White
-                ),
-                title = {
-                    Text(
-                        text = "My Cart",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = AppColors.Black,
+                        navigationIconContentColor = AppColors.White,
+                        titleContentColor = AppColors.White
+                    ),
+                    title = {
+                        Text(
+                            text = "My Cart",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navigator.pop() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    }
+                )
+            },
+            containerColor = AppColors.Black,
+            snackbarHost = {
+                snackbarMessage?.let { message ->
+                    Snackbar(
+                        modifier = Modifier.padding(16.dp),
+                        action = {
+                            TextButton(onClick = { snackbarMessage = null }) {
+                                Text("Dismiss")
+                            }
+                        }
+                    ) {
+                        Text(message)
+                    }
+                }
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                }
-            )
-        },
-        containerColor = AppColors.Black,
-        snackbarHost = {
-            snackbarMessage?.let { message ->
-                Snackbar(
-                    modifier = Modifier.padding(16.dp),
-                    action = {
-                        TextButton(onClick = { snackbarMessage = null }) {
-                            Text("Dismiss")
-                        }
+
+                    error != null -> {
+                        Text(
+                            text = error ?: "An error occurred",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp)
+                        )
                     }
-                ) {
-                    Text(message)
-                }
-            }
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when {
-                isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
 
-                error != null -> {
-                    Text(
-                        text = error ?: "An error occurred",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(16.dp)
-                    )
-                }
+                    cartItems.isEmpty() -> {
+                        EmptyCartMessage()
+                    }
 
-                cartItems.isEmpty() -> {
-                    EmptyCartMessage()
-                }
-
-                else -> {
-                    LazyColumn(
-                        modifier = modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(cartItems) { item ->
-                            CartItemCard(
-                                item = item,
-                                onQuantityDecrease = {
-                                    item.product?.let { product ->
-                                        val newQuantity = (item.quantity ?: 1) - 1
-//                                        if (newQuantity > 0) {
-//                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
-//                                        }
-                                        if (newQuantity > 0) {
-                                            product.product_id?.let {
-                                                viewModel.updateCartItem(
-                                                    it,
-                                                    newQuantity.toString()
-                                                )
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(cartItems) { item ->
+                                CartItemCard(
+                                    item = item,
+                                    onQuantityDecrease = {
+                                        item.product?.let { product ->
+                                            val newQuantity = (item.quantity ?: 1) - 1
+                                            if (newQuantity > 0) {
+                                                product.product_id?.let {
+                                                    viewModel.updateCartItem(
+                                                        it,
+                                                        newQuantity.toString()
+                                                    )
+                                                }
                                             }
                                         }
-                                    }
-                                },
-                                onQuantityIncrease = {
-                                    item.product?.let { product ->
-                                        val newQuantity = (item.quantity ?: 1) + 1
-                                        if (newQuantity > 0) {
-                                            product.product_id?.let {
-                                                viewModel.updateCartItem(
-                                                    it,
-                                                    newQuantity.toString()
-                                                )
+                                    },
+                                    onQuantityIncrease = {
+                                        item.product?.let { product ->
+                                            val newQuantity = (item.quantity ?: 1) + 1
+                                            if (newQuantity > 0) {
+                                                product.product_id?.let {
+                                                    viewModel.updateCartItem(
+                                                        it,
+                                                        newQuantity.toString()
+                                                    )
+                                                }
                                             }
                                         }
+                                    },
+                                    onDeleteClick = {
+                                        item.product?.product_id?.let { productId ->
+                                            viewModel.updateCartItem(productId, "0")
+                                        }
                                     }
+                                )
+                            }
 
-                                },
-                                onDeleteClick = {
-                                    item.product?.product_id?.let { productId ->
-                                        viewModel.updateCartItem(productId, "0")
-                                    }
-                                }
-                            )
-                        }
-
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            OrderSummary(cartItems = cartItems)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            CheckoutButton(
-                                onClick = onCheckoutClick,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                OrderSummary(cartItems = cartItems)
+                                Spacer(modifier = Modifier.height(16.dp))
+                                CheckoutButton(
+                                    onClick = { /* Navigate to checkout */ },
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                            }
                         }
                     }
                 }
@@ -340,7 +339,7 @@ private fun CartItemCard(
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.BlueCardBackground // Replace with your desired color
+            containerColor = AppColors.BlueCardBackground
         ),
     ) {
         Row(

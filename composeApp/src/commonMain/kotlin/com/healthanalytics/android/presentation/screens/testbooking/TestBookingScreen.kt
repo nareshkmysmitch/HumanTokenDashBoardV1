@@ -49,183 +49,178 @@ import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.screens.marketplace.CartListState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TestBookingScreen(
-    viewModel: TestBookingViewModel,
-    marketPlaceViewModel: MarketPlaceViewModel,
-    onNavigateBack: () -> Unit,
-    onNavigateToSchedule: (Set<Product>) -> Unit,
-) {
-    val state by viewModel.state.collectAsState()
-    val accessToken by marketPlaceViewModel.accessToken.collectAsState()
-    var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf<String?>(null) }
-    val getCartList by marketPlaceViewModel.cartListFlow.collectAsState()
+class TestBookingScreen(
+    private val viewModel: TestBookingViewModel,
+    private val marketPlaceViewModel: MarketPlaceViewModel
+) : Screen {
 
-    LaunchedEffect(Unit) {
-        marketPlaceViewModel.getCartList()
-    }
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        val state by viewModel.state.collectAsState()
+        val accessToken by marketPlaceViewModel.accessToken.collectAsState()
+        var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
+        var isLoading by remember { mutableStateOf(true) }
+        var error by remember { mutableStateOf<String?>(null) }
+        val getCartList by marketPlaceViewModel.cartListFlow.collectAsState()
 
-    LaunchedEffect(getCartList) {
-        when (getCartList) {
-            is CartListState.Success -> {
-                cartItems = (getCartList as CartListState.Success).cartList.flatMap { cart ->
-                    cart.cart_items ?: emptyList()
+        LaunchedEffect(Unit) {
+            marketPlaceViewModel.getCartList()
+        }
+
+        LaunchedEffect(getCartList) {
+            when (getCartList) {
+                is CartListState.Success -> {
+                    cartItems = (getCartList as CartListState.Success).cartList.flatMap { cart ->
+                        cart.cart_items ?: emptyList()
+                    }
+                    accessToken?.let { viewModel.loadTests(it) }
+                    isLoading = false
                 }
-                accessToken?.let { viewModel.loadTests(it) }
-                isLoading = false
-            }
 
-            is CartListState.Error -> {
-                error = (getCartList as CartListState.Error).message
-                isLoading = false
-            }
+                is CartListState.Error -> {
+                    error = (getCartList as CartListState.Error).message
+                    isLoading = false
+                }
 
-            is CartListState.Loading -> {
-                isLoading = true
+                is CartListState.Loading -> {
+                    isLoading = true
+                }
             }
         }
-    }
-    BackHandler(enabled = true, onBack = { onNavigateBack() })
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Test Booking",
-                        color = AppColors.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back arrow",
-                            tint = AppColors.White,
-                            modifier = Modifier.size(24.dp)
+        BackHandler(enabled = true, onBack = { navigator.pop() })
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "Test Booking",
+                            color = AppColors.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
-                ),
-            )
-        },
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Spacer(Modifier.padding(paddingValues))
-                Text(
-                    text = "Schedule comprehensive health screenings and diagnostic tests",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White.copy(alpha = 0.7f)
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navigator.pop() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "back arrow",
+                                tint = AppColors.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Black
                     ),
-                    modifier = Modifier.padding(bottom = 24.dp)
                 )
+            },
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Black)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(16.dp)
+                ) {
+                    Spacer(Modifier.padding(paddingValues))
+                    Text(
+                        text = "Schedule comprehensive health screenings and diagnostic tests",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White.copy(alpha = 0.7f)
+                        ),
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
 
-                if (state.isLoading || state.error != null) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = Color(0xFFF50057))
-                    }
-                } else {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        items(state.availableTests) { test ->
-                            val isInCart = cartItems.any { cartItem ->
-                                cartItem.product?.product_id == test.product_id
-                            }
-                            val updatedTest = test.copy(isAdded = isInCart)
-
-                            LaunchedEffect(isInCart) {
-                                if (isInCart && !state.selectedTests.any { it.product_id == updatedTest.product_id }) {
-                                    viewModel.toggleTestSelection(updatedTest)
-                                } else if (!isInCart) {
-                                    viewModel.removeTest(updatedTest)
+                    if (state.isLoading || state.error != null) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Color(0xFFF50057))
+                        }
+                    } else {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(1),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            items(state.availableTests) { test ->
+                                val isInCart = cartItems.any { cartItem ->
+                                    cartItem.product?.product_id == test.product_id
                                 }
-                                println("isInCart --> $isInCart, selectedTests --> ${state.selectedTests}")
-                            }
+                                val updatedTest = test.copy(isAdded = isInCart)
 
-                            TestCard(
-                                test = updatedTest,
-                                onSelect = {
-                                    if (!updatedTest.isAdded) {
-                                        marketPlaceViewModel.addToCart(
-                                            updatedTest.product_id ?: "",
-                                            updatedTest.variants?.firstOrNull()?.variant_id ?: ""
-                                        )
-                                    } else {
-                                        marketPlaceViewModel.updateCartItem(
-                                            updatedTest.product_id ?: "",
-                                            "0"
-                                        )
+                                LaunchedEffect(isInCart) {
+                                    if (isInCart && !state.selectedTests.any { it.product_id == updatedTest.product_id }) {
+                                        viewModel.toggleTestSelection(updatedTest)
+                                    } else if (!isInCart) {
                                         viewModel.removeTest(updatedTest)
                                     }
+                                    println("isInCart --> $isInCart, selectedTests --> ${state.selectedTests}")
                                 }
-                            )
+
+                                TestCard(
+                                    test = updatedTest, onSelect = {
+                                        if (!updatedTest.isAdded) {
+                                            marketPlaceViewModel.addToCart(
+                                                updatedTest.product_id ?: "",
+                                                updatedTest.variants?.firstOrNull()?.variant_id
+                                                    ?: ""
+                                            )
+                                        } else {
+                                            marketPlaceViewModel.updateCartItem(
+                                                updatedTest.product_id ?: "", "0"
+                                            )
+                                            viewModel.removeTest(updatedTest)
+                                        }
+                                    })
+                            }
                         }
-                    }
-                    if (state.selectedTests.isNotEmpty()) {
-//                        Spacer(modifier = Modifier.height(50.dp))
-                        Spacer(modifier = Modifier.padding(paddingValues))
+                        if (state.selectedTests.isNotEmpty()) {
+                            Spacer(modifier = Modifier.padding(paddingValues))
+                        }
                     }
                 }
-            }
 
-            // Bottom Bar
-            if (state.selectedTests.isNotEmpty()) {
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth(),
-                    color = Color(0xFF1A1A1A)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                // Bottom Bar
+                if (state.selectedTests.isNotEmpty()) {
+                    Surface(
+                        modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+                        color = Color(0xFF1A1A1A)
                     ) {
-                        Column {
-                            Text(
-                                text = "${state.selectedTests.size} tests selected",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                            Text(
-                                text = "Total: ₹${state.totalAmount.toFloat()}",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Button(
-                            onClick = { onNavigateToSchedule(state.selectedTests) },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = AppColors.PinkButton
-                            ),
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Schedule Tests", color = Color.White)
+                            Column {
+                                Text(
+                                    text = "${state.selectedTests.size} tests selected",
+                                    color = Color.White,
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    text = "Total: ₹${state.totalAmount.toFloat()}",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                    navigator.push(ScheduleTestBookingScreen(marketPlaceViewModel))
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = AppColors.PinkButton
+                                ),
+                            ) {
+                                Text("Schedule Tests", color = Color.White)
+                            }
                         }
                     }
                 }
@@ -236,8 +231,7 @@ fun TestBookingScreen(
 
 @Composable
 private fun TestCard(
-    test: Product,
-    onSelect: () -> Unit
+    test: Product, onSelect: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -258,8 +252,7 @@ private fun TestCard(
                     Text(
                         text = test.name ?: "",
                         style = MaterialTheme.typography.titleMedium.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            color = Color.White, fontWeight = FontWeight.Bold
                         ),
                         modifier = Modifier.padding(bottom = 4.dp, end = 12.dp),
                         maxLines = 2,
@@ -276,8 +269,7 @@ private fun TestCard(
                     Text(
                         text = "₹${test.price ?: "0.00"}",
                         style = MaterialTheme.typography.titleMedium.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            color = Color.White, fontWeight = FontWeight.Bold
                         )
                     )
                     if (!test.vendor_name.isNullOrEmpty()) {
@@ -291,15 +283,11 @@ private fun TestCard(
                     }
                 }
                 IconButton(
-                    onClick = onSelect,
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(
-                            color = if (test.isAdded) Color.Green.copy(alpha = 0.5f) else Color.White.copy(
-                                alpha = 0.1f
-                            ),
-                            shape = CircleShape
-                        )
+                    onClick = onSelect, modifier = Modifier.size(32.dp).background(
+                        color = if (test.isAdded) Color.Green.copy(alpha = 0.5f) else Color.White.copy(
+                            alpha = 0.1f
+                        ), shape = CircleShape
+                    )
                 ) {
                     Icon(
                         imageVector = if (!test.isAdded) Icons.Default.Add else Icons.Default.Check,

@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import cafe.adriel.voyager.navigator.Navigator
 import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.data.api.BloodData
@@ -48,9 +49,9 @@ import com.healthanalytics.android.presentation.components.Pages.TEST_BOOKING
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.ProfileScreen
-import com.healthanalytics.android.presentation.screens.chat.ChatScreen
+import com.healthanalytics.android.presentation.screens.chat.ChatScreen as VoyagerChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
-import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
+import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen as VoyagerConversationListScreen
 import com.healthanalytics.android.presentation.screens.health.BioMarkerFullReportScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailScreen
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
@@ -75,6 +76,7 @@ import com.healthanalytics.android.presentation.screens.testbooking.TestBookingS
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTheme
+import org.koin.compose.KoinContext
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -85,8 +87,8 @@ fun HealthAnalyticsApp() {
 
     AppTheme {
 
-        var currentPages by remember { mutableStateOf<Pages>(Pages.HOME) }
-        var lastMainPages by remember { mutableStateOf<Pages>(Pages.HOME) }
+        var currentPages by remember { mutableStateOf<Pages>(HOME) }
+        var lastMainPages by remember { mutableStateOf<Pages>(HOME) }
         var biomarker by remember { mutableStateOf(BloodData()) }
 
         fun navigateTo(pages: Pages) {
@@ -131,57 +133,65 @@ fun HealthAnalyticsApp() {
                     }
 
                     CONVERSATION_LIST -> {
-                        ConversationListScreen(
-                            onNavigateToChat = { id ->
-                                navigateTo(CHAT(conversationId = id))
-                            },
-                            onNavigateBack = { navigateTo(HOME) },
-                            viewModel = chatViewModel,
-                        )
+                        Navigator(VoyagerConversationListScreen())
                     }
 
                     is CHAT -> {
                         val chatScreen = currentPages as CHAT
-                        ChatScreen(
-                            conversationId = chatScreen.conversationId,
-                            onNavigateBack = { navigateBack() },
-                            viewModel = chatViewModel,
-                        )
+                        Navigator(VoyagerChatScreen(conversationId = chatScreen.conversationId))
                     }
 
                     is MARKETPLACE_DETAIL -> {
                         val marketplaceScreen = currentPages as MARKETPLACE_DETAIL
-                        ProductDetailScreen(
-                            product = marketplaceScreen.product,
-                            onNavigateBack = { navigateBack() },
-                            onNavigateToCart = { navigateTo(Pages.CART) },
-                            viewModel = marketPlaceViewModel,
+
+                        Navigator(
+                            ProductDetailScreen(
+                                product = marketplaceScreen.product,
+                                viewModel = marketPlaceViewModel,
+                            )
                         )
+
+//                        ProductDetailScreen(
+//                            product = marketplaceScreen.product,
+//                            onNavigateBack = { navigateBack() },
+//                            onNavigateToCart = { navigateTo(CART) },
+//                            viewModel = marketPlaceViewModel,
+//                        )
                     }
 
-                    CART -> CartScreen(
-                        onCheckoutClick = { },
-                        onBackClick = { navigateBack() },
-                        viewModel = marketPlaceViewModel,
-                    )
+                    CART -> {
+                        Navigator(CartScreen(viewModel = marketPlaceViewModel))
+                    }
 
                     SCHEDULE_TEST_BOOKING -> {
-                        ScheduleTestBookingScreen(
-                            onNavigateBack = { navigateTo(TEST_BOOKING) },
-                            viewModel = marketPlaceViewModel,
-                        )
+
+                        Navigator(ScheduleTestBookingScreen(viewModel = marketPlaceViewModel))
+
+//                        ScheduleTestBookingScreen(
+//                            onNavigateBack = { navigateTo(TEST_BOOKING) },
+//                            viewModel = marketPlaceViewModel,
+//                        )
                     }
 
                     TEST_BOOKING -> {
-                        TestBookingScreen(
-                            onNavigateBack = { navigateBack() },
-                            onNavigateToSchedule = {
-                                localTestList = localTestList + it
-                                navigateTo(SCHEDULE_TEST_BOOKING)
-                            },
-                            viewModel = testBookingViewModel,
-                            marketPlaceViewModel = marketPlaceViewModel,
+
+                        Navigator(
+                            TestBookingScreen(
+                                viewModel = testBookingViewModel,
+                                marketPlaceViewModel = marketPlaceViewModel
+                            )
                         )
+
+
+//                        TestBookingScreen(
+//                            onNavigateBack = { navigateBack() },
+//                            onNavigateToSchedule = {
+//                                localTestList = localTestList + it
+//                                navigateTo(SCHEDULE_TEST_BOOKING)
+//                            },
+//                            viewModel = testBookingViewModel,
+//                            marketPlaceViewModel = marketPlaceViewModel,
+//                        )
                     }
 
                     HOME -> {
@@ -235,27 +245,18 @@ fun HealthAnalyticsApp() {
                         SymptomsScreen(
                             onNavigateBack = { navigateBack() },
                             viewModel = symptomsViewModel,
-                            onNavigateHome = { navigateTo(HOME) }
-                        )
+                            onNavigateHome = { navigateTo(HOME) })
                     }
 
-                    BIOMARKER_FULL_REPORT -> {
-                        BioMarkerFullReportScreen(
-                            onNavigateBack = {
-                                navigateBack()
-                            }, biomarker = biomarker
-                        )
-                    }
+
                 }
             }
 
             else -> {
                 OnboardContainer(
-                    onboardViewModel = onboardViewModel,
-                    isLoggedIn = {
+                    onboardViewModel = onboardViewModel, isLoggedIn = {
                         onboardViewModel.updateOnBoardState()
-                    }
-                )
+                    })
             }
         }
     }
@@ -278,7 +279,7 @@ private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel
 fun OnboardContainer(
     isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel,
 ) {
-    org.koin.compose.KoinContext {
+    KoinContext {
         val navController = rememberNavController()
         val razorpayHandler: RazorpayHandler = getKoin().get()
 
@@ -294,41 +295,31 @@ fun OnboardContainer(
                     GetStartedScreen(
                         onGetStarted = { navController.navigate(OnboardRoute.Login) },
                         onLogin = { navController.navigate(OnboardRoute.Login) },
-                        onViewAllBiomarkers = {}
-                    )
+                        onViewAllBiomarkers = {})
                 }
                 composable<OnboardRoute.Login> {
                     LoginScreenContainer(
-                        onboardViewModel = onboardViewModel,
-                        navigateToOtpVerification = {
+                        onboardViewModel = onboardViewModel, navigateToOtpVerification = {
                             navController.navigate(OnboardRoute.OTPVerification)
-                        }
-                    )
+                        })
 
                 }
 
                 composable<OnboardRoute.OTPVerification> {
-                    OTPContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
+                    OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                        navController.navigateUp()
 
-                        }, navigateToAccountCreation = {
-                            navController.navigate(OnboardRoute.CreateAccount)
-                        }
-                    )
+                    }, navigateToAccountCreation = {
+                        navController.navigate(OnboardRoute.CreateAccount)
+                    })
                 }
 
                 composable<OnboardRoute.CreateAccount> {
-                    CreateAccountContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
-                        },
-                        navigateToAddress = {
-                            navController.navigate(OnboardRoute.SampleCollectionAddress)
-                        }
-                    )
+                    CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                        navController.navigateUp()
+                    }, navigateToAddress = {
+                        navController.navigate(OnboardRoute.SampleCollectionAddress)
+                    })
                 }
 
                 composable<OnboardRoute.SampleCollectionAddress> {
@@ -339,20 +330,15 @@ fun OnboardContainer(
                         },
                         navigateToBloodTest = {
                             navController.navigate(OnboardRoute.ScheduleBloodTest)
-                        }
-                    )
+                        })
                 }
 
                 composable<OnboardRoute.ScheduleBloodTest> {
-                    ScheduleBloodTestContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
-                        },
-                        navigateToPayment = {
-                            navController.navigate(OnboardRoute.Payment)
-                        }
-                    )
+                    ScheduleBloodTestContainer(onboardViewModel = onboardViewModel, onBackClick = {
+                        navController.navigateUp()
+                    }, navigateToPayment = {
+                        navController.navigate(OnboardRoute.Payment)
+                    })
                 }
 
                 composable<OnboardRoute.Payment> {
@@ -364,8 +350,7 @@ fun OnboardContainer(
                         },
                         isPaymentCompleted = {
                             isLoggedIn()
-                        }
-                    )
+                        })
                 }
             }
         }
@@ -399,9 +384,8 @@ fun HomeScreen(
 
     Scaffold(topBar = {
         TopAppBar(
-            title = "Human Token",
-            actions = {
-                when(currentScreen){
+            title = "Human Token", actions = {
+                when (currentScreen) {
                     MainScreen.DASHBOARD -> {
                         IconButton(onClick = onSymptomsClick) {
                             Icon(
@@ -420,6 +404,7 @@ fun HomeScreen(
                             )
                         }
                     }
+
                     MainScreen.RECOMMENDATIONS -> {
                         IconButton(onClick = onProfileClick) {
                             Icon(
@@ -430,6 +415,7 @@ fun HomeScreen(
                             )
                         }
                     }
+
                     MainScreen.MARKETPLACE -> {
                         IconButton(onClick = onCartClick) {
                             Icon(
