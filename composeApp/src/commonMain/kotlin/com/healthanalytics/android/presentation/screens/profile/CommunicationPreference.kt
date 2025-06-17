@@ -17,10 +17,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,9 +29,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthanalytics.android.data.models.RecommendationIcon
 import com.healthanalytics.android.presentation.screens.marketplace.CommunicationPreferenceType
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -53,21 +51,22 @@ import humantokendashboardv1.composeapp.generated.resources.communication_prefer
 import humantokendashboardv1.composeapp.generated.resources.doctor_description
 import humantokendashboardv1.composeapp.generated.resources.doctor_example
 import humantokendashboardv1.composeapp.generated.resources.doctor_title
+import humantokendashboardv1.composeapp.generated.resources.ic_stethoscope
+import humantokendashboardv1.composeapp.generated.resources.ic_vital_signs
 import humantokendashboardv1.composeapp.generated.resources.information_delivery_style
 import humantokendashboardv1.composeapp.generated.resources.information_delivery_style_subtitle
 import humantokendashboardv1.composeapp.generated.resources.save_preferences
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 sealed class CommunicationUIDatat(
-    val icon: ImageVector,
     val titleRes: StringResource,
     val descriptionRes: StringResource,
     val exampleRes: StringResource,
     val type: String,
 ) {
     data object Biohacker : CommunicationUIDatat(
-        icon = Icons.Filled.Analytics,
         titleRes = Res.string.biohacker_title,
         descriptionRes = Res.string.biohacker_description,
         exampleRes = Res.string.biohacker_example,
@@ -75,7 +74,6 @@ sealed class CommunicationUIDatat(
     )
 
     data object Doctor : CommunicationUIDatat(
-        icon = Icons.Filled.MedicalServices,
         titleRes = Res.string.doctor_title,
         descriptionRes = Res.string.doctor_description,
         exampleRes = Res.string.doctor_example,
@@ -83,7 +81,6 @@ sealed class CommunicationUIDatat(
     )
 
     data object CloseFriend : CommunicationUIDatat(
-        icon = Icons.Filled.ChatBubbleOutline,
         titleRes = Res.string.close_friend_title,
         descriptionRes = Res.string.close_friend_description,
         exampleRes = Res.string.close_friend_example,
@@ -161,21 +158,27 @@ fun CommunicationPreference(
             CommunicationStyleCard(
                 style = CommunicationUIDatat.Biohacker,
                 selected = selectedPreference == CommunicationUIDatat.Biohacker,
-                onClick = { onStyleSelected(CommunicationUIDatat.Biohacker) })
+                onClick = { onStyleSelected(CommunicationUIDatat.Biohacker) },
+                icon = RecommendationIcon.Painter(Res.drawable.ic_vital_signs)
+            )
 
             Spacer(modifier = Modifier.height(Dimensions.size12dp))
 
             CommunicationStyleCard(
                 style = CommunicationUIDatat.Doctor,
                 selected = selectedPreference == CommunicationUIDatat.Doctor,
-                onClick = { onStyleSelected(CommunicationUIDatat.Doctor) })
+                onClick = { onStyleSelected(CommunicationUIDatat.Doctor) },
+                icon = RecommendationIcon.Painter(Res.drawable.ic_stethoscope)
+            )
 
             Spacer(modifier = Modifier.height(Dimensions.size12dp))
 
             CommunicationStyleCard(
                 style = CommunicationUIDatat.CloseFriend,
                 selected = selectedPreference == CommunicationUIDatat.CloseFriend,
-                onClick = { onStyleSelected(CommunicationUIDatat.CloseFriend) })
+                onClick = { onStyleSelected(CommunicationUIDatat.CloseFriend) },
+                icon = RecommendationIcon.Vector(Icons.Default.ChatBubble)
+            )
 
 
             Spacer(modifier = Modifier.height(Dimensions.size28dp))
@@ -203,6 +206,7 @@ fun CommunicationStyleCard(
     style: CommunicationUIDatat,
     selected: Boolean,
     onClick: () -> Unit,
+    icon: RecommendationIcon,
 ) {
     val borderColor = if (selected) AppColors.darkPink else AppColors.borderBlue
     val backgroundColor = if (selected) AppColors.semiTransparentPink else AppColors.BlueBackground
@@ -221,12 +225,25 @@ fun CommunicationStyleCard(
                 ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = style.icon,
-                    contentDescription = null,
-                    tint = if (selected) AppColors.White else AppColors.iconGrey,
-                    modifier = Modifier.size(Dimensions.size16dp)
-                )
+                when (icon) {
+                    is RecommendationIcon.Vector -> {
+                        Icon(
+                            imageVector = icon.imageVector,
+                            contentDescription = null,
+                            tint = if (selected) AppColors.White else AppColors.iconGrey,
+                            modifier = Modifier.size(Dimensions.size16dp)
+                        )
+                    }
+
+                    is RecommendationIcon.Painter -> {
+                        Icon(
+                            painter = painterResource(icon.resource),
+                            contentDescription = null,
+                            tint = if (selected) AppColors.White else AppColors.iconGrey,
+                            modifier = Modifier.size(Dimensions.size16dp)
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.width(Dimensions.size12dp))
