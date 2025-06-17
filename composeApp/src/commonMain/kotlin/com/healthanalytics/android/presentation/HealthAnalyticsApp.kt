@@ -50,7 +50,7 @@ import com.healthanalytics.android.presentation.components.Screen.SCHEDULE_TEST_
 import com.healthanalytics.android.presentation.components.Screen.TEST_BOOKING
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
-import com.healthanalytics.android.presentation.screens.ProfileScreen
+import com.healthanalytics.android.presentation.screens.profile.ProfileScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatScreen
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.screens.chat.ConversationListScreen
