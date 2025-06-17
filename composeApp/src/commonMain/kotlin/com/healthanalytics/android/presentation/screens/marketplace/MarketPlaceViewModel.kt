@@ -2,22 +2,26 @@ package com.healthanalytics.android.presentation.screens.marketplace
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.humantoken.ui.screens.Cart
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
-import com.example.humantoken.ui.screens.Cart
 import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.data.models.AddressItem
+import com.healthanalytics.android.data.models.LoadingState
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
+import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
+import com.healthanalytics.android.presentation.screens.profile.CommunicationUIData
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 
@@ -44,6 +48,12 @@ enum class SortOption(val displayName: String) {
         "A to Z (Name)"
     ),
     NAME_Z_TO_A("Z to A (Name)"), PRICE_LOW_TO_HIGH("Low to High (Price)"), PRICE_HIGH_TO_LOW("High to Low (Price)")
+}
+
+sealed class CommunicationPreferenceType(val type: String) {
+    data object Biohacker : CommunicationPreferenceType("bio_hacker")
+    data object Doctor : CommunicationPreferenceType("doctor")
+    data object CloseFriend : CommunicationPreferenceType("friend")
 }
 
 sealed class ProductDetailsState {
@@ -94,7 +104,8 @@ class MarketPlaceViewModel(
     private val _selectedAddress = MutableStateFlow<AddressItem?>(null)
     val selectedAddress = _selectedAddress.asStateFlow()
 
-    private val _productDetailsState = MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
+    private val _productDetailsState =
+        MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
 
     private val _leadId = MutableStateFlow<String?>(null)
@@ -134,6 +145,12 @@ class MarketPlaceViewModel(
 
     private val _logoutState = MutableStateFlow<LogoutState>(LogoutState.Initial)
     val logoutState: StateFlow<LogoutState> = _logoutState.asStateFlow()
+
+    private val _communicationSelected =
+        MutableStateFlow<CommunicationUIData>(CommunicationUIData.Doctor)
+    val communicationSelected: StateFlow<CommunicationUIData?> = _communicationSelected.asStateFlow()
+
+    var initialPreferenceValue: CommunicationUIData = CommunicationUIData.Doctor
 
     fun clearLogoutState() {
         _logoutState.value = LogoutState.Initial
@@ -199,7 +216,7 @@ class MarketPlaceViewModel(
                 _accessToken.value = token
             }
         }
-        
+
         // Collect user details
         viewModelScope.launch {
             preferencesRepository.userName.collect { name ->
@@ -257,7 +274,7 @@ class MarketPlaceViewModel(
             try {
                 val token = _accessToken.value
                 println("Current Token: $token")
-                
+
                 if (token != null) {
                     loadProducts()
                     loadAddresses()
@@ -278,7 +295,8 @@ class MarketPlaceViewModel(
                 }
             } catch (e: Exception) {
                 println("Marketplace initialization error: ${e.message}")
-                _uiState.value = MarketPlaceUiState.Error(e.message ?: "Failed to initialize marketplace")
+                _uiState.value =
+                    MarketPlaceUiState.Error(e.message ?: "Failed to initialize marketplace")
             }
         }
     }
@@ -325,7 +343,8 @@ class MarketPlaceViewModel(
                 println("Loading cart with token: $token")
                 if (token != null) {
                     val cartList = apiService.getCartList(token)
-                    _cartListState.value = CartListState.Success(cartList?.filterNotNull() ?: emptyList())
+                    _cartListState.value =
+                        CartListState.Success(cartList?.filterNotNull() ?: emptyList())
                 } else {
                     _cartListState.value = CartListState.Error("Access token not available")
                 }
@@ -347,13 +366,15 @@ class MarketPlaceViewModel(
                         _cartActionState.value = CartActionState.Success(response.message)
                         getCartList()
                     } else {
-                        _cartActionState.value = CartActionState.Error("Failed to add product to cart")
+                        _cartActionState.value =
+                            CartActionState.Error("Failed to add product to cart")
                     }
                 } else {
                     _cartActionState.value = CartActionState.Error("Access token not available")
                 }
             } catch (e: Exception) {
-                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
+                _cartActionState.value =
+                    CartActionState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -375,7 +396,8 @@ class MarketPlaceViewModel(
                     _cartActionState.value = CartActionState.Error("Access token not available")
                 }
             } catch (e: Exception) {
-                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
+                _cartActionState.value =
+                    CartActionState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -394,7 +416,7 @@ class MarketPlaceViewModel(
                         country = _cachedCountry.value,
                         di_address_id = _cachedAddressId.value
                     )
-                    
+
                     val cachedAddress = AddressItem(
                         address = createAddress(cachedAddressResponse),
                         address_id = _cachedAddressId.value ?: ""
@@ -444,7 +466,7 @@ class MarketPlaceViewModel(
         phone: String,
         diAddressId: String,
         address: UpdateAddressListResponse,
-        callback: (Boolean, String) -> Unit
+        callback: (Boolean, String) -> Unit,
     ) {
         viewModelScope.launch {
             try {
@@ -487,10 +509,12 @@ class MarketPlaceViewModel(
                         _productDetailsState.value = ProductDetailsState.Error("Product not found")
                     }
                 } else {
-                    _productDetailsState.value = ProductDetailsState.Error("Access token not available")
+                    _productDetailsState.value =
+                        ProductDetailsState.Error("Access token not available")
                 }
             } catch (e: Exception) {
-                _productDetailsState.value = ProductDetailsState.Error(e.message ?: "Unknown error occurred")
+                _productDetailsState.value =
+                    ProductDetailsState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -532,7 +556,7 @@ class MarketPlaceViewModel(
 
         val slotRequest = SlotRequest(
             date = selectedDate,
-            lead_id = leadId.value ?:"",
+            lead_id = leadId.value ?: "",
             user_timezone = TimeZone.Companion.currentSystemDefault().toString()
         )
 
@@ -542,6 +566,94 @@ class MarketPlaceViewModel(
                 _slotAvailability.value = Resource.Success(response)
             } catch (_: Exception) {
                 _slotAvailability.value = Resource.Error(errorMessage = "Something went wrong...")
+            }
+        }
+    }
+
+    fun setCommunicationPreference(preference: CommunicationUIData) {
+        viewModelScope.launch {
+            _communicationSelected.emit(preference)
+        }
+    }
+
+    private fun setInitialPreference(preference: CommunicationUIData) {
+        initialPreferenceValue = preference
+    }
+
+    private val _uiCommunicationPreference = MutableStateFlow(LoadingState())
+    val uiCommunicationPreference: StateFlow<LoadingState> =
+        _uiCommunicationPreference.asStateFlow()
+
+
+    fun loadCommunicationPreference(accessToken: String?) {
+        viewModelScope.launch {
+            try {
+                _uiCommunicationPreference.update { it.copy(isLoading = true) }
+                val preferenceResponse =
+                    accessToken?.let { apiService.getCommunicationPreference(it) }
+                val preference = preferenceResponse?.preference?.communication_preference
+                    ?: CommunicationPreferenceType.Doctor.type //default
+                when (preference) {
+                    CommunicationPreferenceType.Biohacker.type -> {
+                        val responsePreference = CommunicationUIData.Biohacker
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+
+                    CommunicationPreferenceType.Doctor.type -> {
+                        val responsePreference = CommunicationUIData.Doctor
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+
+                    CommunicationPreferenceType.CloseFriend.type -> {
+                        val responsePreference = CommunicationUIData.CloseFriend
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+                }
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load preference"
+                    )
+                }
+            }
+        }
+    }
+
+    fun saveCommunicationPreference(accessToken: String, preference: CommunicationUIData) {
+        viewModelScope.launch {
+            try {
+                _uiCommunicationPreference.update { it.copy(isLoading = true) }
+                val communicationPreference = UploadCommunicationPreference(
+                    fields = listOf("communication_preference"),
+                    communication_preference = preference.type
+                )
+                val preferenceResponse =
+                    apiService.saveCommunicationPreference(accessToken, communicationPreference)
+
+                if (preferenceResponse) {
+                    setInitialPreference(preference)
+                }
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to uploaded preference"
+                    )
+                }
             }
         }
     }

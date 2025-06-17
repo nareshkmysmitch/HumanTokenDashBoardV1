@@ -70,7 +70,7 @@ object EncryptionUtils {
 
     inline fun <reified T> T.toEncryptedRequestBody(): JsonObject {
         val jsonString = json.encodeToString(this)
-        println("toEncryptedRequestBody..$json")
+        Logger.e("toEncryptedRequestBody..${this.toString()}")
 
         val encrypted = encrypt(jsonString)
         return buildJsonObject {

@@ -16,6 +16,9 @@ import com.healthanalytics.android.data.models.SubmitSymptomsResponse
 import com.healthanalytics.android.data.models.Symptom
 import com.healthanalytics.android.data.models.SymptomsWrapper
 import com.healthanalytics.android.data.models.UpdateProfileRequest
+import com.healthanalytics.android.data.models.profile.CommunicationPreference
+import com.healthanalytics.android.data.models.profile.UpdatedPreferenceResponse
+import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
@@ -82,6 +85,15 @@ interface ApiService {
     suspend fun getSymptoms(accessToken: String): List<Symptom>?
 
     suspend fun submitSymptoms(accessToken: String, symptomIds: List<String>): Boolean
+
+    suspend fun getCommunicationPreference(
+        accessToken: String,
+    ): CommunicationPreference?
+
+    suspend fun saveCommunicationPreference(
+        accessToken: String,
+        preference: UploadCommunicationPreference,
+    ): Boolean
 }
 
 
@@ -395,4 +407,33 @@ class ApiServiceImpl(
             return false
         }
     }
+
+
+    override suspend fun getCommunicationPreference(
+        accessToken: String,
+    ): CommunicationPreference? {
+        val response = httpClient.get("v4/human-token/preference") {
+            header("access_token", accessToken)
+            parameter("fields", "communication_preference")
+        }
+        val responseBody = response.bodyAsText()
+        val preference =
+            EncryptionUtils.handleDecryptionResponse<CommunicationPreference>(responseBody)
+        return preference
+    }
+
+    override suspend fun saveCommunicationPreference(
+        accessToken: String,
+        preference: UploadCommunicationPreference,
+    ): Boolean {
+        val response = httpClient.put("v4/human-token/preference") {
+            header("access_token", accessToken)
+            setBody(preference.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val preferenceResponse =
+            EncryptionUtils.handleDecryptionResponse<UpdatedPreferenceResponse>(responseBody)
+        return preferenceResponse?.is_updated == true
+    }
+
 }
