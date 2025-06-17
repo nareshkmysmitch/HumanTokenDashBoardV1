@@ -10,15 +10,16 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -77,6 +78,7 @@ import com.healthanalytics.android.presentation.screens.testbooking.TestBookingS
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTheme
+import kotlinx.coroutines.launch
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -190,28 +192,22 @@ fun HealthAnalyticsApp() {
                             onProfileClick = {
                                 navigateTo(PROFILE)
                             },
-                            onChatClick = {
-                                navigateTo(CONVERSATION_LIST)
-                            },
-                            onMarketPlaceClick = { product ->
-                                navigateTo(MARKETPLACE_DETAIL(product))
+                            onSymptomsClick = {
+                                navigateTo(Screen.SYMPTOMS)
                             },
                             onCartClick = {
                                 navigateTo(CART)
                             },
-                            onCsvDownload = {
-
-                            },
-                            onSymptomsClick = {
-                                navigateTo(Screen.SYMPTOMS)
-                            },
-                            onBiomarkerFullReportClick = {
-                                biomarker = it ?: BloodData()
-                                navigateTo(BIOMARKER_FULL_REPORT)
+                            onChatClick = {
+                                navigateTo(CONVERSATION_LIST)
                             },
                             onBiomarker = {
                                 biomarker = it ?: BloodData()
                                 navigateTo(BIOMARKERS_DETAIL)
+                            },
+                            onMarketPlaceClick = { navigateTo(MARKETPLACE_DETAIL(it)) },
+                            onBiomarkerFullReportClick = {
+                                biomarker = it ?: BloodData(); navigateTo(BIOMARKER_FULL_REPORT)
                             },
                             healthDataViewModel = healthDataViewModel,
                             preferenceViewModel = preferencesViewModel,
@@ -385,12 +381,22 @@ fun HomeScreen(
     onSymptomsClick: () -> Unit = {},
     onCartClick: () -> Unit,
     onChatClick: () -> Unit = {},
-    onCsvDownload: () -> Unit = {},
     onBiomarker: (BloodData?) -> Unit = {},
     onMarketPlaceClick: (Product) -> Unit = {},
     onBiomarkerFullReportClick: (BloodData?) -> Unit = {},
     recommendationsViewModel: RecommendationsViewModel,
 ) {
+
+    val uiState by healthDataViewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    var isCsvStarted by remember { mutableStateOf(false) }
+    val metrics: List<BloodData?> = uiState.metrics
+    val isLoading: Boolean = uiState.isLoading
+    val error: String? = uiState.error
+    val selectedFilter: String? = uiState.selectedFilter
+    val searchQuery: String = uiState.searchQuery
+    val lastUpdated: BloodData? = uiState.lastUpdated
+    println("uiState --> $isLoading, $error, $selectedFilter, $searchQuery, ${lastUpdated}, ${metrics.size}")
 
     var currentScreen by remember { mutableStateOf(MainScreen.DASHBOARD) }
 
@@ -406,7 +412,7 @@ fun HomeScreen(
         TopAppBar(
             title = "Human Token",
             actions = {
-                when(currentScreen){
+                when (currentScreen) {
                     MainScreen.DASHBOARD -> {
                         IconButton(onClick = onSymptomsClick) {
                             Icon(
@@ -424,15 +430,16 @@ fun HomeScreen(
                                 tint = AppColors.White
                             )
                         }
-                        IconButton(onClick = onCsvDownload) {
+                        IconButton(onClick = { isCsvStarted = true }) {
                             Icon(
                                 imageVector = Icons.Default.ImportExport,
-                                contentDescription = "Csv",
-                                modifier = Modifier.size(24.dp),
-                                tint = AppColors.White
+                                contentDescription = "Export CSV",
+                                tint = AppColors.White,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
+
                     MainScreen.RECOMMENDATIONS -> {
                         IconButton(onClick = onProfileClick) {
                             Icon(
@@ -443,6 +450,7 @@ fun HomeScreen(
                             )
                         }
                     }
+
                     MainScreen.MARKETPLACE -> {
                         IconButton(onClick = onCartClick) {
                             Icon(
@@ -494,5 +502,18 @@ fun HomeScreen(
                 }
             }
         }
+    }
+    if (isCsvStarted) {
+        if (metrics.isNotEmpty()) {
+            val csv = com.healthanalytics.android.utils.CsvUtils.bloodDataListToCsv(metrics)
+            scope.launch {
+                val filePath = com.healthanalytics.android.utils.saveTextFile("biomarkers.csv", csv)
+                println("CSV saved to: $filePath")
+                // Optionally show a Snackbar or Toast here
+            }
+        } else {
+            println("No metrics to export.")
+        }
+        isCsvStarted = false
     }
 }
