@@ -140,7 +140,7 @@ fun CommunicationPreference(
             Text(
                 text = stringResource(Res.string.information_delivery_style),
                 fontSize = FontSize.textSize14sp,
-                fontFamily = FontFamily.medium(),
+                fontFamily = FontFamily.regular(),
                 color = AppColors.White
             )
 
