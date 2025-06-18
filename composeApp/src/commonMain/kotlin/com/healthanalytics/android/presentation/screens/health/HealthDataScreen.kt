@@ -39,8 +39,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -74,10 +72,8 @@ fun HealthDataScreen(
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-
     val filteredMetrics = viewModel.getFilteredMetrics()
     val availableFilters = viewModel.getAvailableFilters()
-    val isSearchVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -194,7 +190,10 @@ fun HealthDataScreen(
                     val lastPosition = filteredMetrics.size.minus(1)
                     items(filteredMetrics) { metric ->
                         MetricCard(
-                            metric = metric, onMetricClick = { onNavigateToDetail(metric) })
+                            metric = metric,
+                            onMetricClick = { onNavigateToDetail(metric) },
+                            searchQuery = uiState.searchQuery
+                        )
 
                         if (lastPosition != filteredMetrics.indexOf(metric)) {
                             HorizontalDivider(modifier = Modifier.padding(start = size12dp))
@@ -209,7 +208,9 @@ fun HealthDataScreen(
 @Composable
 fun MetricCard(
     metric: BloodData?, onMetricClick: (BloodData) -> Unit = {},
+    searchQuery: String,
 ) {
+    val isSearching = searchQuery.isNotBlank()
     val symptomsReported = metric?.symptomsReported
     val isLatest = metric?.isLatest == true
     Column(
@@ -243,7 +244,7 @@ fun MetricCard(
             StatusChip(status = metric?.displayRating ?: "")
         }
 
-        Spacer(modifier = Modifier.height(Dimensions.size8dp))
+        Spacer(modifier = Modifier.height(size8dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
@@ -271,23 +272,46 @@ fun MetricCard(
             )
         }
 
-        Spacer(modifier = Modifier.height(Dimensions.size8dp))
+        Spacer(modifier = Modifier.height(size8dp))
+
         if (symptomsReported != null && symptomsReported > 0) {
+
+            val filterSymptoms = if (isSearching) {
+                metric.reportedSymptoms?.filter {
+                    it.name?.startsWith(searchQuery, ignoreCase = true) == true
+                }.orEmpty()
+            } else emptyList()
+
+            val filterText = if (isSearching) {
+                if (filterSymptoms.size > 1) {
+                    "${filterSymptoms.first().name} +${filterSymptoms.size}"
+                } else {
+                    filterSymptoms.firstOrNull()?.name ?: ""
+                }
+            } else {
+                "$symptomsReported symptoms reported"
+            }
+
             Column(
-                modifier = Modifier.wrapContentSize().background(
-                    color = Color(0xFF192D50), shape = RoundedCornerShape(50)
-                ).padding(PaddingValues(vertical = size4dp, horizontal = Dimensions.size8dp))
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(
+                        color = AppColors.tagTransparentBlue,
+                        shape = RoundedCornerShape(50)
+                    )
+                    .padding(vertical = size4dp, horizontal = size8dp)
             ) {
                 Text(
-                    text = "${metric.symptomsReported} symptoms reported",
+                    text = filterText,
                     fontSize = FontSize.textSize14sp,
                     fontFamily = FontFamily.medium(),
-                    color = Color(0xFF60a5fa),
+                    color = AppColors.tagBlue,
                 )
             }
 
-            Spacer(modifier = Modifier.height(Dimensions.size8dp))
+            Spacer(modifier = Modifier.height(size8dp))
         }
+
 
         Text(
             text = "Last updated: ${formatDate(metric?.updatedAt ?: "")}",
@@ -317,7 +341,7 @@ fun StatusChip(status: String) {
         Text(
             text = status,
             modifier = Modifier.wrapContentWidth()
-                .padding(horizontal = Dimensions.size8dp, vertical = size4dp),
+                .padding(horizontal = size8dp, vertical = size4dp),
             fontSize = FontSize.textSize12sp,
             fontFamily = FontFamily.medium(),
             color = textColor
