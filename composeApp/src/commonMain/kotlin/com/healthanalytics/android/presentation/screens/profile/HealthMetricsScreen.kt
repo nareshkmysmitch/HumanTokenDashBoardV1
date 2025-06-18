@@ -306,8 +306,8 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                         icon = Icons.Default.Close,
                         txt = stringResource(Res.string.cancel),
                         onClicked = {
-                            editWeight = userWeight.toString()
-                            editHeight = userHeight.toString()
+                            editWeight = viewModel.displayBMI(userWeight)
+                            editHeight = viewModel.displayBMI(userHeight)
                             isEditable = false
                             keyboardController?.hide()
                         },
