@@ -81,7 +81,6 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
     LaunchedEffect(key1 = userWeight, key2 = userHeight) {
         editWeight = userWeight.toString()
         editHeight = userHeight.toString()
-
     }
 
     LaunchedEffect(editWeight, editHeight) {
@@ -142,8 +141,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                     value = editHeight,
                     onValueChange = {
                         editHeight = viewModel.filterDecimalInput(it)
-
-                        isShowRangeHeight = viewModel.isHeightRange(editHeight)
+                        isShowRangeHeight = viewModel.isHeightInvalid(editHeight)
                     },
                     placeholder = {
                         Text(
@@ -204,7 +202,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                     onValueChange = {
                         editWeight = viewModel.filterDecimalInput(it)
 
-                        isShowRangeWeight = viewModel.isWeightRange(editWeight)
+                        isShowRangeWeight = viewModel.isWeightInvalid(editWeight)
                     },
                     placeholder = {
                         Text(
@@ -290,7 +288,8 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                         icon = Icons.Default.Save,
                         txt = stringResource(Res.string.save),
                         onClicked = {},
-                        modifier = Modifier.wrapContentWidth()
+                        modifier = Modifier.wrapContentWidth(),
+                        isEnabled = isSaveEnabled
                     )
 
                     Spacer(modifier = Modifier.width(Dimensions.size12dp))

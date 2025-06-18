@@ -21,7 +21,13 @@ import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 
 @Composable
-fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, modifier: Modifier) {
+fun TransparentButton(
+    icon: ImageVector,
+    txt: String,
+    onClicked: () -> Unit,
+    modifier: Modifier,
+    isEnabled: Boolean = true,
+) {
     OutlinedButton(
         modifier = modifier.height(Dimensions.size50dp),
         onClick = onClicked,
@@ -30,6 +36,7 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, mod
             contentColor = AppColors.White,
             containerColor = AppColors.Black
         ),
+        enabled = isEnabled,
         border = BorderStroke(
             width = Dimensions.size1dp,
             color = AppColors.lineBorderColor,
@@ -39,7 +46,7 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, mod
             imageVector = icon,
             contentDescription = "Remove",
             modifier = Modifier.size(Dimensions.size16dp),
-            tint = AppColors.White
+            tint = if (isEnabled) AppColors.White else AppColors.buttonGrey
         )
         Spacer(modifier = Modifier.width(Dimensions.size8dp))
         Text(
@@ -77,3 +84,4 @@ fun PrimaryButton(
         )
     }
 }
+

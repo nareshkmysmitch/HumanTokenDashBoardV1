@@ -749,13 +749,19 @@ class MarketPlaceViewModel(
         } ?: ("" to Color.Black)
     }
 
-    fun isHeightRange(editHeight: String): Boolean {
+    fun isHeightInvalid(editHeight: String): Boolean {
+        if (editHeight.isBlank()){
+            return false
+        }
         val heightValue = editHeight.toDoubleOrNull()
         return heightValue == null ||
                 heightValue !in AppConstants.MIN_HEIGHT..AppConstants.MAX_HEIGHT
     }
 
-    fun isWeightRange(editWeight: String): Boolean {
+    fun isWeightInvalid(editWeight: String): Boolean {
+        if (editWeight.isBlank()){
+            return false
+        }
         val weightValue = editWeight.toDoubleOrNull()
         return weightValue == null ||
                 weightValue !in AppConstants.MIN_WEIGHT..AppConstants.MAX_WEIGHT
