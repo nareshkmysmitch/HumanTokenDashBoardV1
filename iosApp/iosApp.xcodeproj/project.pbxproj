@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		183DC9CB2E018D7000E50932 /* RazorpayCheckout in Frameworks */ = {isa = PBXBuildFile; productRef = 183DC9CA2E018D7000E50932 /* RazorpayCheckout */; };
+		185129972E01415F00AFBD65 /* RazorpayCheckout in Frameworks */ = {isa = PBXBuildFile; productRef = 185129962E01415F00AFBD65 /* RazorpayCheckout */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,7 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				183DC9CB2E018D7000E50932 /* RazorpayCheckout in Frameworks */,
+				185129972E01415F00AFBD65 /* RazorpayCheckout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +90,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
-				183DC9CA2E018D7000E50932 /* RazorpayCheckout */,
+				185129962E01415F00AFBD65 /* RazorpayCheckout */,
 			);
 			productName = iosApp;
 			productReference = B9DA97B12DC1472C00A4DA20 /* HumanTokenDashBoardV1.app */;
@@ -122,7 +122,7 @@
 			mainGroup = B9DA97A82DC1472C00A4DA20;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				183DC9C92E018D7000E50932 /* XCRemoteSwiftPackageReference "razorpay-pod" */,
+				185129952E01415F00AFBD65 /* XCRemoteSwiftPackageReference "razorpay-pod" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B9DA97B22DC1472C00A4DA20 /* Products */;
@@ -390,7 +390,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		183DC9C92E018D7000E50932 /* XCRemoteSwiftPackageReference "razorpay-pod" */ = {
+		185129952E01415F00AFBD65 /* XCRemoteSwiftPackageReference "razorpay-pod" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/razorpay/razorpay-pod.git";
 			requirement = {
@@ -401,9 +401,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		183DC9CA2E018D7000E50932 /* RazorpayCheckout */ = {
+		185129962E01415F00AFBD65 /* RazorpayCheckout */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 183DC9C92E018D7000E50932 /* XCRemoteSwiftPackageReference "razorpay-pod" */;
+			package = 185129952E01415F00AFBD65 /* XCRemoteSwiftPackageReference "razorpay-pod" */;
 			productName = RazorpayCheckout;
 		};
 /* End XCSwiftPackageProductDependency section */
