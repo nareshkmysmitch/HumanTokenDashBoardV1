@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
-import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.presentation.components.FilledAppButton
 import com.healthanalytics.android.presentation.components.HorizontalBar
 import com.healthanalytics.android.presentation.theme.AppColors

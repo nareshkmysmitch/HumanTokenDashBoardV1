@@ -1,10 +1,5 @@
 package com.healthanalytics.android.presentation.screens.health
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +21,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,9 +44,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
@@ -56,9 +58,12 @@ import com.healthanalytics.android.presentation.theme.Dimensions.size4dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size8dp
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.search_biomarkers
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HealthDataScreen(
@@ -68,10 +73,11 @@ fun HealthDataScreen(
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val filteredMetrics = viewModel.getFilteredMetrics()
     val availableFilters = viewModel.getAvailableFilters()
-    val isSearchVisible by remember { mutableStateOf(false) }
+    val isSearchVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
@@ -83,21 +89,6 @@ fun HealthDataScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.Black).padding(top = size16dp)
     ) {
-
-        AnimatedVisibility(
-            visible = isSearchVisible,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
-        ) {
-            OutlinedTextField(
-                value = uiState.searchQuery,
-                onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier.fillMaxWidth().padding(size16dp),
-                placeholder = { Text("Search health data") },
-                singleLine = true
-            )
-        }
-
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -105,6 +96,53 @@ fun HealthDataScreen(
                 CircularProgressIndicator()
             }
         } else {
+            Spacer(modifier = Modifier.height(size16dp))
+
+            OutlinedTextField(
+                value = uiState.searchQuery,
+                onValueChange = {
+                    viewModel.updateSearchQuery(it)
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(Res.string.search_biomarkers),
+                        fontSize = FontSize.textSize16sp,
+                        fontFamily = FontFamily.regular(),
+                        textAlign = TextAlign.Start,
+                        color = AppColors.descriptionColor,
+                    )
+                },
+                maxLines = 1,
+                singleLine = true,
+                textStyle = TextStyle(
+                    color = AppColors.White,
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.medium(),
+                    textAlign = TextAlign.Start
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppColors.darkPink,
+                    unfocusedBorderColor = AppColors.textFieldUnFocusedColor,
+                    focusedContainerColor = AppColors.Black,
+                    unfocusedContainerColor = AppColors.Black,
+                    errorBorderColor = AppColors.error
+                ),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Remove",
+                        tint = AppColors.descriptionColor
+                    )
+                },
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                }),
+                shape = RoundedCornerShape(size12dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = size12dp)
+            )
+
+            Spacer(modifier = Modifier.height(size16dp))
+
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(size16dp),

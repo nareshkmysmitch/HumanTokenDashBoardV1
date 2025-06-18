@@ -32,7 +32,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.humantoken.ui.screens.CartScreen
 import com.example.humantoken.ui.screens.ProductDetailScreen
-import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.payment.RazorpayHandler
 import com.healthanalytics.android.presentation.components.BottomNavBar

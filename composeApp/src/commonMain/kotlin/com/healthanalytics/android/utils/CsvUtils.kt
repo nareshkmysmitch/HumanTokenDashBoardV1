@@ -1,6 +1,6 @@
 package com.healthanalytics.android.utils
 
-import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.data.models.home.BloodData
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

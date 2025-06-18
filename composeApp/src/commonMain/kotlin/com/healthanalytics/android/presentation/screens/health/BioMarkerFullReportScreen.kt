@@ -45,7 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
-import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.data.api.MetricData
 import com.healthanalytics.android.data.api.ReportedSymptom
 import com.healthanalytics.android.data.api.WellnessCategory
