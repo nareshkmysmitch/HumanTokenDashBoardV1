@@ -16,7 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -259,7 +261,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
             if (isEditable) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     TransparentButton(
-                        icon = Icons.Default.Remove,
+                        icon = Icons.Default.Save,
                         txt = stringResource(Res.string.save),
                         onClicked = {},
                         modifier = Modifier.wrapContentWidth()
@@ -268,7 +270,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                     Spacer(modifier = Modifier.width(Dimensions.size12dp))
 
                     TransparentButton(
-                        icon = Icons.Default.Remove,
+                        icon = Icons.Default.Close,
                         txt = stringResource(Res.string.cancel),
                         onClicked = {
                             isEditable = false
@@ -279,7 +281,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                 }
             } else {
                 TransparentButton(
-                    icon = Icons.Default.Remove,
+                    icon = Icons.Default.Edit,
                     txt = stringResource(Res.string.edit_metrics),
                     onClicked = {
                         isEditable = true
