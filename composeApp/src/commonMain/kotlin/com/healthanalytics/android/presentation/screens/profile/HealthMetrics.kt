@@ -49,6 +49,8 @@ import humantokendashboardv1.composeapp.generated.resources.cancel
 import humantokendashboardv1.composeapp.generated.resources.edit_metrics
 import humantokendashboardv1.composeapp.generated.resources.enter_height_in_cm
 import humantokendashboardv1.composeapp.generated.resources.enter_weight_in_kg
+import humantokendashboardv1.composeapp.generated.resources.error_height_out_of_range
+import humantokendashboardv1.composeapp.generated.resources.error_weight_out_of_range
 import humantokendashboardv1.composeapp.generated.resources.health_metrics_subtitle
 import humantokendashboardv1.composeapp.generated.resources.health_metrics_title
 import humantokendashboardv1.composeapp.generated.resources.height_cm_label
@@ -60,6 +62,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun HealthMetrics(viewModel: MarketPlaceViewModel) {
     var isEditable by remember { mutableStateOf(false) }
+    var isShowRangeWeight by remember { mutableStateOf(false) }
+    var isShowRangeHeight by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val personalData by viewModel.personalData.collectAsStateWithLifecycle()
     val userWeight = personalData?.pii_data?.weight
@@ -72,11 +76,19 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
 
     val accessToken by viewModel.accessToken.collectAsStateWithLifecycle()
     val uiState by viewModel.uiPersonalData.collectAsState()
+    val isSaveEnabled = bmi != null && !isShowRangeWeight && !isShowRangeHeight
 
     LaunchedEffect(key1 = userWeight, key2 = userHeight) {
         editWeight = userWeight.toString()
         editHeight = userHeight.toString()
-        bmi = viewModel.calculateBMI(userWeight, userHeight)
+
+    }
+
+    LaunchedEffect(editWeight, editHeight) {
+        bmi = viewModel.calculateBMI(
+            editWeight.toDoubleOrNull(),
+            editHeight.toDoubleOrNull()
+        )
         bmiState = viewModel.getBMICategory(bmi)
     }
 
@@ -130,11 +142,8 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                     value = editHeight,
                     onValueChange = {
                         editHeight = viewModel.filterDecimalInput(it)
-                        bmi = viewModel.calculateBMI(
-                            editWeight.toIntOrNull(),
-                            editHeight.toIntOrNull()
-                        )
-                        bmiState = viewModel.getBMICategory(bmi)
+
+                        isShowRangeHeight = viewModel.isHeightRange(editHeight)
                     },
                     placeholder = {
                         Text(
@@ -145,6 +154,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                             color = AppColors.descriptionColor,
                         )
                     },
+                    isError = isShowRangeHeight,
                     maxLines = 1,
                     singleLine = true,
                     textStyle = TextStyle(
@@ -158,13 +168,22 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                         unfocusedBorderColor = AppColors.textFieldUnFocusedColor,
                         focusedContainerColor = AppColors.Black,
                         unfocusedContainerColor = AppColors.Black,
-                        errorContainerColor = AppColors.HighColor
+                        errorBorderColor = AppColors.error
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onNext = {}),
                     shape = RoundedCornerShape(Dimensions.size12dp),
                     modifier = Modifier.fillMaxWidth()
                 )
+                if (isShowRangeHeight) {
+                    Spacer(modifier = Modifier.height(Dimensions.size8dp))
+                    Text(
+                        text = stringResource(Res.string.error_height_out_of_range),
+                        fontSize = FontSize.textSize14sp,
+                        fontFamily = FontFamily.medium(),
+                        color = AppColors.error
+                    )
+                }
             } else {
                 ShowHealthMetric(userHeight)
             }
@@ -184,11 +203,8 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                     value = editWeight,
                     onValueChange = {
                         editWeight = viewModel.filterDecimalInput(it)
-                        bmi = viewModel.calculateBMI(
-                            editWeight.toIntOrNull(),
-                            editHeight.toIntOrNull()
-                        )
-                        bmiState = viewModel.getBMICategory(bmi)
+
+                        isShowRangeWeight = viewModel.isWeightRange(editWeight)
                     },
                     placeholder = {
                         Text(
@@ -199,6 +215,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                             color = AppColors.descriptionColor,
                         )
                     },
+                    isError = isShowRangeWeight,
                     maxLines = 1,
                     singleLine = true,
                     textStyle = TextStyle(
@@ -212,7 +229,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                         unfocusedBorderColor = AppColors.textFieldUnFocusedColor,
                         focusedContainerColor = AppColors.Black,
                         unfocusedContainerColor = AppColors.Black,
-                        errorContainerColor = AppColors.HighColor
+                        errorBorderColor = AppColors.error
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onDone = {
@@ -221,7 +238,15 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                     shape = RoundedCornerShape(Dimensions.size12dp),
                     modifier = Modifier.fillMaxWidth()
                 )
-
+                if (isShowRangeWeight) {
+                    Spacer(modifier = Modifier.height(Dimensions.size8dp))
+                    Text(
+                        text = stringResource(Res.string.error_weight_out_of_range),
+                        fontSize = FontSize.textSize14sp,
+                        fontFamily = FontFamily.medium(),
+                        color = AppColors.error
+                    )
+                }
             } else {
                 ShowHealthMetric(userWeight)
             }
@@ -260,6 +285,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
             Spacer(modifier = Modifier.height(Dimensions.size28dp))
             if (isEditable) {
                 Row(modifier = Modifier.fillMaxWidth()) {
+
                     TransparentButton(
                         icon = Icons.Default.Save,
                         txt = stringResource(Res.string.save),
@@ -273,6 +299,8 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                         icon = Icons.Default.Close,
                         txt = stringResource(Res.string.cancel),
                         onClicked = {
+                            editWeight = userWeight.toString()
+                            editHeight = userHeight.toString()
                             isEditable = false
                             keyboardController?.hide()
                         },

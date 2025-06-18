@@ -722,11 +722,11 @@ class MarketPlaceViewModel(
         return if (result.length <= 4) result else result.take(4)
     }
 
-    fun calculateBMI(userWeight: Int?, userHeight: Int?): Double? {
-        if (userHeight == null || userHeight == 0 || userWeight == null || userWeight == 0) return null
+    fun calculateBMI(userWeight: Double?, userHeight: Double?): Double? {
+        if (userHeight == null || userHeight == 0.0 || userWeight == null || userWeight == 0.0) return null
 
-        val heightInMeters = userHeight.toDouble() / 100
-        val bmi = userWeight.toDouble() / (heightInMeters * heightInMeters)
+        val heightInMeters = userHeight / 100
+        val bmi = userWeight / (heightInMeters * heightInMeters)
 
         // Round to 1 decimal
         return (bmi * 10).toInt().toDouble() / 10.0
@@ -747,6 +747,18 @@ class MarketPlaceViewModel(
                 else -> AppConstants.BMI_CATEGORY_OBESE to Color(0xFFF87171)
             }
         } ?: ("" to Color.Black)
+    }
+
+    fun isHeightRange(editHeight: String): Boolean {
+        val heightValue = editHeight.toDoubleOrNull()
+        return heightValue == null ||
+                heightValue !in AppConstants.MIN_HEIGHT..AppConstants.MAX_HEIGHT
+    }
+
+    fun isWeightRange(editWeight: String): Boolean {
+        val weightValue = editWeight.toDoubleOrNull()
+        return weightValue == null ||
+                weightValue !in AppConstants.MIN_WEIGHT..AppConstants.MAX_WEIGHT
     }
 
 

@@ -22,7 +22,7 @@
 
     <string name="save_preferences">Save Preferences</string>
 
-   <!--Health Metrics-->
+    <!--Health Metrics-->
     <string name="health_metrics_title">Health Metrics</string>
     <string name="health_metrics_subtitle">Track your health indicators</string>
 
@@ -36,4 +36,7 @@
     <string name="edit_metrics">Edit Metrics</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="error_weight_out_of_range">Weight must be between 10 and 150 kg</string>
+    <string name="error_height_out_of_range">Height must be between 60.96 and 302.26 cm</string>
+
 </resources>

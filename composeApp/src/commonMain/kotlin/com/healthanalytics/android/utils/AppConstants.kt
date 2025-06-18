@@ -18,4 +18,9 @@ object AppConstants {
     const val BMI_CATEGORY_OVERWEIGHT = "Overweight"
     const val BMI_CATEGORY_OBESE = "Obese"
 
+    const val MIN_HEIGHT = 60.96 // 2 feet 0 inch
+    const val MAX_HEIGHT = 302.26 // 9 feet 11 inch
+    const val MIN_WEIGHT = 10.0
+    const val MAX_WEIGHT = 150.0
+
 }
