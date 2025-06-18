@@ -58,7 +58,7 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BioMarkerFullReportScreen(
-    biomarker: BloodData,
+    biomarker: BloodData?,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     prefs: PreferencesViewModel = koinInject(),
@@ -73,7 +73,7 @@ fun BioMarkerFullReportScreen(
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
             prefs.saveAccessToken(token)
-            viewModel.fetchBiomarkerReport("blood", biomarker.metricId ?: "", token)
+            viewModel.fetchBiomarkerReport("blood", biomarker?.metricId ?: "", token)
         }
     }
 
@@ -81,7 +81,7 @@ fun BioMarkerFullReportScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = biomarker.displayName ?: "", color = AppColors.White)
+                    Text(text = biomarker?.displayName ?: "", color = AppColors.White)
                 }, navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
@@ -112,7 +112,7 @@ fun BioMarkerFullReportScreen(
                             onTabSelected = { selectedTab = it },
                             causes = state.data?.metricData?.firstOrNull()?.causes ?: emptyList(),
                             metricData = state.data?.metricData,
-                            biomarker.displayName.toString()
+                            biomarker?.displayName.toString()
                         )
                     }
 
@@ -163,7 +163,7 @@ private fun TabSection(
 }
 
 @Composable
-private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
+private fun HeaderCard(biomarker: BloodData?, releasedAt: String?) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         colors = CardDefaults.cardColors(
@@ -179,18 +179,18 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = biomarker.displayName ?: "",
+                    text = biomarker?.displayName ?: "",
                     style = MaterialTheme.typography.headlineMedium,
                     color = AppColors.White,
                     fontFamily = FontFamily.bold()
                 )
-                StatusChip(status = biomarker.displayRating ?: "")
+                StatusChip(status = biomarker?.displayRating ?: "")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "${biomarker.value} ${biomarker.unit}",
+                text = "${biomarker?.value} ${biomarker?.unit}",
                 style = MaterialTheme.typography.headlineLarge,
                 color = AppColors.White,
                 fontFamily = FontFamily.pilBold()
@@ -203,7 +203,7 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?) {
                 fontFamily = FontFamily.regular()
             )
 
-            if (!biomarker.shortDescription.isNullOrBlank()) {
+            if (!biomarker?.shortDescription.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = biomarker.shortDescription,
