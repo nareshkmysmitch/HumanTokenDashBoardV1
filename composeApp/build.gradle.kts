@@ -70,6 +70,7 @@ kotlin {
 
             // Decompose Android extensions
 //            implementation("com.arkivanov.decompose:extensions-compose-android:2.1.0")
+            
 
         }
 
@@ -113,15 +114,35 @@ kotlin {
             api(libs.androidx.datastore.preferences.core)
             implementation(compose.components.resources)
 
+
+            val voyagerVersion = "1.1.0-beta03"
+            // Navigator
+            implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+            // Screen Model
+            implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
+            // BottomSheetNavigator
+            implementation("cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyagerVersion")
+            // TabNavigator
+            implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
+            // Transitions
+            implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
+            // Koin integration
+            implementation("cafe.adriel.voyager:voyager-koin:$voyagerVersion")
+
+
+            // Decompose
+            implementation("com.arkivanov.decompose:extensions-compose-jetbrains:2.2.1")
             implementation("com.arkivanov.decompose:decompose:3.3.0-alpha02")
+
+
         }
 
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
-            implementation("com.arkivanov.decompose:extensions‑compose‑iosarm64:3.0.0‑alpha07")
+//            implementation("com.arkivanov.decompose:extensions‑compose‑iosarm64:3.0.0‑alpha07")
 
             // Decompose iOS extensions
-          //  implementation("com.arkivanov.decompose:extensions-compose-ios:1.1.0")
+            //  implementation("com.arkivanov.decompose:extensions-compose-ios:1.1.0")
         }
 
         commonTest.dependencies {
