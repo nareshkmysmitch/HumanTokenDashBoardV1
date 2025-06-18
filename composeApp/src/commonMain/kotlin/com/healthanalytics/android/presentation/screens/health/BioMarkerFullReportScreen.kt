@@ -92,8 +92,8 @@ fun BioMarkerFullReportScreen(
                 title = {
                     Text(
                         text = biomarker.displayName ?: "",
-                        color = AppColors.White,
-                        fontSize = 16.sp,
+                        color = AppColors.textPrimaryColor,
+                        fontSize = 24.sp,
                         fontFamily = FontFamily.semiBold()
                     )
                 }, navigationIcon = {
@@ -101,7 +101,7 @@ fun BioMarkerFullReportScreen(
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = AppColors.White
+                            tint = AppColors.textPrimaryColor
                         )
                     }
                 }, colors = TopAppBarDefaults.topAppBarColors(
@@ -174,7 +174,14 @@ private fun TabSection(
                     Tab(
                         selected = selectedTab == index,
                         onClick = { onTabSelected(index) },
-                        text = { Text(text = tabTitle, fontFamily = FontFamily.semiBold()) }
+                        text = {
+                            Text(
+                                text = tabTitle,
+                                fontSize = FontSize.textSize18sp,
+                                color = AppColors.textPrimaryColor,
+                                fontFamily = FontFamily.semiBold()
+                            )
+                        }
                     )
                 }
             }
@@ -188,7 +195,8 @@ private fun TabSection(
             }
         }
 
-        val contentDesc = metricsForSelectedTabCategory.find { it.category == "short_description" }?.content ?: ""
+        val contentDesc =
+            metricsForSelectedTabCategory.find { it.category == "short_description" }?.content ?: ""
         onTabChanged(contentDesc)
         Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             TypeBasedCardDesc(
@@ -215,8 +223,8 @@ fun TypeBasedCardDesc(
 
         metricData.forEach { data ->
             data.subgroups?.let { subgroups ->
-                subgroups.increase?.let { allIncreases.addAll(it.filterNotNull()) } // filterNotNull if strings can be null
-                subgroups.decrease?.let { allDecreases.addAll(it.filterNotNull()) }
+                subgroups.increase?.let { allIncreases.addAll(it) } // filterNotNull if strings can be null
+                subgroups.decrease?.let { allDecreases.addAll(it) }
             }
         }
         increaseLevelDesc = allIncreases.toList() // Assign new lists
@@ -267,7 +275,7 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?, biomarkerDesc:
     Card(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.BlueCardBackground
+            containerColor = AppColors.cardBlueColor
         ),
     ) {
         Column(
@@ -276,8 +284,9 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?, biomarkerDesc:
             Text(
                 text = biomarker.displayName ?: "",
                 style = MaterialTheme.typography.headlineMedium,
-                color = AppColors.White,
-                fontFamily = FontFamily.bold()
+                color = AppColors.textPrimaryColor,
+                fontSize = FontSize.textSize20sp,
+                fontFamily = FontFamily.semiBold()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -290,16 +299,18 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?, biomarkerDesc:
                 Column {
                     Text(
                         text = "${biomarker.value} ${biomarker.unit}",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = AppColors.White,
+//                        style = MaterialTheme.typography.headlineLarge,
+                        color = AppColors.textPrimaryColor,
                         fontFamily = FontFamily.pilBold(),
+                        fontSize = FontSize.textSize18sp,
                         maxLines = 1,
                     )
 
                     Text(
                         text = "Last Updated: ${formatDate(releasedAt ?: "")}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.White.copy(alpha = 0.7f),
+//                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = FontSize.textSize14sp,
+                        color = AppColors.textPrimaryColor,
                         fontFamily = FontFamily.regular(),
                         maxLines = 1,
                     )
@@ -312,8 +323,9 @@ private fun HeaderCard(biomarker: BloodData, releasedAt: String?, biomarkerDesc:
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = biomarkerDesc,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.White,
+//                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = FontSize.textSize16sp,
+                    color = AppColors.textPrimaryColor,
                     fontFamily = FontFamily.regular()
                 )
             }
@@ -326,7 +338,7 @@ private fun WhyItMattersContent(metricData: MetricData?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.BlueCardBackground
+            containerColor = AppColors.cardBlueColor
         ),
     ) {
         Column(
@@ -336,7 +348,7 @@ private fun WhyItMattersContent(metricData: MetricData?) {
                 Text(
                     text = metricData.title,
                     fontSize = 18.sp,
-                    color = AppColors.White,
+                    color = AppColors.textPrimaryColor,
                     fontFamily = FontFamily.semiBold(),
                     modifier = Modifier.padding(bottom = Dimensions.size14dp)
                 )
@@ -345,7 +357,7 @@ private fun WhyItMattersContent(metricData: MetricData?) {
                 Text(
                     text = metricData.content,
                     fontSize = 16.sp,
-                    color = AppColors.White,
+                    color = AppColors.textPrimaryColor,
                     fontFamily = FontFamily.medium()
                 )
             } else {
@@ -353,24 +365,33 @@ private fun WhyItMattersContent(metricData: MetricData?) {
                     text = "Elevated ALT is a key indicator of liver inflammation or damage.",
                     fontSize = 16.sp,
                     fontFamily = FontFamily.medium(),
-                    color = AppColors.White,
+                    color = AppColors.textPrimaryColor,
                 )
             }
-            Spacer(Modifier.height(Dimensions.size16dp))
+            Text(
+                text = "Key Impact",
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = Dimensions.size16dp),
+                fontSize = FontSize.textSize14sp,
+                color = AppColors.darkPink,
+                fontFamily = FontFamily.medium()
+            )
+
+            Spacer(Modifier.height(Dimensions.size8dp))
             metricData?.keyPoints?.forEachIndexed { index, points ->
                 if (points?.isNotBlank() == true) {
                     Row {
                         Text(
                             text = "${index + 1}. ",
-                            fontSize = 14.sp,
+                            fontSize = FontSize.textSize14sp,
                             fontFamily = FontFamily.medium(),
                             color = AppColors.textSecondary,
                         )
                         Text(
                             text = points,
-                            fontSize = 14.sp,
+                            fontSize = FontSize.textSize14sp,
                             fontFamily = FontFamily.medium(),
-                            color = AppColors.White,
+                            color = AppColors.textPrimaryColor,
                         )
                     }
                 }
@@ -388,7 +409,7 @@ private fun CausesContent(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.BlueCardBackground
+            containerColor = AppColors.cardBlueColor
         ),
     ) {
         Column(
@@ -399,7 +420,7 @@ private fun CausesContent(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Factors That May Increase Levels",
-                    style = MaterialTheme.typography.titleMedium, fontSize = 16.sp,
+                    fontSize = FontSize.textSize14sp,
                     color = MaterialTheme.colorScheme.error,
                     fontFamily = FontFamily.semiBold()
                 )
@@ -418,8 +439,9 @@ private fun CausesContent(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = cause,
-                            style = MaterialTheme.typography.bodyMedium, fontSize = 14.sp,
-                            fontFamily = FontFamily.regular()
+                            fontSize = FontSize.textSize14sp,
+                            fontFamily = FontFamily.regular(),
+                            color = AppColors.textPrimaryColor,
                         )
                     }
                 }
@@ -429,10 +451,9 @@ private fun CausesContent(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Factors That May Decrease Levels",
-                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontFamily = FontFamily.semiBold(),
-                    fontSize = 16.sp,
+                    fontSize = FontSize.textSize14sp,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 decreaseLevelDesc.forEach { cause ->
@@ -449,9 +470,9 @@ private fun CausesContent(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = cause,
-                            style = MaterialTheme.typography.bodyMedium,
                             fontFamily = FontFamily.regular(),
-                            fontSize = 14.sp,
+                            fontSize = FontSize.textSize14sp,
+                            color = AppColors.textPrimaryColor,
                         )
                     }
                 }
@@ -459,9 +480,8 @@ private fun CausesContent(
 
             Text(
                 text = "Note: These are general factors that may influence your ${name}. Individual responses can vary based on your unique genetic makeup and overall health.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp,
+                color = AppColors.textPrimaryColor,
+                fontSize = FontSize.textSize12sp,
                 fontFamily = FontFamily.regular()
             )
         }
@@ -477,7 +497,8 @@ private fun CorrelationsSection(
     ) {
         Text(
             text = "Correlations with Daily Wellness & Symptoms",
-            style = MaterialTheme.typography.titleLarge,
+            fontSize = FontSize.textSize18sp,
+            color = AppColors.textPrimaryColor,
             fontFamily = FontFamily.semiBold()
         )
         if (wellnessCategories?.isNotEmpty() == true) {
@@ -499,9 +520,8 @@ private fun CorrelationsSection(
 
             Text(
                 text = "Correlations are based on patterns from user-reported data and may vary individually. Track your daily wellness and symptoms to discover your personal patterns.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp,
+                fontSize = FontSize.textSize14sp,
+                color = AppColors.textPrimaryColor,
                 fontFamily = FontFamily.medium()
             )
         }
@@ -516,6 +536,8 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
         Text(
             text = "No wellness factors available",
             modifier = Modifier.fillMaxWidth().padding(16.dp),
+            fontSize = FontSize.textSize18sp,
+            color = AppColors.textPrimaryColor,
         )
         return
     }
@@ -528,7 +550,7 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = AppColors.BlueContainer.copy(alpha = 0.5f)
+                    containerColor = AppColors.cardBlueColor
                 ),
             ) {
                 Row(
@@ -539,14 +561,14 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = category.name ?: "",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = AppColors.White,
+                            fontSize = FontSize.textSize16sp,
+                            color = AppColors.textPrimaryColor,
                             fontFamily = FontFamily.medium()
                         )
                         Text(
                             text = category.description ?: "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = AppColors.White,
+                            fontSize = FontSize.textSize14sp,
+                            color = AppColors.textPrimaryColor,
                             fontFamily = FontFamily.regular()
                         )
                     }
@@ -562,7 +584,7 @@ private fun WellnessFactors(categories: List<WellnessCategory>?) {
 fun DailyWellness(wellnessCategories: List<WellnessCategory>?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = AppColors.BlueCardBackground),
+        colors = CardDefaults.cardColors(containerColor = AppColors.cardDarkBlueColor),
     ) {
         Column {
             Text(
@@ -570,7 +592,6 @@ fun DailyWellness(wellnessCategories: List<WellnessCategory>?) {
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = Dimensions.size16dp)
                     .padding(top = Dimensions.size16dp),
-                style = MaterialTheme.typography.titleMedium,
                 fontSize = FontSize.textSize16sp,
                 color = AppColors.success,
                 fontFamily = FontFamily.medium()
@@ -590,7 +611,7 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
     }
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = AppColors.BlueCardBackground),
+        colors = CardDefaults.cardColors(containerColor = AppColors.cardBlueColor),
     ) {
         Column(
             modifier = Modifier
@@ -607,27 +628,32 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
                 color = AppColors.error,
                 fontFamily = FontFamily.medium()
             )
-            symptoms.forEach { symptom ->
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(top = Dimensions.size4dp)
-                        .padding(horizontal = Dimensions.size16dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = symptom.name ?: "",
-                        fontSize = FontSize.textSize14sp,
-                        modifier = Modifier.weight(1f),
-                        fontFamily = FontFamily.medium(),
-                        color = AppColors.White
-                    )
-                    Text(
-                        text = "${symptom.count ?: 0} times",
-                        color = AppColors.White,
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily.regular()
-                    )
+            Card(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = Dimensions.size4dp)
+                    .padding(horizontal = Dimensions.size16dp),
+                colors = CardDefaults.cardColors(containerColor = AppColors.cardDarkBlueColor),
+            ) {
+                symptoms.forEach { symptom ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = symptom.name ?: "",
+                            fontSize = FontSize.textSize16sp,
+                            modifier = Modifier.weight(1f),
+                            fontFamily = FontFamily.medium(),
+                            color = AppColors.textPrimaryColor
+                        )
+                        Text(
+                            text = "${symptom.count ?: 0} times",
+                            color = AppColors.textPrimaryColor,
+                            fontSize = FontSize.textSize14sp,
+                            fontFamily = FontFamily.regular()
+                        )
+                    }
                 }
             }
         }

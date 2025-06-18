@@ -77,6 +77,9 @@ object AppColors {
     val iconGrey = Color(0Xffe5e7eb)
     val txtBlue = Color(0Xff93c5fd)
     val backgroundBlue = Color(0X1f293780)
+    val textPrimaryColor = Color(0XFFF3F4F6)
+    val cardBlueColor = Color(0xFF1F2937)
+    val cardDarkBlueColor = Color(0xFF111827)
 
 
 }
