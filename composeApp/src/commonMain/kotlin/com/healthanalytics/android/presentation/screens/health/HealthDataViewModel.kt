@@ -69,7 +69,7 @@ class HealthDataViewModel(
     fun getFilteredMetrics(): List<BloodData?> {
         val uiState = _uiState.value
         val currentFilter = uiState.selectedFilter
-        val searchQuery = uiState.searchQuery
+        val searchQuery = uiState.searchQuery.trim()
         val filterMap = healthDataMap[currentFilter]
         val isNewData = currentFilter == AppConstants.NEW_DATA
 
@@ -82,13 +82,10 @@ class HealthDataViewModel(
                 else -> filterMap?.contains(metric.displayRating?.lowercase()) == true
             }
 
-            val matchesSearch = searchQuery.isEmpty() ||
-                    metric.displayName?.startsWith(
-                        searchQuery,
-                        ignoreCase = true
-                    ) == true || metric.reportedSymptoms?.any {
-                it.name.equals(searchQuery, ignoreCase = true)
-                    } == true
+            val matchesSearch = searchQuery.isBlank() ||
+                    metric.displayName?.startsWith(searchQuery, ignoreCase = true) == true ||
+                    metric.reportedSymptoms?.any { it.name?.startsWith(searchQuery, ignoreCase = true) == true } == true||
+                    metric.causes?.any { it.name?.startsWith(searchQuery, ignoreCase = true) == true } == true
 
             matchesFilter && matchesSearch
         }
