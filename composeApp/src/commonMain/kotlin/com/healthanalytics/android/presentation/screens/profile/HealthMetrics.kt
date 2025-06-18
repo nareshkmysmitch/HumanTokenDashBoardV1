@@ -60,7 +60,7 @@ import humantokendashboardv1.composeapp.generated.resources.your_bmi_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun HealthMetrics(viewModel: MarketPlaceViewModel) {
+fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> Unit) {
     var isEditable by remember { mutableStateOf(false) }
     var isShowRangeWeight by remember { mutableStateOf(false) }
     var isShowRangeHeight by remember { mutableStateOf(false) }
@@ -287,7 +287,9 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel) {
                     TransparentButton(
                         icon = Icons.Default.Save,
                         txt = stringResource(Res.string.save),
-                        onClicked = {},
+                        onClicked = {
+                            onSaved(editWeight,editHeight)
+                        },
                         modifier = Modifier.wrapContentWidth(),
                         isEnabled = isSaveEnabled
                     )

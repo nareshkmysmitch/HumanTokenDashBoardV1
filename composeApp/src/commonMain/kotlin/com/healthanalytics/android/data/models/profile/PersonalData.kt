@@ -12,8 +12,8 @@ data class PiData(
     val _id: String? = null,
     val dob: String? = null,
     val email: String? = null,
-    val height: Int? = null,
+    var height: Int? = null,
     val lead_id: String? = null,
     val name: String? = null,
-    val weight: Int? = null
+    var weight: Int? = null
 )

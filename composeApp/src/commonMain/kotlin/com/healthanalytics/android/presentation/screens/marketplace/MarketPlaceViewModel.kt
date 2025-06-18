@@ -750,7 +750,7 @@ class MarketPlaceViewModel(
     }
 
     fun isHeightInvalid(editHeight: String): Boolean {
-        if (editHeight.isBlank()){
+        if (editHeight.isBlank()) {
             return false
         }
         val heightValue = editHeight.toDoubleOrNull()
@@ -759,12 +759,49 @@ class MarketPlaceViewModel(
     }
 
     fun isWeightInvalid(editWeight: String): Boolean {
-        if (editWeight.isBlank()){
+        if (editWeight.isBlank()) {
             return false
         }
         val weightValue = editWeight.toDoubleOrNull()
         return weightValue == null ||
                 weightValue !in AppConstants.MIN_WEIGHT..AppConstants.MAX_WEIGHT
+    }
+
+
+    private val _uiHealthMetrics = MutableStateFlow(LoadingState())
+    val uiHealthMetrics: StateFlow<LoadingState> =
+        _uiHealthMetrics.asStateFlow()
+
+
+    fun saveHealthMetrics(accessToken: String, editWeight: String, editHeight: String) {
+        viewModelScope.launch {
+            try {
+                _uiHealthMetrics.update { it.copy(isLoading = true) }
+
+                val personalData = personalData.value
+                personalData?.pii_data?.weight =
+                    editWeight.toIntOrNull() //if need we can pass double
+                personalData?.pii_data?.height =
+                    editHeight.toIntOrNull()//if need we can pass double
+
+                val preferenceResponse =
+                    apiService.saveHealthMetrics(accessToken, personalData)
+
+                _uiHealthMetrics.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = preferenceResponse
+                    )
+                }
+            } catch (e: Exception) {
+                _uiHealthMetrics.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to uploaded preference"
+                    )
+                }
+            }
+        }
     }
 
 
