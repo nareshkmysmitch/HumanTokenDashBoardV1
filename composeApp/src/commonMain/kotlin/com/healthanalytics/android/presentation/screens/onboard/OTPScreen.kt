@@ -244,8 +244,8 @@ fun OTPScreen(
 
             PrimaryButton(
                 buttonName = AppStrings.CONTINUE,
-                isEnable = otpValues.all { it.isNotEmpty() },
-                onclick = {
+                enable = otpValues.all { it.isNotEmpty() },
+                onClick = {
                     val otp = otpValues.joinToString("")
                     onContinueClick(otp)
                 }

@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -440,8 +439,8 @@ fun GetStartedScreen(
 
             Spacer(modifier = Modifier.height(Dimensions.size32dp))
             PrimaryButton(
-                isEnable = true,
-                onclick = onGetStarted,
+                enable = true,
+                onClick = onGetStarted,
                 buttonName = "Get Started"
             )
             Spacer(modifier = Modifier.height(Dimensions.size16dp))

@@ -71,4 +71,15 @@ object AppColors {
     val spot= Color(0xFF40394F)
     val cardBackground= Color(0xFF293041)
 
+    val backGround = Color(0xFF121417)
+    val primaryColor = Color(0xFFD1E3F2)
+    val primaryTextColor = Color(0xFFFFFFFF)
+    val secondaryTextColor = Color(0xFFA1ABB5)
+    val tertiaryTextColor = Color(0xFF141A1F)
+    val textLabelColor = Color(0xFF9CADBF)
+
+    val gray = Color(0xFF40474F)
+    val gray_100 = Color(0xFF293642)
+    val lightGreen = Color(0xFF00c6b4)
+
 }

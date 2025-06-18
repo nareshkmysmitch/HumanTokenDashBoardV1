@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -57,6 +58,8 @@ import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenCon
 import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
+import com.healthanalytics.android.presentation.screens.questionnaire.QuestionnaireScreen
+import com.healthanalytics.android.presentation.screens.questionnaire.viewmodel.QuestionnaireViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsScreen
@@ -95,6 +98,8 @@ fun HealthAnalyticsApp() {
             }
         }
 
+        val questionnaireViewModel: QuestionnaireViewModel = koinInject<QuestionnaireViewModel>()
+
         val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
         val healthDataViewModel: HealthDataViewModel = koinInject<HealthDataViewModel>()
         val preferencesViewModel: PreferencesViewModel = koinInject<PreferencesViewModel>()
@@ -109,134 +114,142 @@ fun HealthAnalyticsApp() {
         when {
             onBoardUiState.isLoading -> CircularProgressIndicator()
             onBoardUiState.hasAccessToken -> {
-                when (currentScreen) {
-                    PROFILE -> {
-                        ProfileScreen(
-                            onNavigateBack = { navigateTo(HOME) },
-                            viewModel = marketPlaceViewModel,
-                            onNavigateToTestBooking = {
-                                navigateTo(TEST_BOOKING)
-                            },
-                        )
-                    }
+//                when (currentScreen) {
+//                    PROFILE -> {
+//                        ProfileScreen(
+//                            onNavigateBack = { navigateTo(HOME) },
+//                            viewModel = marketPlaceViewModel,
+//                            onNavigateToTestBooking = {
+//                                navigateTo(TEST_BOOKING)
+//                            },
+//                        )
+//                    }
+//
+//                    CONVERSATION_LIST -> {
+//                        ConversationListScreen(
+//                            onNavigateToChat = { id ->
+//                                navigateTo(CHAT(conversationId = id))
+//                            },
+//                            onNavigateBack = { navigateTo(HOME) },
+//                            viewModel = chatViewModel,
+//                        )
+//                    }
+//
+//                    is CHAT -> {
+//                        val chatScreen = currentScreen as CHAT
+//                        ChatScreen(
+//                            conversationId = chatScreen.conversationId,
+//                            onNavigateBack = { navigateBack() },
+//                            viewModel = chatViewModel,
+//                        )
+//                    }
+//
+//                    is MARKETPLACE_DETAIL -> {
+//                        val marketplaceScreen = currentScreen as MARKETPLACE_DETAIL
+//                        ProductDetailScreen(
+//                            product = marketplaceScreen.product,
+//                            onNavigateBack = { navigateBack() },
+//                            onNavigateToCart = { navigateTo(Screen.CART) },
+//                            viewModel = marketPlaceViewModel,
+//                        )
+//                    }
+//
+//                    CART -> CartScreen(
+//                        onCheckoutClick = { },
+//                        onBackClick = { navigateBack() },
+//                        viewModel = marketPlaceViewModel,
+//                    )
+//
+//                    SCHEDULE_TEST_BOOKING -> {
+//                        ScheduleTestBookingScreen(
+//                            onNavigateBack = { navigateTo(TEST_BOOKING) },
+//                            viewModel = marketPlaceViewModel,
+//                        )
+//                    }
+//
+//                    TEST_BOOKING -> {
+//                        TestBookingScreen(
+//                            onNavigateBack = { navigateBack() },
+//                            onNavigateToSchedule = {
+//                                localTestList = localTestList + it
+//                                navigateTo(SCHEDULE_TEST_BOOKING)
+//                            },
+//                            viewModel = testBookingViewModel,
+//                            marketPlaceViewModel = marketPlaceViewModel,
+//                        )
+//                    }
+//
+//                    HOME -> {
+//                        HomeScreen(
+//                            onProfileClick = {
+//                                navigateTo(PROFILE)
+//                            },
+//                            onChatClick = {
+//                                navigateTo(CONVERSATION_LIST)
+//                            },
+//                            onMarketPlaceClick = { product ->
+//                                navigateTo(MARKETPLACE_DETAIL(product))
+//                            },
+//                            onCartClick = {
+//                                navigateTo(CART)
+//                            },
+//                            onSymptomsClick = {
+//                                navigateTo(Screen.SYMPTOMS)
+//                            },
+//                            onBiomarkerFullReportClick = {
+//                                biomarker = it ?: BloodData()
+//                                navigateTo(BIOMARKER_FULL_REPORT)
+//                            },
+//                            onBiomarker = {
+//                                biomarker = it ?: BloodData()
+//                                navigateTo(BIOMARKERS_DETAIL)
+//                            },
+//                            healthDataViewModel = healthDataViewModel,
+//                            preferenceViewModel = preferencesViewModel,
+//                            recommendationsViewModel = recommendationsViewModel,
+//                            marketPlaceViewModel = marketPlaceViewModel,
+//                        )
+//                    }
+//
+//                    BIOMARKERS_DETAIL -> {
+//                        BiomarkerDetailScreen(
+//                            onNavigateBack = { navigateBack() },
+//                            biomarker = biomarker,
+//                            onNavigateFullReport = { navigateTo(BIOMARKER_FULL_REPORT) })
+//                    }
+//
+//                    BIOMARKER_FULL_REPORT -> {
+//                        BioMarkerFullReportScreen(
+//                            onNavigateBack = {
+//                                navigateBack()
+//                            }, biomarker = biomarker
+//                        )
+//                    }
+//
+//                    Screen.SYMPTOMS -> {
+//                        SymptomsScreen(
+//                            onNavigateBack = { navigateBack() },
+//                            viewModel = symptomsViewModel,
+//                            onNavigateHome = { navigateTo(HOME) }
+//                        )
+//                    }
+//
+//                    BIOMARKER_FULL_REPORT -> {
+//                        BioMarkerFullReportScreen(
+//                            onNavigateBack = {
+//                                navigateBack()
+//                            }, biomarker = biomarker
+//                        )
+//                    }
+//                }
 
-                    CONVERSATION_LIST -> {
-                        ConversationListScreen(
-                            onNavigateToChat = { id ->
-                                navigateTo(CHAT(conversationId = id))
-                            },
-                            onNavigateBack = { navigateTo(HOME) },
-                            viewModel = chatViewModel,
-                        )
-                    }
 
-                    is CHAT -> {
-                        val chatScreen = currentScreen as CHAT
-                        ChatScreen(
-                            conversationId = chatScreen.conversationId,
-                            onNavigateBack = { navigateBack() },
-                            viewModel = chatViewModel,
-                        )
-                    }
-
-                    is MARKETPLACE_DETAIL -> {
-                        val marketplaceScreen = currentScreen as MARKETPLACE_DETAIL
-                        ProductDetailScreen(
-                            product = marketplaceScreen.product,
-                            onNavigateBack = { navigateBack() },
-                            onNavigateToCart = { navigateTo(Screen.CART) },
-                            viewModel = marketPlaceViewModel,
-                        )
-                    }
-
-                    CART -> CartScreen(
-                        onCheckoutClick = { },
-                        onBackClick = { navigateBack() },
-                        viewModel = marketPlaceViewModel,
-                    )
-
-                    SCHEDULE_TEST_BOOKING -> {
-                        ScheduleTestBookingScreen(
-                            onNavigateBack = { navigateTo(TEST_BOOKING) },
-                            viewModel = marketPlaceViewModel,
-                        )
-                    }
-
-                    TEST_BOOKING -> {
-                        TestBookingScreen(
-                            onNavigateBack = { navigateBack() },
-                            onNavigateToSchedule = {
-                                localTestList = localTestList + it
-                                navigateTo(SCHEDULE_TEST_BOOKING)
-                            },
-                            viewModel = testBookingViewModel,
-                            marketPlaceViewModel = marketPlaceViewModel,
-                        )
-                    }
-
-                    HOME -> {
-                        HomeScreen(
-                            onProfileClick = {
-                                navigateTo(PROFILE)
-                            },
-                            onChatClick = {
-                                navigateTo(CONVERSATION_LIST)
-                            },
-                            onMarketPlaceClick = { product ->
-                                navigateTo(MARKETPLACE_DETAIL(product))
-                            },
-                            onCartClick = {
-                                navigateTo(CART)
-                            },
-                            onSymptomsClick = {
-                                navigateTo(Screen.SYMPTOMS)
-                            },
-                            onBiomarkerFullReportClick = {
-                                biomarker = it ?: BloodData()
-                                navigateTo(BIOMARKER_FULL_REPORT)
-                            },
-                            onBiomarker = {
-                                biomarker = it ?: BloodData()
-                                navigateTo(BIOMARKERS_DETAIL)
-                            },
-                            healthDataViewModel = healthDataViewModel,
-                            preferenceViewModel = preferencesViewModel,
-                            recommendationsViewModel = recommendationsViewModel,
-                            marketPlaceViewModel = marketPlaceViewModel,
-                        )
-                    }
-
-                    BIOMARKERS_DETAIL -> {
-                        BiomarkerDetailScreen(
-                            onNavigateBack = { navigateBack() },
-                            biomarker = biomarker,
-                            onNavigateFullReport = { navigateTo(BIOMARKER_FULL_REPORT) })
-                    }
-
-                    BIOMARKER_FULL_REPORT -> {
-                        BioMarkerFullReportScreen(
-                            onNavigateBack = {
-                                navigateBack()
-                            }, biomarker = biomarker
-                        )
-                    }
-
-                    Screen.SYMPTOMS -> {
-                        SymptomsScreen(
-                            onNavigateBack = { navigateBack() },
-                            viewModel = symptomsViewModel,
-                            onNavigateHome = { navigateTo(HOME) }
-                        )
-                    }
-
-                    BIOMARKER_FULL_REPORT -> {
-                        BioMarkerFullReportScreen(
-                            onNavigateBack = {
-                                navigateBack()
-                            }, biomarker = biomarker
-                        )
-                    }
-                }
+                QuestionnaireScreen(
+                    viewModel= questionnaireViewModel,
+                    onNavigateToHome = {},
+                    onNavigateToCompleted = {},
+                    onNavigateToContinuation = {}
+                )
             }
 
             else -> {

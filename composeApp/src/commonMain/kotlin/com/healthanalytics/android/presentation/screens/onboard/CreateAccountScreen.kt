@@ -420,11 +420,11 @@ fun CreateAccountScreen(
         ) {
             PrimaryButton(
                 modifier = Modifier.padding(Dimensions.size16dp),
-                isEnable = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() &&
+                enable = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() &&
                         emailError.isEmpty() && selectedDate != null && selectedGender.isNotEmpty() &&
                         weight.isNotEmpty() && height.isNotEmpty(),
                 buttonName = AppStrings.CONTINUE,
-                onclick = {
+                onClick = {
                     if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() &&
                         emailError.isEmpty() && selectedDate != null && selectedGender.isNotEmpty() &&
                         weight.isNotEmpty() && height.isNotEmpty()

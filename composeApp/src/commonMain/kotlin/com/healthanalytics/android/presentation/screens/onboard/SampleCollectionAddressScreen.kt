@@ -213,9 +213,9 @@ fun SampleCollectionAddressScreen(
             PrimaryButton(
                 modifier = Modifier.padding(Dimensions.size16dp),
                 buttonName = AppStrings.SCHEDULE,
-                isEnable = streetAddress.isNotEmpty() && city.isNotEmpty() &&
+                enable = streetAddress.isNotEmpty() && city.isNotEmpty() &&
                         state.isNotEmpty() && zipCode.isNotEmpty(),
-                onclick = {
+                onClick = {
                     if (streetAddress.isNotEmpty() && city.isNotEmpty() &&
                         state.isNotEmpty() && zipCode.isNotEmpty()
                     ) {

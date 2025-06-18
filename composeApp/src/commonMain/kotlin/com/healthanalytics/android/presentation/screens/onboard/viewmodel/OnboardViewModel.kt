@@ -196,6 +196,7 @@ class OnboardViewModel(
                     user.name?.let { preferencesRepository.saveUserName(it) }
                     user.email?.let { preferencesRepository.saveUserEmail(it) }
                     user.mobile?.let { preferencesRepository.saveUserPhone(it) }
+                    user.gender?.let { preferencesRepository.saveGender(it) }
 
                     // Save communication address if available
                     user.communication_address?.let { address ->

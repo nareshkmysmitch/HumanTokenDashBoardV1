@@ -232,8 +232,8 @@ fun LoginScreen(
 
             PrimaryButton(
                 buttonName = AppStrings.CONTINUE,
-                isEnable = phoneNumber.isNotBlank(),
-                onclick = {
+                enable = phoneNumber.isNotBlank(),
+                onClick = {
                     onContinueClick(phoneNumber.trim())
                 }
             )

@@ -5,6 +5,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.healthanalytics.android.data.models.questionnaire.Questionnaire
+import com.healthanalytics.android.data.models.questionnaire.QuestionnaireNextQuestionData
+import com.healthanalytics.android.utils.EncryptionUtils.json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -29,6 +32,9 @@ object PreferencesKeys {
     val PINCODE = stringPreferencesKey("pincode")
     val COUNTRY = stringPreferencesKey("country")
     val ADDRESS_ID = stringPreferencesKey("address_id")
+    val GENDER = stringPreferencesKey("gender")
+    val NEXT_QUESTIONNAIRES_KEY = stringPreferencesKey("next_questionnaires_data")
+
 }
 
 /**
@@ -108,6 +114,15 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     val addressId: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.ADDRESS_ID] }
 
+    val gender: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.GENDER] }
+
+    val nextQuestionnaire: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.NEXT_QUESTIONNAIRES_KEY] }
+        .catch {
+            emit("[]")
+        }
+
     suspend fun saveAccessToken(token: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.ACCESS_TOKEN_KEY] = token
@@ -166,6 +181,18 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     suspend fun saveUserCountry(country: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.USER_COUNTRY] = country
+        }
+    }
+
+    suspend fun saveGender(gender: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.GENDER] = gender
+        }
+    }
+
+    suspend fun saveNextQuestionnaireData(nextQuestionnaire:String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NEXT_QUESTIONNAIRES_KEY] = nextQuestionnaire
         }
     }
 

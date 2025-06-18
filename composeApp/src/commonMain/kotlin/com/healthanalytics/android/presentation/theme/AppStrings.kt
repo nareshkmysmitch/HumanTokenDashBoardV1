@@ -56,5 +56,9 @@ object AppStrings {
     const val ADDED_TO_PLAN= "Added to plan"
     const val REMOVE= "Remove"
 
+    const val GO_BACK = "Go back"
+    const val SUBMIT = "Submit"
+    const val ARE_YOU_SURE_YOU_WANT_TO_SUBMIT_THE_QUESTIONNAIRE= "Are you sure you want to submit the questionnaire?"
+
 
 }
