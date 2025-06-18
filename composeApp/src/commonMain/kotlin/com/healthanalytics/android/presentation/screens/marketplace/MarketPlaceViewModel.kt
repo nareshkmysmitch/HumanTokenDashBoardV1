@@ -784,13 +784,17 @@ class MarketPlaceViewModel(
                 personalData?.pii_data?.height =
                     editHeight.toDoubleOrNull()//if need we can pass double
 
-                val preferenceResponse =
+                val personalResponse =
                     apiService.saveHealthMetrics(accessToken, personalData)
+
+                if (personalResponse) {
+                    setPersonalData(personalData)
+                }
 
                 _uiHealthMetrics.update {
                     it.copy(
                         isLoading = false,
-                        isSuccess = preferenceResponse
+                        isSuccess = personalResponse
                     )
                 }
             } catch (e: Exception) {

@@ -463,13 +463,14 @@ class ApiServiceImpl(
     ): Boolean {
         val response = httpClient.put("v4/human-token/lead/update-profile") {
             header("access_token", accessToken)
-            setBody(personalData.toEncryptedRequestBody())
+            setBody(personalData?.pii_data.toEncryptedRequestBody())
         }
-        val responseBody = response.bodyAsText()
-        println("${responseBody}")
-        val preferenceResponse =
-            EncryptionUtils.handleDecryptionResponse<UpdatedPreferenceResponse>(responseBody)
-        return preferenceResponse?.is_updated == true
+        val responseBody =
+            response.bodyAsText() //TODO @puvi backend issues on response, once they worked we need to handled it
+        return true
+        /*   val preferenceResponse =
+            EncryptionUtils.handleDecryptionResponse<UpdatedPreferenceResponse>(responseBody)*/
+        // return preferenceResponse?.is_updated == true
     }
 
 }

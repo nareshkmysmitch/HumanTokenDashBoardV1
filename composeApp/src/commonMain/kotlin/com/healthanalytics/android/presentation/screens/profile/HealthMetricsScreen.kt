@@ -60,7 +60,7 @@ import humantokendashboardv1.composeapp.generated.resources.your_bmi_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> Unit) {
+fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> Unit) {
     var isEditable by remember { mutableStateOf(false) }
     var isShowRangeWeight by remember { mutableStateOf(false) }
     var isShowRangeHeight by remember { mutableStateOf(false) }
@@ -76,11 +76,18 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
 
     val accessToken by viewModel.accessToken.collectAsStateWithLifecycle()
     val uiState by viewModel.uiPersonalData.collectAsState()
+    val uiUpload by viewModel.uiHealthMetrics.collectAsState()
     val isSaveEnabled = bmi != null && !isShowRangeWeight && !isShowRangeHeight
 
+    LaunchedEffect(accessToken) {
+        if (accessToken != null) {
+            viewModel.loadPersonalData(accessToken)
+        }
+    }
+
     LaunchedEffect(key1 = userWeight, key2 = userHeight) {
-        editWeight = userWeight.toString()
-        editHeight = userHeight.toString()
+        editWeight = viewModel.displayBMI(userWeight)
+        editHeight = viewModel.displayBMI(userHeight)
     }
 
     LaunchedEffect(editWeight, editHeight) {
@@ -91,9 +98,9 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
         bmiState = viewModel.getBMICategory(bmi)
     }
 
-    LaunchedEffect(accessToken) {
-        if (accessToken != null) {
-            viewModel.loadPersonalData(accessToken)
+    LaunchedEffect(uiUpload) {
+        if (uiUpload.isSuccess) {
+            isEditable = false
         }
     }
 
@@ -102,7 +109,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
             .background(AppColors.BlueBackground, shape = RoundedCornerShape(Dimensions.size12dp))
             .padding(Dimensions.size16dp)
     ) {
-        if (uiState.isLoading) {
+        if (uiState.isLoading || uiUpload.isLoading) {
             Box(
                 modifier = Modifier.fillMaxWidth().height(Dimensions.size180dp),
                 contentAlignment = Alignment.Center
@@ -183,7 +190,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
                     )
                 }
             } else {
-                ShowHealthMetric(userHeight)
+                ShowHealthMetric(viewModel.displayBMI(userHeight))
             }
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
@@ -246,13 +253,12 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
                     )
                 }
             } else {
-                ShowHealthMetric(userWeight)
+                ShowHealthMetric(viewModel.displayBMI(userWeight))
             }
 
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
 
             if (bmi != null) {
-
                 Text(
                     text = stringResource(Res.string.your_bmi_label),
                     fontSize = FontSize.textSize14sp,
@@ -288,7 +294,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
                         icon = Icons.Default.Save,
                         txt = stringResource(Res.string.save),
                         onClicked = {
-                            onSaved(editWeight,editHeight)
+                            onSaved(editWeight, editHeight)
                         },
                         modifier = Modifier.wrapContentWidth(),
                         isEnabled = isSaveEnabled
@@ -323,10 +329,10 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
 }
 
 @Composable
-private fun ShowHealthMetric(value: Double?) {
+private fun ShowHealthMetric(value: String) {
     Spacer(modifier = Modifier.height(Dimensions.size8dp))
     Text(
-        text = "$value",
+        text = value,
         fontSize = FontSize.textSize14sp,
         fontFamily = FontFamily.regular(),
         color = AppColors.White
