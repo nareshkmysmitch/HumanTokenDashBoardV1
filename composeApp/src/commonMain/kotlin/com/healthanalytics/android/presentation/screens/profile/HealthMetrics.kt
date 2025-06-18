@@ -323,7 +323,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String,String) -> U
 }
 
 @Composable
-private fun ShowHealthMetric(value: Int?) {
+private fun ShowHealthMetric(value: Double?) {
     Spacer(modifier = Modifier.height(Dimensions.size8dp))
     Text(
         text = "$value",

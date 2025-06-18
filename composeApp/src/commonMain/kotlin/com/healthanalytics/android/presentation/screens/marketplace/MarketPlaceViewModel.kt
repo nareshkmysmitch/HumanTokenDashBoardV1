@@ -780,9 +780,9 @@ class MarketPlaceViewModel(
 
                 val personalData = personalData.value
                 personalData?.pii_data?.weight =
-                    editWeight.toIntOrNull() //if need we can pass double
+                    editWeight.toDoubleOrNull() //if need we can pass double
                 personalData?.pii_data?.height =
-                    editHeight.toIntOrNull()//if need we can pass double
+                    editHeight.toDoubleOrNull()//if need we can pass double
 
                 val preferenceResponse =
                     apiService.saveHealthMetrics(accessToken, personalData)

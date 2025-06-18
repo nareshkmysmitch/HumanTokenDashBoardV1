@@ -461,11 +461,12 @@ class ApiServiceImpl(
         accessToken: String,
         personalData: PersonalData?,
     ): Boolean {
-        val response = httpClient.get("v4/human-token/lead/update-profile") {
+        val response = httpClient.put("v4/human-token/lead/update-profile") {
             header("access_token", accessToken)
             setBody(personalData.toEncryptedRequestBody())
         }
         val responseBody = response.bodyAsText()
+        println("${responseBody}")
         val preferenceResponse =
             EncryptionUtils.handleDecryptionResponse<UpdatedPreferenceResponse>(responseBody)
         return preferenceResponse?.is_updated == true
