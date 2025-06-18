@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
@@ -26,13 +25,14 @@ fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, mod
     OutlinedButton(
         modifier = modifier.height(Dimensions.size50dp),
         onClick = onClicked,
+        shape = RoundedCornerShape(Dimensions.size12dp),
         colors = ButtonDefaults.buttonColors(
             contentColor = AppColors.White,
             containerColor = AppColors.Black
         ),
         border = BorderStroke(
-            width = 1.dp,
-            color = Color(0XFFF3F4F6)
+            width = Dimensions.size1dp,
+            color = AppColors.lineBorderColor,
         )
     ) {
         Icon(

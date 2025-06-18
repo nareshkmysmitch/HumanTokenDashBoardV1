@@ -77,6 +77,8 @@ object AppColors {
     val iconGrey = Color(0Xffe5e7eb)
     val txtBlue = Color(0Xff93c5fd)
     val backgroundBlue = Color(0X1f293780)
+    val lineBorderColor = Color(0XFF262626)
+    val textFieldUnFocusedColor = Color(0XFF374151)
 
 
 }
