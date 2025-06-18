@@ -39,9 +39,8 @@ import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrap
 import com.healthanalytics.android.presentation.theme.AppColors
 import org.koin.compose.koinInject
 
-// CompositionLocal to pass the main navigator to tab screens
-val LocalMainNavigator = staticCompositionLocalOf<Navigator> { 
-    error("LocalMainNavigator not provided") 
+val LocalMainNavigator = staticCompositionLocalOf<Navigator> {
+    error("LocalMainNavigator not provided")
 }
 
 class MainScreen : Screen {
@@ -116,11 +115,11 @@ class MainScreen : Screen {
 
                             topBar = {
                                 TopAppBar(
-                                    title = { Text("Human Token") }, 
-                                    actions = {
-                                        TopBarActions(currentTab = currentTab, mainNavigator = mainNavigator)
-                                    }, 
-                                    colors = TopAppBarDefaults.topAppBarColors(
+                                    title = { Text("Human Token") }, actions = {
+                                        TopBarActions(
+                                            currentTab = currentTab, mainNavigator = mainNavigator
+                                        )
+                                    }, colors = TopAppBarDefaults.topAppBarColors(
                                         containerColor = AppColors.Black,
                                         titleContentColor = Color.White
                                     )
@@ -174,130 +173,3 @@ class MainScreen : Screen {
     }
 }
 
-
-//
-//
-//class MainScreen : Screen {
-//
-//    @Composable
-//    override fun Content() {
-//        val navigator = LocalNavigator.currentOrThrow
-//
-//        val onboardViewModel: OnboardViewModel = koinInject()
-//        val healthDataViewModel: HealthDataViewModel = koinInject()
-//        val preferencesViewModel: PreferencesViewModel = koinInject()
-//        val marketPlaceViewModel: MarketPlaceViewModel = koinInject()
-//        val testBookingViewModel: TestBookingViewModel = koinInject()
-//        val chatViewModel: ChatViewModel = koinInject()
-//        val symptomsViewModel: SymptomsViewModel = koinInject()
-//        val recommendationsViewModel: RecommendationsViewModel = koinInject()
-//        val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
-//
-//        var localTestList by remember { mutableStateOf<List<Product>>(emptyList()) }
-//
-//        val bottomNavScreens = listOf(
-//            BottomNavScreen.Health, BottomNavScreen.Recommendations, BottomNavScreen.Marketplace
-//        )
-//
-//        Navigator(BottomNavScreen.Health) { mainNavigator ->
-//
-//            val currentScreen = mainNavigator.lastItem
-//
-//            if (currentScreen is BottomNavScreen) {
-//                TabNavigator(currentScreen) { tabNavigator ->
-//
-//                    val currentTab = tabNavigator.current
-//
-//                    Scaffold(containerColor = AppColors.Black, topBar = {
-//                        TopAppBar(title = "Human Token", actions = {
-//                            when (currentTab) {
-//                                BottomNavScreen.Health -> {
-//                                    IconButton(onClick = {
-//                                        mainNavigator.push(SymptomsNavWrapper())
-//                                    }) {
-//                                        Icon(
-//                                            imageVector = Icons.Default.Add,
-//                                            contentDescription = "symptoms",
-//                                            tint = AppColors.White
-//                                        )
-//                                    }
-//                                    IconButton(onClick = {
-//                                        mainNavigator.push(ConversationListNavWrapper())
-//                                    }) {
-//                                        Icon(
-//                                            imageVector = Icons.Default.Chat,
-//                                            contentDescription = "chat",
-//                                            tint = AppColors.White
-//                                        )
-//                                    }
-//                                }
-//
-//                                BottomNavScreen.Recommendations -> {
-//                                    IconButton(onClick = {
-//                                        mainNavigator.push(ProfileNavWrapper())
-//                                    }) {
-//                                        Icon(
-//                                            imageVector = Icons.Default.AccountCircle,
-//                                            contentDescription = "profile",
-//                                            tint = AppColors.White
-//                                        )
-//                                    }
-//                                }
-//
-//                                BottomNavScreen.Marketplace -> {
-//                                    IconButton(onClick = {
-//                                        mainNavigator.push(CartScreen(viewModel = marketPlaceViewModel))
-//                                    }) {
-//                                        Icon(
-//                                            imageVector = Icons.Default.ShoppingCart,
-//                                            contentDescription = "cart",
-//                                            tint = AppColors.White
-//                                        )
-//                                    }
-//                                }
-//                            }
-//                        })
-//                    }, bottomBar = {
-//                        NavigationBar(
-//                            containerColor = AppColors.Black, contentColor = Color.White
-//                        ) {
-//                            bottomNavScreens.forEach { screen ->
-//                                NavigationBarItem(
-//                                    selected = currentTab == screen,
-//                                    onClick = { tabNavigator.current = screen },
-//                                    icon = {
-//                                        screen.options.icon?.let {
-//                                            Icon(it, contentDescription = null)
-//                                        } ?: Icon(
-//                                            painter = rememberVectorPainter(Icons.Default.Help),
-//                                            contentDescription = "Fallback"
-//                                        )
-//                                    },
-//                                    label = {
-//                                        Text(screen.options.title)
-//                                    },
-//                                    colors = NavigationBarItemDefaults.colors(
-//                                        selectedIconColor = AppColors.Pink,
-//                                        selectedTextColor = AppColors.Pink,
-//                                        indicatorColor = AppColors.Black,
-//                                        unselectedIconColor = Color.White,
-//                                        unselectedTextColor = Color.White
-//                                    )
-//                                )
-//                            }
-//                        }
-//                    }) { padding ->
-//                        Box(
-//                            Modifier.fillMaxSize().background(AppColors.Black).padding(padding)
-//                        ) {
-//                            CurrentTab()
-//                        }
-//                    }
-//                }
-//            } else {
-//                // ✅ Non-tab screens render here (no bottom nav or top app bar)
-//                currentScreen.Content()
-//            }
-//        }
-//    }
-//}
