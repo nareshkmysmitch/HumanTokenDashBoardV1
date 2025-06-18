@@ -12,4 +12,10 @@ object AppConstants {
     const val LOW = "Low"
     const val HIGH = "High"
     const val NEW_DATA = "New Data"
+
+    const val BMI_CATEGORY_UNDERWEIGHT = "Underweight"
+    const val BMI_CATEGORY_NORMAL = "Normal"
+    const val BMI_CATEGORY_OVERWEIGHT = "Overweight"
+    const val BMI_CATEGORY_OBESE = "Obese"
+
 }

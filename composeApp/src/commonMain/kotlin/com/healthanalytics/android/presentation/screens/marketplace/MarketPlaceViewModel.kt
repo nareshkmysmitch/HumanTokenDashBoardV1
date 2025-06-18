@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.marketplace
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.humantoken.ui.screens.Cart
@@ -12,10 +13,12 @@ import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
+import com.healthanalytics.android.data.models.profile.PersonalData
 import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.presentation.screens.profile.CommunicationUIData
+import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -148,7 +151,8 @@ class MarketPlaceViewModel(
 
     private val _communicationSelected =
         MutableStateFlow<CommunicationUIData>(CommunicationUIData.Doctor)
-    val communicationSelected: StateFlow<CommunicationUIData?> = _communicationSelected.asStateFlow()
+    val communicationSelected: StateFlow<CommunicationUIData?> =
+        _communicationSelected.asStateFlow()
 
     var initialPreferenceValue: CommunicationUIData = CommunicationUIData.Doctor
 
@@ -658,4 +662,92 @@ class MarketPlaceViewModel(
         }
     }
 
-} 
+
+    private val _uiPersonalData = MutableStateFlow(LoadingState())
+    val uiPersonalData: StateFlow<LoadingState> =
+        _uiPersonalData.asStateFlow()
+
+
+    fun loadPersonalData(accessToken: String?) {
+        viewModelScope.launch {
+            try {
+                _uiPersonalData.update { it.copy(isLoading = true) }
+                val personalData =
+                    accessToken?.let { apiService.getPersonalData(it) }
+                setPersonalData(personalData)
+                _uiPersonalData.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiPersonalData.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load personal"
+                    )
+                }
+            }
+        }
+    }
+
+    private val _personalData = MutableStateFlow<PersonalData?>(null)
+    val personalData: StateFlow<PersonalData?> =
+        _personalData.asStateFlow()
+
+    private fun setPersonalData(personalData: PersonalData?) {
+        viewModelScope.launch {
+            _personalData.emit(personalData)
+        }
+    }
+
+    fun filterDecimalInput(input: String): String {
+        if (input.isEmpty()) return ""
+
+        // Only allow 0-9 and .
+        val cleaned = input.filter { it.isDigit() || it == '.' }
+
+        // Only one decimal point allowed
+        val parts = cleaned.split(".")
+        val integerPart = parts.getOrNull(0) ?: ""
+        val decimalPart = parts.getOrNull(1)
+
+        val result = if (decimalPart != null) {
+            "$integerPart.${decimalPart}"
+        } else {
+            integerPart
+        }
+
+        // Enforce max length of 4
+        return if (result.length <= 4) result else result.take(4)
+    }
+
+    fun calculateBMI(userWeight: Int?, userHeight: Int?): Double? {
+        if (userHeight == null || userHeight == 0 || userWeight == null || userWeight == 0) return null
+
+        val heightInMeters = userHeight.toDouble() / 100
+        val bmi = userWeight.toDouble() / (heightInMeters * heightInMeters)
+
+        // Round to 1 decimal
+        return (bmi * 10).toInt().toDouble() / 10.0
+    }
+
+    fun displayBMI(bmi: Double?): String {
+        return bmi?.let {
+            if (it % 1.0 == 0.0) it.toInt().toString() else it.toString()
+        } ?: ""
+    }
+
+    fun getBMICategory(bmi: Double?): Pair<String, Color> {
+        return bmi?.let {
+            when {
+                bmi < 18.5 -> AppConstants.BMI_CATEGORY_UNDERWEIGHT to Color(0xFFFACC15)
+                bmi < 25.0 -> AppConstants.BMI_CATEGORY_NORMAL to Color(0xFF4ADE80)
+                bmi < 30.0 -> AppConstants.BMI_CATEGORY_OVERWEIGHT to Color(0xFFFACC15)
+                else -> AppConstants.BMI_CATEGORY_OBESE to Color(0xFFF87171)
+            }
+        } ?: ("" to Color.Black)
+    }
+
+
+}

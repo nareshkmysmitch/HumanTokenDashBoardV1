@@ -277,7 +277,7 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.height(Dimensions.size24dp))
 
-                        HealthMetrics()
+                        HealthMetrics(viewModel = viewModel)
 
                         Button(
                             onClick = { onNavigateToTestBooking() },
