@@ -67,8 +67,7 @@ fun BioMarkerFullReportScreen(
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
-    var selectedTab by rememberSaveable { mutableStateOf(0) } // 👈 Use rememberSaveable for resilience
-
+    var selectedTab by rememberSaveable { mutableStateOf(0) }
     BackHandler(enabled = true, onBack = { onNavigateBack() })
 
     LaunchedEffect(preferencesState.data) {
