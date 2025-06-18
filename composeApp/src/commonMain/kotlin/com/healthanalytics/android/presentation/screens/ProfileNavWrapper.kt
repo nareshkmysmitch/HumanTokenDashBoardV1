@@ -6,6 +6,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.koin.compose.koinInject
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
+import com.healthanalytics.android.presentation.screens.profile.ProfileScreen
 
 class ProfileNavWrapper : Screen {
 

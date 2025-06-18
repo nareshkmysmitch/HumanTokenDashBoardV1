@@ -130,8 +130,7 @@ fun BioMarkerFullReportScreen(
                             biomarker?.displayName.toString(),
                             onTabChanged = {
                                 biomarkerDesc = it
-                            }
-                        )
+                            })
                     }
 
                     item {
@@ -158,13 +157,12 @@ private fun TabSection(
     onTabChanged: (String) -> Unit,
 ) {
     val uniqueTabDefinitions = remember(metricData) {
-        metricData
-            ?.mapNotNull { metric ->
-                metric.contentType?.let { type ->
-                    val displayTitle = type.replace('_', ' ').capitalizeFirst()
-                    Triple(displayTitle, type, metric)
-                }
-            }?.distinctBy { it.first } ?: emptyList()
+        metricData?.mapNotNull { metric ->
+            metric.contentType?.let { type ->
+                val displayTitle = type.replace('_', ' ').capitalizeFirst()
+                Triple(displayTitle, type, metric)
+            }
+        }?.distinctBy { it.first } ?: emptyList()
     }
 
     val tabTitles = remember(uniqueTabDefinitions) { uniqueTabDefinitions.map { it.first } }
@@ -176,8 +174,7 @@ private fun TabSection(
                     Tab(
                         selected = selectedTab == index,
                         onClick = { onTabSelected(index) },
-                        text = { Text(text = tabTitle, fontFamily = FontFamily.semiBold()) }
-                    )
+                        text = { Text(text = tabTitle, fontFamily = FontFamily.semiBold()) })
                 }
             }
         }
@@ -190,7 +187,8 @@ private fun TabSection(
             }
         }
 
-        val contentDesc = metricsForSelectedTabCategory.find { it.category == "short_description" }?.content ?: ""
+        val contentDesc =
+            metricsForSelectedTabCategory.find { it.category == "short_description" }?.content ?: ""
         onTabChanged(contentDesc)
         Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             TypeBasedCardDesc(
@@ -264,9 +262,9 @@ fun TypeBasedCardDesc(
     }
 }
 
+
 @Composable
 private fun HeaderCard(biomarker: BloodData?, releasedAt: String?, biomarkerDesc: String) {
-
     Card(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         colors = CardDefaults.cardColors(
@@ -290,37 +288,9 @@ private fun HeaderCard(biomarker: BloodData?, releasedAt: String?, biomarkerDesc
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                Text(
-                    text = biomarker?.displayName ?: "",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = AppColors.White,
-                    fontFamily = FontFamily.bold()
-                )
-                StatusChip(status = biomarker?.displayRating ?: "")
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "${biomarker?.value} ${biomarker?.unit}",
-                style = MaterialTheme.typography.headlineLarge,
-                color = AppColors.White,
-                fontFamily = FontFamily.pilBold()
-            )
-
-            Text(
-                text = "Last Updated: ${formatDate(releasedAt ?: "")}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.White.copy(alpha = 0.7f),
-                fontFamily = FontFamily.regular()
-            )
-
-            if (!biomarker?.shortDescription.isNullOrBlank()) {
-
                 Column {
                     Text(
-                        text = "${biomarker.value} ${biomarker.unit}",
+                        text = "${biomarker?.value} ${biomarker?.unit}",
                         style = MaterialTheme.typography.headlineLarge,
                         color = AppColors.White,
                         fontFamily = FontFamily.pilBold(),
@@ -334,13 +304,11 @@ private fun HeaderCard(biomarker: BloodData?, releasedAt: String?, biomarkerDesc
                         fontFamily = FontFamily.regular(),
                         maxLines = 1,
                     )
-
                 }
-                StatusChip(status = biomarker.displayRating ?: "")
+                StatusChip(status = biomarker?.displayRating ?: "")
             }
 
             if (!biomarker?.shortDescription.isNullOrBlank()) {
-
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = biomarkerDesc,
@@ -352,6 +320,94 @@ private fun HeaderCard(biomarker: BloodData?, releasedAt: String?, biomarkerDesc
         }
     }
 }
+
+
+//@Composable
+//private fun HeaderCard(biomarker: BloodData?, releasedAt: String?, biomarkerDesc: String) {
+//
+//    Card(
+//        modifier = Modifier.fillMaxWidth().padding(16.dp),
+//        colors = CardDefaults.cardColors(containerColor = AppColors.BlueCardBackground),
+//    ) {
+//        Column(
+//            modifier = Modifier.fillMaxWidth().padding(16.dp)
+//        ) {
+//            Text(
+//                text = biomarker?.displayName ?: "",
+//                style = MaterialTheme.typography.headlineMedium,
+//                color = AppColors.White,
+//                fontFamily = FontFamily.bold()
+//            )
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//
+//                Text(
+//                    text = biomarker?.displayName ?: "",
+//                    style = MaterialTheme.typography.headlineMedium,
+//                    color = AppColors.White,
+//                    fontFamily = FontFamily.bold()
+//                )
+//                StatusChip(status = biomarker?.displayRating ?: "")
+//            }
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            Text(
+//                text = "${biomarker?.value} ${biomarker?.unit}",
+//                style = MaterialTheme.typography.headlineLarge,
+//                color = AppColors.White,
+//                fontFamily = FontFamily.pilBold()
+//            )
+//
+//            Text(
+//                text = "Last Updated: ${formatDate(releasedAt ?: "")}",
+//                style = MaterialTheme.typography.bodyMedium,
+//                color = AppColors.White.copy(alpha = 0.7f),
+//                fontFamily = FontFamily.regular()
+//            )
+//
+//            if (!biomarker?.shortDescription.isNullOrBlank()) {
+//
+//                Column {
+//                    Text(
+//                        text = "${biomarker.value} ${biomarker.unit}",
+//                        style = MaterialTheme.typography.headlineLarge,
+//                        color = AppColors.White,
+//                        fontFamily = FontFamily.pilBold(),
+//                        maxLines = 1,
+//                    )
+//
+//                    Text(
+//                        text = "Last Updated: ${formatDate(releasedAt ?: "")}",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = AppColors.White.copy(alpha = 0.7f),
+//                        fontFamily = FontFamily.regular(),
+//                        maxLines = 1,
+//                    )
+//
+//                }
+//                StatusChip(status = biomarker.displayRating ?: "")
+//            }
+//
+//            if (!biomarker?.shortDescription.isNullOrBlank()) {
+//
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Text(
+//                    text = biomarkerDesc,
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = AppColors.White,
+//                    fontFamily = FontFamily.regular()
+//                )
+//            }
+//        }
+//    }
+//}
 
 @Composable
 private fun WhyItMattersContent(metricData: MetricData?) {
@@ -431,7 +487,8 @@ private fun CausesContent(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Factors That May Increase Levels",
-                    style = MaterialTheme.typography.titleMedium, fontSize = 16.sp,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.error,
                     fontFamily = FontFamily.semiBold()
                 )
@@ -450,7 +507,8 @@ private fun CausesContent(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = cause,
-                            style = MaterialTheme.typography.bodyMedium, fontSize = 14.sp,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontSize = 14.sp,
                             fontFamily = FontFamily.regular()
                         )
                     }
@@ -524,9 +582,7 @@ private fun CorrelationsSection(
                 imageVector = Icons.Default.Info,
                 contentDescription = "Info",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .size(18.dp)
-                    .padding(end = 4.dp)
+                modifier = Modifier.size(18.dp).padding(end = 4.dp)
             )
 
             Text(
@@ -599,8 +655,7 @@ fun DailyWellness(wellnessCategories: List<WellnessCategory>?) {
         Column {
             Text(
                 text = "Daily Wellness Factors",
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = Dimensions.size16dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Dimensions.size16dp)
                     .padding(top = Dimensions.size16dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = FontSize.textSize16sp,
@@ -625,15 +680,12 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
         colors = CardDefaults.cardColors(containerColor = AppColors.BlueCardBackground),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = Dimensions.size16dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = Dimensions.size16dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = "Reported Symptoms",
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = Dimensions.size16dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Dimensions.size16dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = FontSize.textSize16sp,
                 color = AppColors.error,
@@ -641,8 +693,7 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
             )
             symptoms.forEach { symptom ->
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(top = Dimensions.size4dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size4dp)
                         .padding(horizontal = Dimensions.size16dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
