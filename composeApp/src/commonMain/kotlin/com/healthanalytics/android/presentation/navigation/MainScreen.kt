@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -13,16 +15,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.key.Key.Companion.R
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
+import co.touchlab.kermit.Logger
 import com.healthanalytics.android.presentation.theme.AppColors
 
-
 class MainScreen : Screen {
+
     @Composable
     override fun Content() {
-        TabNavigator(BottomNavScreen.Health) { tabNavigator ->
+
+        val bottomNavScreens = listOf(
+            BottomNavScreen.Health,
+            BottomNavScreen.Recommendations,
+            BottomNavScreen.Marketplace
+        )
+
+
+        TabNavigator(bottomNavScreens.first()) { tabNavigator ->
 
             val currentTab = tabNavigator.current
 
@@ -31,23 +44,27 @@ class MainScreen : Screen {
                     NavigationBar(
                         containerColor = AppColors.Black, contentColor = Color.White
                     ) {
-                        BottomNavScreen.items.forEach { screen ->
+                        bottomNavScreens.forEach { screen ->
+
+                            Logger.e("screen: $screen")
 
                             NavigationBarItem(
                                 selected = currentTab == screen,
                                 onClick = { tabNavigator.current = screen },
 
-
                                 icon = {
-                                    screen.options.icon?.let {
-                                        Icon(
-                                            painter = it,
-                                            contentDescription = null
-                                        )
-                                    }
+                                    screen?.options?.icon?.let { icon ->
+                                        Icon(painter = icon, contentDescription = null)
+                                    } ?: Icon(
+                                        painter = rememberVectorPainter(Icons.Default.Help),
+                                        contentDescription = "Fallback"
+                                    )
                                 },
 
-                                label = { Text(screen.options.title) },
+                                label = {
+                                    val title = screen?.options?.title ?: "Untitled"
+                                    Text(title)
+                                },
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = AppColors.Pink,
                                     selectedTextColor = AppColors.Pink,
@@ -56,7 +73,6 @@ class MainScreen : Screen {
                                     unselectedTextColor = Color.White
                                 )
                             )
-
                         }
                     }
                 }) { paddingValues ->
