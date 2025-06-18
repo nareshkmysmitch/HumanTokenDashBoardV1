@@ -96,6 +96,8 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
             editHeight.toDoubleOrNull()
         )
         bmiState = viewModel.getBMICategory(bmi)
+        isShowRangeHeight = viewModel.isHeightInvalid(editHeight)
+        isShowRangeWeight = viewModel.isWeightInvalid(editWeight)
     }
 
     LaunchedEffect(uiUpload) {
@@ -147,8 +149,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                 OutlinedTextField(
                     value = editHeight,
                     onValueChange = {
-                        editHeight = viewModel.filterDecimalInput(it)
-                        isShowRangeHeight = viewModel.isHeightInvalid(editHeight)
+                        editHeight = viewModel.filterDecimalInput(it,6)
                     },
                     placeholder = {
                         Text(
@@ -207,9 +208,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                 OutlinedTextField(
                     value = editWeight,
                     onValueChange = {
-                        editWeight = viewModel.filterDecimalInput(it)
-
-                        isShowRangeWeight = viewModel.isWeightInvalid(editWeight)
+                        editWeight = viewModel.filterDecimalInput(it,4)
                     },
                     placeholder = {
                         Text(

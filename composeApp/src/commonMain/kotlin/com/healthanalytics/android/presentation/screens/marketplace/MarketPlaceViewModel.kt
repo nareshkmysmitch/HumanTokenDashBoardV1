@@ -701,7 +701,7 @@ class MarketPlaceViewModel(
         }
     }
 
-    fun filterDecimalInput(input: String): String {
+    fun filterDecimalInput(input: String,maxLength:Int): String {
         if (input.isEmpty()) return ""
 
         // Only allow 0-9 and .
@@ -719,7 +719,7 @@ class MarketPlaceViewModel(
         }
 
         // Enforce max length of 4
-        return if (result.length <= 4) result else result.take(4)
+        return if (result.length <= maxLength) result else result.take(maxLength)
     }
 
     fun calculateBMI(userWeight: Double?, userHeight: Double?): Double? {
