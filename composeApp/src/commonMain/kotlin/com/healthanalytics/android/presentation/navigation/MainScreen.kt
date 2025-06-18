@@ -29,21 +29,26 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import co.touchlab.kermit.Logger
 import com.healthanalytics.android.data.api.Product
 import com.healthanalytics.android.presentation.components.TopAppBar
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
+import com.healthanalytics.android.presentation.screens.ProfileNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.screens.chat.ConversationListNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrapper
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsViewModel
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.example.humantoken.ui.screens.CartScreen
 import org.koin.compose.koinInject
 
 class MainScreen : Screen {
@@ -51,6 +56,7 @@ class MainScreen : Screen {
     @Composable
     override fun Content() {
 
+        val navigator = LocalNavigator.currentOrThrow
         val onboardViewModel: OnboardViewModel = koinInject<OnboardViewModel>()
         val healthDataViewModel: HealthDataViewModel = koinInject<HealthDataViewModel>()
         val preferencesViewModel: PreferencesViewModel = koinInject<PreferencesViewModel>()
@@ -77,7 +83,7 @@ class MainScreen : Screen {
                     ) {
                         bottomNavScreens.forEach { screen ->
 
-                            Logger.e("screen: $screen")
+
 
                             NavigationBarItem(
                                 selected = currentTab == screen,
@@ -113,7 +119,9 @@ class MainScreen : Screen {
 
                             when (currentTab) {
                                 BottomNavScreen.Health -> {
-                                    IconButton(onClick = {}) {
+                                    IconButton(onClick = { 
+                                        navigator.push(SymptomsNavWrapper())
+                                    }) {
                                         Icon(
                                             imageVector = Icons.Default.Add,
                                             contentDescription = "symptoms",
@@ -121,7 +129,9 @@ class MainScreen : Screen {
                                             tint = AppColors.White
                                         )
                                     }
-                                    IconButton(onClick = { }) {
+                                    IconButton(onClick = { 
+                                        navigator.push(ConversationListNavWrapper())
+                                    }) {
                                         Icon(
                                             imageVector = Icons.Default.Chat,
                                             contentDescription = "Chat",
@@ -132,7 +142,9 @@ class MainScreen : Screen {
                                 }
 
                                 BottomNavScreen.Recommendations -> {
-                                    IconButton(onClick = { }) {
+                                    IconButton(onClick = { 
+                                        navigator.push(ProfileNavWrapper())
+                                    }) {
                                         Icon(
                                             imageVector = Icons.Default.AccountCircle,
                                             contentDescription = "Profile",
@@ -143,7 +155,9 @@ class MainScreen : Screen {
                                 }
 
                                 BottomNavScreen.Marketplace -> {
-                                    IconButton(onClick = { }) {
+                                    IconButton(onClick = { 
+                                        navigator.push(CartScreen(viewModel = marketPlaceViewModel))
+                                    }) {
                                         Icon(
                                             imageVector = Icons.Default.ShoppingCart,
                                             contentDescription = "Cart",

@@ -10,7 +10,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
-import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.theme.AppStrings
 import org.koin.compose.koinInject
 
@@ -36,8 +36,9 @@ sealed class BottomNavScreen : Tab {
     object Recommendations : BottomNavScreen() {
         @Composable
         override fun Content() {
-            RecommendationsScreen(
-                viewModel = koinInject(), preferencesViewModel = koinInject()
+            RecommendationsTabScreen(
+                navigateBack = { /* Handle back navigation */ },
+                viewModel = koinInject(), preferencesViewModel = koinInject(),
             )
         }
 
