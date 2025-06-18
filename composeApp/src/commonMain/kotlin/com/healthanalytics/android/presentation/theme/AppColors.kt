@@ -58,7 +58,7 @@ object AppColors {
     val secondary = Color(0xFF8B5CF6)
     val tertiary = Color(0xFF06B6D4)
     val CardGrey = Color(0xFF1C1C1E)
-    val DarkPink = Color(0xFFF524A1)
+    val darkPink = Color(0xFFF524A1)
     val TextGrey = Color(0xFF888888)
     val OptimalColor = Color(0xFF1f7a4c)
     val HighColor = Color(0xFFf4978a)
@@ -70,5 +70,13 @@ object AppColors {
 
     val spot = Color(0xFF40394F)
     val cardBackground = Color(0xFF293041)
+    val descriptionColor = Color(0xFFA6A6A6)
+    val borderBlue = Color(0xFF374151)
+    val semiTransparentPink = Color(0xFF301B29)
+    val iconSemiTransparentPink = Color(0XFF581F41)
+    val iconGrey = Color(0Xffe5e7eb)
+    val txtBlue = Color(0Xff93c5fd)
+    val backgroundBlue = Color(0X1f293780)
+
 
 }
