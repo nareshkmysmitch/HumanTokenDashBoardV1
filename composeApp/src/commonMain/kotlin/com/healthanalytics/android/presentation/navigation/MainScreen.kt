@@ -62,6 +62,9 @@ import kotlinx.coroutines.launch
 import org.koin.compose.KoinContext
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 
 val LocalMainNavigator = staticCompositionLocalOf<Navigator> {
     error("LocalMainNavigator not provided")
@@ -76,7 +79,8 @@ class MainScreen(
         currentTab: Tab,
         mainNavigator: Navigator,
         metrics: List<BloodData?>,
-        scope: CoroutineScope
+        scope: CoroutineScope,
+        snackbarHostState: SnackbarHostState
     ) {
         val marketPlaceViewModel: MarketPlaceViewModel = koinInject()
 
@@ -96,7 +100,13 @@ class MainScreen(
                         tint = AppColors.White
                     )
                 }
-                IconButton(onClick = { exportMetricsToCsv(metrics, scope) }) {
+                IconButton(onClick = {
+                    exportMetricsToCsv(metrics, scope) { filePath ->
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Successfully saved CSV file in downloads")
+                        }
+                    }
+                }) {
                     Icon(
                         imageVector = Icons.Default.ImportExport,
                         contentDescription = "Csv",
@@ -136,6 +146,9 @@ class MainScreen(
         val razorpayHandler: RazorpayHandler = getKoin().get()
         val onBoardUiState = onboardViewModel.onBoardUiState.collectAsStateWithLifecycle().value
 
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope = rememberCoroutineScope()
+
         if (onBoardUiState.isLoading) {
             CircularProgressIndicator()
         } else if (!onBoardUiState.hasAccessToken) {
@@ -155,7 +168,6 @@ class MainScreen(
                 val currentScreen = mainNavigator.lastItem
                 val uiState = healthDataViewModel.uiState.collectAsStateWithLifecycle().value
                 val metrics: List<BloodData?> = uiState.metrics
-                val scope = rememberCoroutineScope()
 
                 if (currentScreen is BottomNavScreen) {
                     // Render Bottom Nav UI
@@ -166,7 +178,7 @@ class MainScreen(
                         CompositionLocalProvider(LocalMainNavigator provides mainNavigator) {
                             Scaffold(
                                 containerColor = AppColors.Black,
-
+                                snackbarHost = { SnackbarHost(snackbarHostState) },
                                 topBar = {
                                     TopAppBar(
                                         title = { Text("Human Token") }, actions = {
@@ -174,7 +186,8 @@ class MainScreen(
                                                 currentTab = currentTab,
                                                 mainNavigator = mainNavigator,
                                                 metrics = metrics,
-                                                scope = scope
+                                                scope = scope,
+                                                snackbarHostState = snackbarHostState
                                             )
                                         }, colors = TopAppBarDefaults.topAppBarColors(
                                             containerColor = AppColors.Black,
@@ -337,12 +350,13 @@ class OnboardNavWrapper(
     }
 }
 
-fun exportMetricsToCsv(metrics: List<BloodData?>, scope: CoroutineScope) {
+fun exportMetricsToCsv(metrics: List<BloodData?>, scope: CoroutineScope, onSuccess: (String) -> Unit) {
     if (metrics.isNotEmpty()) {
         val csv = com.healthanalytics.android.utils.CsvUtils.bloodDataListToCsv(metrics)
         scope.launch {
             val filePath = com.healthanalytics.android.utils.saveTextFile("biomarkers.csv", csv)
             println("CSV saved to: $filePath")
+            filePath?.let { onSuccess(it) }
         }
     } else {
         println("No metrics to export.")
