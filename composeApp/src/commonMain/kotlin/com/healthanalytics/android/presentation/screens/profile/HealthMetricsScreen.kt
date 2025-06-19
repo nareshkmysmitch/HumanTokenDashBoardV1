@@ -278,7 +278,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
 
                     Text(
                         text = bmiState.first,
-                        fontSize = FontSize.textSize12sp,
+                        fontSize = FontSize.textSize14sp,
                         fontFamily = FontFamily.medium(),
                         color = bmiState.second
                     )
