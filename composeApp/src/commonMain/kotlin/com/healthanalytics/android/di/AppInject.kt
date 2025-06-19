@@ -50,6 +50,7 @@ val sharedModules = module {
     viewModelOf(::OnboardViewModel)
     viewModelOf(::SymptomsViewModel)
     factoryOf(::BioMarkerReportViewModel)
+    single { HealthDataViewModel(get(), get()) }
 
 }
 
