@@ -3,6 +3,7 @@ package com.healthanalytics.android.utils
 
 import android.content.Intent
 import android.net.Uri
+import androidx.core.content.FileProvider
 import java.io.File
 
 actual suspend fun saveTextFile(filename: String, content: String): String? {
@@ -24,9 +25,16 @@ actual suspend fun saveTextFile(filename: String, content: String): String? {
 
 private fun openFileWithSystem(file: File) {
     try {
+        val uri = FileProvider.getUriForFile(
+            appContext,
+            "${appContext.packageName}.fileprovider",
+            file
+        )
+        
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(Uri.fromFile(file), "text/csv")
+            setDataAndType(uri, "text/csv")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         
         appContext.startActivity(intent)
@@ -34,9 +42,16 @@ private fun openFileWithSystem(file: File) {
         e.printStackTrace()
         // Fallback: try to open with any app that can handle text files
         try {
+            val uri = FileProvider.getUriForFile(
+                appContext,
+                "${appContext.packageName}.fileprovider",
+                file
+            )
+            
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(Uri.fromFile(file), "text/plain")
+                setDataAndType(uri, "text/plain")
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             
             appContext.startActivity(intent)
@@ -49,10 +64,17 @@ private fun openFileWithSystem(file: File) {
 actual fun shareFile(filePath: String) {
     try {
         val file = File(filePath)
+        val uri = FileProvider.getUriForFile(
+            appContext,
+            "${appContext.packageName}.fileprovider",
+            file
+        )
+        
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/csv"
-            putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
+            putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         
         val chooser = Intent.createChooser(intent, "Share CSV file")
