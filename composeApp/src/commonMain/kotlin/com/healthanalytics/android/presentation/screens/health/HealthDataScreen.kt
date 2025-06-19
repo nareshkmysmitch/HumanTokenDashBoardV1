@@ -285,7 +285,7 @@ fun MetricCard(
                 if (filterSymptoms.isEmpty()) {
                     ""
                 } else if (filterSymptoms.size > 1) {
-                    "${filterSymptoms.first().name} +${filterSymptoms.size}"
+                    "${filterSymptoms.first().name} +${filterSymptoms.size.minus(1)}"
                 } else {
                     filterSymptoms.firstOrNull()?.name ?: ""
                 }
@@ -322,7 +322,7 @@ fun MetricCard(
 
             if (filterCauses.isNotEmpty()) {
                 val filterText = if (filterCauses.size > 1) {
-                    "${filterCauses.first().name} +${filterCauses.size}"
+                    "${filterCauses.first().name} +${filterCauses.size.minus(1)}"
                 } else {
                     filterCauses.first().name ?: ""
                 }
