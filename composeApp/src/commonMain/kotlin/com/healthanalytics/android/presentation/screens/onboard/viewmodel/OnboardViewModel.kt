@@ -191,7 +191,7 @@ class OnboardViewModel(
                 // Save access token and login state
                 if (otpVerifiedResponse.access_token != null) {
                     preferencesRepository.saveAccessToken(otpVerifiedResponse.access_token)
-                    val profileId = decodeAccessToken(otpVerifiedResponse.access_token)
+                    val profileId = decodeProfileId(otpVerifiedResponse.access_token)
                     profileId?.let { id ->
                         preferencesRepository.saveProfileId(id)
                     }
@@ -335,7 +335,7 @@ class OnboardViewModel(
     }
 
 
-    private fun decodeAccessToken(jwt: String): String? {
+    private fun decodeProfileId(jwt: String): String? {
         return try {
             val parts = jwt.split(".")
             if (parts.size != 3) throw IllegalArgumentException("Invalid JWT token")
