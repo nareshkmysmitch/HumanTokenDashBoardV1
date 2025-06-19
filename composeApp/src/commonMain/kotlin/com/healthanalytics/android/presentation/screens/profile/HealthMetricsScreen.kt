@@ -269,7 +269,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                 Row(modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = viewModel.displayBMI(bmi),
-                        fontSize = FontSize.textSize30sp,
+                        fontSize = FontSize.textSize22sp,
                         fontFamily = FontFamily.bold(),
                         color = AppColors.White
                     )
@@ -278,7 +278,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
 
                     Text(
                         text = bmiState.first,
-                        fontSize = FontSize.textSize18sp,
+                        fontSize = FontSize.textSize12sp,
                         fontFamily = FontFamily.medium(),
                         color = bmiState.second
                     )
