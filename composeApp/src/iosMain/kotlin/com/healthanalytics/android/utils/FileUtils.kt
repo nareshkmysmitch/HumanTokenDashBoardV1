@@ -41,5 +41,5 @@ actual suspend fun saveTextFile(filename: String, content: String): String? {
 }
 
 actual fun shareFile(filePath: String) {
-//    FileSharing.shareFile(path = filePath)
+    FileSharing.shareFile(path = filePath)
 }
