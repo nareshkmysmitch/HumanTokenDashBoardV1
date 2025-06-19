@@ -84,8 +84,8 @@ class HealthDataViewModel(
 
             val matchesSearch = searchQuery.isBlank() ||
                     metric.displayName?.startsWith(searchQuery, ignoreCase = true) == true ||
-                    metric.reportedSymptoms?.any { it.name?.startsWith(searchQuery, ignoreCase = true) == true } == true||
-                    metric.causes?.any { it.name?.startsWith(searchQuery, ignoreCase = true) == true } == true
+                    metric.reportedSymptoms?.any { it.name?.contains(searchQuery, ignoreCase = true) == true } == true||
+                    metric.causes?.any { it.name?.contains(searchQuery, ignoreCase = true) == true } == true
 
             matchesFilter && matchesSearch
         }

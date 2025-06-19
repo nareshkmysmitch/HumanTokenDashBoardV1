@@ -275,15 +275,16 @@ fun MetricCard(
         Spacer(modifier = Modifier.height(size8dp))
 
         if (symptomsReported != null && symptomsReported > 0) {
-
             val filterSymptoms = if (isSearching) {
                 metric.reportedSymptoms?.filter {
-                    it.name?.startsWith(searchQuery, ignoreCase = true) == true
+                    it.name?.contains(searchQuery, ignoreCase = true) == true
                 }.orEmpty()
             } else emptyList()
 
             val filterText = if (isSearching) {
-                if (filterSymptoms.size > 1) {
+                if (filterSymptoms.isEmpty()) {
+                    ""
+                } else if (filterSymptoms.size > 1) {
                     "${filterSymptoms.first().name} +${filterSymptoms.size}"
                 } else {
                     filterSymptoms.firstOrNull()?.name ?: ""
@@ -292,26 +293,62 @@ fun MetricCard(
                 "$symptomsReported symptoms reported"
             }
 
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .background(
-                        color = AppColors.tagTransparentBlue,
-                        shape = RoundedCornerShape(50)
+            if (filterText.isNotBlank()) {
+                Column(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .background(
+                            color = AppColors.tagTransparentBlue,
+                            shape = RoundedCornerShape(50)
+                        )
+                        .padding(vertical = size4dp, horizontal = size8dp)
+                ) {
+                    Text(
+                        text = filterText,
+                        fontSize = FontSize.textSize14sp,
+                        fontFamily = FontFamily.medium(),
+                        color = AppColors.tagBlue,
                     )
-                    .padding(vertical = size4dp, horizontal = size8dp)
-            ) {
-                Text(
-                    text = filterText,
-                    fontSize = FontSize.textSize14sp,
-                    fontFamily = FontFamily.medium(),
-                    color = AppColors.tagBlue,
-                )
-            }
+                }
 
-            Spacer(modifier = Modifier.height(size8dp))
+                Spacer(modifier = Modifier.height(size8dp))
+            }
         }
 
+        if (isSearching) {
+            val filterCauses = metric?.causes.orEmpty().filter {
+                it.name?.contains(searchQuery, ignoreCase = true) == true
+            }
+
+            if (filterCauses.isNotEmpty()) {
+                val filterText = if (filterCauses.size > 1) {
+                    "${filterCauses.first().name} +${filterCauses.size}"
+                } else {
+                    filterCauses.first().name ?: ""
+                }
+
+                Column(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .background(
+                            color = AppColors.tagYellow.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(50)
+                        )
+                        .padding(vertical = size4dp, horizontal = size8dp)
+                ) {
+                    Text(
+                        text = filterText,
+                        fontSize = FontSize.textSize14sp,
+                        fontFamily = FontFamily.medium(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = AppColors.tagYellow,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(size8dp))
+            }
+        }
 
         Text(
             text = "Last updated: ${formatDate(metric?.updatedAt ?: "")}",
