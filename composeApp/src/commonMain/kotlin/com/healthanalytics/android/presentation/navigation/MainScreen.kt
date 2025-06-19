@@ -156,10 +156,10 @@ class MainScreen : Screen {
                 razorpayHandler = razorpayHandler,
                 isLoggedIn = { onboardViewModel.updateOnBoardState() }).Content()
         } else {
-            Navigator(BottomNavScreen.Health(healthDataViewModel)) { mainNavigator ->
+            Navigator(BottomNavScreen.Health) { mainNavigator ->
 
                 val bottomNavScreens = listOf(
-                    BottomNavScreen.Health(healthDataViewModel),
+                    BottomNavScreen.Health,
                     BottomNavScreen.Recommendations,
                     BottomNavScreen.Marketplace
                 )

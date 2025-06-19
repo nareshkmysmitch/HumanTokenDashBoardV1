@@ -21,10 +21,11 @@ import org.koin.compose.koinInject
 
 sealed class BottomNavScreen : Tab {
 
-    class Health(val healthDataViewModel: HealthDataViewModel) : BottomNavScreen() {
+    object Health : BottomNavScreen() {
         @Composable
         override fun Content() {
             val mainNavigator = LocalMainNavigator.current
+            val healthDataViewModel: HealthDataViewModel = koinInject()
             HealthDataScreen(
                 viewModel = healthDataViewModel,
                 onNavigateToDetail = { biomarker ->
