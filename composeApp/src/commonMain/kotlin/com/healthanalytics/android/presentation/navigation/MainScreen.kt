@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,9 +39,11 @@ import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.example.humantoken.ui.screens.CartScreen
+import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.payment.RazorpayHandler
 import com.healthanalytics.android.presentation.screens.ProfileNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ConversationListNavWrapper
+import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
@@ -53,6 +57,8 @@ import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTes
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrapper
 import com.healthanalytics.android.presentation.theme.AppColors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.compose.KoinContext
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
@@ -61,15 +67,21 @@ val LocalMainNavigator = staticCompositionLocalOf<Navigator> {
     error("LocalMainNavigator not provided")
 }
 
-class MainScreen : Screen {
+class MainScreen(
+    private val healthDataViewModel: HealthDataViewModel
+) : Screen {
 
     @Composable
-    fun TopBarActions(currentTab: Tab, mainNavigator: Navigator) {
-
+    fun TopBarActions(
+        currentTab: Tab,
+        mainNavigator: Navigator,
+        metrics: List<BloodData?>,
+        scope: CoroutineScope
+    ) {
         val marketPlaceViewModel: MarketPlaceViewModel = koinInject()
 
         when (currentTab) {
-            BottomNavScreen.Health -> {
+            is BottomNavScreen.Health -> {
                 IconButton(onClick = { mainNavigator.push(SymptomsNavWrapper()) }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -84,9 +96,16 @@ class MainScreen : Screen {
                         tint = AppColors.White
                     )
                 }
+                IconButton(onClick = { exportMetricsToCsv(metrics, scope) }) {
+                    Icon(
+                        imageVector = Icons.Default.ImportExport,
+                        contentDescription = "Csv",
+                        tint = AppColors.White
+                    )
+                }
             }
 
-            BottomNavScreen.Recommendations -> {
+            is BottomNavScreen.Recommendations -> {
                 IconButton(onClick = { mainNavigator.push(ProfileNavWrapper()) }) {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
@@ -96,7 +115,7 @@ class MainScreen : Screen {
                 }
             }
 
-            BottomNavScreen.Marketplace -> {
+            is BottomNavScreen.Marketplace -> {
                 IconButton(onClick = {
                     mainNavigator.push(CartScreen(viewModel = marketPlaceViewModel))
                 }) {
@@ -113,7 +132,6 @@ class MainScreen : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-
         val onboardViewModel: OnboardViewModel = koinInject()
         val razorpayHandler: RazorpayHandler = getKoin().get()
         val onBoardUiState = onboardViewModel.onBoardUiState.collectAsStateWithLifecycle().value
@@ -126,15 +144,18 @@ class MainScreen : Screen {
                 razorpayHandler = razorpayHandler,
                 isLoggedIn = { onboardViewModel.updateOnBoardState() }).Content()
         } else {
-            Navigator(BottomNavScreen.Health) { mainNavigator ->
+            Navigator(BottomNavScreen.Health(healthDataViewModel)) { mainNavigator ->
 
                 val bottomNavScreens = listOf(
-                    BottomNavScreen.Health,
+                    BottomNavScreen.Health(healthDataViewModel),
                     BottomNavScreen.Recommendations,
                     BottomNavScreen.Marketplace
                 )
 
                 val currentScreen = mainNavigator.lastItem
+                val uiState = healthDataViewModel.uiState.collectAsStateWithLifecycle().value
+                val metrics: List<BloodData?> = uiState.metrics
+                val scope = rememberCoroutineScope()
 
                 if (currentScreen is BottomNavScreen) {
                     // Render Bottom Nav UI
@@ -151,7 +172,9 @@ class MainScreen : Screen {
                                         title = { Text("Human Token") }, actions = {
                                             TopBarActions(
                                                 currentTab = currentTab,
-                                                mainNavigator = mainNavigator
+                                                mainNavigator = mainNavigator,
+                                                metrics = metrics,
+                                                scope = scope
                                             )
                                         }, colors = TopAppBarDefaults.topAppBarColors(
                                             containerColor = AppColors.Black,
@@ -311,6 +334,18 @@ class OnboardNavWrapper(
                 isLoggedIn = isLoggedIn
             )
         )
+    }
+}
+
+fun exportMetricsToCsv(metrics: List<BloodData?>, scope: CoroutineScope) {
+    if (metrics.isNotEmpty()) {
+        val csv = com.healthanalytics.android.utils.CsvUtils.bloodDataListToCsv(metrics)
+        scope.launch {
+            val filePath = com.healthanalytics.android.utils.saveTextFile("biomarkers.csv", csv)
+            println("CSV saved to: $filePath")
+        }
+    } else {
+        println("No metrics to export.")
     }
 }
 
