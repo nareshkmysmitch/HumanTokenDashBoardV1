@@ -36,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.healthanalytics.android.data.models.MetricRecommendation
 import com.healthanalytics.android.data.models.Recommendation
@@ -133,17 +134,17 @@ fun CategoryChip(
         selected = selected,
         onClick = onClick,
         colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
+            containerColor = if (selected) AppColors.darkPink else AppColors.darkPink.copy(
                 alpha = 0.1f
             ),
             labelColor = AppColors.textPrimary,
-            selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
+            selectedContainerColor = AppColors.darkPink,
             selectedLabelColor = AppColors.White
         ),
         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
             selected = selected,
-            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+            borderColor = if (selected) Color.Transparent else AppColors.Pink.copy(
                 alpha = 0.2f
             )
         ),
