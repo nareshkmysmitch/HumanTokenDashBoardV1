@@ -68,8 +68,6 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.razorpay.checkout)
 
-//            implementation("com.arkivanov.decompose:extensions-compose-android:2.1.0")
-//            implementation("io.insert-koin:koin-android:3.5.3")
 
         }
 
@@ -81,9 +79,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-//            implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
-//            implementation(libs.lifecycle.viewmodel.compose)
 
 
             implementation(libs.kotlinx.coroutines.core)
@@ -129,15 +125,10 @@ kotlin {
             implementation("cafe.adriel.voyager:voyager-koin:$voyagerVersion")
 
 
-//            implementation("com.arkivanov.decompose:decompose:2.1.0")
-//            implementation("com.arkivanov.decompose:extensions-compose-jetbrains:2.1.0")
-//            implementation("io.insert-koin:koin-core:3.5.3")
         }
 
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
-//            implementation("com.arkivanov.decompose:extensions-compose-ios:2.1.0")
-//            implementation("io.insert-koin:koin-core:3.5.3")
         }
 
         commonTest.dependencies {
