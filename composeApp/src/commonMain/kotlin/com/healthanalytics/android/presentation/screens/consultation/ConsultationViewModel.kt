@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class ConsultationconsultUiState(
+data class ConsultationUiState(
     val products: List<Product?>? = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
@@ -20,8 +20,8 @@ class ConsultationViewModel(
     private val apiService: ApiService
 ) : ViewModel() {
 
-    private val _consultUiState = MutableStateFlow(ConsultationconsultUiState())
-    val consultUiState: StateFlow<ConsultationconsultUiState> = _consultUiState.asStateFlow()
+    private val _consultUiState = MutableStateFlow(ConsultationUiState())
+    val consultUiState: StateFlow<ConsultationUiState> = _consultUiState.asStateFlow()
 
     fun loadConsultations(accessToken: String) {
         viewModelScope.launch {
