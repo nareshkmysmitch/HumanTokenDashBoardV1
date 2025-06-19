@@ -43,6 +43,31 @@ private fun openFileWithSystem(file: File) {
                 setDataAndType(Uri.fromFile(file.parentFile), "resource/folder")
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
+            
+            appContext.startActivity(intent)
+        } catch (fallbackException: Exception) {
+            fallbackException.printStackTrace()
+        }
+    }
+}
+
+actual fun shareFile(filePath: String) {
+    try {
+        val file = File(filePath)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/csv"
+            putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        
+        val chooser = Intent.createChooser(intent, "Share CSV file")
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        appContext.startActivity(chooser)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             appContext.startActivity(intent)
         } catch (e2: Exception) {
             e2.printStackTrace()
