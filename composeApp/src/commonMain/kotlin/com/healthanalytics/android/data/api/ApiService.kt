@@ -124,14 +124,24 @@ class ApiServiceImpl(
     }
 
     override suspend fun getHealthMetrics(accessToken: String): List<BloodData?>? {
+        val metrics = listOf("blood", "symptoms")
         val response = httpClient.get("v4/human-token/health-data") {
             header("access_token", accessToken)
+            url {
+                metrics.forEach { metric ->
+                    parameter("metrics[]", metric)
+                }
+            }
         }
-        val responseBody = response.bodyAsText()
-        val healthMetricsResponse =
-            EncryptionUtils.handleDecryptionResponse<HealthMetrics>(responseBody)
-        return healthMetricsResponse?.blood?.bloodData
+
+        val decrypted = EncryptionUtils.handleDecryptionResponse<HealthMetrics>(
+            response.bodyAsText()
+        )
+
+        return decrypted?.blood?.bloodData
     }
+
+
 
     override suspend fun updateProfile(
         accessToken: String, request: UpdateProfileRequest,
