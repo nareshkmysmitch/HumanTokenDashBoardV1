@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.data.api.Range
+import com.healthanalytics.android.data.models.home.Range
 import com.healthanalytics.android.presentation.theme.FontFamily
 
 // Global spacing configuration for HorizontalBar

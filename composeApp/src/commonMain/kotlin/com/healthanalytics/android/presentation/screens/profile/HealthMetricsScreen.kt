@@ -43,7 +43,7 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
-import com.healthanalytics.android.ui.TransparentButton
+import com.healthanalytics.android.ui.CardTransparentButton
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.cancel
 import humantokendashboardv1.composeapp.generated.resources.edit_metrics
@@ -149,7 +149,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                 OutlinedTextField(
                     value = editHeight,
                     onValueChange = {
-                        editHeight = viewModel.filterDecimalInput(it,6)
+                        editHeight = viewModel.filterDecimalInput(it, 6)
                     },
                     placeholder = {
                         Text(
@@ -208,7 +208,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                 OutlinedTextField(
                     value = editWeight,
                     onValueChange = {
-                        editWeight = viewModel.filterDecimalInput(it,4)
+                        editWeight = viewModel.filterDecimalInput(it, 4)
                     },
                     placeholder = {
                         Text(
@@ -269,7 +269,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                 Row(modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = viewModel.displayBMI(bmi),
-                        fontSize = FontSize.textSize30sp,
+                        fontSize = FontSize.textSize22sp,
                         fontFamily = FontFamily.bold(),
                         color = AppColors.White
                     )
@@ -278,7 +278,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
 
                     Text(
                         text = bmiState.first,
-                        fontSize = FontSize.textSize18sp,
+                        fontSize = FontSize.textSize14sp,
                         fontFamily = FontFamily.medium(),
                         color = bmiState.second
                     )
@@ -289,7 +289,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
             if (isEditable) {
                 Row(modifier = Modifier.fillMaxWidth()) {
 
-                    TransparentButton(
+                    CardTransparentButton(
                         icon = Icons.Default.Save,
                         txt = stringResource(Res.string.save),
                         onClicked = {
@@ -301,7 +301,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
 
                     Spacer(modifier = Modifier.width(Dimensions.size12dp))
 
-                    TransparentButton(
+                    CardTransparentButton(
                         icon = Icons.Default.Close,
                         txt = stringResource(Res.string.cancel),
                         onClicked = {
@@ -314,7 +314,7 @@ fun HealthMetrics(viewModel: MarketPlaceViewModel, onSaved: (String, String) -> 
                     )
                 }
             } else {
-                TransparentButton(
+                CardTransparentButton(
                     icon = Icons.Default.Edit,
                     txt = stringResource(Res.string.edit_metrics),
                     onClicked = {

@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.Recommendation
@@ -19,6 +20,12 @@ import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.actionplan.MetricsGrid
 import com.healthanalytics.android.presentation.theme.*
 import com.healthanalytics.android.ui.PrimaryButton
+import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.AppStrings
+import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.CardPrimaryButton
 import com.healthanalytics.android.ui.RecommendationIcon
 import com.healthanalytics.android.utils.AppConstants
 import org.koin.compose.koinInject
@@ -88,7 +95,8 @@ fun CategoryChip(
 ) {
     val categoryEnum = RecommendationCategoryes.fromString(category)
     androidx.compose.material3.FilterChip(
-        selected = selected, onClick = onClick, label = {
+        selected = selected, onClick = onClick,
+        label = {
             Row(
                 modifier = Modifier.padding(
                     vertical = Dimensions.size8dp, horizontal = Dimensions.size4dp
@@ -103,20 +111,22 @@ fun CategoryChip(
                     color = AppColors.textPrimary
                 )
             }
-        }, colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
+        },
+        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+            containerColor = if (selected) AppColors.darkPink else AppColors.darkPink.copy(
                 alpha = 0.1f
             ),
             labelColor = AppColors.textPrimary,
-            selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
+            selectedContainerColor = AppColors.darkPink,
             selectedLabelColor = AppColors.White
-        ), border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+        ),
+        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
             selected = selected,
-            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+            borderColor = if (selected) Color.Transparent else AppColors.Pink.copy(
                 alpha = 0.2f
             )
-        )
+        ),
     )
 }
 
@@ -176,7 +186,7 @@ fun RecommendationCard(
                 val buttonColor =
                     if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
 
-                PrimaryButton(
+                CardPrimaryButton(
                     modifier = Modifier.wrapContentWidth(),
                     txt = buttonText,
                     buttonColor = buttonColor,
@@ -215,11 +225,11 @@ fun RecommendationTitle(recommendation: Recommendation) {
         ) {
             RecommendationIcon(icon, modifier = Modifier.size(Dimensions.size16dp))
         }
-        Spacer(modifier = Modifier.width(Dimensions.size12dp))
+        Spacer(modifier = Modifier.width(Dimensions.size8dp))
         Text(
             text = recommendation.name,
-            fontSize = FontSize.textSize18sp,
-            fontFamily = FontFamily.medium(),
+            fontSize = FontSize.textSize20sp,
+            fontFamily = FontFamily.semiBold(),
             color = AppColors.textPrimary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -237,9 +247,14 @@ fun MetricChip(
         color = AppColors.SubGreyColor, shape = MaterialTheme.shapes.small, modifier = modifier
     ) {
         Text(
-            text = metric, modifier = Modifier.padding(
-                horizontal = Dimensions.size8dp, vertical = Dimensions.size4dp
-            ), style = MaterialTheme.typography.bodySmall, color = AppColors.White
+            text = metric,
+            modifier = Modifier.padding(
+                horizontal = Dimensions.size8dp,
+                vertical = Dimensions.size4dp
+            ),
+            fontSize = FontSize.textSize12sp,
+            fontFamily = FontFamily.regular(),
+            color = AppColors.White
         )
     }
 } 

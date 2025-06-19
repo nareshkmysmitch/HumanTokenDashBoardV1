@@ -1,5 +1,6 @@
 package com.healthanalytics.android.data.api
 
+import com.healthanalytics.android.data.models.home.Range
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
