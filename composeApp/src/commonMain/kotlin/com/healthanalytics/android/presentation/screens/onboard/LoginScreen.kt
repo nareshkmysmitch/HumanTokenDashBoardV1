@@ -52,7 +52,10 @@ import humantokendashboardv1.composeapp.generated.resources.rounded_logo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
-
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.healthanalytics.android.payment.RazorpayHandler
 
 @Composable
 fun LoginScreenContainer(
@@ -68,8 +71,6 @@ fun LoginScreenContainer(
         phoneNumber = onboardViewModel.getPhoneNumber()
     )
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -258,6 +259,23 @@ fun GetOTPResponse(
         }
 
         else -> {}
+    }
+}
+
+class LoginScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val razorpayHandler: RazorpayHandler,
+    private val isLoggedIn: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        LoginScreenContainer(
+            onboardViewModel = onboardViewModel,
+            navigateToOtpVerification = {
+                navigator.push(OTPScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
+            }
+        )
     }
 }
 

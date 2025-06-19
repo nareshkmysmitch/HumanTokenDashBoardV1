@@ -63,6 +63,9 @@ import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceV
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.seiko.imageloader.rememberImagePainter
 import kotlinx.serialization.Serializable
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 
 @Serializable
 data class Product(
@@ -121,188 +124,156 @@ data class EncryptedResponse(
     val data: String // This will contain the encrypted data
 )
 
-@Serializable
-data class CartResponse(
-    val status: String? = null,
-    val message: String? = null,
-    val data: List<Cart>? = null
-)
+class CartScreen(
+    private val viewModel: MarketPlaceViewModel
+) : Screen {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
+        var isLoading by remember { mutableStateOf(true) }
+        var error by remember { mutableStateOf<String?>(null) }
+        var snackbarMessage by remember { mutableStateOf<String?>(null) }
+        val cartListFlow by viewModel.cartListFlow.collectAsStateWithLifecycle()
+        val cartActionState by viewModel.cartActionState.collectAsStateWithLifecycle()
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CartScreen(
-    onBackClick: () -> Unit,
-    onCheckoutClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: MarketPlaceViewModel,
-) {
-    var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf<String?>(null) }
-    var snackbarMessage by remember { mutableStateOf<String?>(null) }
-    val cartListFlow by viewModel.cartListFlow.collectAsStateWithLifecycle()
-    val cartActionState by viewModel.cartActionState.collectAsStateWithLifecycle()
-
-    BackHandler(enabled = true) {
-        onBackClick()
-    }
-    LaunchedEffect(Unit) {
-        viewModel.getCartList()
-    }
-    when (cartListFlow) {
-        is CartListState.Success -> {
-            cartItems = (cartListFlow as CartListState.Success).cartList.flatMap { cart ->
-                cart.cart_items ?: emptyList()
+        BackHandler(enabled = true) {
+            navigator.pop()
+        }
+        LaunchedEffect(Unit) {
+            viewModel.getCartList()
+        }
+        when (cartListFlow) {
+            is CartListState.Success -> {
+                cartItems = (cartListFlow as CartListState.Success).cartList.flatMap { cart ->
+                    cart.cart_items ?: emptyList()
+                }
+                isLoading = false
             }
-            isLoading = false
+
+            is CartListState.Error -> {
+                error = (cartListFlow as CartListState.Error).message
+                isLoading = false
+            }
+
+            is CartListState.Loading -> {
+                isLoading = true
+            }
         }
 
-        is CartListState.Error -> {
-            error = (cartListFlow as CartListState.Error).message
-            isLoading = false
+        when (cartActionState) {
+            is CartActionState.Success -> {
+                snackbarMessage = (cartActionState as CartActionState.Success).message
+            }
+
+            is CartActionState.Error -> {
+                snackbarMessage = (cartActionState as CartActionState.Error).message
+            }
+
+            is CartActionState.Loading -> {
+                // Handle loading if needed
+            }
         }
 
-        is CartListState.Loading -> {
-            isLoading = true
-        }
-    }
-
-    when (cartActionState) {
-        is CartActionState.Success -> {
-            snackbarMessage = (cartActionState as CartActionState.Success).message
-        }
-
-        is CartActionState.Error -> {
-            snackbarMessage = (cartActionState as CartActionState.Error).message
-        }
-
-        is CartActionState.Loading -> {
-            // Handle loading if needed
-        }
-    }
-
-    Scaffold(
-        topBar = {
+        Scaffold(topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppColors.Black,
                     navigationIconContentColor = AppColors.White,
                     titleContentColor = AppColors.White
-                ),
-                title = {
+                ), title = {
                     Text(
                         text = "My Cart",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                }, navigationIcon = {
+                    IconButton(onClick = { navigator.pop() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            imageVector = Icons.Default.ArrowBack, contentDescription = "Back"
                         )
                     }
-                }
-            )
-        },
-        containerColor = AppColors.Black,
-        snackbarHost = {
+                })
+        }, containerColor = AppColors.Black, snackbarHost = {
             snackbarMessage?.let { message ->
                 Snackbar(
-                    modifier = Modifier.padding(16.dp),
-                    action = {
+                    modifier = Modifier.padding(16.dp), action = {
                         TextButton(onClick = { snackbarMessage = null }) {
                             Text("Dismiss")
                         }
-                    }
-                ) {
+                    }) {
                     Text(message)
                 }
             }
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when {
-                isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+        }) { paddingValues ->
+            Box(
+                modifier = Modifier.fillMaxSize().padding(paddingValues)
+            ) {
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
 
-                error != null -> {
-                    Text(
-                        text = error ?: "An error occurred",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(16.dp)
-                    )
-                }
+                    error != null -> {
+                        Text(
+                            text = error ?: "An error occurred",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                        )
+                    }
 
-                cartItems.isEmpty() -> {
-                    EmptyCartMessage()
-                }
+                    cartItems.isEmpty() -> {
+                        EmptyCartMessage()
+                    }
 
-                else -> {
-                    LazyColumn(
-                        modifier = modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(cartItems) { item ->
-                            CartItemCard(
-                                item = item,
-                                onQuantityDecrease = {
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(cartItems) { item ->
+                                CartItemCard(item = item, onQuantityDecrease = {
                                     item.product?.let { product ->
                                         val newQuantity = (item.quantity ?: 1) - 1
-//                                        if (newQuantity > 0) {
-//                                            product.product_id?.let { viewModel.addToCart(it, item.variant_id ?: "0") }
-//                                        }
                                         if (newQuantity > 0) {
                                             product.product_id?.let {
                                                 viewModel.updateCartItem(
-                                                    it,
-                                                    newQuantity.toString()
+                                                    it, newQuantity.toString()
                                                 )
                                             }
                                         }
                                     }
-                                },
-                                onQuantityIncrease = {
+                                }, onQuantityIncrease = {
                                     item.product?.let { product ->
                                         val newQuantity = (item.quantity ?: 1) + 1
                                         if (newQuantity > 0) {
                                             product.product_id?.let {
                                                 viewModel.updateCartItem(
-                                                    it,
-                                                    newQuantity.toString()
+                                                    it, newQuantity.toString()
                                                 )
                                             }
                                         }
                                     }
-
-                                },
-                                onDeleteClick = {
+                                }, onDeleteClick = {
                                     item.product?.product_id?.let { productId ->
                                         viewModel.updateCartItem(productId, "0")
                                     }
-                                }
-                            )
-                        }
+                                })
+                            }
 
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            OrderSummary(cartItems = cartItems)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            CheckoutButton(
-                                onClick = onCheckoutClick,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                OrderSummary(cartItems = cartItems)
+                                Spacer(modifier = Modifier.height(16.dp))
+                                CheckoutButton(
+                                    onClick = { /* Navigate to checkout */ },
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                            }
                         }
                     }
                 }
@@ -314,8 +285,7 @@ fun CartScreen(
 @Composable
 private fun EmptyCartMessage(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Text(
             text = "Your cart is empty",
@@ -335,18 +305,14 @@ private fun CartItemCard(
 ) {
     val quantity = item.quantity ?: 1
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.BlueCardBackground // Replace with your desired color
+            containerColor = AppColors.BlueCardBackground
         ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -354,16 +320,13 @@ private fun CartItemCard(
             Image(
                 painter = rememberImagePainter(item.product?.img_urls?.firstOrNull() ?: ""),
                 contentDescription = item.product?.name,
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
 
             // Product Details
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = item.product?.name ?: "",
@@ -385,8 +348,7 @@ private fun CartItemCard(
             ) {
                 IconButton(
                     onClick = onQuantityDecrease,
-                    modifier = Modifier
-                        .size(24.dp)
+                    modifier = Modifier.size(24.dp)
                         .background(if (quantity > 1) Color.Black else Color.LightGray, CircleShape)
                 ) {
                     Icon(
@@ -407,9 +369,7 @@ private fun CartItemCard(
 
                 IconButton(
                     onClick = onQuantityIncrease,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(AppColors.White, CircleShape)
+                    modifier = Modifier.size(24.dp).background(AppColors.White, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -422,8 +382,7 @@ private fun CartItemCard(
 
             // Delete Button
             IconButton(
-                onClick = onDeleteClick,
-                modifier = Modifier.size(32.dp)
+                onClick = onDeleteClick, modifier = Modifier.size(32.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
@@ -437,8 +396,7 @@ private fun CartItemCard(
 
 @Composable
 private fun OrderSummary(
-    cartItems: List<CartItem>,
-    modifier: Modifier = Modifier
+    cartItems: List<CartItem>, modifier: Modifier = Modifier
 ) {
     val subtotal = cartItems.sumOf { item ->
         item.quantity?.let { item.product?.price?.toDoubleOrNull()?.times(it) } ?: 0.0
@@ -447,17 +405,14 @@ private fun OrderSummary(
     val total = subtotal + tax
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = AppColors.BlueCardBackground
         ),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
                 text = "ORDER SUMMARY",
@@ -467,14 +422,10 @@ private fun OrderSummary(
             )
 
             OrderSummaryRow(
-                "Subtotal",
-                "₹${formatPrice(subtotal)}",
-                valueColor = AppColors.textSecondary
+                "Subtotal", "₹${formatPrice(subtotal)}", valueColor = AppColors.textSecondary
             )
             OrderSummaryRow(
-                "Tax (18%)",
-                "₹${formatPrice(tax)}",
-                valueColor = AppColors.textSecondary
+                "Tax (18%)", "₹${formatPrice(tax)}", valueColor = AppColors.textSecondary
             )
             OrderSummaryRow("Shipping", "Free", valueColor = Color.Green)
             HorizontalDivider()
@@ -506,12 +457,10 @@ private fun OrderSummaryRow(
     valueColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = title, style = titleStyle,
-            color = AppColors.White
+            text = title, style = titleStyle, color = AppColors.White
         )
         Text(text = value, style = valueStyle, color = valueColor)
     }
@@ -519,17 +468,12 @@ private fun OrderSummaryRow(
 
 @Composable
 private fun CheckoutButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     Button(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(
+        onClick = onClick, modifier = modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
             containerColor = AppColors.PinkButton
-        ),
-        shape = RoundedCornerShape(12.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
+        ), shape = RoundedCornerShape(12.dp), contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         Text(
             text = "Proceed to Checkout",

@@ -1,15 +1,13 @@
 package com.healthanalytics.android
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import com.healthanalytics.android.presentation.HealthAnalyticsApp
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
+import cafe.adriel.voyager.navigator.Navigator
+import com.healthanalytics.android.presentation.navigation.MainScreen
+import com.healthanalytics.android.presentation.theme.AppTheme
 
 @Composable
-@Preview
 fun App() {
-    MaterialTheme {
-        HealthAnalyticsApp()
+    AppTheme {
+        Navigator(MainScreen())
     }
 }
