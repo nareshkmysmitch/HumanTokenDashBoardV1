@@ -151,11 +151,11 @@ fun HealthDataScreen(
                         selected = selected,
                         onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
                         colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-                            containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
+                            containerColor = if (selected) AppColors.darkPink else AppColors.darkPink.copy(
                                 alpha = 0.1f
                             ),
                             labelColor = AppColors.textPrimary,
-                            selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
+                            selectedContainerColor = AppColors.darkPink,
                             selectedLabelColor = AppColors.White
                         ),
                         border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
