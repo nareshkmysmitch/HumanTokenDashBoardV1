@@ -275,6 +275,17 @@ fun ProfileScreen(
                             }
                         })
 
+                        Spacer(modifier = Modifier.height(Dimensions.size24dp))
+
+                        HealthMetrics(viewModel = viewModel, onSaved = { editWeight, editHeight ->
+                            if (!accessToken.isNullOrEmpty()) {
+                                viewModel.saveHealthMetrics(
+                                    accessToken!!,
+                                    editWeight, editHeight
+                                )
+                            }
+                        })
+
                         Button(
                             onClick = { onNavigateToTestBooking() },
                             modifier = Modifier.fillMaxWidth().padding(top = 24.dp),

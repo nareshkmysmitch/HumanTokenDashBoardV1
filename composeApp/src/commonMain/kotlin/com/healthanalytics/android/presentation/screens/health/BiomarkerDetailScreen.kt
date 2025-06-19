@@ -35,40 +35,40 @@ import com.healthanalytics.android.presentation.theme.FontFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BiomarkerDetailScreen(
-    biomarker: BloodData,
+    biomarker: BloodData?,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigateFullReport: () -> Unit,
 ) {
     BackHandler(enabled = true, onBack = onNavigateBack)
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                Text(
-                    "Biomarker Details", color = AppColors.White, fontFamily = FontFamily.bold()
-                )
-            }, navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = AppColors.White
+                    Text(
+                        "Biomarker Details", color = AppColors.White, fontFamily = FontFamily.bold()
                     )
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = AppColors.AppBackgroundColor,
-                navigationIconContentColor = AppColors.White,
-                titleContentColor = AppColors.White
-            ))
+                }, navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppColors.White
+                        )
+                    }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppColors.AppBackgroundColor,
+                    navigationIconContentColor = AppColors.White,
+                    titleContentColor = AppColors.White
+                )
+            )
         }) { paddingValues ->
         Column(
             modifier = modifier.fillMaxSize().padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
             BiomarkerHeader(biomarker)
-            if (biomarker.ranges?.isNotEmpty() == true && biomarker.value != null) {
+            if (biomarker?.ranges?.isNotEmpty() == true && biomarker.value != null) {
                 HorizontalBar(biomarker.ranges, biomarker.value)
             }
             //RangeGraph(biomarker)
@@ -86,7 +86,7 @@ fun BiomarkerDetailScreen(
 }
 
 @Composable
-private fun BiomarkerHeader(biomarker: BloodData) {
+private fun BiomarkerHeader(biomarker: BloodData?) {
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp)
@@ -98,7 +98,7 @@ private fun BiomarkerHeader(biomarker: BloodData) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = biomarker.displayName ?: "",
+                    text = biomarker?.displayName ?: "",
                     style = MaterialTheme.typography.headlineMedium,
                     fontFamily = FontFamily.bold()
                 )
@@ -109,7 +109,7 @@ private fun BiomarkerHeader(biomarker: BloodData) {
                     fontFamily = FontFamily.medium()
                 )
             }
-            StatusChip(status = biomarker.displayRating ?: "")
+            StatusChip(status = biomarker?.displayRating ?: "")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -120,7 +120,7 @@ private fun BiomarkerHeader(biomarker: BloodData) {
             fontFamily = FontFamily.bold()
         )
         Text(
-            text = "${biomarker.value} ${biomarker.unit}",
+            text = "${biomarker?.value} ${biomarker?.unit}",
             style = MaterialTheme.typography.headlineLarge,
             fontFamily = FontFamily.pilBold()
         )
@@ -129,11 +129,11 @@ private fun BiomarkerHeader(biomarker: BloodData) {
 
 
 @Composable
-private fun BiomarkerDescription(biomarker: BloodData) {
+private fun BiomarkerDescription(biomarker: BloodData?) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
-        if (!biomarker.shortDescription.isNullOrBlank()) {
+        if (!biomarker?.shortDescription.isNullOrBlank()) {
             Text(
                 text = "Description",
                 style = MaterialTheme.typography.titleMedium,

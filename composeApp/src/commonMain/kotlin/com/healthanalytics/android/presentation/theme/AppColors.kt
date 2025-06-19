@@ -80,6 +80,9 @@ object AppColors {
     val textPrimaryColor = Color(0XFFF3F4F6)
     val cardBlueColor = Color(0xFF1F2937)
     val cardDarkBlueColor = Color(0xFF111827)
+    val lineBorderColor = Color(0XFF262626)
+    val textFieldUnFocusedColor = Color(0XFF374151)
+    val buttonGrey = Color(0XFF747479)
 
 
 }

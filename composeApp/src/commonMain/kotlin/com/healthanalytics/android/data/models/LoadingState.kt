@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class LoadingState(
     val isLoading: Boolean = false,
     val error: String? = null,
+    val isSuccess: Boolean = false
 )

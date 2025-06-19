@@ -36,6 +36,10 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.SharedFlow
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.healthanalytics.android.payment.RazorpayHandler
 
 @Composable
 fun SampleCollectionAddressContainer(
@@ -255,5 +259,23 @@ fun GetAccountCreationResponse(
         }
 
         else -> {}
+    }
+}
+
+class SampleCollectionAddressScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val razorpayHandler: RazorpayHandler,
+    private val isLoggedIn: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        SampleCollectionAddressContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = { navigator.pop() },
+            navigateToBloodTest = {
+                navigator.push(ScheduleBloodTestScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
+            }
+        )
     }
 }

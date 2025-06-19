@@ -30,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -59,12 +60,13 @@ import com.healthanalytics.android.presentation.theme.FontSize
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 
 @Composable
 fun HealthDataScreen(
-    viewModel: HealthDataViewModel,
-    prefs: PreferencesViewModel,
-    onNavigateToDetail: (BloodData?) -> Unit,
+    viewModel: HealthDataViewModel = koinInject(),
+    prefs: PreferencesViewModel = koinInject(),
+    onNavigateToDetail: (BloodData?) -> Unit = {},
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -116,7 +118,7 @@ fun HealthDataScreen(
                     FilterChip(
                         selected = selected,
                         onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
-                        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                        colors = FilterChipDefaults.filterChipColors(
                             containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
                                 alpha = 0.1f
                             ),
@@ -124,7 +126,7 @@ fun HealthDataScreen(
                             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
                             selectedLabelColor = AppColors.White
                         ),
-                        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+                        border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = selected,
                             borderColor = if (selected) Color.Transparent else AppColors.Pink.copy(
