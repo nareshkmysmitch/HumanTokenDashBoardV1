@@ -11,6 +11,7 @@ import com.healthanalytics.android.data.repository.BiomarkerRepositoryImpl
 import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
+import com.healthanalytics.android.presentation.screens.consultation.ConsultationViewModel
 import com.healthanalytics.android.presentation.screens.health.BioMarkerReportViewModel
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
@@ -50,6 +51,7 @@ val sharedModules = module {
     viewModelOf(::OnboardViewModel)
     viewModelOf(::SymptomsViewModel)
     factoryOf(::BioMarkerReportViewModel)
+    factoryOf(::ConsultationViewModel)
 
 }
 

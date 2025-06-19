@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.humantoken.ui.screens.ProductDetailScreen
+import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.presentation.screens.consultation.ConsultationListScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
@@ -23,7 +25,6 @@ sealed class BottomNavScreen : Tab {
         @Composable
         override fun Content() {
             val mainNavigator = LocalMainNavigator.current
-
             HealthDataScreen(
                 viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = { biomarker ->
                     mainNavigator.push(BiomarkerDetailNavWrapper(biomarker = biomarker))
@@ -41,8 +42,8 @@ sealed class BottomNavScreen : Tab {
     object Services : BottomNavScreen() {
         @Composable
         override fun Content() {
-            RecommendationsTabScreen(
-                viewModel = koinInject(), preferencesViewModel = koinInject(), navigateBack = {})
+            ConsultationListScreen(
+                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = {})
         }
 
         override val options: TabOptions

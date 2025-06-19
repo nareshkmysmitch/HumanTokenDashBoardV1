@@ -1,7 +1,7 @@
 package com.healthanalytics.android.data.api
 
 import kotlinx.serialization.Serializable
-
+import kotlinx.serialization.SerialName
 
 @Serializable
 data class ProductData(
@@ -36,12 +36,14 @@ data class Product(
     val type: String? = null,
     val updated_at: String? = null,
     val vendor: Vendor? = null,
+    val meta_data: MetaData? = null,
     val vendor_id: String? = null,
     val vendor_name: String? = null,
     val vendor_product_id: String? = null,
     val variants: List<Variant>? = null,
     val isAdded: Boolean = false
 )
+
 
 @Serializable
 data class Variant(
@@ -62,13 +64,18 @@ data class Variant(
     val updated_at: String? = null
 )
 
+
 @Serializable
 data class Vendor(
     val name: String? = null,
 )
 
-//    parameter("conversation_id", conversationId)
-//            parameter("message", content)
+@Serializable
+data class MetaData(
+    @SerialName("duration") val duration: Int? = null
+)
+
+
 
 
 @Serializable
@@ -76,16 +83,16 @@ data class SendMessage(val conversation_id: String, val message: String)
 
 @Serializable
 data class TestBookingData(
-    val products: List<Product>? = null,
-    val pagination: Pagination? = null
+    val products: List<Product>? = null, val pagination: Pagination? = null
 )
 
 @Serializable
 data class TestBookingResponse(
-    val status: String? = null,
-    val message: String? = null,
-    val data: TestBookingData? = null
+    val status: String? = null, val message: String? = null, val data: TestBookingData? = null
 )
+
+
+
 
 
 
