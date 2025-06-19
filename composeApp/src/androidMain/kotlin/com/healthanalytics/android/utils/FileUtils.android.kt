@@ -4,24 +4,56 @@ package com.healthanalytics.android.utils
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.widget.Toast
+import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 
 actual suspend fun saveTextFile(filename: String, content: String): String? {
     return try {
-        // Save to app's private external files directory (doesn't require WRITE_EXTERNAL_STORAGE)
-        val file = File(appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), filename)
+
+        val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        if (!downloadsDir.exists()) {
+            downloadsDir.mkdirs()
+        }
+
+        val file = File(downloadsDir, filename)
         file.writeText(content)
-        
-        // Open the file with system default app using direct file URI
-        openFileWithSystem(file)
-        
+
+        // Notify the MediaScanner so the file appears in file managers
+        val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+        intent.data = Uri.fromFile(file)
+        appContext.sendBroadcast(intent)
+        openCsvFile(file)
         file.absolutePath
     } catch (e: Exception) {
         e.printStackTrace()
         null
     }
 }
+
+fun openCsvFile(csvFile: File) {
+    val context = appContext
+    val uri: Uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        csvFile
+    )
+
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, "text/csv")
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+
+    // Check if there’s an app to handle it
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
+    } else {
+        Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
+    }
+}
+
 
 private fun openFileWithSystem(file: File) {
     try {
