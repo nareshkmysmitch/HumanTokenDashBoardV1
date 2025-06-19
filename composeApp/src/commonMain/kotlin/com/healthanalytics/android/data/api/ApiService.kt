@@ -22,6 +22,7 @@ import com.healthanalytics.android.data.models.profile.CommunicationPreference
 import com.healthanalytics.android.data.models.profile.PersonalData
 import com.healthanalytics.android.data.models.profile.UpdatedPreferenceResponse
 import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
+import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
@@ -124,11 +125,10 @@ class ApiServiceImpl(
     }
 
     override suspend fun getHealthMetrics(accessToken: String): List<BloodData?>? {
-        val metrics = listOf("blood", "symptoms")
         val response = httpClient.get("v4/human-token/health-data") {
             header("access_token", accessToken)
             url {
-                metrics.forEach { metric ->
+                AppConstants.healthMetrics.forEach { metric ->
                     parameter("metrics[]", metric)
                 }
             }
@@ -140,7 +140,6 @@ class ApiServiceImpl(
 
         return decrypted?.blood?.bloodData
     }
-
 
 
     override suspend fun updateProfile(

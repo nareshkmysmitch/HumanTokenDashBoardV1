@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -84,8 +85,18 @@ class HealthDataViewModel(
 
             val matchesSearch = searchQuery.isBlank() ||
                     metric.displayName?.startsWith(searchQuery, ignoreCase = true) == true ||
-                    metric.reportedSymptoms?.any { it.name?.contains(searchQuery, ignoreCase = true) == true } == true||
-                    metric.causes?.any { it.name?.contains(searchQuery, ignoreCase = true) == true } == true
+                    metric.reportedSymptoms?.any {
+                        it.name?.contains(
+                            searchQuery,
+                            ignoreCase = true
+                        ) == true
+                    } == true ||
+                    metric.causes?.any {
+                        it.name?.contains(
+                            searchQuery,
+                            ignoreCase = true
+                        ) == true
+                    } == true
 
             matchesFilter && matchesSearch
         }
@@ -146,4 +157,13 @@ class HealthDataViewModel(
         }
     }
 
-} 
+    private val _selectedMetrics = MutableStateFlow<String?>(AppConstants.healthMetrics.first())
+    val selectedMetrics: StateFlow<String?> = _selectedMetrics.asStateFlow()
+
+    fun setSelectedMetric(metric: String) {
+        viewModelScope.launch {
+            _selectedMetrics.emit(metric)
+        }
+    }
+
+}

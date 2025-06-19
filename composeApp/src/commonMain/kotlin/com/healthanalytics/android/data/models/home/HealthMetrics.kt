@@ -9,6 +9,7 @@ data class HealthMetrics(
     @SerialName("gene") val gene: Gene? = Gene(),
     @SerialName("gut") val gut: Gut? = Gut(),
     @SerialName("supplement_ct") val supplementCt: SupplementCt? = SupplementCt(),
+    @SerialName("symptoms") val symptoms: Symptoms? = Symptoms()
 )
 
 @Serializable
@@ -132,4 +133,32 @@ data class Cause(
     val name: String? = null,
     val tag: List<String?>? = null,
     val type: String? = null,
+)
+
+
+@Serializable
+data class Symptoms(
+    val `data`: List<Data?>? = null
+)
+
+@Serializable
+data class Data(
+    val biomarkers: List<Biomarker?>? = null,
+    val category: String? = null,
+    val count: Int? = null,
+    val description: String? = null,
+    val is_latest: Boolean? = null,
+    val last_reported: String? = null,
+    val name: String? = null,
+    val symptom_id: String? = null
+)
+
+@Serializable
+data class Biomarker(
+    val description: String? = null,
+    val inference: String? = null,
+    val metric: String? = null,
+    val metric_id: String? = null,
+    val unit: String? = null,
+    val value: Double? = null
 )
