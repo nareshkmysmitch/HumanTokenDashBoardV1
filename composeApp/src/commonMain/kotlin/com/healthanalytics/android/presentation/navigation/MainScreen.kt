@@ -19,20 +19,20 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
@@ -45,26 +45,14 @@ import com.healthanalytics.android.presentation.screens.ProfileNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ConversationListNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
-import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
-import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
 import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
-import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
-import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
-import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenContainer
-import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
-import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrapper
 import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.koin.compose.KoinContext
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.remember
 
 val LocalMainNavigator = staticCompositionLocalOf<Navigator> {
     error("LocalMainNavigator not provided")
@@ -244,92 +232,6 @@ class MainScreen : Screen {
             }
         }
     }
-
-    @Composable
-    fun OnboardContainer(
-        isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel,
-    ) {
-        KoinContext {
-            val navController = rememberNavController()
-            val razorpayHandler: RazorpayHandler = getKoin().get()
-
-            Scaffold(
-                containerColor = AppColors.backgroundDark
-            ) { innerPadding ->
-                NavHost(
-                    navController = navController,
-                    startDestination = OnboardRoute.GetStarted,
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    composable<OnboardRoute.GetStarted> {
-                        GetStartedScreen(
-                            onGetStarted = { navController.navigate(OnboardRoute.Login) },
-                            onLogin = { navController.navigate(OnboardRoute.Login) },
-                            onViewAllBiomarkers = {})
-                    }
-                    composable<OnboardRoute.Login> {
-                        LoginScreenContainer(
-                            onboardViewModel = onboardViewModel, navigateToOtpVerification = {
-                                navController.navigate(OnboardRoute.OTPVerification)
-                            })
-
-                    }
-
-                    composable<OnboardRoute.OTPVerification> {
-                        OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                            navController.navigateUp()
-
-                        }, navigateToAccountCreation = {
-                            navController.navigate(OnboardRoute.CreateAccount)
-                        })
-                    }
-
-                    composable<OnboardRoute.CreateAccount> {
-                        CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                            navController.navigateUp()
-                        }, navigateToAddress = {
-                            navController.navigate(OnboardRoute.SampleCollectionAddress)
-                        })
-                    }
-
-                    composable<OnboardRoute.SampleCollectionAddress> {
-                        SampleCollectionAddressContainer(
-                            onboardViewModel = onboardViewModel,
-                            onBackClick = {
-                                navController.navigateUp()
-                            },
-                            navigateToBloodTest = {
-                                navController.navigate(OnboardRoute.ScheduleBloodTest)
-                            })
-                    }
-
-                    composable<OnboardRoute.ScheduleBloodTest> {
-                        ScheduleBloodTestContainer(
-                            onboardViewModel = onboardViewModel,
-                            onBackClick = {
-                                navController.navigateUp()
-                            },
-                            navigateToPayment = {
-                                navController.navigate(OnboardRoute.Payment)
-                            })
-                    }
-
-                    composable<OnboardRoute.Payment> {
-                        PaymentScreenContainer(
-                            onboardViewModel = onboardViewModel,
-                            razorpayHandler = razorpayHandler,
-                            onBackClick = {
-                                navController.navigateUp()
-                            },
-                            isPaymentCompleted = {
-                                isLoggedIn()
-                            })
-                    }
-                }
-            }
-        }
-    }
-
 }
 
 class OnboardNavWrapper(
@@ -355,7 +257,10 @@ fun exportMetricsToCsv(metrics: List<BloodData?>, scope: CoroutineScope, onSucce
         scope.launch {
             val filePath = com.healthanalytics.android.utils.saveTextFile("biomarkers.csv", csv)
             println("CSV saved to: $filePath")
-            filePath?.let { onSuccess(it) }
+            filePath?.let {
+                com.healthanalytics.android.utils.shareFile(it)
+                onSuccess(it)
+            }
         }
     } else {
         println("No metrics to export.")
