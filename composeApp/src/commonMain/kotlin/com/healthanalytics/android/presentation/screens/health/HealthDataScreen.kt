@@ -213,6 +213,7 @@ fun MetricCard(
     val isSearching = searchQuery.isNotBlank()
     val symptomsReported = metric?.symptomsReported
     val isLatest = metric?.isLatest == true
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(size12dp)
             .clickable { metric?.let { onMetricClick(it) } }) {
@@ -233,9 +234,9 @@ fun MetricCard(
                 Text(
                     text = metric?.displayName ?: "",
                     maxLines = 2,
-                    fontSize = FontSize.textSize22sp,
-                    fontFamily = FontFamily.bold(),
-                    color = AppColors.textPrimary,
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.White,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
@@ -252,24 +253,18 @@ fun MetricCard(
             Row(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${metric?.value}",
-                    fontSize = FontSize.textSize18sp,
-                    fontFamily = FontFamily.semiBold(),
-                    color = AppColors.textPrimary,
+                    fontSize = FontSize.textSize16sp,
+                    fontFamily = FontFamily.medium(),
+                    color = AppColors.White,
                 )
+                Spacer(modifier = Modifier.width(Dimensions.size4dp))
                 Text(
                     text = " ${metric?.unit}",
                     fontSize = FontSize.textSize14sp,
-                    fontFamily = FontFamily.medium(),
+                    fontFamily = FontFamily.regular(),
                     color = AppColors.TextGrey,
                 )
             }
-            Text(
-                text = "Blood",
-                fontSize = FontSize.textSize14sp,
-                fontFamily = FontFamily.medium(),
-                textAlign = TextAlign.Center,
-                color = AppColors.textPrimary,
-            )
         }
 
         Spacer(modifier = Modifier.height(size8dp))
@@ -305,7 +300,7 @@ fun MetricCard(
                 ) {
                     Text(
                         text = filterText,
-                        fontSize = FontSize.textSize14sp,
+                        fontSize = FontSize.textSize12sp,
                         fontFamily = FontFamily.medium(),
                         color = AppColors.tagBlue,
                     )
@@ -338,7 +333,7 @@ fun MetricCard(
                 ) {
                     Text(
                         text = filterText,
-                        fontSize = FontSize.textSize14sp,
+                        fontSize = FontSize.textSize12sp,
                         fontFamily = FontFamily.medium(),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -352,9 +347,9 @@ fun MetricCard(
 
         Text(
             text = "Last updated: ${formatDate(metric?.updatedAt ?: "")}",
-            fontSize = FontSize.textSize14sp,
-            fontFamily = FontFamily.medium(),
-            color = AppColors.TextGrey,
+            fontSize = FontSize.textSize12sp,
+            fontFamily = FontFamily.regular(),
+            color = AppColors.White,
         )
     }
 
