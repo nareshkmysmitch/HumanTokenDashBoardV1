@@ -13,6 +13,8 @@ import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailNa
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsScreen
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.theme.AppStrings
 import org.koin.compose.koinInject
 
@@ -22,14 +24,11 @@ sealed class BottomNavScreen : Tab {
         @Composable
         override fun Content() {
             val mainNavigator = LocalMainNavigator.current
-            
+
             HealthDataScreen(
-                viewModel = koinInject(), 
-                prefs = koinInject(), 
-                onNavigateToDetail = { biomarker ->
+                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = { biomarker ->
                     mainNavigator.push(BiomarkerDetailNavWrapper(biomarker = biomarker))
-                }
-            )
+                })
         }
 
         override val options: TabOptions
@@ -43,10 +42,13 @@ sealed class BottomNavScreen : Tab {
     object Recommendations : BottomNavScreen() {
         @Composable
         override fun Content() {
-            RecommendationsScreen(
-                viewModel = koinInject(), 
-                preferencesViewModel = koinInject()
-            )
+//            RecommendationsScreen(
+//                viewModel = koinInject(),
+//                preferencesViewModel = koinInject()
+//            )
+
+            RecommendationsTabScreen(
+                viewModel = koinInject(), preferencesViewModel = koinInject(), navigateBack = {})
         }
 
         override val options: TabOptions
@@ -61,15 +63,16 @@ sealed class BottomNavScreen : Tab {
         @Composable
         override fun Content() {
             val mainNavigator = LocalMainNavigator.current
-            val viewModel = koinInject<com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel>()
+            val viewModel =
+                koinInject<com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel>()
 
-            MarketPlaceScreen(
-                viewModel = viewModel, 
-                onProductClick = { product ->
-                    mainNavigator.push(ProductDetailScreen(product = product, viewModel = viewModel))
-                }, 
-                navigateBack = { /* Not needed in tab navigation */ }
-            )
+            MarketPlaceScreen(viewModel = viewModel, onProductClick = { product ->
+                mainNavigator.push(
+                    ProductDetailScreen(
+                        product = product, viewModel = viewModel
+                    )
+                )
+            }, navigateBack = { /* Not needed in tab navigation */ })
         }
 
         override val options: TabOptions

@@ -43,8 +43,7 @@ fun RecommendationsScreen(
     ) {
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -133,8 +132,7 @@ fun RecommendationCard(
     val isEnabled = userAction == null || userAction.is_completed == false
 
     val isSupplements = (recommendation.category?.equals(
-        AppConstants.SUPPLEMENTS,
-        ignoreCase = true
+        AppConstants.SUPPLEMENTS, ignoreCase = true
     ) == true)
 
     Card(
@@ -188,8 +186,7 @@ fun RecommendationCard(
                                 it, recommendation
                             )
                         }
-                    }
-                )
+                    })
             }
         }
     }
@@ -240,13 +237,9 @@ fun MetricChip(
         color = AppColors.SubGreyColor, shape = MaterialTheme.shapes.small, modifier = modifier
     ) {
         Text(
-            text = metric,
-            modifier = Modifier.padding(
-                horizontal = Dimensions.size8dp,
-                vertical = Dimensions.size4dp
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = AppColors.White
+            text = metric, modifier = Modifier.padding(
+                horizontal = Dimensions.size8dp, vertical = Dimensions.size4dp
+            ), style = MaterialTheme.typography.bodySmall, color = AppColors.White
         )
     }
 } 
