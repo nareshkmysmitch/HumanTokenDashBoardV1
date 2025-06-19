@@ -30,14 +30,18 @@ actual suspend fun saveTextFile(filename: String, content: String): String? {
             }
         }
 
-        // Share the file using the iOS share sheet
-//        shareFile(filePath)
+        // Open the file using the iOS share sheet
+        openCsvFile(filePath)
 
         filePath
     } catch (e: Exception) {
         println("Error saving file: ${e.message}")
         null
     }
+}
+
+fun openCsvFile(filePath: String) {
+    FileSharing.shareFile(path = filePath)
 }
 
 actual fun shareFile(filePath: String) {
