@@ -52,6 +52,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.CardTransparentButton
 import com.healthanalytics.android.ui.RecommendationIcon
 import com.healthanalytics.android.ui.TransparentButton
 import com.healthanalytics.android.utils.AppConstants
@@ -304,8 +305,8 @@ fun ActionPlanCard(
                 Text(
                     text = recommendation.description ?: "",
                     fontSize = FontSize.textSize16sp,
-                    fontFamily = FontFamily.medium(),
-                    color = AppColors.textSecondary
+                    fontFamily = FontFamily.regular(),
+                    color = AppColors.textPrimary
                 )
             } else {
                 PotentialImpact()
@@ -327,10 +328,10 @@ fun ActionPlanCard(
                 Text(
                     text = "Added $formattedDate",
                     fontSize = FontSize.textSize14sp,
-                    fontFamily = FontFamily.medium(),
-                    color = AppColors.TextGrey,
+                    fontFamily = FontFamily.regular(),
+                    color = AppColors.textPrimary,
                 )
-                TransparentButton(
+                CardTransparentButton(
                     modifier = Modifier.wrapContentWidth(),
                     icon = Icons.Default.Delete,
                     txt = AppStrings.REMOVE,

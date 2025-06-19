@@ -43,7 +43,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
-import com.healthanalytics.android.ui.PrimaryButton
+import com.healthanalytics.android.ui.CardPrimaryButton
 import com.healthanalytics.android.ui.RecommendationIcon
 import com.healthanalytics.android.utils.AppConstants
 import org.koin.compose.koinInject
@@ -208,7 +208,7 @@ fun RecommendationCard(
                 val buttonColor =
                     if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
 
-                PrimaryButton(
+                CardPrimaryButton(
                     modifier = Modifier.wrapContentWidth(),
                     txt = buttonText,
                     buttonColor = buttonColor,
@@ -248,11 +248,11 @@ fun RecommendationTitle(recommendation: Recommendation) {
         ) {
             RecommendationIcon(icon, modifier = Modifier.size(Dimensions.size16dp))
         }
-        Spacer(modifier = Modifier.width(Dimensions.size12dp))
+        Spacer(modifier = Modifier.width(Dimensions.size8dp))
         Text(
             text = recommendation.name,
-            fontSize = FontSize.textSize18sp,
-            fontFamily = FontFamily.medium(),
+            fontSize = FontSize.textSize20sp,
+            fontFamily = FontFamily.semiBold(),
             color = AppColors.textPrimary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -275,7 +275,8 @@ fun MetricChip(
                 horizontal = Dimensions.size8dp,
                 vertical = Dimensions.size4dp
             ),
-            style = MaterialTheme.typography.bodySmall,
+            fontSize = FontSize.textSize12sp,
+            fontFamily = FontFamily.regular(),
             color = AppColors.White
         )
     }
