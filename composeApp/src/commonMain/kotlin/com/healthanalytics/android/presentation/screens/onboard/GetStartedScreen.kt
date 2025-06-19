@@ -51,6 +51,7 @@ import com.healthanalytics.android.presentation.theme.FontSize
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.rounded_logo
 import org.jetbrains.compose.resources.painterResource
+import cafe.adriel.voyager.core.screen.Screen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -472,4 +473,19 @@ data class BiomarkerCategory(
     val title: String,
     val color: androidx.compose.ui.graphics.Color,
     val items: List<String>
-) 
+)
+
+class GetStartedScreenNav(
+    private val onGetStarted: () -> Unit,
+    private val onLogin: () -> Unit,
+    private val onViewAllBiomarkers: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        GetStartedScreen(
+            onGetStarted = onGetStarted,
+            onLogin = onLogin,
+            onViewAllBiomarkers = onViewAllBiomarkers
+        )
+    }
+} 

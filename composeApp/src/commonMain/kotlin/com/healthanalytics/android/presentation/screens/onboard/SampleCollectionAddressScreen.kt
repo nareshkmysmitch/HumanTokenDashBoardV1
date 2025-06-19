@@ -36,6 +36,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.SharedFlow
+import cafe.adriel.voyager.core.screen.Screen
 
 @Composable
 fun SampleCollectionAddressContainer(
@@ -255,5 +256,20 @@ fun GetAccountCreationResponse(
         }
 
         else -> {}
+    }
+}
+
+class SampleCollectionAddressScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val onBackClick: () -> Unit,
+    private val navigateToBloodTest: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        SampleCollectionAddressContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = onBackClick,
+            navigateToBloodTest = navigateToBloodTest
+        )
     }
 }

@@ -34,6 +34,7 @@ import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontSize
+import cafe.adriel.voyager.core.screen.Screen
 
 @Composable
 fun PaymentScreenContainer(
@@ -213,5 +214,22 @@ private fun NextStepCard(
                 )
             }
         }
+    }
+}
+
+class PaymentScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val onBackClick: () -> Unit,
+    private val isPaymentCompleted: () -> Unit,
+    private val razorpayHandler: RazorpayHandler
+) : Screen {
+    @Composable
+    override fun Content() {
+        PaymentScreenContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = onBackClick,
+            isPaymentCompleted = isPaymentCompleted,
+            razorpayHandler = razorpayHandler
+        )
     }
 }

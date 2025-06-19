@@ -48,6 +48,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import cafe.adriel.voyager.core.screen.Screen
 
 @Composable
 fun CreateAccountContainer(
@@ -466,4 +467,19 @@ fun CreateAccountScreenPreview() {
     CreateAccountScreen(
         accountDetails = null
     )
+}
+
+class CreateAccountScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val onBackClick: () -> Unit,
+    private val navigateToAddress: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        CreateAccountContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = onBackClick,
+            navigateToAddress = navigateToAddress
+        )
+    }
 }

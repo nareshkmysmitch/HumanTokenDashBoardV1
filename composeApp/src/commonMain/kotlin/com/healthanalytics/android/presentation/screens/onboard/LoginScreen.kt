@@ -52,7 +52,7 @@ import humantokendashboardv1.composeapp.generated.resources.rounded_logo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
-
+import cafe.adriel.voyager.core.screen.Screen
 
 @Composable
 fun LoginScreenContainer(
@@ -68,8 +68,6 @@ fun LoginScreenContainer(
         phoneNumber = onboardViewModel.getPhoneNumber()
     )
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -258,6 +256,19 @@ fun GetOTPResponse(
         }
 
         else -> {}
+    }
+}
+
+class LoginScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val navigateToOtpVerification: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        LoginScreenContainer(
+            onboardViewModel = onboardViewModel,
+            navigateToOtpVerification = navigateToOtpVerification
+        )
     }
 }
 

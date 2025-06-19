@@ -57,7 +57,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-
+import cafe.adriel.voyager.core.screen.Screen
 
 @Composable
 fun ScheduleBloodTestContainer(
@@ -327,5 +327,20 @@ fun getSlotUpdatedResponse(
             }
         }
         else -> {}
+    }
+}
+
+class ScheduleBloodTestScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val onBackClick: () -> Unit,
+    private val navigateToPayment: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        ScheduleBloodTestContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = onBackClick,
+            navigateToPayment = navigateToPayment
+        )
     }
 }

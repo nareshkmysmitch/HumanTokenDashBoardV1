@@ -51,6 +51,7 @@ import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import cafe.adriel.voyager.core.screen.Screen
 
 private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     clickable(
@@ -339,5 +340,20 @@ fun OTPScreenPreview() {
         onResendClick = {},
         onContinueClick = {}
     )
+}
+
+class OTPScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val onBackClick: () -> Unit,
+    private val navigateToAccountCreation: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        OTPContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = onBackClick,
+            navigateToAccountCreation = navigateToAccountCreation
+        )
+    }
 }
 
