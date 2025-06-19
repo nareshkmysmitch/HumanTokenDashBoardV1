@@ -103,9 +103,7 @@ fun CreateAccountScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.backgroundDark)
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier

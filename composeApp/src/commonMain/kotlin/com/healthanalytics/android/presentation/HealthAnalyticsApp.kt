@@ -286,11 +286,11 @@ fun OnboardContainer(
         val razorpayHandler: RazorpayHandler = getKoin().get()
 
         Scaffold(
-            containerColor = AppColors.backgroundDark
+            containerColor = AppColors.backGround
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = OnboardRoute.GetStarted,
+                startDestination = OnboardRoute.CreateAccount,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable<OnboardRoute.GetStarted> {
