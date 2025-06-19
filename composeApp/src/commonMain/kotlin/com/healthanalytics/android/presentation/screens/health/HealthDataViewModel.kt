@@ -3,8 +3,8 @@ package com.healthanalytics.android.presentation.screens.health
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
-import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.data.api.HealthDataUiState
+import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.utils.AppConstants
 import io.ktor.util.reflect.instanceOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,7 +69,7 @@ class HealthDataViewModel(
     fun getFilteredMetrics(): List<BloodData?> {
         val uiState = _uiState.value
         val currentFilter = uiState.selectedFilter
-        val searchQuery = uiState.searchQuery
+        val searchQuery = uiState.searchQuery.trim()
         val filterMap = healthDataMap[currentFilter]
         val isNewData = currentFilter == AppConstants.NEW_DATA
 
@@ -82,8 +82,10 @@ class HealthDataViewModel(
                 else -> filterMap?.contains(metric.displayRating?.lowercase()) == true
             }
 
-            val matchesSearch = searchQuery.isEmpty() ||
-                    metric.displayName?.startsWith(searchQuery, ignoreCase = true) == true
+            val matchesSearch = searchQuery.isBlank() ||
+                    metric.displayName?.startsWith(searchQuery, ignoreCase = true) == true ||
+                    metric.reportedSymptoms?.any { it.name?.contains(searchQuery, ignoreCase = true) == true } == true||
+                    metric.causes?.any { it.name?.contains(searchQuery, ignoreCase = true) == true } == true
 
             matchesFilter && matchesSearch
         }

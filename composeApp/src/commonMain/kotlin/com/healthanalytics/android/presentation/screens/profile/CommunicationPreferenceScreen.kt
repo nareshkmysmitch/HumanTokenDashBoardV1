@@ -38,7 +38,7 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
-import com.healthanalytics.android.ui.PrimaryButton
+import com.healthanalytics.android.ui.CardPrimaryButton
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.biohacker_description
 import humantokendashboardv1.composeapp.generated.resources.biohacker_example
@@ -189,7 +189,7 @@ fun CommunicationPreference(
                 if (isEnabled) AppColors.Pink else AppColors.Pink.copy(alpha = 0.2f)
 
 
-            PrimaryButton(
+            CardPrimaryButton(
                 modifier = Modifier.wrapContentWidth(),
                 txt = stringResource(Res.string.save_preferences),
                 buttonColor = buttonColor,

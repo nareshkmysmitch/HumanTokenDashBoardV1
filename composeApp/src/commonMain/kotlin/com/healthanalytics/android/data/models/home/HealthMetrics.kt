@@ -1,4 +1,4 @@
-package com.healthanalytics.android.data.api
+package com.healthanalytics.android.data.models.home
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -35,7 +35,9 @@ data class BloodData(
     @SerialName("correlation") val correlation: List<Correlation?>? = null,
     @SerialName("short_description") val shortDescription: String? = null,
     @SerialName("n_symptoms_reported") val symptomsReported: Int? = null,
-    @SerialName("is_latest") val isLatest: Boolean? = null
+    @SerialName("causes") val causes: List<Cause>? = null,
+    @SerialName("reported_symptoms") val reportedSymptoms: List<ReportedSymptom>? = null,
+    @SerialName("is_latest") val isLatest: Boolean? = null,
 )
 
 @Serializable
@@ -114,4 +116,20 @@ data class SupplementData(
     @SerialName("supplement") val supplement: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
     @SerialName("user_id") val userId: String? = null,
+)
+
+@Serializable
+data class ReportedSymptom(
+    val name: String? = null,
+    val symptom_id: String? = null,
+)
+
+
+@Serializable
+data class Cause(
+    val description: String? = null,
+    val id: String? = null,
+    val name: String? = null,
+    val tag: List<String?>? = null,
+    val type: String? = null,
 )

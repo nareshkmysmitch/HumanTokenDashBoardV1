@@ -85,3 +85,70 @@ fun PrimaryButton(
     }
 }
 
+
+@Composable
+fun CardPrimaryButton(
+    modifier: Modifier = Modifier,
+    txt: String,
+    enable: Boolean = true,
+    onClick: () -> Unit,
+    buttonColor: Color,
+) {
+    Button(
+        enabled = enable,
+        onClick = onClick,
+        modifier = modifier.height(Dimensions.size50dp),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = AppColors.White,
+            containerColor = buttonColor
+        ),
+        shape = RoundedCornerShape(Dimensions.size12dp)
+    ) {
+        Text(
+            text = txt,
+            fontSize = FontSize.textSize12sp,
+            fontFamily = FontFamily.medium(),
+            color = AppColors.White
+        )
+    }
+}
+
+@Composable
+fun CardTransparentButton(
+    icon: ImageVector,
+    txt: String,
+    onClicked: () -> Unit,
+    modifier: Modifier,
+    isEnabled: Boolean = true,
+) {
+    OutlinedButton(
+        modifier = modifier.height(Dimensions.size50dp),
+        onClick = onClicked,
+        shape = RoundedCornerShape(Dimensions.size12dp),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = AppColors.White,
+            containerColor = AppColors.Black
+        ),
+        enabled = isEnabled,
+        border = BorderStroke(
+            width = Dimensions.size1dp,
+            color = AppColors.lineBorderColor,
+        )
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "Remove",
+            modifier = Modifier.size(Dimensions.size16dp),
+            tint = if (isEnabled) AppColors.White else AppColors.buttonGrey
+        )
+        Spacer(modifier = Modifier.width(Dimensions.size8dp))
+        Text(
+            txt,
+            fontSize = FontSize.textSize12sp,
+            fontFamily = FontFamily.medium(),
+        )
+    }
+}
+
+
+
