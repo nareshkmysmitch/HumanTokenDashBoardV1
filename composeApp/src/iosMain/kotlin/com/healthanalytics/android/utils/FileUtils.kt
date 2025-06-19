@@ -31,7 +31,7 @@ actual suspend fun saveTextFile(filename: String, content: String): String? {
         }
 
         // Share the file using the iOS share sheet
-        shareFile(filePath)
+//        shareFile(filePath)
 
         filePath
     } catch (e: Exception) {
@@ -41,5 +41,5 @@ actual suspend fun saveTextFile(filename: String, content: String): String? {
 }
 
 actual fun shareFile(filePath: String) {
-    FileSharing.shareFile(path = filePath)
+//    FileSharing.shareFile(path = filePath)
 }

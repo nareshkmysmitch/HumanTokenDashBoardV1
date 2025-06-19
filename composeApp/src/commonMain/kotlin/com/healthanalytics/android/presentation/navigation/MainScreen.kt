@@ -356,10 +356,7 @@ fun exportMetricsToCsv(metrics: List<BloodData?>, scope: CoroutineScope, onSucce
         scope.launch {
             val filePath = com.healthanalytics.android.utils.saveTextFile("biomarkers.csv", csv)
             println("CSV saved to: $filePath")
-            filePath?.let { 
-                onSuccess(it)
-                // File will be automatically opened by the saveTextFile implementation
-            }
+            filePath?.let { onSuccess(it) }
         }
     } else {
         println("No metrics to export.")
