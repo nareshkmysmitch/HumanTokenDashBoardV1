@@ -11,6 +11,6 @@ import org.koin.compose.koinInject
 fun App() {
     AppTheme {
         val healthDataViewModel: HealthDataViewModel = koinInject()
-        Navigator(MainScreen(healthDataViewModel = healthDataViewModel))
+        Navigator(MainScreen())
     }
 }

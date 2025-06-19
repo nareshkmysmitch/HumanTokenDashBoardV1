@@ -70,9 +70,7 @@ val LocalMainNavigator = staticCompositionLocalOf<Navigator> {
     error("LocalMainNavigator not provided")
 }
 
-class MainScreen(
-    private val healthDataViewModel: HealthDataViewModel
-) : Screen {
+class MainScreen : Screen {
 
     @Composable
     fun TopBarActions(
@@ -142,6 +140,7 @@ class MainScreen(
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
+        val healthDataViewModel: HealthDataViewModel = koinInject()
         val onboardViewModel: OnboardViewModel = koinInject()
         val razorpayHandler: RazorpayHandler = getKoin().get()
         val onBoardUiState = onboardViewModel.onBoardUiState.collectAsStateWithLifecycle().value
