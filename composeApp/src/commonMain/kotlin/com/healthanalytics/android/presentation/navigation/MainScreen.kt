@@ -86,7 +86,7 @@ class MainScreen : Screen {
                 }
             }
 
-            BottomNavScreen.Recommendations -> {
+            BottomNavScreen.Services -> {
                 IconButton(onClick = { mainNavigator.push(ProfileNavWrapper()) }) {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
@@ -96,17 +96,28 @@ class MainScreen : Screen {
                 }
             }
 
-            BottomNavScreen.Marketplace -> {
-                IconButton(onClick = {
-                    mainNavigator.push(CartScreen(viewModel = marketPlaceViewModel))
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Cart",
-                        tint = AppColors.White
-                    )
-                }
-            }
+
+//            BottomNavScreen.Recommendations -> {
+//                IconButton(onClick = { mainNavigator.push(ProfileNavWrapper()) }) {
+//                    Icon(
+//                        imageVector = Icons.Default.AccountCircle,
+//                        contentDescription = "Profile",
+//                        tint = AppColors.White
+//                    )
+//                }
+//            }
+//
+//            BottomNavScreen.Marketplace -> {
+//                IconButton(onClick = {
+//                    mainNavigator.push(CartScreen(viewModel = marketPlaceViewModel))
+//                }) {
+//                    Icon(
+//                        imageVector = Icons.Default.ShoppingCart,
+//                        contentDescription = "Cart",
+//                        tint = AppColors.White
+//                    )
+//                }
+//            }
         }
     }
 
@@ -130,8 +141,9 @@ class MainScreen : Screen {
 
                 val bottomNavScreens = listOf(
                     BottomNavScreen.Health,
-                    BottomNavScreen.Recommendations,
-                    BottomNavScreen.Marketplace
+                    BottomNavScreen.Services,
+//                    BottomNavScreen.Recommendations,
+//                    BottomNavScreen.Marketplace
                 )
 
                 val currentScreen = mainNavigator.lastItem
@@ -149,14 +161,14 @@ class MainScreen : Screen {
                                 topBar = {
                                     TopAppBar(
                                         title = { Text("Human Token") }, actions = {
-                                            TopBarActions(
-                                                currentTab = currentTab,
-                                                mainNavigator = mainNavigator
-                                            )
-                                        }, colors = TopAppBarDefaults.topAppBarColors(
-                                            containerColor = AppColors.Black,
-                                            titleContentColor = Color.White
+                                        TopBarActions(
+                                            currentTab = currentTab,
+                                            mainNavigator = mainNavigator
                                         )
+                                    }, colors = TopAppBarDefaults.topAppBarColors(
+                                        containerColor = AppColors.Black,
+                                        titleContentColor = Color.White
+                                    )
                                     )
                                 },
 
