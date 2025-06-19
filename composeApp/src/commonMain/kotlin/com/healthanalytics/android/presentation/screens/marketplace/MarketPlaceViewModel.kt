@@ -1,5 +1,6 @@
 package com.healthanalytics.android.presentation.screens.marketplace
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.humantoken.ui.screens.Cart
@@ -12,10 +13,12 @@ import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
 import com.healthanalytics.android.data.models.onboard.SlotRequest
 import com.healthanalytics.android.data.models.onboard.SlotsAvailability
+import com.healthanalytics.android.data.models.profile.PersonalData
 import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.presentation.screens.profile.CommunicationUIData
+import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -148,7 +151,8 @@ class MarketPlaceViewModel(
 
     private val _communicationSelected =
         MutableStateFlow<CommunicationUIData>(CommunicationUIData.Doctor)
-    val communicationSelected: StateFlow<CommunicationUIData?> = _communicationSelected.asStateFlow()
+    val communicationSelected: StateFlow<CommunicationUIData?> =
+        _communicationSelected.asStateFlow()
 
     var initialPreferenceValue: CommunicationUIData = CommunicationUIData.Doctor
 
@@ -658,4 +662,151 @@ class MarketPlaceViewModel(
         }
     }
 
-} 
+
+    private val _uiPersonalData = MutableStateFlow(LoadingState())
+    val uiPersonalData: StateFlow<LoadingState> =
+        _uiPersonalData.asStateFlow()
+
+
+    fun loadPersonalData(accessToken: String?) {
+        viewModelScope.launch {
+            try {
+                _uiPersonalData.update { it.copy(isLoading = true) }
+                val personalData =
+                    accessToken?.let { apiService.getPersonalData(it) }
+                setPersonalData(personalData)
+                _uiPersonalData.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiPersonalData.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load personal"
+                    )
+                }
+            }
+        }
+    }
+
+    private val _personalData = MutableStateFlow<PersonalData?>(null)
+    val personalData: StateFlow<PersonalData?> =
+        _personalData.asStateFlow()
+
+    private fun setPersonalData(personalData: PersonalData?) {
+        viewModelScope.launch {
+            _personalData.emit(personalData)
+        }
+    }
+
+    fun filterDecimalInput(input: String,maxLength:Int): String {
+        if (input.isEmpty()) return ""
+
+        // Only allow 0-9 and .
+        val cleaned = input.filter { it.isDigit() || it == '.' }
+
+        // Only one decimal point allowed
+        val parts = cleaned.split(".")
+        val integerPart = parts.getOrNull(0) ?: ""
+        val decimalPart = parts.getOrNull(1)
+
+        val result = if (decimalPart != null) {
+            "$integerPart.${decimalPart}"
+        } else {
+            integerPart
+        }
+
+        // Enforce max length of 4
+        return if (result.length <= maxLength) result else result.take(maxLength)
+    }
+
+    fun calculateBMI(userWeight: Double?, userHeight: Double?): Double? {
+        if (userHeight == null || userHeight == 0.0 || userWeight == null || userWeight == 0.0) return null
+
+        val heightInMeters = userHeight / 100
+        val bmi = userWeight / (heightInMeters * heightInMeters)
+
+        // Round to 1 decimal
+        return (bmi * 10).toInt().toDouble() / 10.0
+    }
+
+    fun displayBMI(bmi: Double?): String {
+        return bmi?.let {
+            if (it % 1.0 == 0.0) it.toInt().toString() else it.toString()
+        } ?: ""
+    }
+
+    fun getBMICategory(bmi: Double?): Pair<String, Color> {
+        return bmi?.let {
+            when {
+                bmi < 18.5 -> AppConstants.BMI_CATEGORY_UNDERWEIGHT to Color(0xFFFACC15)
+                bmi < 25.0 -> AppConstants.BMI_CATEGORY_NORMAL to Color(0xFF4ADE80)
+                bmi < 30.0 -> AppConstants.BMI_CATEGORY_OVERWEIGHT to Color(0xFFFACC15)
+                else -> AppConstants.BMI_CATEGORY_OBESE to Color(0xFFF87171)
+            }
+        } ?: ("" to Color.Black)
+    }
+
+    fun isHeightInvalid(editHeight: String): Boolean {
+        if (editHeight.isBlank()) {
+            return false
+        }
+        val heightValue = editHeight.toDoubleOrNull()
+        return heightValue == null ||
+                heightValue !in AppConstants.MIN_HEIGHT..AppConstants.MAX_HEIGHT
+    }
+
+    fun isWeightInvalid(editWeight: String): Boolean {
+        if (editWeight.isBlank()) {
+            return false
+        }
+        val weightValue = editWeight.toDoubleOrNull()
+        return weightValue == null ||
+                weightValue !in AppConstants.MIN_WEIGHT..AppConstants.MAX_WEIGHT
+    }
+
+
+    private val _uiHealthMetrics = MutableStateFlow(LoadingState())
+    val uiHealthMetrics: StateFlow<LoadingState> =
+        _uiHealthMetrics.asStateFlow()
+
+
+    fun saveHealthMetrics(accessToken: String, editWeight: String, editHeight: String) {
+        viewModelScope.launch {
+            try {
+                _uiHealthMetrics.update { it.copy(isLoading = true) }
+
+                val personalData = personalData.value
+                personalData?.pii_data?.weight =
+                    editWeight.toDoubleOrNull() //if need we can pass double
+                personalData?.pii_data?.height =
+                    editHeight.toDoubleOrNull()//if need we can pass double
+
+                val personalResponse =
+                    apiService.saveHealthMetrics(accessToken, personalData)
+
+                if (personalResponse) {
+                    setPersonalData(personalData)
+                }
+
+                _uiHealthMetrics.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = personalResponse
+                    )
+                }
+            } catch (e: Exception) {
+                _uiHealthMetrics.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to uploaded preference"
+                    )
+                }
+            }
+        }
+    }
+
+
+}
