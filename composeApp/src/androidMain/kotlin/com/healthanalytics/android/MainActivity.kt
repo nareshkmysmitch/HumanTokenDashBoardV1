@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import com.healthanalytics.android.di.androidModule
-import com.healthanalytics.android.presentation.HealthAnalyticsApp
 import org.koin.core.context.loadKoinModules
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +16,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                HealthAnalyticsApp()
+                App()
             }
         }
     }

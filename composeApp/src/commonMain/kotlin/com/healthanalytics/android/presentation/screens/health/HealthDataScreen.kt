@@ -28,6 +28,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,12 +63,13 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun HealthDataScreen(
-    viewModel: HealthDataViewModel,
-    prefs: PreferencesViewModel,
-    onNavigateToDetail: (BloodData?) -> Unit,
+    viewModel: HealthDataViewModel = koinInject(),
+    prefs: PreferencesViewModel = koinInject(),
+    onNavigateToDetail: (BloodData?) -> Unit = {},
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()

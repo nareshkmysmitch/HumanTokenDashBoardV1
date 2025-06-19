@@ -20,8 +20,7 @@ data class TestBookingState(
 )
 
 class TestBookingViewModel(
-    private val api: ApiService,
-    private val preferencesRepository: PreferencesRepository
+    private val api: ApiService, private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(TestBookingState())
     val state: StateFlow<TestBookingState> = _state.asStateFlow()
@@ -52,10 +51,9 @@ class TestBookingViewModel(
                 )
             }
         } catch (e: Exception) {
-            _state.update { 
+            _state.update {
                 it.copy(
-                    isLoading = false,
-                    error = e.message ?: "Unknown error occurred"
+                    isLoading = false, error = e.message ?: "Unknown error occurred"
                 )
             }
         }
@@ -64,20 +62,19 @@ class TestBookingViewModel(
     fun toggleTestSelection(test: Product) {
         _state.update { currentState ->
             val updatedSelection = currentState.selectedTests.toMutableSet()
-            
+
             if (test.isAdded) {
                 updatedSelection.add(test)
             } else {
                 updatedSelection.removeAll { it.product_id == test.product_id }
             }
-            
+
             val totalAmount = updatedSelection.sumOf { product ->
                 product.price?.toDoubleOrNull() ?: 0.0
             }
-            
+
             currentState.copy(
-                selectedTests = updatedSelection,
-                totalAmount = totalAmount
+                selectedTests = updatedSelection, totalAmount = totalAmount
             )
         }
     }
@@ -86,14 +83,13 @@ class TestBookingViewModel(
         _state.update { currentState ->
             val updatedSelection = currentState.selectedTests.toMutableSet()
             updatedSelection.removeAll { it.product_id == test.product_id }
-            
+
             val totalAmount = updatedSelection.sumOf { product ->
                 product.price?.toDoubleOrNull() ?: 0.0
             }
-            
+
             currentState.copy(
-                selectedTests = updatedSelection,
-                totalAmount = totalAmount
+                selectedTests = updatedSelection, totalAmount = totalAmount
             )
         }
     }
@@ -101,12 +97,12 @@ class TestBookingViewModel(
     fun scheduleTests() {
         val selectedTests = _state.value.selectedTests
         if (selectedTests.isEmpty()) return
-        
+
         viewModelScope.launch {
             try {
                 println("Scheduling tests: ${selectedTests.map { it.name }}")
             } catch (e: Exception) {
-                _state.update { 
+                _state.update {
                     it.copy(error = e.message ?: "Failed to schedule tests")
                 }
             }
