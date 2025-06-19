@@ -43,6 +43,7 @@ import com.healthanalytics.android.presentation.screens.chat.ConversationListNav
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
 import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
+import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreenNav
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
 import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
@@ -55,20 +56,12 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import org.koin.compose.KoinContext
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
-import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.LoginScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.OTPScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.CreateAccountScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenNav
 
 val LocalMainNavigator = staticCompositionLocalOf<Navigator> {
     error("LocalMainNavigator not provided")
 }
 
 class MainScreen : Screen {
-
 
     @Composable
     fun TopBarActions(currentTab: Tab, mainNavigator: Navigator) {
@@ -123,7 +116,7 @@ class MainScreen : Screen {
 
         val onboardViewModel: OnboardViewModel = koinInject()
         val razorpayHandler: RazorpayHandler = getKoin().get()
-        val onBoardUiState by onboardViewModel.onBoardUiState.collectAsStateWithLifecycle()
+        val onBoardUiState = onboardViewModel.onBoardUiState.collectAsStateWithLifecycle().value
 
         if (onBoardUiState.isLoading) {
             CircularProgressIndicator()
@@ -156,14 +149,14 @@ class MainScreen : Screen {
                                 topBar = {
                                     TopAppBar(
                                         title = { Text("Human Token") }, actions = {
-                                        TopBarActions(
-                                            currentTab = currentTab,
-                                            mainNavigator = mainNavigator
+                                            TopBarActions(
+                                                currentTab = currentTab,
+                                                mainNavigator = mainNavigator
+                                            )
+                                        }, colors = TopAppBarDefaults.topAppBarColors(
+                                            containerColor = AppColors.Black,
+                                            titleContentColor = Color.White
                                         )
-                                    }, colors = TopAppBarDefaults.topAppBarColors(
-                                        containerColor = AppColors.Black,
-                                        titleContentColor = Color.White
-                                    )
                                     )
                                 },
 
@@ -313,91 +306,9 @@ class OnboardNavWrapper(
     override fun Content() {
         Navigator(
             GetStartedScreenNav(
-                onGetStarted = {
-                it.push(
-                    LoginScreenNav(
-                        onboardViewModel, navigateToOtpVerification = {
-                            it.push(
-                                OTPScreenNav(
-                                    onboardViewModel,
-                                    onBackClick = { it.pop() },
-                                    navigateToAccountCreation = {
-                                        it.push(
-                                            CreateAccountScreenNav(
-                                                onboardViewModel,
-                                                onBackClick = { it.pop() },
-                                                navigateToAddress = {
-                                                    it.push(
-                                                        SampleCollectionAddressScreenNav(
-                                                            onboardViewModel,
-                                                            onBackClick = { it.pop() },
-                                                            navigateToBloodTest = {
-                                                                it.push(
-                                                                    ScheduleBloodTestScreenNav(
-                                                                        onboardViewModel,
-                                                                        onBackClick = { it.pop() },
-                                                                        navigateToPayment = {
-                                                                            it.push(
-                                                                                PaymentScreenNav(
-                                                                                    onboardViewModel,
-                                                                                    onBackClick = { it.pop() },
-                                                                                    isPaymentCompleted = { isLoggedIn() },
-                                                                                    razorpayHandler = razorpayHandler
-                                                                                )
-                                                                            )
-                                                                        })
-                                                                )
-                                                            })
-                                                    )
-                                                })
-                                        )
-                                    })
-                            )
-                        })
-                )
-            }, onLogin = {
-                it.push(
-                    LoginScreenNav(
-                        onboardViewModel, navigateToOtpVerification = {
-                            it.push(
-                                OTPScreenNav(
-                                    onboardViewModel,
-                                    onBackClick = { it.pop() },
-                                    navigateToAccountCreation = {
-                                        it.push(
-                                            CreateAccountScreenNav(
-                                                onboardViewModel,
-                                                onBackClick = { it.pop() },
-                                                navigateToAddress = {
-                                                    it.push(
-                                                        SampleCollectionAddressScreenNav(
-                                                            onboardViewModel,
-                                                            onBackClick = { it.pop() },
-                                                            navigateToBloodTest = {
-                                                                it.push(
-                                                                    ScheduleBloodTestScreenNav(
-                                                                        onboardViewModel,
-                                                                        onBackClick = { it.pop() },
-                                                                        navigateToPayment = {
-                                                                            it.push(
-                                                                                PaymentScreenNav(
-                                                                                    onboardViewModel,
-                                                                                    onBackClick = { it.pop() },
-                                                                                    isPaymentCompleted = { isLoggedIn() },
-                                                                                    razorpayHandler = razorpayHandler
-                                                                                )
-                                                                            )
-                                                                        })
-                                                                )
-                                                            })
-                                                    )
-                                                })
-                                        )
-                                    })
-                            )
-                        })
-                )
-            }, onViewAllBiomarkers = TODO()
+                onboardViewModel = onboardViewModel,
+                razorpayHandler = razorpayHandler,
+                isLoggedIn = isLoggedIn
             )
         )
     }

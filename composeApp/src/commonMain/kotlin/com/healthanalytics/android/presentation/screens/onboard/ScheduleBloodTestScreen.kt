@@ -58,6 +58,9 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.healthanalytics.android.payment.RazorpayHandler
 
 @Composable
 fun ScheduleBloodTestContainer(
@@ -332,15 +335,18 @@ fun getSlotUpdatedResponse(
 
 class ScheduleBloodTestScreenNav(
     private val onboardViewModel: OnboardViewModel,
-    private val onBackClick: () -> Unit,
-    private val navigateToPayment: () -> Unit
+    private val razorpayHandler: RazorpayHandler,
+    private val isLoggedIn: () -> Unit
 ) : Screen {
     @Composable
     override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
         ScheduleBloodTestContainer(
             onboardViewModel = onboardViewModel,
-            onBackClick = onBackClick,
-            navigateToPayment = navigateToPayment
+            onBackClick = { navigator.pop() },
+            navigateToPayment = {
+                navigator.push(PaymentScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
+            }
         )
     }
 }
