@@ -60,7 +60,7 @@ import com.healthanalytics.android.payment.RazorpayHandler
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun GetStartedScreen(
-    onGetStarted: () -> Unit, onLogin: () -> Unit, onViewAllBiomarkers: () -> Unit
+    onGetStarted: () -> Unit, onLogin: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize().background(AppColors.backgroundDark)
@@ -426,6 +426,6 @@ class GetStartedScreenNav(
             navigator.push(LoginScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
         }, onLogin = {
             navigator.push(LoginScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
-        }, onViewAllBiomarkers = { /* TODO: Implement if needed */ })
+        })
     }
 } 

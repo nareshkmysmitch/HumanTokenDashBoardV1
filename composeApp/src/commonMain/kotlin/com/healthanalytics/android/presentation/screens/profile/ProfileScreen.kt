@@ -269,8 +269,7 @@ fun ProfileScreen(
                         }, onSaveClicked = { communication ->
                             if (!accessToken.isNullOrEmpty() && communication != null) {
                                 viewModel.saveCommunicationPreference(
-                                    accessToken!!,
-                                    communication
+                                    accessToken!!, communication
                                 )
                             }
                         })
@@ -280,8 +279,7 @@ fun ProfileScreen(
                         HealthMetrics(viewModel = viewModel, onSaved = { editWeight, editHeight ->
                             if (!accessToken.isNullOrEmpty()) {
                                 viewModel.saveHealthMetrics(
-                                    accessToken!!,
-                                    editWeight, editHeight
+                                    accessToken!!, editWeight, editHeight
                                 )
                             }
                         })

@@ -45,22 +45,20 @@ fun PaymentScreenContainer(
     isPaymentCompleted: () -> Unit,
     razorpayHandler: RazorpayHandler,
 ) {
-
     PaymentScreen(
-        onBackClick = onBackClick,
-        onContinueClick = {
+        onBackClick = onBackClick, onContinueClick = {
             val orderDetail = onboardViewModel.getGeneratedOrderDetail()
 
-            if (orderDetail !=null){
+            if (orderDetail != null) {
                 startRazorpayFlow(
                     amount = orderDetail.amount?.toInt() ?: 0,
                     currency = orderDetail.currency ?: "INR",
-                    description = orderDetail.description ?: "" ,
+                    description = orderDetail.description ?: "",
                     orderId = orderDetail.payment_order_id ?: "",
                     razorpayHandler = razorpayHandler,
                     listener = object : RazorpayResultListener {
                         override fun onPaymentSuccess(paymentId: String?) {
-                            if (orderDetail.payment_order_id != null){
+                            if (orderDetail.payment_order_id != null) {
                                 onboardViewModel.getPaymentStatus(orderDetail.payment_order_id)
                                 isPaymentCompleted()
                             }
@@ -69,41 +67,32 @@ fun PaymentScreenContainer(
                         override fun onPaymentError(code: Int, message: String?) {
 
                         }
-                    }
-                )
+                    })
             }
-        }
-    )
+        })
 }
 
 @Composable
 fun PaymentScreen(
-    onBackClick: () -> Unit = {},
-    onContinueClick: () -> Unit = {}
+    onBackClick: () -> Unit = {}, onContinueClick: () -> Unit = {}
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.backgroundDark)
+        modifier = Modifier.fillMaxSize().background(AppColors.backgroundDark)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(Dimensions.cardPadding),
+            modifier = Modifier.fillMaxSize().padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             DHToolBar(
-                title = AppStrings.PAYMENT,
-                onBackClick = onBackClick
+                title = AppStrings.PAYMENT, onBackClick = onBackClick
             )
 
             Spacer(modifier = Modifier.height(Dimensions.size50dp))
 
             // Main content
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
+                modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start
             ) {
                 // Payment Confirmation Card
                 NextStepCard(
@@ -135,20 +124,15 @@ fun PaymentScreen(
             // Continue Button
             Button(
                 onClick = onContinueClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Dimensions.buttonHeight),
+                modifier = Modifier.fillMaxWidth().height(Dimensions.buttonHeight),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF665771),
-                    contentColor = AppColors.textPrimary
+                    containerColor = Color(0xFF665771), contentColor = AppColors.textPrimary
                 ),
                 shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
             ) {
                 Text(
-                    text = "Continue to Pay ₹4,999",
-                    style = AppTextStyles.buttonText.copy(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                    text = "Continue to Pay ₹4,999", style = AppTextStyles.buttonText.copy(
+                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold
                     )
                 )
             }
@@ -160,37 +144,25 @@ fun PaymentScreen(
 
 @Composable
 private fun NextStepCard(
-    icon: String,
-    title: String,
-    description: String,
-    modifier: Modifier = Modifier
+    icon: String, title: String, description: String, modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
             containerColor = Color(0xFF444463).copy(alpha = 0.2f)
-        ),
-        shape = RoundedCornerShape(16.dp)
+        ), shape = RoundedCornerShape(16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimensions.cardPadding),
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.cardPadding),
             verticalAlignment = Alignment.Top
         ) {
             // Icon
             Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(
-                        color = AppColors.backgroundDark,
-                        shape = RoundedCornerShape(12.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.size(48.dp).background(
+                    color = AppColors.backgroundDark, shape = RoundedCornerShape(12.dp)
+                ), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = icon,
-                    fontSize = 20.sp
+                    text = icon, fontSize = 20.sp
                 )
             }
 
