@@ -90,6 +90,7 @@ class MainScreen : Screen {
                     exportMetricsToCsv(metrics, scope) { filePath ->
                         scope.launch {
                             snackbarHostState.showSnackbar("Successfully saved CSV file in downloads")
+                            com.healthanalytics.android.utils.openCsvFile(filePath)
                         }
                     }
                 }) {
@@ -257,10 +258,7 @@ fun exportMetricsToCsv(metrics: List<BloodData?>, scope: CoroutineScope, onSucce
         scope.launch {
             val filePath = com.healthanalytics.android.utils.saveTextFile("biomarkers.csv", csv)
             println("CSV saved to: $filePath")
-            filePath?.let {
-                com.healthanalytics.android.utils.shareFile(it)
-                onSuccess(it)
-            }
+            filePath?.let { onSuccess(it) }
         }
     } else {
         println("No metrics to export.")

@@ -47,3 +47,7 @@ fun openCsvFile(filePath: String) {
 actual fun shareFile(filePath: String) {
     FileSharing.shareFile(path = filePath)
 }
+
+actual fun openCsvFile(path: String) {
+    openCsvFile(path)
+}

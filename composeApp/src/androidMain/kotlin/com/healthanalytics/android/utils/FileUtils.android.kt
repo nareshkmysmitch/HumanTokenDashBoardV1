@@ -1,9 +1,10 @@
-
 package com.healthanalytics.android.utils
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import java.io.File
@@ -24,7 +25,7 @@ actual suspend fun saveTextFile(filename: String, content: String): String? {
         val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
         intent.data = Uri.fromFile(file)
         appContext.sendBroadcast(intent)
-        openCsvFile(file)
+//        openCsvFile(file)
         file.absolutePath
     } catch (e: Exception) {
         e.printStackTrace()
@@ -42,16 +43,20 @@ fun openCsvFile(csvFile: File) {
 
     val intent = Intent(Intent.ACTION_VIEW).apply {
         setDataAndType(uri, "text/csv")
-        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
-    // Check if there’s an app to handle it
-    if (intent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(intent)
-    } else {
-        Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
-    }
+    val chooser = Intent.createChooser(intent, "Open CSV file")
+    chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    Handler(Looper.getMainLooper()).postDelayed({
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(chooser)
+        } else {
+            Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
+        }
+    }, 500)
 }
 
 
@@ -97,4 +102,8 @@ actual fun shareFile(filePath: String) {
     } catch (e: Exception) {
         e.printStackTrace()
     }
+}
+
+actual fun openCsvFile(path: String) {
+    openCsvFile(File(path))
 }
