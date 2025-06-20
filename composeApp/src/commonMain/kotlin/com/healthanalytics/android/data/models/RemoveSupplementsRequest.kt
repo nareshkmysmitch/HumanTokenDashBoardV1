@@ -9,6 +9,7 @@ data class RemoveSupplementsRequest(
     val recommendation_id: String? = null,
     val module: String? = null,
     val is_mock: Boolean? = null,
+    val profile_id: String,
     val event_selection: String? = null,
     val occurrence_id: String? = null,
     val reminder_id: String? = null

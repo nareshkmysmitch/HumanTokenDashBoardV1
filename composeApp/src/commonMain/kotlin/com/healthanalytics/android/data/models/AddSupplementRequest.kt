@@ -11,6 +11,7 @@ data class AddSupplementRequest(
     val scheduled_time: String,
     val days_of_the_week: List<Int>,
     val is_mock: Boolean = false,
+    val profile_id: String,
     val module: String,
     val recommendation_id: String,
     val action_id: String,
