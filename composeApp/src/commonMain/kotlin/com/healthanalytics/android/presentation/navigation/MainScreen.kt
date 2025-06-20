@@ -79,13 +79,13 @@ class MainScreen : Screen {
                         tint = AppColors.White
                     )
                 }
-                IconButton(onClick = { mainNavigator.push(ConversationListNavWrapper()) }) {
-                    Icon(
-                        imageVector = Icons.Default.Chat,
-                        contentDescription = "Chat",
-                        tint = AppColors.White
-                    )
-                }
+//                IconButton(onClick = { mainNavigator.push(ConversationListNavWrapper()) }) {
+//                    Icon(
+//                        imageVector = Icons.Default.Chat,
+//                        contentDescription = "Chat",
+//                        tint = AppColors.White
+//                    )
+//                }
                 IconButton(onClick = {
                     exportMetricsToCsv(metrics, scope) { filePath ->
                         scope.launch {

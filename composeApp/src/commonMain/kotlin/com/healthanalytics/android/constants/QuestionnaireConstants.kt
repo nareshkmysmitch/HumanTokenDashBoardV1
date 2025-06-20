@@ -2,8 +2,8 @@ package com.healthanalytics.android.constants
 
 object QuestionnaireConstants {
 
-    const val YES = "Yes"
-    const val NO = "No"
+//    const val YES = "Yes"
+//    const val NO = "No"
 
     const val MIN_COUNT = 0
     const val MAX_COUNT = 99
