@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 object PreferencesKeys {
     val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
     val IS_LOGIN = booleanPreferencesKey("is_login")
-    
+
     // User Details Keys
     val USER_NAME = stringPreferencesKey("user_name")
     val USER_EMAIL = stringPreferencesKey("user_email")
@@ -29,7 +29,11 @@ object PreferencesKeys {
     val PINCODE = stringPreferencesKey("pincode")
     val COUNTRY = stringPreferencesKey("country")
     val ADDRESS_ID = stringPreferencesKey("address_id")
+    val GENDER = stringPreferencesKey("gender")
+    val NEXT_QUESTIONNAIRES_KEY = stringPreferencesKey("next_questionnaires_data")
+
     val LEAD_ID = stringPreferencesKey("lead_id")
+    val PROFILE_ID = stringPreferencesKey("profile_id")
 }
 
 /**
@@ -98,24 +102,36 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     // Address getters
     val addressLine1: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.ADDRESS_LINE_1] }
-    
+
     val addressLine2: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.ADDRESS_LINE_2] }
-    
+
     val city: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.CITY] }
-    
+
     val state: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.STATE] }
-    
+
     val pincode: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.PINCODE] }
-    
+
     val country: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.COUNTRY] }
-    
+
     val addressId: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.ADDRESS_ID] }
+
+    val gender: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.GENDER] }
+
+    val nextQuestionnaire: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.NEXT_QUESTIONNAIRES_KEY] }
+        .catch {
+            emit("[]")
+        }
+
+    val profileId: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.PROFILE_ID] }
 
     suspend fun saveAccessToken(token: String) {
         dataStore.edit { preferences ->
@@ -184,6 +200,25 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun saveGender(gender: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.GENDER] = gender
+        }
+    }
+
+    suspend fun saveNextQuestionnaireData(nextQuestionnaire:String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NEXT_QUESTIONNAIRES_KEY] = nextQuestionnaire
+        }
+    }
+
+    suspend fun saveProfileId(id: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PROFILE_ID] = id
+        }
+    }
+
+
     // Convenience method to save all user details at once
     suspend fun saveUserDetails(
         name: String,
@@ -193,7 +228,7 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
         pincode: String,
         state: String,
         district: String,
-        country: String
+        country: String,
     ) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.USER_NAME] = name
@@ -215,7 +250,7 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
         state: String?,
         pincode: String?,
         country: String?,
-        addressId: String?
+        addressId: String?,
     ) {
         dataStore.edit { preferences ->
             if (addressLine1 != null) preferences[PreferencesKeys.ADDRESS_LINE_1] = addressLine1

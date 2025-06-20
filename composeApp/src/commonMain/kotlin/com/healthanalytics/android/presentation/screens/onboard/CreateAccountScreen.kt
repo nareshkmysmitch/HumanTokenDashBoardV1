@@ -2,6 +2,7 @@ package com.healthanalytics.android.presentation.screens.onboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,11 +32,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.healthanalytics.android.components.DHToolBar
 import com.healthanalytics.android.components.PrimaryButton
+import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
 import com.healthanalytics.android.data.models.onboard.AccountDetails
+import com.healthanalytics.android.data.models.onboard.CommunicationAddress
+import com.healthanalytics.android.payment.RazorpayHandler
+import com.healthanalytics.android.presentation.components.ScreenContainer
 import com.healthanalytics.android.presentation.components.ShowDatePicker
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -44,31 +55,46 @@ import com.healthanalytics.android.presentation.theme.AppTextStyles
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.utils.Resource
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import com.healthanalytics.android.payment.RazorpayHandler
 
 @Composable
 fun CreateAccountContainer(
     onBackClick: () -> Unit = {},
-    navigateToAddress: () -> Unit,
+    navigateToBloodTest: () -> Unit,
     onboardViewModel: OnboardViewModel
 ) {
-    CreateAccountScreen(
-        accountDetails = onboardViewModel.getAccountDetails(),
-        onBackClick = onBackClick,
-        onContinueClick = { accountDetails ->
-            onboardViewModel.saveAccountDetails(
-                accountDetails = accountDetails
-            )
-            navigateToAddress()
-        }
-    )
+    ScreenContainer {
+        val accountDetails = onboardViewModel.accountDetailsState.collectAsStateWithLifecycle().value
+        CreateAccountScreen(
+            accountDetails = accountDetails,
+            onBackClick = onBackClick,
+            onContinueClick = { accountDetails ->
+                onboardViewModel.saveAccountDetails(
+                    accountDetails = accountDetails
+                )
+                val communicationAddress = CommunicationAddress(
+                    address_line_1 = accountDetails.streetAddress,
+                    address_line_2 = accountDetails.city,
+                    city = accountDetails.state,
+                    pincode = accountDetails.zipCode
+                )
+                onboardViewModel.createAccount(communicationAddress)
+            },
+            onAccountDetailsChange = { onboardViewModel.updateAccountDetails(it) },
+            isAccountDetailsValid = { onboardViewModel.isAccountDetailsValid(it) }
+        )
+
+        GetAccountCreationResponse(
+            accountCreationState = onboardViewModel.accountCreationState,
+            navigateToBloodTest = navigateToBloodTest
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,44 +102,28 @@ fun CreateAccountContainer(
 fun CreateAccountScreen(
     onBackClick: () -> Unit = {},
     onContinueClick: (AccountDetails) -> Unit = { },
-    accountDetails: AccountDetails?
+    accountDetails: AccountDetails,
+    onAccountDetailsChange: (AccountDetails) -> Unit,
+    isAccountDetailsValid: (AccountDetails) -> Boolean
 ) {
-    var firstName by remember { mutableStateOf(accountDetails?.firstName ?: "") }
-    var lastName by remember { mutableStateOf(accountDetails?.lastName ?: "") }
-    var email by remember { mutableStateOf(accountDetails?.email ?: "") }
-    var emailError by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf(accountDetails?.dob) }
-    var selectedGender by remember { mutableStateOf(accountDetails?.gender ?: "") }
-    var weight by remember { mutableStateOf(accountDetails?.weight ?: "") }
-    var height by remember { mutableStateOf(accountDetails?.height ?: "") }
-    var showDatePicker by remember { mutableStateOf(false) }
-    var showGenderDropdown by remember { mutableStateOf(false) }
+
 
     val firstNameFocusRequester = remember { FocusRequester() }
     val weightFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val genderOptions = listOf("Male", "Female")
-
-    // Email validation regex
-    val emailRegex = remember {
-        Regex("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")
-    }
-
-    // Focus on first name field when screen loads
     LaunchedEffect(Unit) {
         firstNameFocusRequester.requestFocus()
         keyboardController?.show()
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.backgroundDark)
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = AppColors.backGround)
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -128,291 +138,22 @@ fun CreateAccountScreen(
                     .padding(bottom = Dimensions.size60dp)
             ) {
 
-                Spacer(modifier = Modifier.height(Dimensions.size50dp))
+                BasicInformation(
+                    accountDetails = accountDetails,
+                    onAccountDetailsChange = onAccountDetailsChange,
+                    firstNameFocusRequester = firstNameFocusRequester
+                )
 
-                // First Name Field
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FieldNameText(
-                        name = AppStrings.FIRST_NAME
-                    )
-                    OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(firstNameFocusRequester),
-                        maxLines = 1,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
+                HealthInformation(
+                    accountDetails = accountDetails,
+                    onAccountDetailsChange = onAccountDetailsChange,
+                    weightFocusRequester = weightFocusRequester,
+                )
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Last Name Field
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FieldNameText(
-                        name = AppStrings.LAST_NAME
-                    )
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 1,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Email Field
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FieldNameText(
-                        name = AppStrings.EMAIL
-                    )
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { newValue ->
-                            email = newValue
-                            // Only validate if email contains @ and appears to be a complete attempt
-                            emailError =
-                                if (newValue.isNotEmpty() && newValue.contains("@") && !emailRegex.matches(
-                                        newValue
-                                    )
-                                ) {
-                                    "Please enter a valid email address"
-                                } else {
-                                    ""
-                                }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 1,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-
-                    // Show email error message
-                    if (emailError.isNotEmpty()) {
-                        Text(
-                            text = emailError,
-                            style = AppTextStyles.caption,
-                            color = AppColors.error,
-                            modifier = Modifier.padding(top = Dimensions.size4dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Date of Birth Field
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FieldNameText(
-                        name = AppStrings.DOB
-                    )
-                    OutlinedTextField(
-                        value = selectedDate?.toString() ?: "",
-                        onValueChange = { },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showDatePicker = true },
-                        enabled = false,
-                        placeholder = {
-                            Text(
-                                text = "Select date",
-                                color = AppColors.inputHint,
-                                style = AppTextStyles.bodyMedium
-                            )
-                        },
-                        trailingIcon = {
-                            Text(
-                                text = "📅",
-                                style = AppTextStyles.bodyMedium,
-                                color = AppColors.inputHint
-                            )
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            disabledBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            disabledTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-
-                    // Date Picker Dialog
-                    if (showDatePicker) {
-                        ShowDatePicker(
-                            selectedDate = selectedDate ?: Clock.System.now()
-                                .toLocalDateTime(TimeZone.currentSystemDefault()).date,
-                            onDismiss = {
-                                showDatePicker = false
-                            },
-                            onCancel = {
-                                showDatePicker = false
-                            },
-                            onConfirm = {
-                                selectedDate = it
-                                showDatePicker = false
-                            }
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Gender Field
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FieldNameText(
-                        name = AppStrings.GENDER
-                    )
-                    ExposedDropdownMenuBox(
-                        expanded = showGenderDropdown,
-                        onExpandedChange = { showGenderDropdown = !showGenderDropdown }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedGender,
-                            onValueChange = { },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(
-                                    type = MenuAnchorType.PrimaryEditable,
-                                ),
-                            readOnly = true,
-                            placeholder = {
-                                Text(
-                                    text = "Select gender",
-                                    color = AppColors.inputHint,
-                                    style = AppTextStyles.bodyMedium
-                                )
-                            },
-                            trailingIcon = {
-                                Text(
-                                    text = "▼",
-                                    style = AppTextStyles.bodyMedium,
-                                    color = AppColors.inputHint
-                                )
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = AppColors.inputBorder,
-                                unfocusedBorderColor = AppColors.outline,
-                                focusedTextColor = AppColors.inputText,
-                                unfocusedTextColor = AppColors.inputText,
-                                cursorColor = AppColors.inputText
-                            ),
-                            shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = showGenderDropdown,
-                            onDismissRequest = { showGenderDropdown = false },
-                            modifier = Modifier.background(AppColors.inputBackground)
-                        ) {
-                            genderOptions.forEach { option ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = option,
-                                            color = AppColors.inputText
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedGender = option
-                                        showGenderDropdown = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Weight Field
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FieldNameText(
-                        name = AppStrings.WEIGHT
-                    )
-                    OutlinedTextField(
-                        value = weight,
-                        onValueChange = { weight = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(weightFocusRequester),
-                        maxLines = 1,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Height Field
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FieldNameText(
-                        name = AppStrings.HEIGHT
-                    )
-                    OutlinedTextField(
-                        value = height,
-                        onValueChange = { height = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 1,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = AppColors.inputBorder,
-                            unfocusedBorderColor = AppColors.outline,
-                            focusedTextColor = AppColors.inputText,
-                            unfocusedTextColor = AppColors.inputText,
-                            cursorColor = AppColors.inputText
-                        ),
-                        shape = RoundedCornerShape(Dimensions.cornerRadiusSmall)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(40.dp))
+                AddressDetails(
+                    accountDetails = accountDetails,
+                    onAccountDetailsChange = onAccountDetailsChange,
+                )
             }
         }
 
@@ -424,26 +165,11 @@ fun CreateAccountScreen(
         ) {
             PrimaryButton(
                 modifier = Modifier.padding(Dimensions.size16dp),
-                isEnable = firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() &&
-                        emailError.isEmpty() && selectedDate != null && selectedGender.isNotEmpty() &&
-                        weight.isNotEmpty() && height.isNotEmpty(),
+                enable = false,
                 buttonName = AppStrings.CONTINUE,
-                onclick = {
-                    if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() &&
-                        emailError.isEmpty() && selectedDate != null && selectedGender.isNotEmpty() &&
-                        weight.isNotEmpty() && height.isNotEmpty()
-                    ) {
-                        onContinueClick(
-                            AccountDetails(
-                                firstName = firstName.trim(),
-                                lastName = lastName.trim(),
-                                email = email.trim(),
-                                dob = selectedDate,
-                                gender = selectedGender,
-                                weight = weight.trim(),
-                                height = height.trim()
-                            )
-                        )
+                onClick = {
+                    if (isAccountDetailsValid(accountDetails)) {
+                        onContinueClick(accountDetails)
                     }
                 }
             )
@@ -452,24 +178,512 @@ fun CreateAccountScreen(
 }
 
 @Composable
-fun FieldNameText(
-    name: String
+fun BasicInformation(
+    accountDetails: AccountDetails,
+    onAccountDetailsChange: (AccountDetails) -> Unit,
+    firstNameFocusRequester: FocusRequester
 ) {
-    Text(
-        text = name,
-        fontSize = FontSize.textSize14sp,
-        fontFamily = FontFamily.medium(),
-        color = AppColors.textSecondary,
-        modifier = Modifier.padding(bottom = Dimensions.size8dp)
+
+    Spacer(modifier = Modifier.height(Dimensions.size20dp))
+
+    CategoryTitleText(
+        name = AppStrings.BASIC_INFORMATION
     )
+
+    Spacer(modifier = Modifier.height(Dimensions.size20dp))
+
+    var emailError by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val emailRegex = remember {
+        Regex("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")
+    }
+
+    FirstNameField(
+        value = accountDetails.firstName,
+        onValueChange = {
+            onAccountDetailsChange(
+                accountDetails.copy(
+                    firstName = it
+                )
+            )
+        },
+        focusRequester = firstNameFocusRequester
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    LastNameField(
+        value = accountDetails.lastName,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(lastName = it)) }
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Email Field
+    EmailField(
+        value = accountDetails.email,
+        onValueChange = { newValue ->
+            onAccountDetailsChange(accountDetails.copy(email = newValue))
+            emailError =
+                if (newValue.isNotEmpty() && newValue.contains("@") && !emailRegex.matches(
+                        newValue
+                    )
+                ) {
+                    "Please enter a valid email address"
+                } else {
+                    ""
+                }
+        },
+        error = emailError
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Date of Birth Field
+    DobField(
+        value = accountDetails.dob,
+        onClick = { showDatePicker = true }
+    )
+
+    // Date Picker Dialog
+    if (showDatePicker) {
+        ShowDatePicker(
+            selectedDate = accountDetails.dob ?: Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault()).date,
+            onDismiss = {
+                showDatePicker = false
+            },
+            onCancel = {
+                showDatePicker = false
+            },
+            onConfirm = {
+                onAccountDetailsChange(accountDetails.copy(dob = it))
+                showDatePicker = false
+            }
+        )
+    }
+
+    Spacer(modifier = Modifier.height(Dimensions.size50dp))
+}
+
+
+@Composable
+fun HealthInformation(
+    accountDetails: AccountDetails,
+    weightFocusRequester: FocusRequester,
+    onAccountDetailsChange: (AccountDetails) -> Unit,
+) {
+    var showGenderDropdown by remember { mutableStateOf(false) }
+    val genderOptions = listOf("Male", "Female")
+
+    CategoryTitleText(
+        name = AppStrings.HEALTH_INFORMATION
+    )
+
+    Spacer(modifier = Modifier.height(Dimensions.size20dp))
+
+    // Gender Field
+    GenderField(
+        value = accountDetails.gender,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(gender = it)) },
+        expanded = showGenderDropdown,
+        onExpandedChange = { showGenderDropdown = !showGenderDropdown },
+        genderOptions = genderOptions,
+        onDismiss = { showGenderDropdown = false }
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Weight Field
+    WeightField(
+        value = accountDetails.weight,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(weight = it)) },
+        focusRequester = weightFocusRequester
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Height Field
+    HeightField(
+        value = accountDetails.height,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(height = it)) }
+    )
+
+    Spacer(modifier = Modifier.height(Dimensions.size50dp))
+}
+
+@Composable
+fun AddressDetails(
+    accountDetails: AccountDetails,
+    onAccountDetailsChange: (AccountDetails) -> Unit,
+) {
+
+    CategoryTitleText(
+        name = AppStrings.ADDRESS_DETAILS
+    )
+
+    Spacer(modifier = Modifier.height(Dimensions.size20dp))
+
+    StreetAddressField(
+        value = accountDetails.streetAddress,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(streetAddress = it)) }
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    CityField(
+        value = accountDetails.city,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(city = it)) }
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    StateField(
+        value = accountDetails.state,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(state = it)) }
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    ZipCodeField(
+        value = accountDetails.zipCode,
+        onValueChange = { onAccountDetailsChange(accountDetails.copy(zipCode = it)) }
+    )
+
+    Spacer(modifier = Modifier.height(50.dp))
+}
+
+private fun fieldModifier(modifier: Modifier = Modifier): Modifier =
+    modifier
+        .height(Dimensions.size56dp)
+        .fillMaxWidth()
+        .background(
+            color = AppColors.gray_100,
+            shape = RoundedCornerShape(Dimensions.size12dp)
+        )
+
+
+@Composable
+fun FirstNameField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    focusRequester: FocusRequester,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.FIRST_NAME)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            focusRequester = focusRequester,
+            placeholder = AppStrings.ENTER_YOUR_FIRST_NAME
+        )
+    }
+}
+
+@Composable
+fun LastNameField(value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.LAST_NAME)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = AppStrings.ENTER_LAST_NAME
+        )
+    }
+}
+
+@Composable
+fun EmailField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    error: String,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.EMAIL)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            error = error,
+            placeholder = AppStrings.ENTER_EMAIL
+        )
+    }
+}
+
+@Composable
+fun DobField(value: LocalDate?, onClick: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.DOB)
+
+        val dob = if (value != null) {
+            "${value.dayOfMonth}-${value.monthNumber}-{${value.year}}"
+        } else {
+            AppStrings.DOB_DATE_FORMAT
+        }
+
+        val textStyle = if (value != null) {
+            TextStyle(
+                fontFamily = FontFamily.medium(),
+                fontSize = FontSize.textSize16sp,
+                color = AppColors.primaryTextColor
+            )
+        } else {
+            TextStyle(
+                fontFamily = FontFamily.regular(),
+                fontSize = FontSize.textSize16sp,
+                color = AppColors.textLabelColor
+            )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = fieldModifier(Modifier)
+                .clickable { onClick() }
+        ) {
+            Text(
+                text = dob,
+                style = textStyle,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(
+                    horizontal = Dimensions.size18dp,
+                )
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GenderField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    expanded: Boolean,
+    onExpandedChange: () -> Unit,
+    genderOptions: List<String>,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.GENDER)
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { onExpandedChange() }
+        ) {
+            CommonTextField(
+                value = value,
+                onValueChange = {},
+                modifier = fieldModifier(modifier).menuAnchor(type = MenuAnchorType.PrimaryEditable),
+                readOnly = true,
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { onDismiss() },
+                modifier = Modifier.background(AppColors.inputBorder)
+            ) {
+                genderOptions.forEach { option ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = option,
+                                color = AppColors.inputText
+                            )
+                        },
+                        onClick = {
+                            onValueChange(option)
+                            onDismiss()
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun WeightField(value: String, onValueChange: (String) -> Unit, focusRequester: FocusRequester) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.WEIGHT)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            focusRequester = focusRequester,
+            placeholder = AppStrings.ENTER_WEIGHT,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal
+            )
+        )
+    }
+}
+
+@Composable
+fun HeightField(value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.HEIGHT)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = AppStrings.ENTER_HEIGHT,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal
+            )
+        )
+    }
+}
+
+@Composable
+fun StreetAddressField(value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.STREET_ADDRESS)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            maxLines = 2,
+            placeholder = AppStrings.ENTER_ADDRESS
+        )
+    }
+}
+
+@Composable
+fun CityField(value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.CITY)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = AppStrings.ENTER_CITY
+        )
+    }
+}
+
+@Composable
+fun StateField(value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.STATE)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = AppStrings.ENTER_STATE
+        )
+    }
+}
+
+@Composable
+fun ZipCodeField(value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        FieldNameText(name = AppStrings.PIN_CODE)
+        CommonTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = AppStrings.ENTER_PINCODE,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.NumberPassword
+            )
+        )
+    }
 }
 
 @Preview
 @Composable
 fun CreateAccountScreenPreview() {
     CreateAccountScreen(
-        accountDetails = null
+        accountDetails = AccountDetails(
+            firstName = "",
+            lastName = "",
+            email = "",
+            dob = null,
+            gender = "",
+            weight = "",
+            height = "",
+            streetAddress = "",
+            city = "",
+            state = "",
+            zipCode = ""
+        ),
+        onAccountDetailsChange = { },
+        isAccountDetailsValid = { true }
     )
+}
+
+@Composable
+fun GetAccountCreationResponse(
+    accountCreationState: SharedFlow<Resource<AccountCreationResponse?>>,
+    navigateToBloodTest: () -> Unit
+) {
+    val response by accountCreationState.collectAsStateWithLifecycle(null)
+    when (response) {
+        is Resource.Error<*> -> {}
+
+        is Resource.Loading<*> -> {}
+
+        is Resource.Success<*> -> {
+            LaunchedEffect(response) {
+                navigateToBloodTest()
+            }
+        }
+
+        else -> {}
+    }
+}
+
+@Composable
+fun CommonTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    readOnly: Boolean = false,
+    enabled: Boolean = true,
+    maxLines: Int = 1,
+    shape: RoundedCornerShape = RoundedCornerShape(Dimensions.cornerRadiusSmall),
+    focusRequester: FocusRequester? = null,
+    error: String = ""
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = fieldModifier(modifier).let {
+            if (focusRequester != null) it.focusRequester(
+                focusRequester
+            ) else it
+        },
+        maxLines = maxLines,
+        keyboardOptions = keyboardOptions,
+        readOnly = readOnly,
+        enabled = enabled,
+        placeholder = {
+            if (placeholder != null) {
+                Text(
+                    text = placeholder,
+                    fontFamily = FontFamily.regular(),
+                    fontSize = FontSize.textSize16sp,
+                    color = AppColors.textLabelColor
+                )
+            }
+        },
+        trailingIcon = trailingIcon,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = AppColors.Transparent,
+            unfocusedBorderColor = AppColors.Transparent,
+            focusedTextColor = AppColors.primaryTextColor,
+            unfocusedTextColor = AppColors.primaryTextColor,
+            cursorColor = AppColors.inputText
+        ),
+        shape = shape,
+        textStyle = TextStyle(
+            fontFamily = FontFamily.medium(),
+            fontSize = FontSize.textSize16sp,
+            color = AppColors.primaryTextColor
+        )
+    )
+    if (error.isNotEmpty()) {
+        Text(
+            text = error,
+            style = AppTextStyles.caption,
+            color = AppColors.error,
+            modifier = Modifier.padding(top = Dimensions.size4dp)
+        )
+    }
 }
 
 class CreateAccountScreenNav(
@@ -483,8 +697,8 @@ class CreateAccountScreenNav(
         CreateAccountContainer(
             onboardViewModel = onboardViewModel,
             onBackClick = { navigator.pop() },
-            navigateToAddress = {
-                navigator.push(SampleCollectionAddressScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
+            navigateToBloodTest = {
+                navigator.push(ScheduleBloodTestScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
             }
         )
     }

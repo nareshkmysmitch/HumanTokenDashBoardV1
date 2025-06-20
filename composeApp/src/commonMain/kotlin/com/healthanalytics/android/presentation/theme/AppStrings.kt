@@ -6,8 +6,8 @@ object AppStrings {
 
     // Login screen
     const val LOGIN_TITLE = "Login to your"
-    const val loginSubtitle = "Human Token Dashboard"
-    const val PHONE_NUMBER = "PHONE NUMBER"
+    const val LOGIN_SUBTITLE = "Human Token Dashboard"
+    const val PHONE_NUMBER = "Phone Number"
     const val phoneNumberPlaceholder = "Enter your phone number"
     const val countryCode = "+91"
     const val continueButton = "Continue"
@@ -62,6 +62,25 @@ object AppStrings {
     const val HEALTH_DATA = "Health Data"
     const val RECOMMENDATIONS = "Recommendations"
     const val MARKET_PLACE = "Market Place"
+
+    const val ENTER_YOUR_FIRST_NAME= "Enter your first name"
+    const val ENTER_LAST_NAME = "Enter your last name"
+    const val ENTER_EMAIL = "Enter your email"
+    const val DOB_DATE_FORMAT = "MM/DD/YYYY"
+    const val ENTER_HEIGHT = "Enter your height"
+    const val ENTER_WEIGHT = "Enter your weight"
+    const val ENTER_ADDRESS = "Enter your address"
+    const val ENTER_CITY = "Enter your city"
+    const val ENTER_STATE = "Enter your state"
+    const val ENTER_PINCODE = "Enter your pincode"
+
+    const val BASIC_INFORMATION = "Basic Information"
+    const val HEALTH_INFORMATION = "Health Information"
+    const val ADDRESS_DETAILS = "Address Details"
+
+    const val GO_BACK = "Go back"
+    const val SUBMIT = "Submit"
+    const val ARE_YOU_SURE_YOU_WANT_TO_SUBMIT_THE_QUESTIONNAIRE= "Are you sure you want to submit the questionnaire?"
 
 
 }

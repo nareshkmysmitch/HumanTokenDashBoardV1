@@ -46,6 +46,13 @@ import com.healthanalytics.android.presentation.screens.chat.ConversationListNav
 import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreenNav
+import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
+import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
+import com.healthanalytics.android.presentation.screens.onboard.LoginScreenNav
+import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
+import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
+import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenContainer
+import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrapper
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -235,6 +242,84 @@ class MainScreen : Screen {
             }
         }
     }
+
+    @Composable
+    fun OnboardContainer(
+        isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel,
+    ) {
+        KoinContext {
+            val navController = rememberNavController()
+            val razorpayHandler: RazorpayHandler = getKoin().get()
+
+            Scaffold(
+                containerColor = AppColors.backgroundDark
+            ) { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = OnboardRoute.Login,
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable<OnboardRoute.Login> {
+                        LoginScreenContainer(
+                            onboardViewModel = onboardViewModel,
+                            navigateToOtpVerification = {
+                                navController.navigate(OnboardRoute.OTPVerification)
+                            }
+                        )
+                    }
+
+                    composable<OnboardRoute.OTPVerification> {
+                        OTPContainer(
+                            onboardViewModel = onboardViewModel,
+                            onBackClick = {
+                                navController.navigateUp()
+                            },
+                            navigateToAccountCreation = {
+                                navController.navigate(OnboardRoute.CreateAccount)
+                            }
+                        )
+                    }
+
+                    composable<OnboardRoute.CreateAccount> {
+                        CreateAccountContainer(
+                            onboardViewModel = onboardViewModel,
+                            onBackClick = {
+                                navController.navigateUp()
+                            },
+                            navigateToBloodTest = {
+                                navController.navigate(OnboardRoute.ScheduleBloodTest)
+                            }
+                        )
+                    }
+
+                    composable<OnboardRoute.ScheduleBloodTest> {
+                        ScheduleBloodTestContainer(
+                            onboardViewModel = onboardViewModel,
+                            onBackClick = {
+                                navController.navigateUp()
+                            },
+                            navigateToPayment = {
+                                navController.navigate(OnboardRoute.Payment)
+                            }
+                        )
+                    }
+
+                    composable<OnboardRoute.Payment> {
+                        PaymentScreenContainer(
+                            onboardViewModel = onboardViewModel,
+                            razorpayHandler = razorpayHandler,
+                            onBackClick = {
+                                navController.navigateUp()
+                            },
+                            isPaymentCompleted = {
+                                isLoggedIn()
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 class OnboardNavWrapper(
@@ -245,7 +330,7 @@ class OnboardNavWrapper(
     @Composable
     override fun Content() {
         Navigator(
-            GetStartedScreenNav(
+            LoginScreenNav(
                 onboardViewModel = onboardViewModel,
                 razorpayHandler = razorpayHandler,
                 isLoggedIn = isLoggedIn

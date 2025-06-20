@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,22 +17,22 @@ import com.healthanalytics.android.presentation.theme.FontSize
 
 @Composable
 fun PrimaryButton(
-    isEnable: Boolean,
-    onclick: () -> Unit,
     buttonName: String,
+    onClick: () -> Unit,
+    enable: Boolean = true,
     modifier: Modifier= Modifier
 ) {
     Button(
-        enabled = isEnable,
-        onClick = onclick,
+        enabled = enable,
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(height = Dimensions.size56dp),
         colors = ButtonColors(
-            containerColor = Color(0xFF4A4A5C),
-            contentColor = Color(0xFFFFFF),
-            disabledContentColor = AppColors.textSecondary,
-            disabledContainerColor = Color(0xFF003D46),
+            containerColor = AppColors.primaryColor,
+            contentColor = AppColors.tertiaryTextColor,
+            disabledContainerColor = AppColors.primaryColor.copy(alpha = 0.4f),
+            disabledContentColor = AppColors.tertiaryTextColor.copy(alpha = 0.4f)
         ),
         shape = RoundedCornerShape(Dimensions.size12dp)
     ) {
@@ -39,7 +40,38 @@ fun PrimaryButton(
             text = buttonName,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.bold(),
-            color = if (isEnable) AppColors.White else AppColors.textSecondary
+            color = if (enable) AppColors.tertiaryTextColor else AppColors.tertiaryTextColor.copy(alpha = 0.4f)
         )
     }
 }
+
+@Composable
+fun SecondaryButton(
+    buttonName: String,
+    onClick: () -> Unit,
+    enable: Boolean = true,
+    modifier: Modifier= Modifier
+) {
+    Button(
+        enabled = enable,
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height = Dimensions.size56dp),
+        colors = ButtonColors(
+            containerColor = AppColors.gray_100,
+            contentColor = AppColors.primaryTextColor,
+            disabledContainerColor = AppColors.gray_100.copy(alpha = 0.2f),
+            disabledContentColor = AppColors.primaryTextColor.copy(alpha = 0.2f)
+        ),
+        shape = RoundedCornerShape(Dimensions.size12dp)
+    ) {
+        Text(
+            text = buttonName,
+            fontSize = FontSize.textSize16sp,
+            fontFamily = FontFamily.bold(),
+            color = AppColors.primaryTextColor
+        )
+    }
+}
+
