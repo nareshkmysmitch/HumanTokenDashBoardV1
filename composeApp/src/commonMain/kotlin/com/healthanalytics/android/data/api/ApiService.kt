@@ -115,7 +115,7 @@ interface ApiService {
 
     suspend fun getConsultationServices(accessToken: String): List<Product?>?
 
-    suspend fun getDiagnosticList(accessToken: String): Diagnostic?
+    suspend fun getDiagnostic(accessToken: String): Diagnostic?
 }
 
 
@@ -516,13 +516,13 @@ class ApiServiceImpl(
         return result?.isReset == true
     }
 
-    override suspend fun getDiagnosticList(accessToken: String): Diagnostic? {
+    override suspend fun getDiagnostic(accessToken: String): Diagnostic? {
         val response = httpClient.get("v4/human-token/lab-test") {
             header("access_token", accessToken)
         }
         val responseBody = response.bodyAsText()
         val result =
-            EncryptionUtils.handleDecryptionResponse<Diagnostic>(responseBody)
+            EncryptionUtils.tempHandleDecryptionResponse<Diagnostic>(responseBody)
         return result
     }
 }

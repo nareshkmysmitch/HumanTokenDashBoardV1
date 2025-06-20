@@ -8,12 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.healthanalytics.android.presentation.screens.consultation.ConsultationListScreen
 import com.healthanalytics.android.presentation.screens.diagnostic.DiagnosticScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
 import com.healthanalytics.android.presentation.screens.health.SymptomsDetailsWrapper
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.theme.AppStrings
 import org.koin.compose.koinInject
@@ -67,7 +65,8 @@ sealed class BottomNavScreen : Tab {
 //                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = {})
 
             DiagnosticScreen(
-                viewModel = koinInject(), preferencesViewModel = koinInject())
+                viewModel = koinInject()
+            )
         }
 
         override val options: TabOptions

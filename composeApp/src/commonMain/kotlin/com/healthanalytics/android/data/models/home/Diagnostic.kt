@@ -104,7 +104,7 @@ data class Package(
     @SerialName("tags")
     val tags: List<String?>? = null,
     @SerialName("tests")
-    val tests: List<PackageTest?>? = null,
+    val tests: List<PackageTest>? = null,
     @SerialName("type")
     val type: String? = null,
     @SerialName("updated_at")
@@ -214,7 +214,7 @@ data class Test(
     @SerialName("code")
     val code: String? = "",
     @SerialName("content")
-    val content: String? = null,
+    val content: Content? = null,
     @SerialName("created_at")
     val createdAt: String? = "",
     @SerialName("description")
@@ -243,4 +243,19 @@ data class Test(
     val type: String? = "",
     @SerialName("updated_at")
     val updatedAt: String? = "",
+)
+
+
+data class LocalDiagnostic(
+    val id: String? = null,
+    val name: String? = null,
+    val type: String? = null,
+    val reportGenerationHr: String? = null,
+    val price: String? = null,
+    val description: String? = null,
+    val note: String? = null,
+    val sampleType: String? = null,
+    val fastingDuration: String? = null,
+    val isFastingRequired: Boolean? = null,
+    val bioMaker: List<PackageTest>? = null,
 )
