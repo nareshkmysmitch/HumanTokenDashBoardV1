@@ -62,8 +62,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun BioMarkerList(viewModel: HealthDataViewModel, onNavigateToDetail: (BloodData?) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val filteredMetrics = viewModel.getFilteredMetrics()
-    val availableFilters = viewModel.getAvailableFilters()
+    val filteredMetrics = viewModel.getBiomarkerFilterList()
+    val availableFilters = viewModel.getBiomarkerFilter()
     val uiState by viewModel.uiState.collectAsState()
 
     Spacer(modifier = Modifier.height(size16dp))

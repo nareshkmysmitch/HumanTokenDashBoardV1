@@ -84,7 +84,7 @@ fun HealthDataScreen(
                         ),
                         label = {
                             Text(
-                                text = "${filter.capitalizeFirst()}",
+                                text = filter.capitalizeFirst(),
                                 fontSize = FontSize.textSize16sp,
                                 fontFamily = FontFamily.medium(),
                                 color = AppColors.textPrimary,

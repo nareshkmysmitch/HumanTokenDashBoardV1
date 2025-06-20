@@ -42,7 +42,7 @@ import kotlinx.serialization.json.put
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
-    suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
+    suspend fun getHealthMetrics(accessToken: String): HealthMetrics?
     suspend fun getRecommendations(accessToken: String): List<Recommendation>?
 
     suspend fun removeRecommendation(
@@ -124,7 +124,7 @@ class ApiServiceImpl(
         return productsList?.products
     }
 
-    override suspend fun getHealthMetrics(accessToken: String): List<BloodData?>? {
+    override suspend fun getHealthMetrics(accessToken: String): HealthMetrics? {
         val response = httpClient.get("v4/human-token/health-data") {
             header("access_token", accessToken)
             url {
@@ -138,7 +138,7 @@ class ApiServiceImpl(
             response.bodyAsText()
         )
 
-        return decrypted?.blood?.bloodData
+        return decrypted
     }
 
 
