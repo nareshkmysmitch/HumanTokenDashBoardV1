@@ -27,6 +27,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -46,14 +47,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
+import com.healthanalytics.android.presentation.screens.questionnaire.viewmodel.QuestionnaireViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.ui.ShowAlertDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +67,8 @@ fun ProfileScreen(
     onNavigateBack: () -> Unit,
     viewModel: MarketPlaceViewModel,
     onNavigateToTestBooking: () -> Unit,
+    questionnaireViewModel: QuestionnaireViewModel,
+    onQuestionnaireNavigate: () -> Unit = {}
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
@@ -176,9 +183,13 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues), color = Color.Black
         ) {
             Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-
                 if (!isEditing) {
                     // Profile View Screen
+                    ProfileCompletionCard(
+                        progress = 0.5f,
+                        onNavigateToQuestionnaire = {
+                            onQuestionnaireNavigate()
+                        })
                     Column(
                         modifier = Modifier.fillMaxSize().padding(16.dp)
                     ) {
@@ -462,7 +473,7 @@ fun ProfileScreen(
 @Composable
 private fun ProfileInfoItem(label: String, value: String) {
     Column(
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier.padding(vertical = Dimensions.size8dp)
     ) {
         Text(
             text = label, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White
@@ -486,7 +497,7 @@ private fun ProfileTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label, color = Color.White) },
-        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = modifier.fillMaxWidth().padding(vertical = Dimensions.size8dp),
         enabled = enabled,
         colors = TextFieldColors(
             cursorColor = Color.White,
@@ -535,8 +546,110 @@ private fun ProfileTextField(
                 handleColor = Color.White, backgroundColor = Color.White
             )
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(Dimensions.size8dp)
     )
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileCompletionCard(
+    progress: Float = 0.5f,
+    onNavigateToQuestionnaire: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(Dimensions.size16dp),
+        shape = RoundedCornerShape(Dimensions.size16dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF18181B))
+    ) {
+        Column(modifier = Modifier.padding(Dimensions.size14dp)) {
+            Text(
+                text = "Profile Completion",
+                color = AppColors.textPrimaryColor,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+            Text(
+                text = "Complete your profile to get better health insights",
+                color = Color.Gray,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(top = Dimensions.size4dp, bottom = Dimensions.size16dp)
+            )
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(Dimensions.size8dp)
+                    .clip(RoundedCornerShape(Dimensions.size4dp)),
+                color = AppColors.BlueStroke,
+                trackColor = Color(0xFF23232A),
+            )
+
+            Text(
+                text = "${(progress * 100).toInt()}% Complete",
+                color = Color(0xFF4F8CFF),
+                fontSize = FontSize.textSize14sp,
+                fontFamily = FontFamily.medium(),
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(Dimensions.size20dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF23232A), RoundedCornerShape(Dimensions.size12dp))
+                    .padding(Dimensions.size16dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(Dimensions.size32dp)
+                        .background(Color(0xFFFFC107), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Man, // Use a clock or history icon if available
+                        contentDescription = null,
+                        tint = AppColors.Black,
+                        modifier = Modifier.size(Dimensions.size20dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Medical History Questionnaire",
+                        fontFamily = FontFamily.medium(),
+                        color = AppColors.textPrimaryColor,
+                        fontSize = FontSize.textSize16sp,
+                    )
+                    Text(
+                        text = "0/16",
+                        fontFamily = FontFamily.medium(),
+                        fontSize = FontSize.textSize14sp,
+                        color = AppColors.inputHint,
+                    )
+                }
+            }
+            Button(
+                onClick = onNavigateToQuestionnaire,
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.BlueStroke),
+                shape = RoundedCornerShape(Dimensions.size8dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Man, // Use a quiz or question icon if available
+                    contentDescription = null,
+                    tint = AppColors.textPrimaryColor,
+                    modifier = Modifier.size(Dimensions.size18dp)
+                )
+                Spacer(modifier = Modifier.width(Dimensions.size6dp))
+                Text(
+                    text = "Complete Remaining Questions",
+                    color = AppColors.textPrimaryColor,
+                    modifier = Modifier,
+                    fontSize = FontSize.textSize14sp,
+                )
+            }
+        }
+    }
+}
