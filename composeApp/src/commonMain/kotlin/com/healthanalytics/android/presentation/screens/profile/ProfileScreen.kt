@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Man
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -46,15 +48,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
-import com.healthanalytics.android.presentation.screens.marketplace.LogoutState
+import com.healthanalytics.android.data.models.questionnaire.Questionnaire
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
+import com.healthanalytics.android.presentation.screens.questionnaire.viewmodel.QuestionnaireViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.ui.ShowAlertDialog
+import com.healthanalytics.android.utils.Resource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +71,8 @@ fun ProfileScreen(
     onNavigateBack: () -> Unit,
     viewModel: MarketPlaceViewModel,
     onNavigateToTestBooking: () -> Unit,
+    questionnaireViewModel: QuestionnaireViewModel,
+    onQuestionnaireNavigate: () -> Unit = {}
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
@@ -72,22 +83,9 @@ fun ProfileScreen(
     val userPhone by viewModel.userPhone.collectAsState()
     val addressList by viewModel.addressList.collectAsState()
     val accessToken by viewModel.accessToken.collectAsState()
-    val logoutState by viewModel.logoutState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.clearLogoutState()
-    }
-    // Handle logout state changes
-    LaunchedEffect(logoutState) {
-        when (logoutState) {
-            is LogoutState.Success -> {
-                // User will be redirected to OnboardContainer automatically
-                // because hasAccessToken in HealthAnalyticsApp will become false
-//                onNavigateBack()
-            }
-
-            else -> {}
-        }
     }
 
     var name by remember(userName) { mutableStateOf(userName ?: "") }
@@ -120,11 +118,19 @@ fun ProfileScreen(
         mutableStateOf(selectedAddress?.address_id ?: "")
     }
 
+    val response by questionnaireViewModel.questionnaireFlow.collectAsStateWithLifecycle(
+        Resource.Loading()
+    )
+
     // Load addresses when access token becomes available
     LaunchedEffect(accessToken) {
+        questionnaireViewModel.saveQuestionnaireDetails(
+            assessmentId = "105", nextQuestionId = 0, displayName = "LifeStyle"
+        )
         if (accessToken != null) {
             println("Loading addresses with available token")
             viewModel.loadAddresses()
+            questionnaireViewModel.getQuestionnaires()
         }
     }
 
@@ -176,9 +182,41 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues), color = Color.Black
         ) {
             Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-
                 if (!isEditing) {
-                    // Profile View Screen
+                    when (response) {
+                        is Resource.Loading -> {
+                        }
+
+                        is Resource.Success -> {
+                            val (totalQuestions, answeredQuestion) = getQuestionnaireCount(result = response.data)
+
+                            val completionPercent = if (totalQuestions > 0) {
+                                (answeredQuestion.toFloat() / totalQuestions.toFloat()) * 100f
+                            } else {
+                                0f
+                            }
+
+                            val totalProgress =
+                                0.5f + (completionPercent / 2f / 100f) // Scales from 0.5 to 1.0
+                            Logger.v("totalProgress: $totalProgress, $completionPercent")
+                            ProfileCompletionCard(
+                                progress = totalProgress,
+                                answered = answeredQuestion,
+                                total = totalQuestions,
+                                onNavigateToQuestionnaire = {
+                                    onQuestionnaireNavigate()
+                                })
+
+                        }
+
+                        is Resource.Error -> {
+                            response.data?.let {
+                                LaunchedEffect(Unit) {
+                                }
+                            }
+                        }
+                    }
+
                     Column(
                         modifier = Modifier.fillMaxSize().padding(16.dp)
                     ) {
@@ -269,8 +307,7 @@ fun ProfileScreen(
                         }, onSaveClicked = { communication ->
                             if (!accessToken.isNullOrEmpty() && communication != null) {
                                 viewModel.saveCommunicationPreference(
-                                    accessToken!!,
-                                    communication
+                                    accessToken!!, communication
                                 )
                             }
                         })
@@ -280,8 +317,7 @@ fun ProfileScreen(
                         HealthMetrics(viewModel = viewModel, onSaved = { editWeight, editHeight ->
                             if (!accessToken.isNullOrEmpty()) {
                                 viewModel.saveHealthMetrics(
-                                    accessToken!!,
-                                    editWeight, editHeight
+                                    accessToken!!, editWeight, editHeight
                                 )
                             }
                         })
@@ -462,7 +498,7 @@ fun ProfileScreen(
 @Composable
 private fun ProfileInfoItem(label: String, value: String) {
     Column(
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier.padding(vertical = Dimensions.size8dp)
     ) {
         Text(
             text = label, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White
@@ -486,7 +522,7 @@ private fun ProfileTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label, color = Color.White) },
-        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = modifier.fillMaxWidth().padding(vertical = Dimensions.size8dp),
         enabled = enabled,
         colors = TextFieldColors(
             cursorColor = Color.White,
@@ -535,8 +571,185 @@ private fun ProfileTextField(
                 handleColor = Color.White, backgroundColor = Color.White
             )
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(Dimensions.size8dp)
     )
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileCompletionCard(
+    progress: Float = 0.5f,
+    answered: Int,
+    total: Int,
+    onNavigateToQuestionnaire: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp),
+        shape = RoundedCornerShape(Dimensions.size16dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF18181B))
+    ) {
+        Column(modifier = Modifier.padding(Dimensions.size14dp)) {
+            Text(
+                text = "Profile Completion",
+                color = AppColors.textPrimaryColor,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+            Text(
+                text = "Complete your profile to get better health insights",
+                color = Color.Gray,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(top = Dimensions.size4dp, bottom = Dimensions.size16dp)
+            )
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.fillMaxWidth().height(Dimensions.size8dp)
+                    .clip(RoundedCornerShape(Dimensions.size4dp)),
+                color = AppColors.BlueStroke,
+                trackColor = Color(0xFF23232A),
+            )
+            Text(
+                text = "${(progress * 100).toInt()}% Complete",
+                color = Color(0xFF4F8CFF),
+                fontSize = FontSize.textSize14sp,
+                fontFamily = FontFamily.medium(),
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(Dimensions.size20dp))
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .background(Color(0xFF23232A), RoundedCornerShape(Dimensions.size12dp))
+                    .padding(Dimensions.size16dp), verticalAlignment = Alignment.CenterVertically
+            ) {
+                if(answered != total) {
+                    Box(
+                        modifier = Modifier.size(Dimensions.size32dp)
+                            .background(Color(0xFFFFC107), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Man,
+                            contentDescription = null,
+                            tint = AppColors.Black,
+                            modifier = Modifier.size(Dimensions.size20dp)
+                        )
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.size(Dimensions.size32dp)
+                            .background(AppColors.lightGreen, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = AppColors.White,
+                            modifier = Modifier.size(Dimensions.size20dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Medical History Questionnaire",
+                        fontFamily = FontFamily.medium(),
+                        color = AppColors.textPrimaryColor,
+                        fontSize = FontSize.textSize16sp,
+                    )
+                    Text(
+                        text = "$answered/$total",
+                        fontFamily = FontFamily.medium(),
+                        fontSize = FontSize.textSize14sp,
+                        color = AppColors.inputHint,
+                    )
+                }
+            }
+            if (answered != total) {
+                Button(
+                    onClick = onNavigateToQuestionnaire,
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.BlueStroke),
+                    shape = RoundedCornerShape(Dimensions.size8dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Man,
+                        contentDescription = null,
+                        tint = AppColors.textPrimaryColor,
+                        modifier = Modifier.size(Dimensions.size18dp)
+                    )
+                    Spacer(modifier = Modifier.width(Dimensions.size6dp))
+                    Text(
+                        text = "Complete Remaining Questions",
+                        color = AppColors.textPrimaryColor,
+                        fontSize = FontSize.textSize14sp,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/*
+
+private fun getQuestionnaireCount(
+    result: Questionnaire?,
+): Pair<Int, Int> {
+    val totalCount = result?.ha_questions?.size ?: 0
+    val completedCount = getAnsweredQuestionCount(result?.ha_questions ?: emptyList())
+    Logger.e("result --> $totalCount, $completedCount")
+//    return Pair(totalCount, completedCount)
+    return totalCount to completedCount
+}
+*/
+
+/*
+fun getAnsweredQuestionCount(questions: List<Question>): Int {
+    val questionMap = questions.associateBy { it.id }
+    val firstQuestion = questions.find { it.is_first_question == true } ?: return 0
+
+    var count = 0
+    var currentQuestion = firstQuestion
+
+    while (true) {
+        val hasSelected = currentQuestion.answers?.any { it.is_selected == true }
+
+        if (hasSelected == true) {
+            count++
+            val nextId = currentQuestion.default_next_question_id
+            if (nextId == null || !questionMap.containsKey(nextId)) break
+            currentQuestion = questionMap[nextId]!!
+        } else {
+            break
+        }
+    }
+    return count
+}
+*/
+
+fun getQuestionnaireCount(result: Questionnaire?): Pair<Int, Int> {
+    val questions = result?.ha_questions
+    var total = 0
+    var answered = 0
+
+    questions?.forEach { question ->
+        total += 1
+
+        when (question.input_element) {
+            "radio", "checkbox" -> {
+                val selected = question.answers?.any { it.is_selected == true } == true
+                if (selected) answered += 1
+            }
+
+            "textbox" -> {
+                if (!question.text_answer.isNullOrBlank()) answered += 1
+            }
+
+            else -> {
+                // Optional: handle other input types
+            }
+        }
+    }
+
+    return Pair(total, answered)
+}
+

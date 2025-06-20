@@ -77,7 +77,6 @@ fun HealthDataScreen(
 
     LaunchedEffect(preferencesState.data) {
         preferencesState.data?.let { token ->
-            prefs.saveAccessToken(token)
             viewModel.loadHealthMetrics(token)
         }
     }

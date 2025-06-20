@@ -20,6 +20,7 @@ import com.healthanalytics.android.data.models.onboard.VerifyOtp
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.utils.Resource
+import io.ktor.util.decodeBase64Bytes
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,6 +30,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class OnboardViewModel(
     private val onboardApiService: OnboardApiService,
@@ -36,6 +40,7 @@ class OnboardViewModel(
 ) : ViewModel() {
 
     private var phoneNumber: String = ""
+    private var countryCode: String = "+91"
     private var mh: String = ""
     private var leadId = ""
     private var accessToken = ""
@@ -68,7 +73,12 @@ class OnboardViewModel(
     private val _paymentStatus = MutableSharedFlow<Resource<OtpResponse?>>()
     val paymentStatus: SharedFlow<Resource<OtpResponse?>> = _paymentStatus
 
+    private val _accountDetailsState = MutableStateFlow(AccountDetails())
+    val accountDetailsState: StateFlow<AccountDetails> = _accountDetailsState
+
     fun getPhoneNumber() = phoneNumber
+
+    fun getCountryCode() = countryCode
 
     fun getGeneratedOrderDetail() = generateOrderIdResponse
 
@@ -124,12 +134,21 @@ class OnboardViewModel(
 
     fun getAccessToken() = accessToken
 
-    fun getAccountDetails() = accountDetails
+    fun getAccountDetails() = _accountDetailsState.value
 
     fun getAddressDetails() = communicationAddress
 
     fun saveAccountDetails(accountDetails: AccountDetails) {
         this.accountDetails = accountDetails
+        updateAccountDetails(accountDetails)
+    }
+
+    fun updateAccountDetails(accountDetails: AccountDetails) {
+        _accountDetailsState.value = accountDetails
+    }
+
+    fun updateAccountField(update: (AccountDetails) -> AccountDetails) {
+        _accountDetailsState.value = update(_accountDetailsState.value)
     }
 
     fun sendOTP(phoneNumber: String) {
@@ -187,6 +206,10 @@ class OnboardViewModel(
                 // Save access token and login state
                 if (otpVerifiedResponse.access_token != null) {
                     preferencesRepository.saveAccessToken(otpVerifiedResponse.access_token)
+                    val profileId = decodeProfileId(otpVerifiedResponse.access_token)
+                    profileId?.let { id ->
+                        preferencesRepository.saveProfileId(id)
+                    }
                     preferencesRepository.saveIsLogin(true)
                 }
 
@@ -196,7 +219,7 @@ class OnboardViewModel(
                     user.name?.let { preferencesRepository.saveUserName(it) }
                     user.email?.let { preferencesRepository.saveUserEmail(it) }
                     user.mobile?.let { preferencesRepository.saveUserPhone(it) }
-                    user.lead_id?.let {preferencesRepository.saveLeadId(it)}
+                    user.gender?.let { preferencesRepository.saveGender(it) }
 
                     // Save communication address if available
                     user.communication_address?.let { address ->
@@ -240,7 +263,6 @@ class OnboardViewModel(
             try {
                 val response = onboardApiService.createAccount(accountCreation)
                 leadId = response?.lead_id ?: ""
-                preferencesRepository.saveLeadId(leadId)
                 _accountCreationState.emit(Resource.Success(response))
             } catch (_: Exception) {
                 _accountCreationState.emit(Resource.Error(errorMessage = "Something went wrong..."))
@@ -321,8 +343,41 @@ class OnboardViewModel(
         }
     }
 
+    fun isAccountDetailsValid(accountDetails: AccountDetails): Boolean {
+        val emailRegex = Regex("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")
+        return accountDetails.firstName.isNotEmpty() &&
+                accountDetails.lastName.isNotEmpty() &&
+                accountDetails.email.isNotEmpty() &&
+                emailRegex.matches(accountDetails.email) &&
+                accountDetails.dob != null &&
+                accountDetails.gender.isNotEmpty() &&
+                accountDetails.weight.isNotEmpty() &&
+                accountDetails.height.isNotEmpty() &&
+                accountDetails.streetAddress.isNotEmpty() &&
+                accountDetails.city.isNotEmpty() &&
+                accountDetails.state.isNotEmpty() &&
+                accountDetails.zipCode.isNotEmpty()
+    }
+
     override fun onCleared() {
         super.onCleared()
         println("onCleared...........")
     }
+
+
+    private fun decodeProfileId(jwt: String): String? {
+        return try {
+            val parts = jwt.split(".")
+            if (parts.size != 3) throw IllegalArgumentException("Invalid JWT token")
+
+            val decoded = parts[1].decodeBase64Bytes()
+            val jsonString = decoded.decodeToString()
+            val decodedJsonObject = Json.parseToJsonElement(jsonString).jsonObject
+
+            decodedJsonObject["profile_id"]?.jsonPrimitive?.content
+        } catch (ex: Exception) {
+            null
+        }
+    }
+
 }

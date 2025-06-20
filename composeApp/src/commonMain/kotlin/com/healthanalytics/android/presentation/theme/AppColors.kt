@@ -77,9 +77,24 @@ object AppColors {
     val iconGrey = Color(0Xffe5e7eb)
     val txtBlue = Color(0Xff93c5fd)
     val backgroundBlue = Color(0X1f293780)
+    val textPrimaryColor = Color(0XFFF3F4F6)
+    val cardBlueColor = Color(0xFF1F2937)
+    val cardDarkBlueColor = Color(0xFF111827)
     val lineBorderColor = Color(0XFF262626)
     val textFieldUnFocusedColor = Color(0XFF374151)
     val buttonGrey = Color(0XFF747479)
+    val pinkBackground = Color(0XF7258533)
 
+
+    val backGround = Color(0xFF121417)
+    val primaryColor = Color(0xFFD1E3F2)
+    val primaryTextColor = Color(0xFFFFFFFF)
+    val secondaryTextColor = Color(0xFFA1ABB5)
+    val tertiaryTextColor = Color(0xFF141A1F)
+    val textLabelColor = Color(0xFF9CADBF)
+
+    val gray = Color(0xFF40474F)
+    val gray_100 = Color(0xFF293642)
+    val lightGreen = Color(0xFF00c6b4)
 
 }

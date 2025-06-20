@@ -11,6 +11,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
+import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
@@ -24,9 +25,10 @@ sealed class BottomNavScreen : Tab {
         @Composable
         override fun Content() {
             val mainNavigator = LocalMainNavigator.current
-
+            val healthDataViewModel: HealthDataViewModel = koinInject()
             HealthDataScreen(
-                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = { biomarker ->
+                viewModel = healthDataViewModel,
+                onNavigateToDetail = { biomarker ->
                     mainNavigator.push(BiomarkerDetailNavWrapper(biomarker = biomarker))
                 })
         }
@@ -39,13 +41,30 @@ sealed class BottomNavScreen : Tab {
             )
     }
 
+
+//    object Profile : BottomNavScreen() {
+//        @Composable
+//        override fun Content() {
+//            val mainNavigator = LocalMainNavigator.current
+//
+//            HealthDataScreen(
+//                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = { biomarker ->
+//                    mainNavigator.push(BiomarkerDetailNavWrapper(biomarker = biomarker))
+//                })
+//        }
+//
+//        override val options: TabOptions
+//            @Composable get() = TabOptions(
+//                index = 1u,
+//                title = AppStrings.HEALTH_DATA,
+//                icon = rememberVectorPainter(Icons.Default.Home)
+//            )
+//    }
+
+
     object Recommendations : BottomNavScreen() {
         @Composable
         override fun Content() {
-//            RecommendationsScreen(
-//                viewModel = koinInject(),
-//                preferencesViewModel = koinInject()
-//            )
 
             RecommendationsTabScreen(
                 viewModel = koinInject(), preferencesViewModel = koinInject(), navigateBack = {})
@@ -83,4 +102,3 @@ sealed class BottomNavScreen : Tab {
             )
     }
 }
-

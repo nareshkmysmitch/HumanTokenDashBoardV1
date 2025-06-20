@@ -113,7 +113,10 @@ fun ActionPlanScreen(
             ) {
                 items(filteredRecommendations) { recommendation ->
                     ActionPlanCard(
-                        recommendation = recommendation, viewModel, preferencesState.data
+                        recommendation = recommendation,
+                        viewModel,
+                        preferencesState.data,
+                        preferencesViewModel
                     )
                 }
             }
@@ -273,12 +276,14 @@ fun ActionPlanCard(
     recommendation: Recommendation,
     viewModel: RecommendationsViewModel,
     accessToken: String?,
+    preferencesViewModel: PreferencesViewModel,
 ) {
     val createAt =
         recommendation.actions?.firstOrNull()?.user_recommendation_actions?.firstOrNull()?.created_at
     val formattedDate = formatDate(createAt)
 
     val metricRecommendation = recommendation.metric_recommendations
+    val profileId by preferencesViewModel.profileId.collectAsState()
 
     val isSupplements = recommendation.category.equals(
         AppConstants.SUPPLEMENTS,
@@ -340,7 +345,9 @@ fun ActionPlanCard(
                                     ignoreCase = true
                                 )
                             ) {
-                                viewModel.removeSupplements(it, recommendation)
+                                if (!profileId.isNullOrEmpty()) {
+                                    viewModel.removeSupplements(it, recommendation, profileId!!)
+                                }
                             } else {
                                 viewModel.removeRecommendation(it, recommendation)
                             }

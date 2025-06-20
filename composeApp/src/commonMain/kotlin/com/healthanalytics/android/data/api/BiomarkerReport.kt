@@ -52,9 +52,13 @@ data class Cause(
 
 @Serializable
 data class ReportedSymptom(
+    @SerialName("id") val id: String? = null,
     @SerialName("name") val name: String? = null,
+    @SerialName("description") val description: String? = null,
+    @SerialName("category") val category: String? = null,
+    @SerialName("metric_inferences") val metricInferences: List<String>? = null,
     @SerialName("count") val count: Int? = null,
-    @SerialName("last_reported") val lastReported: String? = null
+    @SerialName("reported_at") val reportedAt: String? = null
 )
 
 @Serializable
@@ -62,4 +66,4 @@ data class WellnessCategory(
     @SerialName("name") val name: String? = null,
     @SerialName("impact") val impact: String? = null,
     @SerialName("description") val description: String? = null
-) 
+)

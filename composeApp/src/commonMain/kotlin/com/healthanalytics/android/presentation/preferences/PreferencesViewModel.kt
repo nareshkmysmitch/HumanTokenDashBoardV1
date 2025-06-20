@@ -19,6 +19,9 @@ class PreferencesViewModel(
     private val _uiState = MutableStateFlow(PreferencesUiState<String?>())
     val uiState: StateFlow<PreferencesUiState<String?>> = _uiState.asStateFlow()
 
+    private val _profileId = MutableStateFlow<String?>(null)
+    val profileId: StateFlow<String?> = _profileId.asStateFlow()
+
     init {
         observerAccessToken()
     }
@@ -46,6 +49,12 @@ class PreferencesViewModel(
                         )
                     }
                 }
+        }
+
+        viewModelScope.launch {
+            preferencesRepository.profileId.collect { id ->
+                _profileId.value = id
+            }
         }
     }
 
