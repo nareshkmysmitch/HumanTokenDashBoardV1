@@ -18,8 +18,12 @@ import com.healthanalytics.android.presentation.screens.symptoms.SymptomsViewMod
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiServiceImpl
+import com.healthanalytics.android.presentation.screens.questionnaire.QuestionnaireApiService
+import com.healthanalytics.android.presentation.screens.questionnaire.QuestionnaireApiServiceImpl
+import com.healthanalytics.android.presentation.screens.questionnaire.viewmodel.QuestionnaireViewModel
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import com.healthanalytics.android.utils.KermitLogger
+import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -31,6 +35,7 @@ val loggingModule = module {
     single { KermitLogger() }
 }
 
+
 val sharedModules = module {
 
     single { NetworkConfig.createHttpClient() }
@@ -39,6 +44,7 @@ val sharedModules = module {
 
     single<ChatApiService> { ChatApiServiceImpl(get()) }
     single<OnboardApiService> { OnboardApiServiceImpl(get()) }
+    single<QuestionnaireApiService> { QuestionnaireApiServiceImpl(get()) }
     single<PreferencesRepository> { PreferencesRepository(get()) }
 
     factoryOf(::HealthDataViewModel)
@@ -49,15 +55,29 @@ val sharedModules = module {
     factoryOf(::RecommendationsViewModel)
     viewModelOf(::OnboardViewModel)
     viewModelOf(::SymptomsViewModel)
+    viewModelOf(::QuestionnaireViewModel)
     factoryOf(::BioMarkerReportViewModel)
 
 }
+
+val serializationModule = module {
+    single<Json> {
+        Json {
+            prettyPrint = true
+            isLenient = true
+            ignoreUnknownKeys = true
+            explicitNulls = true
+            encodeDefaults = true
+        }
+    }
+}
+
 
 expect val platformModules: Module
 
 fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
         config?.invoke(this)
-        modules(sharedModules, platformModules, loggingModule)
+        modules(sharedModules, platformModules, loggingModule,serializationModule)
     }
 }

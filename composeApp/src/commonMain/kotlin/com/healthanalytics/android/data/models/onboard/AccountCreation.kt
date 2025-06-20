@@ -29,6 +29,10 @@ data class AccountDetails(
     val dob: LocalDate? = null,
     val gender: String = "",
     val weight: String = "",
-    val height: String = ""
+    val height: String = "",
+    val streetAddress: String = "",
+    val city: String = "",
+    val state: String = "",
+    val zipCode: String = ""
 )
 

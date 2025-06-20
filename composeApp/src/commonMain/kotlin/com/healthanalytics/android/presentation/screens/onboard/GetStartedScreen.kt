@@ -51,38 +51,46 @@ import com.healthanalytics.android.presentation.theme.FontSize
 import humantokendashboardv1.composeapp.generated.resources.Res
 import humantokendashboardv1.composeapp.generated.resources.rounded_logo
 import org.jetbrains.compose.resources.painterResource
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
-import com.healthanalytics.android.payment.RazorpayHandler
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun GetStartedScreen(
-    onGetStarted: () -> Unit, onLogin: () -> Unit
+    onGetStarted: () -> Unit,
+    onLogin: () -> Unit,
+    onViewAllBiomarkers: () -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize().background(AppColors.backgroundDark)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.backgroundDark)
             .padding(Dimensions.screenPadding)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter)
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(Dimensions.size32dp))
 
             Box(
-                contentAlignment = Alignment.Center, modifier = Modifier.padding(
-                    end = Dimensions.size16dp, bottom = Dimensions.size16dp
-                ).size(Dimensions.size120dp).shadow(
-                    elevation = Dimensions.size6dp,
-                    shape = CircleShape,
-                    clip = false,
-                    ambientColor = AppColors.backgroundDark,
-                    spotColor = AppColors.spot
-                ).clip(CircleShape).background(AppColors.backgroundDark)
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .padding(
+                        end = Dimensions.size16dp,
+                        bottom = Dimensions.size16dp
+                    )
+                    .size(Dimensions.size120dp)
+                    .shadow(
+                        elevation = Dimensions.size6dp,
+                        shape = CircleShape,
+                        clip = false,
+                        ambientColor = AppColors.backgroundDark,
+                        spotColor = AppColors.spot
+                    )
+                    .clip(CircleShape)
+                    .background(AppColors.backgroundDark)
                     .padding(paddingValues = PaddingValues(Dimensions.size6dp))
             ) {
                 Image(
@@ -94,7 +102,7 @@ fun GetStartedScreen(
 
             Spacer(modifier = Modifier.height(Dimensions.size32dp))
             val gradient = Brush.linearGradient(
-                colors = listOf(AppColors.White, AppColors.secondary, AppColors.White),
+                colors = listOf(AppColors.primaryTextColor, AppColors.secondary, AppColors.primaryTextColor),
                 tileMode = TileMode.Clamp
             )
             BasicText(
@@ -106,7 +114,8 @@ fun GetStartedScreen(
                     textAlign = TextAlign.Center,
                     lineHeight = FontSize.textSize40sp
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .graphicsLayer(alpha = 0.99f) // Needed for gradient text
             )
             Spacer(modifier = Modifier.height(Dimensions.size8dp))
@@ -143,7 +152,9 @@ fun GetStartedScreen(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         val certs = listOf(
-                            "CLIA-certified labs", "FDA-approved tests", "HIPAA-compliant"
+                            "CLIA-certified labs",
+                            "FDA-approved tests",
+                            "HIPAA-compliant"
                         )
                         certs.forEachIndexed { index, cert ->
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -159,9 +170,11 @@ fun GetStartedScreen(
 
                                 if (index > 0) {
                                     Box(
-                                        modifier = Modifier.size(Dimensions.size4dp).background(
-                                            color = AppColors.success, shape = CircleShape
-                                        )
+                                        modifier = Modifier.size(Dimensions.size4dp)
+                                            .background(
+                                                color = AppColors.success,
+                                                shape = CircleShape
+                                            )
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
@@ -183,16 +196,21 @@ fun GetStartedScreen(
             val categories = listOf(
                 BiomarkerCategory(
                     icon = "\uD83D\uDCA7", // Water drop
-                    title = "Metabolic Health", color = AppColors.tertiary, items = listOf(
+                    title = "Metabolic Health",
+                    color = AppColors.tertiary,
+                    items = listOf(
                         "Fasting Blood Glucose",
                         "Hemoglobin A1C (HbA1c)",
                         "Fasting Insulin",
                         "HOMA-IR",
                         "Average Blood Glucose"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\u2764\uFE0F", // Heart
-                    title = "Heart Health", color = AppColors.secondary, items = listOf(
+                    title = "Heart Health",
+                    color = AppColors.secondary,
+                    items = listOf(
                         "Total Cholesterol",
                         "LDL, HDL, Triglycerides",
                         "VLDL, Non-HDL Cholesterol",
@@ -202,23 +220,34 @@ fun GetStartedScreen(
                         "TGL/HDL, HDL/LDL Ratios",
                         "Small LDL"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\uD83D\uDD25", // Fire
-                    title = "Inflammation", color = AppColors.error, items = listOf(
-                        "hs-CRP", "Homocysteine", "Ferritin"
+                    title = "Inflammation",
+                    color = AppColors.error,
+                    items = listOf(
+                        "hs-CRP",
+                        "Homocysteine",
+                        "Ferritin"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\u2697\uFE0F", // Test tube
-                    title = "Hormone Health", color = AppColors.Pink, items = listOf(
+                    title = "Hormone Health",
+                    color = AppColors.Pink,
+                    items = listOf(
                         "Total Testosterone",
                         "Free Testosterone",
                         "SHBG",
                         "DHEAS",
                         "Cortisol (morning)"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\uD83E\uDDEA", // Microbe
-                    title = "Immune Health", color = AppColors.tertiary, items = listOf(
+                    title = "Immune Health",
+                    color = AppColors.tertiary,
+                    items = listOf(
                         "Total WBC Count",
                         "Neutrophils %, Lymphocytes %",
                         "Monocytes %, Eosinophils %",
@@ -226,9 +255,12 @@ fun GetStartedScreen(
                         "Absolute Counts",
                         "Immature Granulocytes"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\uD83E\uDDEA", // Blood drop
-                    title = "Blood Health", color = AppColors.error, items = listOf(
+                    title = "Blood Health",
+                    color = AppColors.error,
+                    items = listOf(
                         "Total RBC Count",
                         "Hemoglobin, Hematocrit",
                         "MCV, MCH, MCHC",
@@ -237,9 +269,12 @@ fun GetStartedScreen(
                         "Platelet Count, MPV",
                         "PCT, PDW, P-LCR"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\uD83C\uDF31", // Leaf
-                    title = "Nutrients & Vitamins", color = AppColors.success, items = listOf(
+                    title = "Nutrients & Vitamins",
+                    color = AppColors.success,
+                    items = listOf(
                         "Vitamin D, B12, Folate",
                         "Vitamin B6, B3, A, E",
                         "Vitamin B5, B7 (Biotin)",
@@ -248,12 +283,18 @@ fun GetStartedScreen(
                         "Transferrin Saturation",
                         "Calcium"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\u26A1", // Lightning
-                    title = "Thyroid Health", color = AppColors.secondary, items = listOf(
-                        "TSH", "Total T3, Free T3", "Total T4, Free T4"
+                    title = "Thyroid Health",
+                    color = AppColors.secondary,
+                    items = listOf(
+                        "TSH",
+                        "Total T3, Free T3",
+                        "Total T4, Free T4"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\uD83D\uDC8E", // Gem (for liver)
                     title = "Liver Health",
                     color = AppColors.PurpleButtonBackground,
@@ -265,10 +306,16 @@ fun GetStartedScreen(
                         "ALP, GGTP",
                         "A/G Ratio"
                     )
-                ), BiomarkerCategory(
+                ),
+                BiomarkerCategory(
                     icon = "\uD83C\uDF79", // Cocktail glass (for kidney)
-                    title = "Kidney Health", color = AppColors.tertiary, items = listOf(
-                        "Creatinine", "eGFR", "Urea", "Uric Acid"
+                    title = "Kidney Health",
+                    color = AppColors.tertiary,
+                    items = listOf(
+                        "Creatinine",
+                        "eGFR",
+                        "Urea",
+                        "Uric Acid"
                     )
                 )
             )
@@ -276,7 +323,9 @@ fun GetStartedScreen(
             Column(modifier = Modifier.animateContentSize()) {
                 shownCategories.forEach { cat ->
                     Card(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.size12dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = Dimensions.size12dp),
                         colors = CardDefaults.cardColors(containerColor = AppColors.cardBackground),
                         shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
                     ) {
@@ -285,10 +334,13 @@ fun GetStartedScreen(
                             modifier = Modifier.padding(Dimensions.size16dp)
                         ) {
                             Box(
-                                modifier = Modifier.size(48.dp).background(
-                                    color = AppColors.backgroundDark,
-                                    shape = RoundedCornerShape(12.dp)
-                                ), contentAlignment = Alignment.Center
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(
+                                        color = AppColors.backgroundDark,
+                                        shape = RoundedCornerShape(12.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = cat.icon,
@@ -313,7 +365,8 @@ fun GetStartedScreen(
                                         fontFamily = FontFamily.regular(),
                                         color = AppColors.textSecondary,
                                         modifier = Modifier.padding(
-                                            start = Dimensions.size8dp, bottom = Dimensions.size2dp
+                                            start = Dimensions.size8dp,
+                                            bottom = Dimensions.size2dp
                                         )
                                     )
                                 }
@@ -340,11 +393,14 @@ fun GetStartedScreen(
                 Card(
                     colors = CardDefaults.cardColors(containerColor = AppColors.cardBackground),
                     shape = RoundedCornerShape(Dimensions.cornerRadiusLarge),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(top = Dimensions.size8dp, bottom = Dimensions.size16dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimensions.size16dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -374,7 +430,7 @@ fun GetStartedScreen(
                                 text = "\u20B99,999",
                                 fontSize = FontSize.textSize28sp,
                                 fontFamily = FontFamily.semiBold(),
-                                color = AppColors.White
+                                color = AppColors.primaryTextColor
                             )
                         }
                     }
@@ -383,11 +439,14 @@ fun GetStartedScreen(
 
             Spacer(modifier = Modifier.height(Dimensions.size32dp))
             PrimaryButton(
-                isEnable = true, onclick = onGetStarted, buttonName = "Get Started"
+                enable = true,
+                onClick = onGetStarted,
+                buttonName = "Get Started"
             )
             Spacer(modifier = Modifier.height(Dimensions.size16dp))
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Already have an account? Continue to ",
@@ -400,7 +459,8 @@ fun GetStartedScreen(
                     fontSize = FontSize.textSize14sp,
                     fontFamily = FontFamily.medium(),
                     color = AppColors.secondary,
-                    modifier = Modifier.clickable { onLogin() })
+                    modifier = Modifier.clickable { onLogin() }
+                )
             }
         }
     }
@@ -412,20 +472,4 @@ data class BiomarkerCategory(
     val title: String,
     val color: androidx.compose.ui.graphics.Color,
     val items: List<String>
-)
-
-class GetStartedScreenNav(
-    private val onboardViewModel: OnboardViewModel,
-    private val razorpayHandler: RazorpayHandler,
-    private val isLoggedIn: () -> Unit
-) : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        GetStartedScreen(onGetStarted = {
-            navigator.push(LoginScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
-        }, onLogin = {
-            navigator.push(LoginScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
-        })
-    }
-} 
+) 

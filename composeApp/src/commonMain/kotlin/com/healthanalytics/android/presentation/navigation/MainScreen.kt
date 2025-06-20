@@ -38,7 +38,7 @@ import com.healthanalytics.android.payment.RazorpayHandler
 import com.healthanalytics.android.presentation.screens.ProfileNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ConversationListNavWrapper
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
-import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreenNav
+import com.healthanalytics.android.presentation.screens.onboard.LoginScreenNav
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrapper
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -137,14 +137,14 @@ class MainScreen : Screen {
                                 topBar = {
                                     TopAppBar(
                                         title = { Text("Human Token") }, actions = {
-                                            TopBarActions(
-                                                currentTab = currentTab,
-                                                mainNavigator = mainNavigator
-                                            )
-                                        }, colors = TopAppBarDefaults.topAppBarColors(
-                                            containerColor = AppColors.Black,
-                                            titleContentColor = Color.White
+                                        TopBarActions(
+                                            currentTab = currentTab,
+                                            mainNavigator = mainNavigator
                                         )
+                                    }, colors = TopAppBarDefaults.topAppBarColors(
+                                        containerColor = AppColors.Black,
+                                        titleContentColor = Color.White
+                                    )
                                     )
                                 },
 
@@ -198,8 +198,6 @@ class MainScreen : Screen {
         }
     }
 
-
-
 }
 
 class OnboardNavWrapper(
@@ -210,7 +208,7 @@ class OnboardNavWrapper(
     @Composable
     override fun Content() {
         Navigator(
-            GetStartedScreenNav(
+            LoginScreenNav(
                 onboardViewModel = onboardViewModel,
                 razorpayHandler = razorpayHandler,
                 isLoggedIn = isLoggedIn
