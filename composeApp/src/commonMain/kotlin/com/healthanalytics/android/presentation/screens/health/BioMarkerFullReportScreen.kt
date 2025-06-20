@@ -52,6 +52,7 @@ import com.healthanalytics.android.data.api.WellnessCategory
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.Dimensions.size12dp
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.utils.capitalizeFirst
@@ -181,8 +182,7 @@ private fun TabSection(
                                 color = AppColors.textPrimaryColor,
                                 fontFamily = FontFamily.semiBold()
                             )
-                        }
-                    )
+                        })
                 }
             }
         }
@@ -247,26 +247,29 @@ fun TypeBasedCardDesc(
         }
         Spacer(modifier = Modifier.height(8.dp))
         WhyItMattersContent(whyItMattersData)
-        Spacer(Modifier.height(Dimensions.size24dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Outlined.MedicalInformation,
-                contentDescription = "Causes",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp).padding(end = 4.dp)
-            )
-            Text(
-                text = "Causes",
-                style = MaterialTheme.typography.titleLarge,
-                fontFamily = FontFamily.semiBold(),
+
+        if (increaseLevelDesc.isNotEmpty() && decreaseLevelDesc.isNotEmpty()) {
+            Spacer(Modifier.height(Dimensions.size24dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Outlined.MedicalInformation,
+                    contentDescription = "Causes",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp).padding(end = 4.dp)
+                )
+                Text(
+                    text = "Causes",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontFamily = FontFamily.semiBold(),
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            CausesContent(
+                name = name,
+                increaseLevelDesc = increaseLevelDesc,
+                decreaseLevelDesc = decreaseLevelDesc
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        CausesContent(
-            name = name,
-            increaseLevelDesc = increaseLevelDesc,
-            decreaseLevelDesc = decreaseLevelDesc
-        )
     }
 }
 
@@ -458,8 +461,7 @@ private fun WhyItMattersContent(metricData: MetricData?) {
             }
             Text(
                 text = "Key Impact",
-                modifier = Modifier.fillMaxWidth()
-                    .padding(top = Dimensions.size16dp),
+                modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size16dp),
                 fontSize = FontSize.textSize14sp,
                 color = AppColors.darkPink,
                 fontFamily = FontFamily.medium()
@@ -710,30 +712,38 @@ private fun ReportedSymptoms(symptoms: List<ReportedSymptom>?) {
                 color = AppColors.error,
                 fontFamily = FontFamily.medium()
             )
-            Card(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(top = Dimensions.size4dp)
-                    .padding(horizontal = Dimensions.size16dp),
-                colors = CardDefaults.cardColors(containerColor = AppColors.cardDarkBlueColor),
-            ) {
-                symptoms.forEach { symptom ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+
+            symptoms.forEach { symptom ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size4dp)
+                        .padding(horizontal = Dimensions.size16dp),
+                    colors = CardDefaults.cardColors(containerColor = AppColors.cardDarkBlueColor),
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(size12dp)) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = symptom.name ?: "",
+                                fontSize = FontSize.textSize16sp,
+                                modifier = Modifier.weight(1f),
+                                fontFamily = FontFamily.medium(),
+                                color = AppColors.textPrimaryColor
+                            )
+                            Text(
+                                text = "${symptom.count ?: 0} times",
+                                color = AppColors.textPrimaryColor,
+                                fontSize = FontSize.textSize14sp,
+                                fontFamily = FontFamily.regular()
+                            )
+                        }
                         Text(
-                            text = symptom.name ?: "",
-                            fontSize = FontSize.textSize16sp,
-                            modifier = Modifier.weight(1f),
-                            fontFamily = FontFamily.medium(),
-                            color = AppColors.textPrimaryColor
-                        )
-                        Text(
-                            text = "${symptom.count ?: 0} times",
-                            color = AppColors.textPrimaryColor,
+                            text = "Last Reported: ${formatDate(symptom.reportedAt ?: "")}",
                             fontSize = FontSize.textSize14sp,
-                            fontFamily = FontFamily.regular()
+                            color = AppColors.textPrimaryColor,
+                            fontFamily = FontFamily.regular(),
+                            maxLines = 1,
                         )
                     }
                 }
@@ -768,7 +778,11 @@ private fun formatDate(isoString: String): String {
     return try {
         val instant = Instant.parse(isoString)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        "${localDateTime.dayOfMonth} ${localDateTime.month.name.take(3)} ${localDateTime.year}"
+        val hour = localDateTime.hour % 12
+        val formattedHour = if (hour == 0) 12 else hour
+        val amPm = if (localDateTime.hour < 12) "AM" else "PM"
+        val minute = localDateTime.minute.toString().padStart(2, '0')
+        "${localDateTime.dayOfMonth} ${localDateTime.month.name.take(3)} ${localDateTime.year}, $formattedHour:$minute $amPm"
     } catch (e: Exception) {
         isoString
     }

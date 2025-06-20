@@ -12,6 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,12 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.touchlab.kermit.Logger
 import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.api.BloodData
+import com.healthanalytics.android.data.api.Correlation
 import com.healthanalytics.android.presentation.components.FilledAppButton
 import com.healthanalytics.android.presentation.components.HorizontalBar
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.Dimensions
+import com.healthanalytics.android.presentation.theme.Dimensions.size12dp
 import com.healthanalytics.android.presentation.theme.FontFamily
+import com.healthanalytics.android.presentation.theme.FontSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +47,7 @@ fun BiomarkerDetailScreen(
     modifier: Modifier = Modifier,
     onNavigateFullReport: () -> Unit,
 ) {
+    Logger.e("biomarker --> ${biomarker?.correlation}")
     BackHandler(enabled = true, onBack = onNavigateBack)
     Scaffold(
         topBar = {
@@ -74,6 +82,10 @@ fun BiomarkerDetailScreen(
             //RangeGraph(biomarker)
             BiomarkerDescription(biomarker)
 
+            if (biomarker?.correlation?.isNotEmpty() == true) {
+                ConnectedBiomarkersCard(biomarker.correlation)
+            }
+
             FilledAppButton(
                 onClick = onNavigateFullReport,
                 modifier = Modifier.fillMaxWidth().padding(top = 24.dp, start = 20.dp, end = 20.dp),
@@ -99,14 +111,15 @@ private fun BiomarkerHeader(biomarker: BloodData?) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = biomarker?.displayName ?: "",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontFamily = FontFamily.bold()
+                    fontFamily = FontFamily.medium(),
+                    fontSize = FontSize.textSize16sp,
+                    color = AppColors.textPrimaryColor
                 )
                 Text(
                     text = "Blood Biomarker",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontFamily = FontFamily.medium()
+                    fontFamily = FontFamily.regular(),
+                    fontSize = FontSize.textSize14sp,
+                    color = AppColors.inputHint,
                 )
             }
             StatusChip(status = biomarker?.displayRating ?: "")
@@ -116,12 +129,14 @@ private fun BiomarkerHeader(biomarker: BloodData?) {
 
         Text(
             text = "Current Value",
-            style = MaterialTheme.typography.titleMedium,
-            fontFamily = FontFamily.bold()
+            fontFamily = FontFamily.medium(),
+            fontSize = FontSize.textSize14sp,
+            color = AppColors.inputHint,
         )
         Text(
             text = "${biomarker?.value} ${biomarker?.unit}",
-            style = MaterialTheme.typography.headlineLarge,
+            fontSize = FontSize.textSize20sp,
+            color = AppColors.textPrimaryColor,
             fontFamily = FontFamily.pilBold()
         )
     }
@@ -136,16 +151,53 @@ private fun BiomarkerDescription(biomarker: BloodData?) {
         if (!biomarker?.shortDescription.isNullOrBlank()) {
             Text(
                 text = "Description",
-                style = MaterialTheme.typography.titleMedium,
-                fontFamily = FontFamily.bold()
+                fontFamily = FontFamily.medium(),
+                fontSize = FontSize.textSize14sp,
+                color = AppColors.textPrimaryColor,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = biomarker.shortDescription,
-                style = MaterialTheme.typography.bodyMedium,
+                fontFamily = FontFamily.regular(),
+                fontSize = FontSize.textSize14sp,
                 color = AppColors.White,
-                fontFamily = FontFamily.medium()
             )
         }
     }
-} 
+}
+
+@Composable
+fun ConnectedBiomarkersCard(correlation: List<Correlation?>?) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Text(
+            text = "Connected Biomarkers",
+            fontFamily = FontFamily.medium(),
+            fontSize = FontSize.textSize16sp,
+            color = AppColors.textPrimaryColor,
+        )
+        Spacer(Modifier.height(Dimensions.size12dp))
+        correlation?.forEach {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(containerColor = AppColors.CardGrey),
+            ) {
+                Column(modifier = Modifier.fillMaxWidth().padding(size12dp)) {
+                    Text(
+                        text = it?.sourceMetricName ?: "No Data",
+                        fontFamily = FontFamily.medium(),
+                        fontSize = FontSize.textSize14sp,
+                        color = AppColors.textPrimaryColor,
+                    )
+
+                    Text(
+                        text = it?.description ?: "No Data",
+                        fontFamily = FontFamily.medium(),
+                        fontSize = FontSize.textSize14sp,
+                        color = AppColors.inputHint,
+                    )
+                }
+            }
+        }
+    }
+}
