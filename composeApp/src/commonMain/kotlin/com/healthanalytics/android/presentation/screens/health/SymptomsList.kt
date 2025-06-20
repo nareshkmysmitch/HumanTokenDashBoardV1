@@ -192,7 +192,7 @@ fun SymptomCard(symptoms: SymptomsData?, onSymptomsClick: (SymptomsData?) -> Uni
         }
 
         Text(
-            text = "Last updated: ${formatDate(lastReported ?: "")}",
+            text = "Last reported: ${formatDate(lastReported ?: "")}",
             fontSize = FontSize.textSize12sp,
             fontFamily = FontFamily.regular(),
             color = AppColors.White,

@@ -45,6 +45,12 @@
     <string name="search_symptoms">Search Symptoms...</string>
     <string name="symptom_count_single"> time reported</string>
     <string name="symptom_count_plural"> times reported</string>
+    <string name="symptom_details">Symptoms Details</string>
+
+    <string name="times_singular"> time</string>
+    <string name="times_plural"> times</string>
+    <string name="times_reported">Times Reported</string>
+    <string name="associated_biomarkers">Associated Biomarkers</string>
 
 
 </resources>

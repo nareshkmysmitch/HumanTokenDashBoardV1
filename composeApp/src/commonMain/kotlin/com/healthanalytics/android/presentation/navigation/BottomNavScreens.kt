@@ -11,9 +11,8 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.humantoken.ui.screens.ProductDetailScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
+import com.healthanalytics.android.presentation.screens.health.SymptomsDetailsWrapper
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
-import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsScreen
-import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTab
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.theme.AppStrings
 import org.koin.compose.koinInject
@@ -26,8 +25,11 @@ sealed class BottomNavScreen : Tab {
             val mainNavigator = LocalMainNavigator.current
 
             HealthDataScreen(
-                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = { biomarker ->
+                viewModel = koinInject(), prefs = koinInject(), onBiomarkerDetails = { biomarker ->
                     mainNavigator.push(BiomarkerDetailNavWrapper(biomarker = biomarker))
+                },
+                onSymptomsDetails = { symptomsData ->
+                    mainNavigator.push(SymptomsDetailsWrapper(symptomsData = symptomsData))
                 })
         }
 

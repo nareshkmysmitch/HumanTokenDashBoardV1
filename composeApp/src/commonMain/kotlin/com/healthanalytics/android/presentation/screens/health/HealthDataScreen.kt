@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthanalytics.android.data.models.home.BloodData
+import com.healthanalytics.android.data.models.home.SymptomsData
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions.size12dp
@@ -37,7 +38,8 @@ import org.koin.compose.koinInject
 fun HealthDataScreen(
     viewModel: HealthDataViewModel = koinInject(),
     prefs: PreferencesViewModel = koinInject(),
-    onNavigateToDetail: (BloodData?) -> Unit = {},
+    onBiomarkerDetails: (BloodData?) -> Unit = {},
+    onSymptomsDetails: (SymptomsData?) -> Unit = {},
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -95,15 +97,11 @@ fun HealthDataScreen(
             }
             when (selectedMetrics) {
                 "blood" -> {
-
-                    BioMarkerList(viewModel, onNavigateToDetail = onNavigateToDetail)
+                    BioMarkerList(viewModel, onNavigateToDetail = onBiomarkerDetails)
                 }
 
                 "symptoms" -> {
-
-                    SymptomsList(viewModel, onSymptomsClick = {
-
-                    })
+                    SymptomsList(viewModel, onSymptomsClick = onSymptomsDetails)
                 }
             }
         }
