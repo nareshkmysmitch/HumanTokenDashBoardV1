@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 sealed class OnboardRoute {
 
     @Serializable
+    data object GetStarted : OnboardRoute()
+
+    @Serializable
     data object Login : OnboardRoute()
 
     @Serializable
@@ -14,17 +17,9 @@ sealed class OnboardRoute {
     data object CreateAccount : OnboardRoute()
 
     @Serializable
-    data object HealthProfile : OnboardRoute()
-
-    @Serializable
-    data object SampleCollectionAddress : OnboardRoute()
-
-    @Serializable
     data object ScheduleBloodTest : OnboardRoute()
 
     @Serializable
     data object Payment : OnboardRoute()
 
-    @Serializable
-    data object GetStarted : OnboardRoute()
 }

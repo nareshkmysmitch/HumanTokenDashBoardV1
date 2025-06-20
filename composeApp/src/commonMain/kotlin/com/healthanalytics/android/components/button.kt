@@ -31,8 +31,8 @@ fun PrimaryButton(
         colors = ButtonColors(
             containerColor = AppColors.primaryColor,
             contentColor = AppColors.tertiaryTextColor,
-            disabledContainerColor = AppColors.primaryColor.copy(alpha = 0.2f),
-            disabledContentColor = AppColors.tertiaryTextColor.copy(alpha = 0.2f)
+            disabledContainerColor = AppColors.primaryColor.copy(alpha = 0.4f),
+            disabledContentColor = AppColors.tertiaryTextColor.copy(alpha = 0.4f)
         ),
         shape = RoundedCornerShape(Dimensions.size12dp)
     ) {
@@ -40,7 +40,7 @@ fun PrimaryButton(
             text = buttonName,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.bold(),
-            color = AppColors.tertiaryTextColor
+            color = if (enable) AppColors.tertiaryTextColor else AppColors.tertiaryTextColor.copy(alpha = 0.4f)
         )
     }
 }

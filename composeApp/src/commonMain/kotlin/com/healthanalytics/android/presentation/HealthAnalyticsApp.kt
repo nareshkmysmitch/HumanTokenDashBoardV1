@@ -55,7 +55,6 @@ import com.healthanalytics.android.presentation.screens.onboard.LoginScreenConta
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
 import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenContainer
-import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.questionnaire.QuestionnaireScreen
@@ -290,7 +289,7 @@ fun OnboardContainer(
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = OnboardRoute.CreateAccount,
+                startDestination = OnboardRoute.Login,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable<OnboardRoute.GetStarted> {
@@ -324,18 +323,6 @@ fun OnboardContainer(
 
                 composable<OnboardRoute.CreateAccount> {
                     CreateAccountContainer(
-                        onboardViewModel = onboardViewModel,
-                        onBackClick = {
-                            navController.navigateUp()
-                        },
-                        navigateToAddress = {
-                            navController.navigate(OnboardRoute.SampleCollectionAddress)
-                        }
-                    )
-                }
-
-                composable<OnboardRoute.SampleCollectionAddress> {
-                    SampleCollectionAddressContainer(
                         onboardViewModel = onboardViewModel,
                         onBackClick = {
                             navController.navigateUp()

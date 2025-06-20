@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.modifier.onBoxClick
 import com.healthanalytics.android.presentation.theme.AppColors
+import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 
 @Composable
@@ -43,8 +45,8 @@ fun DHToolBar(
                     .padding(end = 12.dp)
                     .size(32.dp)
                     .background(
-                        color = AppColors.white,
-                        shape = CircleShape
+                        color = AppColors.gray,
+                        shape = RoundedCornerShape(Dimensions.size12dp)
                     )
                     .onBoxClick(
                         onClick = {
@@ -57,7 +59,8 @@ fun DHToolBar(
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxSize(0.85f)
+                        .fillMaxSize(0.85f),
+                    tint = AppColors.primaryColor
                 )
             }
         }

@@ -3,6 +3,7 @@ package com.healthanalytics.android.presentation.screens.onboard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +17,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -33,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,7 +63,7 @@ import org.jetbrains.compose.resources.painterResource
 fun LoginScreenContainer(
     onboardViewModel: OnboardViewModel,
     navigateToOtpVerification: () -> Unit
-){
+) {
     LoginScreen(
         loginState = onboardViewModel.loginState,
         onContinueClick = {
@@ -68,7 +73,6 @@ fun LoginScreenContainer(
         phoneNumber = onboardViewModel.getPhoneNumber()
     )
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,7 +101,6 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.backgroundDark)
             .padding(Dimensions.screenPadding)
     ) {
         Column(
@@ -107,38 +110,53 @@ fun LoginScreen(
                 .padding(top = Dimensions.size12dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(Res.drawable.rounded_logo),
-                contentDescription = AppStrings.appName,
-                modifier = Modifier.size(Dimensions.size80dp)
-            )
 
-            Spacer(modifier = Modifier.height(Dimensions.size48dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.rounded_logo),
+                    contentDescription = AppStrings.appName,
+                    modifier = Modifier.size(Dimensions.size24dp)
+                )
+
+                Spacer(modifier = Modifier.width(Dimensions.size8dp))
+
+                Text(
+                    text = "Deep Holistics",
+                    fontSize = FontSize.textSize18sp,
+                    fontFamily = FontFamily.bold(),
+                    color = AppColors.textPrimary,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Dimensions.size50dp))
 
             Text(
-                fontSize = FontSize.textSize32sp,
                 text = AppStrings.LOGIN_TITLE,
-                fontFamily = FontFamily.semiBold(),
+                fontSize = FontSize.textSize18sp,
+                fontFamily = FontFamily.bold(),
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(Dimensions.size4dp))
+            Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
             Text(
-                text = AppStrings.loginSubtitle,
-                style = AppTextStyles.headingSmall,
+                text = AppStrings.LOGIN_SUBTITLE,
+                fontSize = FontSize.textSize24sp,
+                fontFamily = FontFamily.bold(),
                 color = AppColors.textPrimary,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(Dimensions.size48dp))
 
-            Text(
-                text = AppStrings.PHONE_NUMBER,
-                fontFamily = FontFamily.medium(),
-                fontSize = FontSize.textSize14sp,
-                color = AppColors.textSecondary,
+            FieldNameText(
+                name = AppStrings.PHONE_NUMBER,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -150,11 +168,11 @@ fun LoginScreen(
                     .height(Dimensions.inputFieldHeight)
                     .border(
                         width = 1.dp,
-                        color = Color(0xFF4A4A4A),
+                        color = AppColors.tertiaryTextColor,
                         shape = RoundedCornerShape(Dimensions.cornerRadiusMedium)
                     )
                     .background(
-                        color = AppColors.inputBackground,
+                        color = AppColors.gray,
                         shape = RoundedCornerShape(Dimensions.cornerRadiusMedium)
                     ),
                 verticalAlignment = Alignment.CenterVertically
@@ -177,18 +195,30 @@ fun LoginScreen(
                     border = null,
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
-                    Text(
-                        text = "${AppStrings.countryCode} ▼",
-                        style = AppTextStyles.bodyMedium,
-                        color = AppColors.textPrimary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = AppStrings.countryCode,
+                            fontFamily = FontFamily.medium(),
+                            fontSize = FontSize.textSize16sp,
+                            color = AppColors.primaryTextColor
+                        )
+
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            contentDescription = null,
+                            tint = AppColors.primaryTextColor
+                        )
+                    }
                 }
 
                 Box(
                     modifier = Modifier
                         .width(1.dp)
                         .height(32.dp)
-                        .background(Color(0xFF4A4A4A))
+                        .background(AppColors.secondaryTextColor)
                 )
 
                 OutlinedTextField(
@@ -205,8 +235,10 @@ fun LoginScreen(
                         .weight(1f)
                         .height(Dimensions.inputFieldHeight)
                         .focusRequester(focusRequester),
-                    textStyle = AppTextStyles.bodyMedium.copy(
-                        color = AppColors.inputText
+                    textStyle = TextStyle(
+                        fontFamily = FontFamily.medium(),
+                        fontSize = FontSize.textSize16sp,
+                        color = AppColors.primaryTextColor
                     ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Phone
@@ -224,7 +256,8 @@ fun LoginScreen(
                         focusedBorderColor = Color.Transparent,
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = AppColors.primary
-                    )
+                    ),
+                    maxLines = 1,
                 )
             }
 

@@ -36,6 +36,7 @@ class OnboardViewModel(
 ) : ViewModel() {
 
     private var phoneNumber: String = ""
+    private var countryCode: String = "+91"
     private var mh: String = ""
     private var leadId = ""
     private var accessToken = ""
@@ -68,7 +69,12 @@ class OnboardViewModel(
     private val _paymentStatus = MutableSharedFlow<Resource<OtpResponse?>>()
     val paymentStatus: SharedFlow<Resource<OtpResponse?>> = _paymentStatus
 
+    private val _accountDetailsState = MutableStateFlow(AccountDetails())
+    val accountDetailsState: StateFlow<AccountDetails> = _accountDetailsState
+
     fun getPhoneNumber() = phoneNumber
+
+    fun getCountryCode() = countryCode
 
     fun getGeneratedOrderDetail() = generateOrderIdResponse
 
@@ -124,12 +130,21 @@ class OnboardViewModel(
 
     fun getAccessToken() = accessToken
 
-    fun getAccountDetails() = accountDetails
+    fun getAccountDetails() = _accountDetailsState.value
 
     fun getAddressDetails() = communicationAddress
 
     fun saveAccountDetails(accountDetails: AccountDetails) {
         this.accountDetails = accountDetails
+        updateAccountDetails(accountDetails)
+    }
+
+    fun updateAccountDetails(accountDetails: AccountDetails) {
+        _accountDetailsState.value = accountDetails
+    }
+
+    fun updateAccountField(update: (AccountDetails) -> AccountDetails) {
+        _accountDetailsState.value = update(_accountDetailsState.value)
     }
 
     fun sendOTP(phoneNumber: String) {
@@ -318,6 +333,22 @@ class OnboardViewModel(
                 _paymentStatus.emit(Resource.Error(errorMessage = "Something went wrong..."))
             }
         }
+    }
+
+    fun isAccountDetailsValid(accountDetails: AccountDetails): Boolean {
+        val emailRegex = Regex("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")
+        return accountDetails.firstName.isNotEmpty() &&
+                accountDetails.lastName.isNotEmpty() &&
+                accountDetails.email.isNotEmpty() &&
+                emailRegex.matches(accountDetails.email) &&
+                accountDetails.dob != null &&
+                accountDetails.gender.isNotEmpty() &&
+                accountDetails.weight.isNotEmpty() &&
+                accountDetails.height.isNotEmpty() &&
+                accountDetails.streetAddress.isNotEmpty() &&
+                accountDetails.city.isNotEmpty() &&
+                accountDetails.state.isNotEmpty() &&
+                accountDetails.zipCode.isNotEmpty()
     }
 
     override fun onCleared() {
