@@ -66,11 +66,11 @@ class QuestionnaireViewModel(
             }
         }
 
-        saveQuestionnaireDetails(
-            assessmentId = "105",
-            nextQuestionId = 0,
-            displayName = "LifeStyle"
-        )
+//        saveQuestionnaireDetails(
+//            assessmentId = "105",
+//            nextQuestionId = 0,
+//            displayName = "LifeStyle"
+//        )
     }
 
     fun getQuestionnaireName() = questionnaireName
