@@ -172,9 +172,9 @@ class MainScreen : Screen {
                                 topBar = {
                                     TopAppBar(
                                         title = { Text("Human Token") }, actions = {
-                                            TopBarActions(
-                                                currentTab = currentTab,
-                                                mainNavigator = mainNavigator,
+                                        TopBarActions(
+                                            currentTab = currentTab,
+                                            mainNavigator = mainNavigator,
                                                 metrics = metrics,
                                                 scope = scope,
                                                 snackbarHostState = snackbarHostState

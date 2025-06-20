@@ -41,6 +41,27 @@ sealed class BottomNavScreen : Tab {
             )
     }
 
+
+//    object Profile : BottomNavScreen() {
+//        @Composable
+//        override fun Content() {
+//            val mainNavigator = LocalMainNavigator.current
+//
+//            HealthDataScreen(
+//                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = { biomarker ->
+//                    mainNavigator.push(BiomarkerDetailNavWrapper(biomarker = biomarker))
+//                })
+//        }
+//
+//        override val options: TabOptions
+//            @Composable get() = TabOptions(
+//                index = 1u,
+//                title = AppStrings.HEALTH_DATA,
+//                icon = rememberVectorPainter(Icons.Default.Home)
+//            )
+//    }
+
+
     object Recommendations : BottomNavScreen() {
         @Composable
         override fun Content() {
