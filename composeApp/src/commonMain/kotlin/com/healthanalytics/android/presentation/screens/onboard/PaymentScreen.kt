@@ -81,7 +81,6 @@ fun PaymentScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.backgroundDark)
     ) {
         Column(
             modifier = Modifier

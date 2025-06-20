@@ -223,7 +223,12 @@ fun LoginScreen(
 
                 OutlinedTextField(
                     value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
+                    onValueChange = { newValue ->
+                        val filteredValue = newValue.filter { it.isDigit() }
+                        if (filteredValue.length <= 15) {
+                            phoneNumber = filteredValue
+                        }
+                    },
                     placeholder = {
                         Text(
                             text = AppStrings.phoneNumberPlaceholder,
