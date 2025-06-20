@@ -52,6 +52,10 @@ import com.healthanalytics.android.presentation.theme.FontSize
 import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.healthanalytics.android.payment.RazorpayHandler
 
 
 @Composable
@@ -336,5 +340,23 @@ fun OTPScreenPreview() {
         otpVerifyState = Resource.Loading(),
         countryCode = "+91"
     )
+}
+
+class OTPScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val razorpayHandler: RazorpayHandler,
+    private val isLoggedIn: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        OTPContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = { navigator.pop() },
+            navigateToAccountCreation = {
+                navigator.push(CreateAccountScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
+            }
+        )
+    }
 }
 

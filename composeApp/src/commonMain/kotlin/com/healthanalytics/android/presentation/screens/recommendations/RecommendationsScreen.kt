@@ -1,34 +1,14 @@
 package com.healthanalytics.android.presentation.screens.recommendations
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,11 +17,7 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategoryes
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.actionplan.MetricsGrid
-import com.healthanalytics.android.presentation.theme.AppColors
-import com.healthanalytics.android.presentation.theme.AppStrings
-import com.healthanalytics.android.presentation.theme.Dimensions
-import com.healthanalytics.android.presentation.theme.FontFamily
-import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.presentation.theme.*
 import com.healthanalytics.android.ui.PrimaryButton
 import com.healthanalytics.android.ui.RecommendationIcon
 import com.healthanalytics.android.utils.AppConstants
@@ -49,7 +25,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun RecommendationsScreen(
-    viewModel: RecommendationsViewModel,
+    viewModel: RecommendationsViewModel = koinInject(),
     preferencesViewModel: PreferencesViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,16 +41,13 @@ fun RecommendationsScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.Black)
     ) {
-        // Recommendations List
         if (uiState.isLoading || preferencesState.data == null) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else {
-            // Category Selector
             LazyRow(
                 modifier = Modifier.fillMaxWidth().padding(top = Dimensions.size8dp),
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.size12dp),
@@ -136,7 +109,7 @@ fun CategoryChip(
             ),
             labelColor = AppColors.textPrimary,
             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
-            selectedLabelColor = AppColors.white
+            selectedLabelColor = AppColors.White
         ), border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
             enabled = true,
             selected = selected,
@@ -159,8 +132,7 @@ fun RecommendationCard(
     val isEnabled = userAction == null || userAction.is_completed == false
 
     val isSupplements = (recommendation.category?.equals(
-        AppConstants.SUPPLEMENTS,
-        ignoreCase = true
+        AppConstants.SUPPLEMENTS, ignoreCase = true
     ) == true)
 
     Card(
@@ -214,8 +186,7 @@ fun RecommendationCard(
                                 it, recommendation
                             )
                         }
-                    }
-                )
+                    })
             }
         }
     }
@@ -227,7 +198,7 @@ fun PotentialImpact() {
         text = AppStrings.POTENTIAL_IMPACT,
         fontSize = FontSize.textSize14sp,
         fontFamily = FontFamily.medium(),
-        color = AppColors.white
+        color = AppColors.White
     )
 }
 
@@ -266,13 +237,9 @@ fun MetricChip(
         color = AppColors.SubGreyColor, shape = MaterialTheme.shapes.small, modifier = modifier
     ) {
         Text(
-            text = metric,
-            modifier = Modifier.padding(
-                horizontal = Dimensions.size8dp,
-                vertical = Dimensions.size4dp
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = AppColors.white
+            text = metric, modifier = Modifier.padding(
+                horizontal = Dimensions.size8dp, vertical = Dimensions.size4dp
+            ), style = MaterialTheme.typography.bodySmall, color = AppColors.White
         )
     }
 } 

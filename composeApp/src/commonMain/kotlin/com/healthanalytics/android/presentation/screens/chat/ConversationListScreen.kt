@@ -52,32 +52,32 @@ import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationListScreen(
     onNavigateToChat: (String) -> Unit,
-    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChatViewModel,
+    navigator: cafe.adriel.voyager.navigator.Navigator
 ) {
-    BackHandler(enabled = true, onBack = { onNavigateBack() })
+
+    BackHandler(enabled = true, onBack = { navigator.pop() })
 
     val uiState by viewModel.conversationsState.collectAsState()
     println("conversation list screen $uiState")
-
 
 //    viewModel.loadConversations()
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = {
         TopAppBar(
             title = {
-                Text(
-                    text = "Conversations", color = AppColors.textPrimary
-                )
+                Text(text = "Conversations", color = AppColors.textPrimary)
             }, navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
+                IconButton(onClick = {
+                    Logger.e { "Back button clicked" }
+                    navigator.pop()
+                }) {
                     Icon(
                         Icons.Default.ArrowBack,
                         contentDescription = "Back",
@@ -95,7 +95,7 @@ fun ConversationListScreen(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 48.dp),
             onClick = { },
             containerColor = AppColors.Pink,
-            contentColor = AppColors.white
+            contentColor = AppColors.White
         ) {
             Icon(Icons.Default.Add, contentDescription = "New Chat")
         }
@@ -179,7 +179,7 @@ private fun ConversationItem(
                         imageVector = Icons.Default.Chat,
                         contentDescription = null,
                         modifier = Modifier.padding(8.dp),
-                        tint = AppColors.white
+                        tint = AppColors.White
                     )
                 }
 

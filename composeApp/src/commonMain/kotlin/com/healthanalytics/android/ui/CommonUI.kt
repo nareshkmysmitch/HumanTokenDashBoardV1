@@ -15,14 +15,14 @@ fun RecommendationIcon(category: RecommendationCategoryes, modifier: Modifier) {
         is RecommendationIcon.Vector -> Icon(
             imageVector = icon.imageVector,
             contentDescription = null,
-            tint = AppColors.white,
+            tint = AppColors.White,
             modifier = modifier
         )
 
         is RecommendationIcon.Painter -> Icon(
             painter = painterResource(icon.resource),
             contentDescription = null,
-            tint = AppColors.white,
+            tint = AppColors.White,
             modifier = modifier
         )
     }

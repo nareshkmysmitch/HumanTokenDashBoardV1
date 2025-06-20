@@ -15,31 +15,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 
 @Composable
-fun TransparentButton(icon: ImageVector, txt: String, onClicked: () -> Unit, modifier: Modifier) {
+fun TransparentButton(
+    icon: ImageVector,
+    txt: String,
+    onClicked: () -> Unit,
+    modifier: Modifier,
+    isEnabled: Boolean = true,
+) {
     OutlinedButton(
         modifier = modifier.height(Dimensions.size50dp),
         onClick = onClicked,
+        shape = RoundedCornerShape(Dimensions.size12dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.white,
+            contentColor = AppColors.White,
             containerColor = AppColors.Black
         ),
+        enabled = isEnabled,
         border = BorderStroke(
-            width = 1.dp,
-            color = Color(0XFFF3F4F6)
+            width = Dimensions.size1dp,
+            color = AppColors.lineBorderColor,
         )
     ) {
         Icon(
             imageVector = icon,
             contentDescription = "Remove",
             modifier = Modifier.size(Dimensions.size16dp),
-            tint = AppColors.white
+            tint = if (isEnabled) AppColors.White else AppColors.buttonGrey
         )
         Spacer(modifier = Modifier.width(Dimensions.size8dp))
         Text(
@@ -64,7 +71,7 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier.height(Dimensions.size50dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.white,
+            contentColor = AppColors.White,
             containerColor = buttonColor
         ),
         shape = RoundedCornerShape(Dimensions.size12dp)
@@ -73,7 +80,8 @@ fun PrimaryButton(
             text = txt,
             fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.bold(),
-            color = AppColors.white
+            color = AppColors.White
         )
     }
 }
+

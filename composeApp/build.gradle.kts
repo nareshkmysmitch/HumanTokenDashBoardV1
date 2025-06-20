@@ -58,7 +58,6 @@ kotlin {
 //    }
 
 
-
     sourceSets {
 //        val desktopMain by getting
         androidMain.dependencies {
@@ -68,6 +67,8 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.razorpay.checkout)
+
+
         }
 
         commonMain.dependencies {
@@ -78,9 +79,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-//            implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
-//            implementation(libs.lifecycle.viewmodel.compose)
 
 
             implementation(libs.kotlinx.coroutines.core)
@@ -108,8 +107,22 @@ kotlin {
 
             api(libs.androidx.datastore.preferences)
             api(libs.androidx.datastore.preferences.core)
-
             implementation(compose.components.resources)
+
+            val voyagerVersion = "1.1.0-beta03"
+
+            // Navigator
+            implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+            // Screen Model
+            implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
+            // BottomSheetNavigator
+            implementation("cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyagerVersion")
+            // TabNavigator
+            implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
+            // Transitions
+            implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
+            // Koin integration
+            implementation("cafe.adriel.voyager:voyager-koin:$voyagerVersion")
 
 
         }
@@ -178,8 +191,7 @@ compose.resources {
 
     customDirectory(
         sourceSetName = "iosMain",
-        directoryProvider = provider { layout.projectDirectory.dir("composeResources") }
-    )
+        directoryProvider = provider { layout.projectDirectory.dir("composeResources") })
 }
 
 

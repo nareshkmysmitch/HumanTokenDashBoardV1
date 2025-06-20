@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -28,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -51,17 +54,19 @@ import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.Dimensions.size12dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size16dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size4dp
+import com.healthanalytics.android.presentation.theme.Dimensions.size8dp
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 
 @Composable
 fun HealthDataScreen(
-    viewModel: HealthDataViewModel,
-    prefs: PreferencesViewModel,
-    onNavigateToDetail: (BloodData?) -> Unit,
+    viewModel: HealthDataViewModel = koinInject(),
+    prefs: PreferencesViewModel = koinInject(),
+    onNavigateToDetail: (BloodData?) -> Unit = {},
 ) {
     val preferencesState by prefs.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -78,8 +83,7 @@ fun HealthDataScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(AppColors.Black)
-            .padding(top = size16dp)
+        modifier = Modifier.fillMaxSize().background(AppColors.Black).padding(top = size16dp)
     ) {
 
         AnimatedVisibility(
@@ -90,7 +94,7 @@ fun HealthDataScreen(
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier.fillMaxWidth().padding(Dimensions.size16dp),
+                modifier = Modifier.fillMaxWidth().padding(size16dp),
                 placeholder = { Text("Search health data") },
                 singleLine = true
             )
@@ -109,28 +113,29 @@ fun HealthDataScreen(
                 contentPadding = PaddingValues(horizontal = size12dp)
             ) {
                 items(availableFilters) { filter ->
+                    val count = viewModel.getHealthDataCount(filter ?: "")
                     val selected = uiState.selectedFilter == filter
                     FilterChip(
                         selected = selected,
                         onClick = { viewModel.updateFilter(if (uiState.selectedFilter == filter) null else filter) },
-                        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                        colors = FilterChipDefaults.filterChipColors(
                             containerColor = if (selected) AppColors.Pink.copy(alpha = 0.5f) else AppColors.Pink.copy(
                                 alpha = 0.1f
                             ),
                             labelColor = AppColors.textPrimary,
                             selectedContainerColor = AppColors.Pink.copy(alpha = 0.5f),
-                            selectedLabelColor = AppColors.white
+                            selectedLabelColor = AppColors.White
                         ),
-                        border = androidx.compose.material3.FilterChipDefaults.filterChipBorder(
+                        border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = selected,
-                            borderColor = if (selected) androidx.compose.ui.graphics.Color.Transparent else AppColors.Pink.copy(
+                            borderColor = if (selected) Color.Transparent else AppColors.Pink.copy(
                                 alpha = 0.2f
                             )
                         ),
                         label = {
                             Text(
-                                text = filter ?: "",
+                                text = "$filter ($count)",
                                 fontSize = FontSize.textSize14sp,
                                 fontFamily = FontFamily.medium(),
                                 color = AppColors.textPrimary,
@@ -170,24 +175,34 @@ fun MetricCard(
     metric: BloodData?, onMetricClick: (BloodData) -> Unit = {},
 ) {
     val symptomsReported = metric?.symptomsReported
+    val isLatest = metric?.isLatest == true
     Column(
         modifier = Modifier.fillMaxWidth().padding(size12dp)
-            .clickable { metric?.let { onMetricClick(it) } }
-    ) {
+            .clickable { metric?.let { onMetricClick(it) } }) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = metric?.displayName ?: "",
-                maxLines = 2,
-                fontSize = FontSize.textSize22sp,
-                fontFamily = FontFamily.bold(),
-                color = AppColors.textPrimary,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
+            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                if (isLatest) {
+                    Box(
+                        modifier = Modifier.size(size8dp)
+                            .background(color = AppColors.error, shape = RoundedCornerShape(50))
+                    )
+                    Spacer(modifier = Modifier.width(size4dp))
+                }
+                Text(
+                    text = metric?.displayName ?: "",
+                    maxLines = 2,
+                    fontSize = FontSize.textSize22sp,
+                    fontFamily = FontFamily.bold(),
+                    color = AppColors.textPrimary,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             StatusChip(status = metric?.displayRating ?: "")
         }
@@ -195,8 +210,7 @@ fun MetricCard(
         Spacer(modifier = Modifier.height(Dimensions.size8dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Row(modifier = Modifier.weight(1f)) {
                 Text(
@@ -224,11 +238,9 @@ fun MetricCard(
         Spacer(modifier = Modifier.height(Dimensions.size8dp))
         if (symptomsReported != null && symptomsReported > 0) {
             Column(
-                modifier = Modifier.wrapContentSize()
-                    .background(
-                        color = Color(0xFF192D50),
-                        shape = RoundedCornerShape(50)
-                    ).padding(PaddingValues(vertical = size4dp, horizontal = Dimensions.size8dp))
+                modifier = Modifier.wrapContentSize().background(
+                    color = Color(0xFF192D50), shape = RoundedCornerShape(50)
+                ).padding(PaddingValues(vertical = size4dp, horizontal = Dimensions.size8dp))
             ) {
                 Text(
                     text = "${metric.symptomsReported} symptoms reported",
@@ -254,13 +266,13 @@ fun MetricCard(
 @Composable
 fun StatusChip(status: String) {
 
-    val backgroundColor = when (status.lowercase()) {
-        "normal" -> AppColors.NormalColor
-        "low" -> AppColors.LowColor
-        "high" -> AppColors.HighColor
-        "optimal" -> AppColors.OptimalColor
-        "none" -> AppColors.NoneColor
-        else -> AppColors.YellowColor
+    val (backgroundColor, textColor) = when (status.lowercase()) {
+        "normal" -> (AppColors.NormalColor to AppColors.White)
+        "low" -> (AppColors.LowColor to AppColors.Black)
+        "high" -> (AppColors.HighColor to AppColors.Black)
+        "optimal" -> (AppColors.OptimalColor to AppColors.White)
+        "none" -> (AppColors.NoneColor to AppColors.White)
+        else -> (AppColors.YellowColor to AppColors.Black)
     }
 
     Surface(
@@ -272,7 +284,7 @@ fun StatusChip(status: String) {
                 .padding(horizontal = Dimensions.size8dp, vertical = size4dp),
             fontSize = FontSize.textSize12sp,
             fontFamily = FontFamily.medium(),
-            color = AppColors.textPrimary
+            color = textColor
         )
     }
 }

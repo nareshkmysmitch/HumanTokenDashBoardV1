@@ -57,8 +57,10 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.painterResource
-
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.healthanalytics.android.payment.RazorpayHandler
 
 @Composable
 fun ScheduleBloodTestContainer(
@@ -150,7 +152,7 @@ fun ScheduleBloodTestScreen(
                     text = AppStrings.SCHEDULE_YOUR_BLOOD_TEST_DESCRIPTION,
                     fontSize = FontSize.textSize16sp,
                     fontFamily = FontFamily.regular(),
-                    color = AppColors.white,
+                    color = AppColors.White,
                 )
 
                 Spacer(Modifier.height(Dimensions.size30dp))
@@ -267,7 +269,7 @@ fun ScheduleBloodTestScreen(
 }
 
 @Composable
-private fun TimeSlotCard(
+fun TimeSlotCard(
     time: String,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -327,5 +329,23 @@ fun getSlotUpdatedResponse(
             }
         }
         else -> {}
+    }
+}
+
+class ScheduleBloodTestScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val razorpayHandler: RazorpayHandler,
+    private val isLoggedIn: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        ScheduleBloodTestContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = { navigator.pop() },
+            navigateToPayment = {
+                navigator.push(PaymentScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
+            }
+        )
     }
 }

@@ -35,6 +35,7 @@ object PreferencesKeys {
     val GENDER = stringPreferencesKey("gender")
     val NEXT_QUESTIONNAIRES_KEY = stringPreferencesKey("next_questionnaires_data")
 
+    val LEAD_ID = stringPreferencesKey("lead_id")
 }
 
 /**
@@ -54,6 +55,14 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     val isLogin: Flow<Boolean?> = dataStore.data
         .map { preferences ->
             preferences[PreferencesKeys.IS_LOGIN]
+        }
+        .catch { _ ->
+            emit(null)
+        }
+
+    val leadId: Flow<String?> = dataStore.data
+        .map { preferences ->
+            preferences[PreferencesKeys.LEAD_ID]
         }
         .catch { _ ->
             emit(null)
@@ -126,6 +135,12 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     suspend fun saveAccessToken(token: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.ACCESS_TOKEN_KEY] = token
+        }
+    }
+
+    suspend fun saveLeadId(leadId: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LEAD_ID] = leadId
         }
     }
 

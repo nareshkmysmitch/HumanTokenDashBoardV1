@@ -1,20 +1,32 @@
 package com.healthanalytics.android.presentation.screens.marketplace
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.humantoken.ui.screens.Cart
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.Product
-import com.example.humantoken.ui.screens.Cart
 import com.healthanalytics.android.data.models.Address
 import com.healthanalytics.android.data.models.AddressItem
+import com.healthanalytics.android.data.models.LoadingState
 import com.healthanalytics.android.data.models.UpdateAddressListResponse
 import com.healthanalytics.android.data.models.UpdateProfileRequest
+import com.healthanalytics.android.data.models.onboard.SlotRequest
+import com.healthanalytics.android.data.models.onboard.SlotsAvailability
+import com.healthanalytics.android.data.models.profile.PersonalData
+import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
 import com.healthanalytics.android.data.repositories.PreferencesRepository
+import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
+import com.healthanalytics.android.presentation.screens.profile.CommunicationUIData
+import com.healthanalytics.android.utils.AppConstants
+import com.healthanalytics.android.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 
 sealed class MarketPlaceUiState {
     data object Loading : MarketPlaceUiState()
@@ -41,6 +53,12 @@ enum class SortOption(val displayName: String) {
     NAME_Z_TO_A("Z to A (Name)"), PRICE_LOW_TO_HIGH("Low to High (Price)"), PRICE_HIGH_TO_LOW("High to Low (Price)")
 }
 
+sealed class CommunicationPreferenceType(val type: String) {
+    data object Biohacker : CommunicationPreferenceType("bio_hacker")
+    data object Doctor : CommunicationPreferenceType("doctor")
+    data object CloseFriend : CommunicationPreferenceType("friend")
+}
+
 sealed class ProductDetailsState {
     data object Loading : ProductDetailsState()
     data class Success(val product: Product) : ProductDetailsState()
@@ -57,6 +75,7 @@ sealed class LogoutState {
 class MarketPlaceViewModel(
     private val apiService: ApiService,
     private val preferencesRepository: PreferencesRepository,
+    private val onboardApiService: OnboardApiService,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MarketPlaceUiState>(MarketPlaceUiState.Loading)
@@ -88,8 +107,12 @@ class MarketPlaceViewModel(
     private val _selectedAddress = MutableStateFlow<AddressItem?>(null)
     val selectedAddress = _selectedAddress.asStateFlow()
 
-    private val _productDetailsState = MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
+    private val _productDetailsState =
+        MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
+
+    private val _leadId = MutableStateFlow<String?>(null)
+    val leadId: StateFlow<String?> = _leadId.asStateFlow()
 
     // User Profile States
     private val _userName = MutableStateFlow<String?>(null)
@@ -125,6 +148,13 @@ class MarketPlaceViewModel(
 
     private val _logoutState = MutableStateFlow<LogoutState>(LogoutState.Initial)
     val logoutState: StateFlow<LogoutState> = _logoutState.asStateFlow()
+
+    private val _communicationSelected =
+        MutableStateFlow<CommunicationUIData>(CommunicationUIData.Doctor)
+    val communicationSelected: StateFlow<CommunicationUIData?> =
+        _communicationSelected.asStateFlow()
+
+    var initialPreferenceValue: CommunicationUIData = CommunicationUIData.Doctor
 
     fun clearLogoutState() {
         _logoutState.value = LogoutState.Initial
@@ -190,7 +220,7 @@ class MarketPlaceViewModel(
                 _accessToken.value = token
             }
         }
-        
+
         // Collect user details
         viewModelScope.launch {
             preferencesRepository.userName.collect { name ->
@@ -233,6 +263,13 @@ class MarketPlaceViewModel(
         viewModelScope.launch {
             preferencesRepository.addressId.collect { _cachedAddressId.value = it }
         }
+
+        viewModelScope.launch {
+            preferencesRepository.leadId.collect { leadId ->
+                println("Lead ID Updated: $leadId")
+                _leadId.value = leadId
+            }
+        }
     }
 
     fun initializeMarketplace() {
@@ -241,7 +278,7 @@ class MarketPlaceViewModel(
             try {
                 val token = _accessToken.value
                 println("Current Token: $token")
-                
+
                 if (token != null) {
                     loadProducts()
                     loadAddresses()
@@ -262,7 +299,8 @@ class MarketPlaceViewModel(
                 }
             } catch (e: Exception) {
                 println("Marketplace initialization error: ${e.message}")
-                _uiState.value = MarketPlaceUiState.Error(e.message ?: "Failed to initialize marketplace")
+                _uiState.value =
+                    MarketPlaceUiState.Error(e.message ?: "Failed to initialize marketplace")
             }
         }
     }
@@ -309,7 +347,8 @@ class MarketPlaceViewModel(
                 println("Loading cart with token: $token")
                 if (token != null) {
                     val cartList = apiService.getCartList(token)
-                    _cartListState.value = CartListState.Success(cartList?.filterNotNull() ?: emptyList())
+                    _cartListState.value =
+                        CartListState.Success(cartList?.filterNotNull() ?: emptyList())
                 } else {
                     _cartListState.value = CartListState.Error("Access token not available")
                 }
@@ -331,13 +370,15 @@ class MarketPlaceViewModel(
                         _cartActionState.value = CartActionState.Success(response.message)
                         getCartList()
                     } else {
-                        _cartActionState.value = CartActionState.Error("Failed to add product to cart")
+                        _cartActionState.value =
+                            CartActionState.Error("Failed to add product to cart")
                     }
                 } else {
                     _cartActionState.value = CartActionState.Error("Access token not available")
                 }
             } catch (e: Exception) {
-                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
+                _cartActionState.value =
+                    CartActionState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -359,7 +400,8 @@ class MarketPlaceViewModel(
                     _cartActionState.value = CartActionState.Error("Access token not available")
                 }
             } catch (e: Exception) {
-                _cartActionState.value = CartActionState.Error(e.message ?: "Unknown error occurred")
+                _cartActionState.value =
+                    CartActionState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -378,7 +420,7 @@ class MarketPlaceViewModel(
                         country = _cachedCountry.value,
                         di_address_id = _cachedAddressId.value
                     )
-                    
+
                     val cachedAddress = AddressItem(
                         address = createAddress(cachedAddressResponse),
                         address_id = _cachedAddressId.value ?: ""
@@ -428,7 +470,7 @@ class MarketPlaceViewModel(
         phone: String,
         diAddressId: String,
         address: UpdateAddressListResponse,
-        callback: (Boolean, String) -> Unit
+        callback: (Boolean, String) -> Unit,
     ) {
         viewModelScope.launch {
             try {
@@ -471,10 +513,12 @@ class MarketPlaceViewModel(
                         _productDetailsState.value = ProductDetailsState.Error("Product not found")
                     }
                 } else {
-                    _productDetailsState.value = ProductDetailsState.Error("Access token not available")
+                    _productDetailsState.value =
+                        ProductDetailsState.Error("Access token not available")
                 }
             } catch (e: Exception) {
-                _productDetailsState.value = ProductDetailsState.Error(e.message ?: "Unknown error occurred")
+                _productDetailsState.value =
+                    ProductDetailsState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -506,4 +550,263 @@ class MarketPlaceViewModel(
     companion object {
         val PRODUCT_CATEGORIES = listOf("Product", "Blood", "Gene", "Gut")
     }
-} 
+
+
+    private val _slotAvailability =
+        MutableStateFlow<Resource<SlotsAvailability?>>(Resource.Loading())
+    val slotAvailability: StateFlow<Resource<SlotsAvailability?>> = _slotAvailability
+
+    fun getSlotAvailability(selectedDate: String) {
+
+        val slotRequest = SlotRequest(
+            date = selectedDate,
+            lead_id = leadId.value ?: "",
+            user_timezone = TimeZone.Companion.currentSystemDefault().toString()
+        )
+
+        viewModelScope.launch {
+            try {
+                val response = onboardApiService.getSlotsAvailability(slotRequest)
+                _slotAvailability.value = Resource.Success(response)
+            } catch (_: Exception) {
+                _slotAvailability.value = Resource.Error(errorMessage = "Something went wrong...")
+            }
+        }
+    }
+
+    fun setCommunicationPreference(preference: CommunicationUIData) {
+        viewModelScope.launch {
+            _communicationSelected.emit(preference)
+        }
+    }
+
+    private fun setInitialPreference(preference: CommunicationUIData) {
+        initialPreferenceValue = preference
+    }
+
+    private val _uiCommunicationPreference = MutableStateFlow(LoadingState())
+    val uiCommunicationPreference: StateFlow<LoadingState> =
+        _uiCommunicationPreference.asStateFlow()
+
+
+    fun loadCommunicationPreference(accessToken: String?) {
+        viewModelScope.launch {
+            try {
+                _uiCommunicationPreference.update { it.copy(isLoading = true) }
+                val preferenceResponse =
+                    accessToken?.let { apiService.getCommunicationPreference(it) }
+                val preference = preferenceResponse?.preference?.communication_preference
+                    ?: CommunicationPreferenceType.Doctor.type //default
+                when (preference) {
+                    CommunicationPreferenceType.Biohacker.type -> {
+                        val responsePreference = CommunicationUIData.Biohacker
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+
+                    CommunicationPreferenceType.Doctor.type -> {
+                        val responsePreference = CommunicationUIData.Doctor
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+
+                    CommunicationPreferenceType.CloseFriend.type -> {
+                        val responsePreference = CommunicationUIData.CloseFriend
+                        setCommunicationPreference(responsePreference)
+                        setInitialPreference(responsePreference)
+                    }
+                }
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load preference"
+                    )
+                }
+            }
+        }
+    }
+
+    fun saveCommunicationPreference(accessToken: String, preference: CommunicationUIData) {
+        viewModelScope.launch {
+            try {
+                _uiCommunicationPreference.update { it.copy(isLoading = true) }
+                val communicationPreference = UploadCommunicationPreference(
+                    fields = listOf("communication_preference"),
+                    communication_preference = preference.type
+                )
+                val preferenceResponse =
+                    apiService.saveCommunicationPreference(accessToken, communicationPreference)
+
+                if (preferenceResponse) {
+                    setInitialPreference(preference)
+                }
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiCommunicationPreference.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to uploaded preference"
+                    )
+                }
+            }
+        }
+    }
+
+
+    private val _uiPersonalData = MutableStateFlow(LoadingState())
+    val uiPersonalData: StateFlow<LoadingState> =
+        _uiPersonalData.asStateFlow()
+
+
+    fun loadPersonalData(accessToken: String?) {
+        viewModelScope.launch {
+            try {
+                _uiPersonalData.update { it.copy(isLoading = true) }
+                val personalData =
+                    accessToken?.let { apiService.getPersonalData(it) }
+                setPersonalData(personalData)
+                _uiPersonalData.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiPersonalData.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load personal"
+                    )
+                }
+            }
+        }
+    }
+
+    private val _personalData = MutableStateFlow<PersonalData?>(null)
+    val personalData: StateFlow<PersonalData?> =
+        _personalData.asStateFlow()
+
+    private fun setPersonalData(personalData: PersonalData?) {
+        viewModelScope.launch {
+            _personalData.emit(personalData)
+        }
+    }
+
+    fun filterDecimalInput(input: String,maxLength:Int): String {
+        if (input.isEmpty()) return ""
+
+        // Only allow 0-9 and .
+        val cleaned = input.filter { it.isDigit() || it == '.' }
+
+        // Only one decimal point allowed
+        val parts = cleaned.split(".")
+        val integerPart = parts.getOrNull(0) ?: ""
+        val decimalPart = parts.getOrNull(1)
+
+        val result = if (decimalPart != null) {
+            "$integerPart.${decimalPart}"
+        } else {
+            integerPart
+        }
+
+        // Enforce max length of 4
+        return if (result.length <= maxLength) result else result.take(maxLength)
+    }
+
+    fun calculateBMI(userWeight: Double?, userHeight: Double?): Double? {
+        if (userHeight == null || userHeight == 0.0 || userWeight == null || userWeight == 0.0) return null
+
+        val heightInMeters = userHeight / 100
+        val bmi = userWeight / (heightInMeters * heightInMeters)
+
+        // Round to 1 decimal
+        return (bmi * 10).toInt().toDouble() / 10.0
+    }
+
+    fun displayBMI(bmi: Double?): String {
+        return bmi?.let {
+            if (it % 1.0 == 0.0) it.toInt().toString() else it.toString()
+        } ?: ""
+    }
+
+    fun getBMICategory(bmi: Double?): Pair<String, Color> {
+        return bmi?.let {
+            when {
+                bmi < 18.5 -> AppConstants.BMI_CATEGORY_UNDERWEIGHT to Color(0xFFFACC15)
+                bmi < 25.0 -> AppConstants.BMI_CATEGORY_NORMAL to Color(0xFF4ADE80)
+                bmi < 30.0 -> AppConstants.BMI_CATEGORY_OVERWEIGHT to Color(0xFFFACC15)
+                else -> AppConstants.BMI_CATEGORY_OBESE to Color(0xFFF87171)
+            }
+        } ?: ("" to Color.Black)
+    }
+
+    fun isHeightInvalid(editHeight: String): Boolean {
+        if (editHeight.isBlank()) {
+            return false
+        }
+        val heightValue = editHeight.toDoubleOrNull()
+        return heightValue == null ||
+                heightValue !in AppConstants.MIN_HEIGHT..AppConstants.MAX_HEIGHT
+    }
+
+    fun isWeightInvalid(editWeight: String): Boolean {
+        if (editWeight.isBlank()) {
+            return false
+        }
+        val weightValue = editWeight.toDoubleOrNull()
+        return weightValue == null ||
+                weightValue !in AppConstants.MIN_WEIGHT..AppConstants.MAX_WEIGHT
+    }
+
+
+    private val _uiHealthMetrics = MutableStateFlow(LoadingState())
+    val uiHealthMetrics: StateFlow<LoadingState> =
+        _uiHealthMetrics.asStateFlow()
+
+
+    fun saveHealthMetrics(accessToken: String, editWeight: String, editHeight: String) {
+        viewModelScope.launch {
+            try {
+                _uiHealthMetrics.update { it.copy(isLoading = true) }
+
+                val personalData = personalData.value
+                personalData?.pii_data?.weight =
+                    editWeight.toDoubleOrNull() //if need we can pass double
+                personalData?.pii_data?.height =
+                    editHeight.toDoubleOrNull()//if need we can pass double
+
+                val personalResponse =
+                    apiService.saveHealthMetrics(accessToken, personalData)
+
+                if (personalResponse) {
+                    setPersonalData(personalData)
+                }
+
+                _uiHealthMetrics.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = personalResponse
+                    )
+                }
+            } catch (e: Exception) {
+                _uiHealthMetrics.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to uploaded preference"
+                    )
+                }
+            }
+        }
+    }
+
+
+}

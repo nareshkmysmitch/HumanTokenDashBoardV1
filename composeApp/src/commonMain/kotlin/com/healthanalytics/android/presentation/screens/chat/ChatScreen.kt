@@ -27,8 +27,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChatBubbleOutline
-import androidx.compose.material.icons.filled.PeopleOutline
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Send
@@ -55,7 +53,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.healthanalytics.android.BackHandler
 import com.healthanalytics.android.data.models.Message
 import com.healthanalytics.android.presentation.theme.AppColors
 import kotlinx.coroutines.delay
@@ -78,10 +75,8 @@ fun ChatScreen(
     LaunchedEffect(conversationId) {
         viewModel.loadChat(conversationId)
     }
-    BackHandler(enabled = true, onBack = { onNavigateBack() })
 
-    // Scroll to bottom when messages are loaded or updated
-    LaunchedEffect(uiState) {
+     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is ChatUiState.Success -> {
                 if (state.messages.isNotEmpty()) {
@@ -90,7 +85,6 @@ fun ChatScreen(
                     }
                 }
             }
-
             else -> {}
         }
     }
@@ -229,7 +223,7 @@ private fun ChatMessage(
 ) {
     val isUserMessage = message.sender.toString() != "bot"
     val backgroundColor = if (isUserMessage) AppColors.Teal else AppColors.Purple
-    val contentColor = AppColors.white
+    val contentColor = AppColors.White
 
     Row(
         modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
@@ -290,7 +284,7 @@ private fun ChatAvatar(isUser: Boolean) {
             imageVector = avatar,
             contentDescription = null,
             modifier = Modifier.padding(8.dp),
-            tint = AppColors.white
+            tint = AppColors.White
         )
     }
 }
@@ -315,7 +309,7 @@ private fun ChatInput(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 40.dp),
-                textStyle = LocalTextStyle.current.copy(color = AppColors.white),
+                textStyle = LocalTextStyle.current.copy(color = AppColors.White),
                 placeholder = {
                     Text("Ask your question...", color = AppColors.inputHint)
                 },
@@ -337,14 +331,14 @@ private fun ChatInput(
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = { onSend() }),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = AppColors.white,
-                    unfocusedTextColor = AppColors.white,
-                    disabledTextColor = AppColors.white.copy(alpha = 0.5f),
+                    focusedTextColor = AppColors.White,
+                    unfocusedTextColor = AppColors.White,
+                    disabledTextColor = AppColors.White.copy(alpha = 0.5f),
                     focusedBorderColor = AppColors.Pink,
                     unfocusedBorderColor = AppColors.Pink.copy(alpha = 0.5f),
                     focusedContainerColor = AppColors.Transparent,
                     unfocusedContainerColor = AppColors.Transparent,
-                    cursorColor = AppColors.white,
+                    cursorColor = AppColors.White,
                 )
             )
         }

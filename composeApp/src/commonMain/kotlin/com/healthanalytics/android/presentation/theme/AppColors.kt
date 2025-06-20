@@ -45,31 +45,42 @@ object AppColors {
     val PurpleBackground = Color(0xFF767633)
     val DarkPurple = Color(0xFF2f1b29)
     val Purple = Color(0xFF490D30)
-    val Teal  = Color(0xFF1F2937)
+    val Teal = Color(0xFF1F2937)
     val PurpleTitle = Color(0xFF82054e)
     val PurpleCardBackground = Color(0xFF565E71)
 
     val Transparent = Color.Transparent
 
-    val white = Color(0xFFFFFFFF)
+    val White = Color(0xFFFFFFFF)
 
     // Additional surface and UI colors
     val PurpleButtonBackground = Color(0XFF54414E)
     val secondary = Color(0xFF8B5CF6)
     val tertiary = Color(0xFF06B6D4)
     val CardGrey = Color(0xFF1C1C1E)
-    val DarkPink = Color(0xFFF524A1)
+    val darkPink = Color(0xFFF524A1)
     val TextGrey = Color(0xFF888888)
     val OptimalColor = Color(0xFF1f7a4c)
     val HighColor = Color(0xFFf4978a)
     val LowColor = Color(0xFFf4978a)
     val NormalColor = Color(0xFF1f7a4c)
     val NoneColor = Color(0xFF4b5563)
-    val YellowColor= Color(0xFFf4c764)
+    val YellowColor = Color(0xFFf4c764)
     val SubGreyColor = Color(0xFF141416)
 
-    val spot= Color(0xFF40394F)
-    val cardBackground= Color(0xFF293041)
+    val spot = Color(0xFF40394F)
+    val cardBackground = Color(0xFF293041)
+    val descriptionColor = Color(0xFFA6A6A6)
+    val borderBlue = Color(0xFF374151)
+    val semiTransparentPink = Color(0xFF301B29)
+    val iconSemiTransparentPink = Color(0XFF581F41)
+    val iconGrey = Color(0Xffe5e7eb)
+    val txtBlue = Color(0Xff93c5fd)
+    val backgroundBlue = Color(0X1f293780)
+    val lineBorderColor = Color(0XFF262626)
+    val textFieldUnFocusedColor = Color(0XFF374151)
+    val buttonGrey = Color(0XFF747479)
+
 
     val backGround = Color(0xFF121417)
     val primaryColor = Color(0xFFD1E3F2)
