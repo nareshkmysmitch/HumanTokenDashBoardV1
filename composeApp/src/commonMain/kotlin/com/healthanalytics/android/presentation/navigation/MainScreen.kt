@@ -42,13 +42,11 @@ import com.healthanalytics.android.presentation.screens.ProfileNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ConversationListNavWrapper
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
 import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
-import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
-import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreenNav
 import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
+import com.healthanalytics.android.presentation.screens.onboard.LoginScreenNav
 import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
 import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
 import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenContainer
-import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
 import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrapper
@@ -223,49 +221,40 @@ class MainScreen : Screen {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = OnboardRoute.GetStarted,
+                    startDestination = OnboardRoute.Login,
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    composable<OnboardRoute.GetStarted> {
-                        GetStartedScreen(
-                            onGetStarted = { navController.navigate(OnboardRoute.Login) },
-                            onLogin = { navController.navigate(OnboardRoute.Login) },
-                            onViewAllBiomarkers = {})
-                    }
                     composable<OnboardRoute.Login> {
                         LoginScreenContainer(
-                            onboardViewModel = onboardViewModel, navigateToOtpVerification = {
+                            onboardViewModel = onboardViewModel,
+                            navigateToOtpVerification = {
                                 navController.navigate(OnboardRoute.OTPVerification)
-                            })
-
+                            }
+                        )
                     }
 
                     composable<OnboardRoute.OTPVerification> {
-                        OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                            navController.navigateUp()
-
-                        }, navigateToAccountCreation = {
-                            navController.navigate(OnboardRoute.CreateAccount)
-                        })
+                        OTPContainer(
+                            onboardViewModel = onboardViewModel,
+                            onBackClick = {
+                                navController.navigateUp()
+                            },
+                            navigateToAccountCreation = {
+                                navController.navigate(OnboardRoute.CreateAccount)
+                            }
+                        )
                     }
 
                     composable<OnboardRoute.CreateAccount> {
-                        CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                            navController.navigateUp()
-                        }, navigateToAddress = {
-                            navController.navigate(OnboardRoute.SampleCollectionAddress)
-                        })
-                    }
-
-                    composable<OnboardRoute.SampleCollectionAddress> {
-                        SampleCollectionAddressContainer(
+                        CreateAccountContainer(
                             onboardViewModel = onboardViewModel,
                             onBackClick = {
                                 navController.navigateUp()
                             },
                             navigateToBloodTest = {
                                 navController.navigate(OnboardRoute.ScheduleBloodTest)
-                            })
+                            }
+                        )
                     }
 
                     composable<OnboardRoute.ScheduleBloodTest> {
@@ -276,7 +265,8 @@ class MainScreen : Screen {
                             },
                             navigateToPayment = {
                                 navController.navigate(OnboardRoute.Payment)
-                            })
+                            }
+                        )
                     }
 
                     composable<OnboardRoute.Payment> {
@@ -288,13 +278,13 @@ class MainScreen : Screen {
                             },
                             isPaymentCompleted = {
                                 isLoggedIn()
-                            })
+                            }
+                        )
                     }
                 }
             }
         }
     }
-
 }
 
 class OnboardNavWrapper(
@@ -305,7 +295,7 @@ class OnboardNavWrapper(
     @Composable
     override fun Content() {
         Navigator(
-            GetStartedScreenNav(
+            LoginScreenNav(
                 onboardViewModel = onboardViewModel,
                 razorpayHandler = razorpayHandler,
                 isLoggedIn = isLoggedIn

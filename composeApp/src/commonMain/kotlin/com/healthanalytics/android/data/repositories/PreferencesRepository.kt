@@ -29,6 +29,9 @@ object PreferencesKeys {
     val PINCODE = stringPreferencesKey("pincode")
     val COUNTRY = stringPreferencesKey("country")
     val ADDRESS_ID = stringPreferencesKey("address_id")
+    val GENDER = stringPreferencesKey("gender")
+    val NEXT_QUESTIONNAIRES_KEY = stringPreferencesKey("next_questionnaires_data")
+
     val LEAD_ID = stringPreferencesKey("lead_id")
     val PROFILE_ID = stringPreferencesKey("profile_id")
 }
@@ -118,6 +121,15 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     val addressId: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.ADDRESS_ID] }
 
+    val gender: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.GENDER] }
+
+    val nextQuestionnaire: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.NEXT_QUESTIONNAIRES_KEY] }
+        .catch {
+            emit("[]")
+        }
+
     val profileId: Flow<String?> = dataStore.data
         .map { preferences -> preferences[PreferencesKeys.PROFILE_ID] }
 
@@ -185,6 +197,18 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) {
     suspend fun saveUserCountry(country: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.USER_COUNTRY] = country
+        }
+    }
+
+    suspend fun saveGender(gender: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.GENDER] = gender
+        }
+    }
+
+    suspend fun saveNextQuestionnaireData(nextQuestionnaire:String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NEXT_QUESTIONNAIRES_KEY] = nextQuestionnaire
         }
     }
 

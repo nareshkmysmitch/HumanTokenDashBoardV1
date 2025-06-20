@@ -61,6 +61,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.healthanalytics.android.payment.RazorpayHandler
+import com.healthanalytics.android.presentation.components.ScreenContainer
 
 @Composable
 fun ScheduleBloodTestContainer(
@@ -77,20 +78,23 @@ fun ScheduleBloodTestContainer(
         )
     }
 
-    ScheduleBloodTestScreen(
-        slotState = slotState,
-        onBackClick = onBackClick,
-        slotUpdateState = slotUpdateState,
-        navigateToPayment = navigateToPayment,
-        onContinueClick = {
-            onboardViewModel.updateSlot(it)
-        },
-        onDateChanged = {
-            onboardViewModel.getSlotAvailability(
-                selectedDate = DateUtils.getIso(it)
-            )
-        }
-    )
+    ScreenContainer {
+        ScheduleBloodTestScreen(
+            slotState = slotState,
+            onBackClick = onBackClick,
+            slotUpdateState = slotUpdateState,
+            navigateToPayment = navigateToPayment,
+            onContinueClick = {
+                onboardViewModel.updateSlot(it)
+            },
+            onDateChanged = {
+                onboardViewModel.getSlotAvailability(
+                    selectedDate = DateUtils.getIso(it)
+                )
+            }
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -127,11 +131,11 @@ fun ScheduleBloodTestScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.backgroundDark)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = AppColors.backGround)
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
