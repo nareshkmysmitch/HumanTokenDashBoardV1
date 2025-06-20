@@ -42,8 +42,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.healthanalytics.android.components.PrimaryButton
 import com.healthanalytics.android.data.models.onboard.AuthResponse
+import com.healthanalytics.android.payment.RazorpayHandler
+import com.healthanalytics.android.presentation.components.ScreenContainer
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppStrings
@@ -57,10 +62,6 @@ import humantokendashboardv1.composeapp.generated.resources.rounded_logo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import com.healthanalytics.android.payment.RazorpayHandler
 
 
 @Composable
@@ -68,14 +69,16 @@ fun LoginScreenContainer(
     onboardViewModel: OnboardViewModel,
     navigateToOtpVerification: () -> Unit
 ) {
-    LoginScreen(
-        loginState = onboardViewModel.loginState,
-        onContinueClick = {
-            onboardViewModel.sendOTP(it)
-        },
-        navigateToOtpVerification = navigateToOtpVerification,
-        phoneNumber = onboardViewModel.getPhoneNumber()
-    )
+    ScreenContainer {
+        LoginScreen(
+            loginState = onboardViewModel.loginState,
+            onContinueClick = {
+                onboardViewModel.sendOTP(it)
+            },
+            navigateToOtpVerification = navigateToOtpVerification,
+            phoneNumber = onboardViewModel.getPhoneNumber()
+        )
+    }
 }
 
 
@@ -105,6 +108,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = AppColors.backGround)
             .padding(Dimensions.screenPadding)
     ) {
         Column(

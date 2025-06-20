@@ -120,7 +120,7 @@ fun RatingBar(
 private fun RatingBarQuestionPreview() {
     RatingBar(
         modifier = Modifier.background(
-            color = AppColors.white
+            color = AppColors.primaryTextColor
         ),
         maxStars = 5,
         rating = 1,

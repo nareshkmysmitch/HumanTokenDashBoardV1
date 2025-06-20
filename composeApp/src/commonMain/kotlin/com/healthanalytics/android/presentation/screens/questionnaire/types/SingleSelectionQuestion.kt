@@ -145,7 +145,7 @@ fun SingleSelection(
                         modifier = Modifier.size(Dimensions.size20dp),
                         selected = isSelected,
                         colors = RadioButtonDefaults.colors(
-                            selectedColor = AppColors.white,
+                            selectedColor = AppColors.primaryTextColor,
                             unselectedColor = AppColors.gray,
                             disabledSelectedColor = AppColors.gray,
                             disabledUnselectedColor = AppColors.gray

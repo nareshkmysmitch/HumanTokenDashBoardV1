@@ -70,7 +70,7 @@ fun DHToolBar(
                 text = title,
                 fontFamily = FontFamily.semiBold(),
                 fontSize = 22.sp,
-                color = AppColors.white,
+                color = AppColors.primaryTextColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

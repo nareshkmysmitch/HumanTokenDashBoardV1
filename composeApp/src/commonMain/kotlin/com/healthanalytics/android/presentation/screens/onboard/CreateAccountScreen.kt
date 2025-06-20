@@ -37,11 +37,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.healthanalytics.android.components.DHToolBar
 import com.healthanalytics.android.components.PrimaryButton
 import com.healthanalytics.android.data.models.onboard.AccountCreationResponse
 import com.healthanalytics.android.data.models.onboard.AccountDetails
 import com.healthanalytics.android.data.models.onboard.CommunicationAddress
+import com.healthanalytics.android.payment.RazorpayHandler
+import com.healthanalytics.android.presentation.components.ScreenContainer
 import com.healthanalytics.android.presentation.components.ShowDatePicker
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
@@ -64,30 +69,32 @@ fun CreateAccountContainer(
     navigateToBloodTest: () -> Unit,
     onboardViewModel: OnboardViewModel
 ) {
-    val accountDetails = onboardViewModel.accountDetailsState.collectAsStateWithLifecycle().value
-    CreateAccountScreen(
-        accountDetails = accountDetails,
-        onBackClick = onBackClick,
-        onContinueClick = { accountDetails ->
-            onboardViewModel.saveAccountDetails(
-                accountDetails = accountDetails
-            )
-            val communicationAddress = CommunicationAddress(
-                address_line_1 = accountDetails.streetAddress,
-                address_line_2 = accountDetails.city,
-                city = accountDetails.state,
-                pincode = accountDetails.zipCode
-            )
-            onboardViewModel.createAccount(communicationAddress)
-        },
-        onAccountDetailsChange = { onboardViewModel.updateAccountDetails(it) },
-        isAccountDetailsValid = { onboardViewModel.isAccountDetailsValid(it) }
-    )
+    ScreenContainer {
+        val accountDetails = onboardViewModel.accountDetailsState.collectAsStateWithLifecycle().value
+        CreateAccountScreen(
+            accountDetails = accountDetails,
+            onBackClick = onBackClick,
+            onContinueClick = { accountDetails ->
+                onboardViewModel.saveAccountDetails(
+                    accountDetails = accountDetails
+                )
+                val communicationAddress = CommunicationAddress(
+                    address_line_1 = accountDetails.streetAddress,
+                    address_line_2 = accountDetails.city,
+                    city = accountDetails.state,
+                    pincode = accountDetails.zipCode
+                )
+                onboardViewModel.createAccount(communicationAddress)
+            },
+            onAccountDetailsChange = { onboardViewModel.updateAccountDetails(it) },
+            isAccountDetailsValid = { onboardViewModel.isAccountDetailsValid(it) }
+        )
 
-    GetAccountCreationResponse(
-        accountCreationState = onboardViewModel.accountCreationState,
-        navigateToBloodTest = navigateToBloodTest
-    )
+        GetAccountCreationResponse(
+            accountCreationState = onboardViewModel.accountCreationState,
+            navigateToBloodTest = navigateToBloodTest
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,6 +123,7 @@ fun CreateAccountScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = AppColors.backGround)
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -674,6 +682,24 @@ fun CommonTextField(
             style = AppTextStyles.caption,
             color = AppColors.error,
             modifier = Modifier.padding(top = Dimensions.size4dp)
+        )
+    }
+}
+
+class CreateAccountScreenNav(
+    private val onboardViewModel: OnboardViewModel,
+    private val razorpayHandler: RazorpayHandler,
+    private val isLoggedIn: () -> Unit
+) : Screen {
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        CreateAccountContainer(
+            onboardViewModel = onboardViewModel,
+            onBackClick = { navigator.pop() },
+            navigateToBloodTest = {
+                navigator.push(ScheduleBloodTestScreenNav(onboardViewModel, razorpayHandler, isLoggedIn))
+            }
         )
     }
 }

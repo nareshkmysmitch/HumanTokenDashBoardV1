@@ -57,7 +57,7 @@ fun DropDownQuestion(
                 .fillMaxWidth()
                 .padding(horizontal = Dimensions.size16dp)
                 .background(
-                    color = AppColors.white,
+                    color = AppColors.primaryTextColor,
                     shape = RoundedCornerShape(Dimensions.size12dp)
                 )
                 .padding(horizontal = Dimensions.size6dp)

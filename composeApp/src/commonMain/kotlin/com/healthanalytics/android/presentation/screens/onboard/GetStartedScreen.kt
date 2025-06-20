@@ -102,7 +102,7 @@ fun GetStartedScreen(
 
             Spacer(modifier = Modifier.height(Dimensions.size32dp))
             val gradient = Brush.linearGradient(
-                colors = listOf(AppColors.white, AppColors.secondary, AppColors.white),
+                colors = listOf(AppColors.primaryTextColor, AppColors.secondary, AppColors.primaryTextColor),
                 tileMode = TileMode.Clamp
             )
             BasicText(
@@ -430,7 +430,7 @@ fun GetStartedScreen(
                                 text = "\u20B99,999",
                                 fontSize = FontSize.textSize28sp,
                                 fontFamily = FontFamily.semiBold(),
-                                color = AppColors.white
+                                color = AppColors.primaryTextColor
                             )
                         }
                     }

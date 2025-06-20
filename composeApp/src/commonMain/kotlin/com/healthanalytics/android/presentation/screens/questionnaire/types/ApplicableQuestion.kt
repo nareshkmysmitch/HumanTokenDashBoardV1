@@ -160,7 +160,7 @@ fun SetSubQuestions(
 private fun PreviewApplicableCheckBox() {
     Box(
         modifier = Modifier.background(
-            color = AppColors.white
+            color = AppColors.primaryTextColor
         )
     ) {}
 }

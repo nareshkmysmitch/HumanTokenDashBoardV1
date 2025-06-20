@@ -37,6 +37,7 @@ import com.healthanalytics.android.presentation.theme.FontSize
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.healthanalytics.android.presentation.components.ScreenContainer
 
 @Composable
 fun PaymentScreenContainer(
@@ -45,35 +46,36 @@ fun PaymentScreenContainer(
     isPaymentCompleted: () -> Unit,
     razorpayHandler: RazorpayHandler,
 ) {
+    ScreenContainer {
+        PaymentScreen(
+            onBackClick = onBackClick,
+            onContinueClick = {
+                val orderDetail = onboardViewModel.getGeneratedOrderDetail()
 
-    PaymentScreen(
-        onBackClick = onBackClick,
-        onContinueClick = {
-            val orderDetail = onboardViewModel.getGeneratedOrderDetail()
+                if (orderDetail !=null){
+                    startRazorpayFlow(
+                        amount = orderDetail.amount?.toInt() ?: 0,
+                        currency = orderDetail.currency ?: "INR",
+                        description = orderDetail.description ?: "" ,
+                        orderId = orderDetail.payment_order_id ?: "",
+                        razorpayHandler = razorpayHandler,
+                        listener = object : RazorpayResultListener {
+                            override fun onPaymentSuccess(paymentId: String?) {
+                                if (orderDetail.payment_order_id != null){
+                                    onboardViewModel.getPaymentStatus(orderDetail.payment_order_id)
+                                    isPaymentCompleted()
+                                }
+                            }
 
-            if (orderDetail !=null){
-                startRazorpayFlow(
-                    amount = orderDetail.amount?.toInt() ?: 0,
-                    currency = orderDetail.currency ?: "INR",
-                    description = orderDetail.description ?: "" ,
-                    orderId = orderDetail.payment_order_id ?: "",
-                    razorpayHandler = razorpayHandler,
-                    listener = object : RazorpayResultListener {
-                        override fun onPaymentSuccess(paymentId: String?) {
-                            if (orderDetail.payment_order_id != null){
-                                onboardViewModel.getPaymentStatus(orderDetail.payment_order_id)
-                                isPaymentCompleted()
+                            override fun onPaymentError(code: Int, message: String?) {
+
                             }
                         }
-
-                        override fun onPaymentError(code: Int, message: String?) {
-
-                        }
-                    }
-                )
+                    )
+                }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -88,6 +90,7 @@ fun PaymentScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = AppColors.backGround)
                 .padding(Dimensions.cardPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

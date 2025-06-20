@@ -56,6 +56,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.healthanalytics.android.payment.RazorpayHandler
+import com.healthanalytics.android.presentation.components.ScreenContainer
 
 
 @Composable
@@ -64,21 +65,23 @@ fun OTPContainer(
     onBackClick: () -> Unit = {},
     navigateToAccountCreation: () -> Unit
 ) {
-    val otpVerifyState by onboardViewModel.otpVerifyState.collectAsStateWithLifecycle(null)
+    ScreenContainer {
+        val otpVerifyState by onboardViewModel.otpVerifyState.collectAsStateWithLifecycle(null)
 
-    OTPScreen(
-        otpVerifyState = otpVerifyState,
-        phoneNumber = onboardViewModel.getPhoneNumber(),
-        countryCode = onboardViewModel.getCountryCode(),
-        onBackClick = onBackClick,
-        otpVerified = navigateToAccountCreation,
-        onResendClick = {
-            onboardViewModel.resendOTP()
-        },
-        onContinueClick = {
-            onboardViewModel.verifyOtp(it)
-        }
-    )
+        OTPScreen(
+            otpVerifyState = otpVerifyState,
+            phoneNumber = onboardViewModel.getPhoneNumber(),
+            countryCode = onboardViewModel.getCountryCode(),
+            onBackClick = onBackClick,
+            otpVerified = navigateToAccountCreation,
+            onResendClick = {
+                onboardViewModel.resendOTP()
+            },
+            onContinueClick = {
+                onboardViewModel.verifyOtp(it)
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,6 +125,7 @@ fun OTPScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = AppColors.backGround)
             .padding(Dimensions.screenPadding)
     ) {
         Column(

@@ -123,7 +123,7 @@ fun SingleSelectionImage(
                         }
                     )
                     .background(
-                        color = AppColors.white,
+                        color = AppColors.primaryTextColor,
                         shape = RoundedCornerShape(Dimensions.size12dp)
                     )
             ) {
