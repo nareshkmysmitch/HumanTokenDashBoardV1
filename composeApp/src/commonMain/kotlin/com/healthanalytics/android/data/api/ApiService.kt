@@ -111,6 +111,8 @@ interface ApiService {
     suspend fun resetAllSymptoms(
         accessToken: String,
     ): Boolean
+
+    suspend fun getConsultationServices(accessToken: String): List<Product?>?
 }
 
 
@@ -122,9 +124,22 @@ class ApiServiceImpl(
             header("access_token", accessToken)
         }
         val responseBody = response.bodyAsText()
-        println("responseBody --> Raw ${responseBody}")
         val productsList = EncryptionUtils.handleDecryptionResponse<ProductData>(responseBody)
-        println("responseBody --> ProductsList ${productsList}")
+        return productsList?.products
+    }
+
+
+    override suspend fun getConsultationServices(accessToken: String): List<Product?>? {
+        val response = httpClient.get("v4/human-token/market-place/products") {
+            header("access_token", accessToken)
+            parameter("category", "service")
+            parameter("page", "1")
+            parameter("limit", "12")
+            parameter("sortBy", "rating")
+            parameter("sortOrder", "desc")
+        }
+        val responseBody = response.bodyAsText()
+        val productsList = EncryptionUtils.handleDecryptionResponse<ProductData>(responseBody)
         return productsList?.products
     }
 
@@ -467,8 +482,7 @@ class ApiServiceImpl(
             header("access_token", accessToken)
         }
         val responseBody = response.bodyAsText()
-        val personalData =
-            EncryptionUtils.handleDecryptionResponse<PersonalData>(responseBody)
+        val personalData = EncryptionUtils.handleDecryptionResponse<PersonalData>(responseBody)
         return personalData
     }
 
@@ -482,12 +496,10 @@ class ApiServiceImpl(
         }
         val responseBody =
             response.bodyAsText() //TODO @puvi backend issues on response, once they worked we need to handled it
-        return true
-        /*   val preferenceResponse =
+        return true/*   val preferenceResponse =
             EncryptionUtils.handleDecryptionResponse<UpdatedPreferenceResponse>(responseBody)*/
         // return preferenceResponse?.is_updated == true
     }
-
 
     override suspend fun resetAllSymptoms(accessToken: String): Boolean {
         val requestBody = buildJsonObject {}

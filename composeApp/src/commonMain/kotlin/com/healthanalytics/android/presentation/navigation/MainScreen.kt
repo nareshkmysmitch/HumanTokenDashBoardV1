@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,32 +27,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import com.example.humantoken.ui.screens.CartScreen
 import com.healthanalytics.android.payment.RazorpayHandler
 import com.healthanalytics.android.presentation.screens.ProfileNavWrapper
 import com.healthanalytics.android.presentation.screens.chat.ConversationListNavWrapper
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
-import com.healthanalytics.android.presentation.screens.onboard.CreateAccountContainer
-import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreen
 import com.healthanalytics.android.presentation.screens.onboard.GetStartedScreenNav
-import com.healthanalytics.android.presentation.screens.onboard.LoginScreenContainer
-import com.healthanalytics.android.presentation.screens.onboard.OTPContainer
-import com.healthanalytics.android.presentation.screens.onboard.OnboardRoute
-import com.healthanalytics.android.presentation.screens.onboard.PaymentScreenContainer
-import com.healthanalytics.android.presentation.screens.onboard.SampleCollectionAddressContainer
-import com.healthanalytics.android.presentation.screens.onboard.ScheduleBloodTestContainer
 import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.symptoms.SymptomsNavWrapper
 import com.healthanalytics.android.presentation.theme.AppColors
-import org.koin.compose.KoinContext
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 
@@ -86,7 +72,7 @@ class MainScreen : Screen {
                 }
             }
 
-            BottomNavScreen.Recommendations -> {
+            BottomNavScreen.Services -> {
                 IconButton(onClick = { mainNavigator.push(ProfileNavWrapper()) }) {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
@@ -96,17 +82,28 @@ class MainScreen : Screen {
                 }
             }
 
-            BottomNavScreen.Marketplace -> {
-                IconButton(onClick = {
-                    mainNavigator.push(CartScreen(viewModel = marketPlaceViewModel))
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Cart",
-                        tint = AppColors.White
-                    )
-                }
-            }
+
+//            BottomNavScreen.Recommendations -> {
+//                IconButton(onClick = { mainNavigator.push(ProfileNavWrapper()) }) {
+//                    Icon(
+//                        imageVector = Icons.Default.AccountCircle,
+//                        contentDescription = "Profile",
+//                        tint = AppColors.White
+//                    )
+//                }
+//            }
+//
+//            BottomNavScreen.Marketplace -> {
+//                IconButton(onClick = {
+//                    mainNavigator.push(CartScreen(viewModel = marketPlaceViewModel))
+//                }) {
+//                    Icon(
+//                        imageVector = Icons.Default.ShoppingCart,
+//                        contentDescription = "Cart",
+//                        tint = AppColors.White
+//                    )
+//                }
+//            }
         }
     }
 
@@ -130,8 +127,9 @@ class MainScreen : Screen {
 
                 val bottomNavScreens = listOf(
                     BottomNavScreen.Health,
-                    BottomNavScreen.Recommendations,
-                    BottomNavScreen.Marketplace
+                    BottomNavScreen.Services,
+//                    BottomNavScreen.Recommendations,
+//                    BottomNavScreen.Marketplace
                 )
 
                 val currentScreen = mainNavigator.lastItem
@@ -161,37 +159,7 @@ class MainScreen : Screen {
                                 },
 
                                 bottomBar = {
-                                    NavigationBar(
-                                        containerColor = AppColors.Black, contentColor = Color.White
-                                    ) {
-                                        bottomNavScreens.forEach { screen ->
-                                            NavigationBarItem(
-                                                selected = currentTab == screen,
-                                                onClick = { tabNavigator.current = screen },
-                                                icon = {
-                                                    screen.options.icon?.let { icon ->
-                                                        Icon(
-                                                            painter = icon,
-                                                            contentDescription = null
-                                                        )
-                                                    } ?: Icon(
-                                                        painter = rememberVectorPainter(Icons.Default.Help),
-                                                        contentDescription = "Fallback"
-                                                    )
-                                                },
-                                                label = {
-                                                    Text(screen.options.title)
-                                                },
-                                                colors = NavigationBarItemDefaults.colors(
-                                                    selectedIconColor = AppColors.Pink,
-                                                    selectedTextColor = AppColors.Pink,
-                                                    indicatorColor = AppColors.Black,
-                                                    unselectedIconColor = Color.White,
-                                                    unselectedTextColor = Color.White
-                                                )
-                                            )
-                                        }
-                                    }
+                                    BottomBar(bottomNavScreens, tabNavigator, currentTab)
                                 }) { paddingValues ->
                                 Box(
                                     modifier = Modifier.fillMaxSize().background(AppColors.Black)
@@ -210,92 +178,48 @@ class MainScreen : Screen {
         }
     }
 
+
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun OnboardContainer(
-        isLoggedIn: () -> Unit, onboardViewModel: OnboardViewModel,
+    fun BottomBar(
+        bottomNavScreens: List<BottomNavScreen>,
+
+        tabNavigator: TabNavigator, currentTab: Tab
     ) {
-        KoinContext {
-            val navController = rememberNavController()
-            val razorpayHandler: RazorpayHandler = getKoin().get()
-
-            Scaffold(
-                containerColor = AppColors.backgroundDark
-            ) { innerPadding ->
-                NavHost(
-                    navController = navController,
-                    startDestination = OnboardRoute.GetStarted,
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    composable<OnboardRoute.GetStarted> {
-                        GetStartedScreen(
-                            onGetStarted = { navController.navigate(OnboardRoute.Login) },
-                            onLogin = { navController.navigate(OnboardRoute.Login) },
-                            onViewAllBiomarkers = {})
-                    }
-                    composable<OnboardRoute.Login> {
-                        LoginScreenContainer(
-                            onboardViewModel = onboardViewModel, navigateToOtpVerification = {
-                                navController.navigate(OnboardRoute.OTPVerification)
-                            })
-
-                    }
-
-                    composable<OnboardRoute.OTPVerification> {
-                        OTPContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                            navController.navigateUp()
-
-                        }, navigateToAccountCreation = {
-                            navController.navigate(OnboardRoute.CreateAccount)
-                        })
-                    }
-
-                    composable<OnboardRoute.CreateAccount> {
-                        CreateAccountContainer(onboardViewModel = onboardViewModel, onBackClick = {
-                            navController.navigateUp()
-                        }, navigateToAddress = {
-                            navController.navigate(OnboardRoute.SampleCollectionAddress)
-                        })
-                    }
-
-                    composable<OnboardRoute.SampleCollectionAddress> {
-                        SampleCollectionAddressContainer(
-                            onboardViewModel = onboardViewModel,
-                            onBackClick = {
-                                navController.navigateUp()
-                            },
-                            navigateToBloodTest = {
-                                navController.navigate(OnboardRoute.ScheduleBloodTest)
-                            })
-                    }
-
-                    composable<OnboardRoute.ScheduleBloodTest> {
-                        ScheduleBloodTestContainer(
-                            onboardViewModel = onboardViewModel,
-                            onBackClick = {
-                                navController.navigateUp()
-                            },
-                            navigateToPayment = {
-                                navController.navigate(OnboardRoute.Payment)
-                            })
-                    }
-
-                    composable<OnboardRoute.Payment> {
-                        PaymentScreenContainer(
-                            onboardViewModel = onboardViewModel,
-                            razorpayHandler = razorpayHandler,
-                            onBackClick = {
-                                navController.navigateUp()
-                            },
-                            isPaymentCompleted = {
-                                isLoggedIn()
-                            })
-                    }
-                }
+        NavigationBar(
+            containerColor = AppColors.Black, contentColor = Color.White
+        ) {
+            bottomNavScreens.forEach { screen ->
+                NavigationBarItem(
+                    selected = currentTab == screen,
+                    onClick = { tabNavigator.current = screen },
+                    icon = {
+                        screen.options.icon?.let { icon ->
+                            Icon(
+                                painter = icon, contentDescription = null
+                            )
+                        } ?: Icon(
+                            painter = rememberVectorPainter(Icons.Default.Help),
+                            contentDescription = "Fallback"
+                        )
+                    },
+                    label = {
+                        Text(screen.options.title)
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = AppColors.Pink,
+                        selectedTextColor = AppColors.Pink,
+                        indicatorColor = AppColors.Black,
+                        unselectedIconColor = Color.White,
+                        unselectedTextColor = Color.White
+                    )
+                )
             }
         }
     }
 
 }
+
 
 class OnboardNavWrapper(
     private val onboardViewModel: OnboardViewModel,

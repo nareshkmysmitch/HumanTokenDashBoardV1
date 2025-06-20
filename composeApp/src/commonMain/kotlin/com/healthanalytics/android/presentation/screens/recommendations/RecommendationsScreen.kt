@@ -1,14 +1,32 @@
 package com.healthanalytics.android.presentation.screens.recommendations
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,8 +36,6 @@ import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategoryes
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.actionplan.MetricsGrid
-import com.healthanalytics.android.presentation.theme.*
-import com.healthanalytics.android.ui.PrimaryButton
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppStrings
 import com.healthanalytics.android.presentation.theme.Dimensions
@@ -146,14 +162,14 @@ fun RecommendationCard(
     ) == true)
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.size8dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = Dimensions.size4dp),
         colors = CardDefaults.cardColors(
             containerColor = AppColors.CardGrey
         ),
         shape = RoundedCornerShape(Dimensions.cornerRadiusLarge)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(Dimensions.size12dp)
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.size4dp)
         ) {
             // Title Row
             RecommendationTitle(recommendation)
@@ -169,9 +185,7 @@ fun RecommendationCard(
                 )
             } else {
                 PotentialImpact()
-
                 Spacer(modifier = Modifier.height(Dimensions.size8dp))
-
                 MetricsGrid(metricRecommendation)
             }
 
@@ -192,9 +206,7 @@ fun RecommendationCard(
                     buttonColor = buttonColor,
                     onClick = {
                         if (isEnabled) accessToken?.let {
-                            viewModel.addToPlan(
-                                it, recommendation
-                            )
+                            viewModel.addToPlan(it, recommendation)
                         }
                     })
             }
@@ -228,7 +240,7 @@ fun RecommendationTitle(recommendation: Recommendation) {
         Spacer(modifier = Modifier.width(Dimensions.size8dp))
         Text(
             text = recommendation.name,
-            fontSize = FontSize.textSize20sp,
+            fontSize = FontSize.textSize16sp,
             fontFamily = FontFamily.semiBold(),
             color = AppColors.textPrimary,
             maxLines = 2,
@@ -239,18 +251,16 @@ fun RecommendationTitle(recommendation: Recommendation) {
 
 
 @Composable
-fun MetricChip(
-    metric: String,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        color = AppColors.SubGreyColor, shape = MaterialTheme.shapes.small, modifier = modifier
+fun MetricChip(metric: String) {
+
+    Box(
+        Modifier.background(AppColors.backgroundDark, RoundedCornerShape(50))
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Text(
             text = metric,
             modifier = Modifier.padding(
-                horizontal = Dimensions.size8dp,
-                vertical = Dimensions.size4dp
+                horizontal = Dimensions.size4dp, vertical = Dimensions.size2dp
             ),
             fontSize = FontSize.textSize12sp,
             fontFamily = FontFamily.regular(),
