@@ -171,6 +171,8 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }
 
 //compose.desktop {
