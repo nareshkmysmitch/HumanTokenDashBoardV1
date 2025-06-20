@@ -84,6 +84,8 @@ object AppColors {
     val tagTransparentBlue = Color(0XFF192D50)
     val tagBlue = Color(0XFF60a5fa)
     val tagYellow = Color(0XFFfacc15)
+    val chipUnSelected = Color(0XFFd1d5db)
+    val tagOrange = Color(0XFFFB923C)
 
 
 }

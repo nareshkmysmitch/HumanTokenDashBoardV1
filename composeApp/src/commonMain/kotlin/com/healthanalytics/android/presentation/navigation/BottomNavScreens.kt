@@ -2,14 +2,18 @@ package com.healthanalytics.android.presentation.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.healthanalytics.android.presentation.screens.consultation.ConsultationListScreen
+import com.healthanalytics.android.presentation.screens.diagnostic.DiagnosticScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
+import com.healthanalytics.android.presentation.screens.health.SymptomsDetailsWrapper
+import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.theme.AppStrings
 import org.koin.compose.koinInject
@@ -20,9 +24,13 @@ sealed class BottomNavScreen : Tab {
         @Composable
         override fun Content() {
             val mainNavigator = LocalMainNavigator.current
+
             HealthDataScreen(
-                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = { biomarker ->
+                viewModel = koinInject(), prefs = koinInject(), onBiomarkerDetails = { biomarker ->
                     mainNavigator.push(BiomarkerDetailNavWrapper(biomarker = biomarker))
+                },
+                onSymptomsDetails = { symptomsData ->
+                    mainNavigator.push(SymptomsDetailsWrapper(symptomsData = symptomsData))
                 })
         }
 
@@ -49,6 +57,24 @@ sealed class BottomNavScreen : Tab {
                 index = 2u,
                 title = AppStrings.SERVICES,
                 icon = rememberVectorPainter(Icons.Default.MedicalServices)
+            )
+    }
+
+    object Diagnostic : BottomNavScreen() {
+        @Composable
+        override fun Content() {
+//            ConsultationListScreen(
+//                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = {})
+
+            DiagnosticScreen(
+                viewModel = koinInject(), preferencesViewModel = koinInject())
+        }
+
+        override val options: TabOptions
+            @Composable get() = TabOptions(
+                index = 3u,
+                title = AppStrings.DIAGNOSTIC,
+                icon = rememberVectorPainter(Icons.Default.Label)
             )
     }
 

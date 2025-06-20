@@ -40,4 +40,24 @@
     <string name="error_height_out_of_range">Height must be between 60.96 and 302.26 cm</string>
     <string name="search_biomarkers">Search Biomarkers...</string>
 
+
+    <!--Symptoms-->
+    <string name="search_symptoms">Search Symptoms...</string>
+    <string name="symptom_count_single"> time reported</string>
+    <string name="symptom_count_plural"> times reported</string>
+    <string name="symptom_details">Symptoms Details</string>
+
+    <string name="times_singular"> time</string>
+    <string name="times_plural"> times</string>
+    <string name="times_reported">Times Reported</string>
+    <string name="associated_biomarkers">Associated Biomarkers</string>
+    <string name="reset_all_symptoms">Reset All Symptoms</string>
+
+    <string name="reset_symptoms_title">Are you absolutely sure?</string>
+    <string name="reset_symptoms_message">This action will reset all your selected symptoms.</string>
+    <string name="continue_button">Continue</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="no_symptoms_reported">No symptoms reported</string>
+
+
 </resources>

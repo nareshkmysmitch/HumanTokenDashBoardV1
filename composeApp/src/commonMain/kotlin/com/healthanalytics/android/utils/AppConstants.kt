@@ -23,4 +23,5 @@ object AppConstants {
     const val MIN_WEIGHT = 10.0
     const val MAX_WEIGHT = 150.0
 
+    val healthMetrics = listOf("blood", "symptoms")
 }

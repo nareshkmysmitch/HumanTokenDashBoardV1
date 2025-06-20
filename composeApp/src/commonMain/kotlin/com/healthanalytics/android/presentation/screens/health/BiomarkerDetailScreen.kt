@@ -109,7 +109,7 @@ private fun BiomarkerHeader(biomarker: BloodData?) {
                     fontFamily = FontFamily.medium()
                 )
             }
-            StatusChip(status = biomarker?.displayRating ?: "")
+            BiomarkerStatus(status = biomarker?.displayRating ?: "")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

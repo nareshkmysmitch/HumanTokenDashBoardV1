@@ -16,12 +16,14 @@ import com.healthanalytics.android.data.models.SubmitSymptomsResponse
 import com.healthanalytics.android.data.models.Symptom
 import com.healthanalytics.android.data.models.SymptomsWrapper
 import com.healthanalytics.android.data.models.UpdateProfileRequest
-import com.healthanalytics.android.data.models.home.BloodData
+import com.healthanalytics.android.data.models.home.Diagnostic
 import com.healthanalytics.android.data.models.home.HealthMetrics
+import com.healthanalytics.android.data.models.home.ResetAllSymptomsResponse
 import com.healthanalytics.android.data.models.profile.CommunicationPreference
 import com.healthanalytics.android.data.models.profile.PersonalData
 import com.healthanalytics.android.data.models.profile.UpdatedPreferenceResponse
 import com.healthanalytics.android.data.models.profile.UploadCommunicationPreference
+import com.healthanalytics.android.utils.AppConstants
 import com.healthanalytics.android.utils.EncryptionUtils
 import com.healthanalytics.android.utils.EncryptionUtils.toEncryptedRequestBody
 import io.ktor.client.HttpClient
@@ -41,7 +43,7 @@ import kotlinx.serialization.json.put
 
 interface ApiService {
     suspend fun getProducts(accessToken: String): List<Product?>?
-    suspend fun getHealthMetrics(accessToken: String): List<BloodData?>?
+    suspend fun getHealthMetrics(accessToken: String): HealthMetrics?
     suspend fun getRecommendations(accessToken: String): List<Recommendation>?
 
     suspend fun removeRecommendation(
@@ -107,7 +109,13 @@ interface ApiService {
         personalData: PersonalData?,
     ): Boolean
 
+    suspend fun resetAllSymptoms(
+        accessToken: String,
+    ): Boolean
+
     suspend fun getConsultationServices(accessToken: String): List<Product?>?
+
+    suspend fun getDiagnosticList(accessToken: String): Diagnostic?
 }
 
 
@@ -138,15 +146,23 @@ class ApiServiceImpl(
         return productsList?.products
     }
 
-    override suspend fun getHealthMetrics(accessToken: String): List<BloodData?>? {
+    override suspend fun getHealthMetrics(accessToken: String): HealthMetrics? {
         val response = httpClient.get("v4/human-token/health-data") {
             header("access_token", accessToken)
+            url {
+                AppConstants.healthMetrics.forEach { metric ->
+                    parameter("metrics[]", metric)
+                }
+            }
         }
-        val responseBody = response.bodyAsText()
-        val healthMetricsResponse =
-            EncryptionUtils.handleDecryptionResponse<HealthMetrics>(responseBody)
-        return healthMetricsResponse?.blood?.bloodData
+
+        val decrypted = EncryptionUtils.handleDecryptionResponse<HealthMetrics>(
+            response.bodyAsText()
+        )
+
+        return decrypted
     }
+
 
     override suspend fun updateProfile(
         accessToken: String, request: UpdateProfileRequest,
@@ -488,5 +504,25 @@ class ApiServiceImpl(
         // return preferenceResponse?.is_updated == true
     }
 
+    override suspend fun resetAllSymptoms(accessToken: String): Boolean {
+        val requestBody = buildJsonObject {}
+        val response = httpClient.post("v4/human-token/symptom/reset") {
+            header("access_token", accessToken)
+            setBody(requestBody.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val result =
+            EncryptionUtils.handleDecryptionResponse<ResetAllSymptomsResponse>(responseBody)
+        return result?.isReset == true
+    }
 
+    override suspend fun getDiagnosticList(accessToken: String): Diagnostic? {
+        val response = httpClient.get("v4/human-token/lab-test") {
+            header("access_token", accessToken)
+        }
+        val responseBody = response.bodyAsText()
+        val result =
+            EncryptionUtils.handleDecryptionResponse<Diagnostic>(responseBody)
+        return result
+    }
 }

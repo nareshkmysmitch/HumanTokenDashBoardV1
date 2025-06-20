@@ -128,6 +128,7 @@ class MainScreen : Screen {
                 val bottomNavScreens = listOf(
                     BottomNavScreen.Health,
                     BottomNavScreen.Services,
+                    BottomNavScreen.Diagnostic,
 //                    BottomNavScreen.Recommendations,
 //                    BottomNavScreen.Marketplace
                 )

@@ -24,32 +24,37 @@ import com.healthanalytics.android.presentation.theme.FontSize
 
 @Composable
 fun TransparentButton(
-    icon: ImageVector,
+    icon: ImageVector?,
     txt: String,
     onClicked: () -> Unit,
     modifier: Modifier,
     isEnabled: Boolean = true,
+    contextColor: Color = AppColors.White,
+    lineBorderColor: Color = AppColors.lineBorderColor,
 ) {
     OutlinedButton(
         modifier = modifier.height(Dimensions.size50dp),
         onClick = onClicked,
         shape = RoundedCornerShape(Dimensions.size12dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.White, containerColor = AppColors.Black
+            contentColor = contextColor,
+            containerColor = AppColors.Black
         ),
         enabled = isEnabled,
         border = BorderStroke(
             width = Dimensions.size1dp,
-            color = AppColors.lineBorderColor,
+            color = lineBorderColor,
         )
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = "Remove",
-            modifier = Modifier.size(Dimensions.size16dp),
-            tint = if (isEnabled) AppColors.White else AppColors.buttonGrey
-        )
-        Spacer(modifier = Modifier.width(Dimensions.size8dp))
+        icon?.let {
+            Icon(
+                imageVector = icon,
+                contentDescription = "Remove",
+                modifier = Modifier.size(Dimensions.size16dp),
+                tint = if (isEnabled) AppColors.White else AppColors.buttonGrey
+            )
+            Spacer(modifier = Modifier.width(Dimensions.size8dp))
+        }
         Text(
             txt,
             fontSize = FontSize.textSize16sp,

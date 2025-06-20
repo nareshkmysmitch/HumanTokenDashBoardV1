@@ -305,7 +305,7 @@ private fun HeaderCard(biomarker: BloodData?, releasedAt: String?, biomarkerDesc
                         maxLines = 1,
                     )
                 }
-                StatusChip(status = biomarker?.displayRating ?: "")
+                BiomarkerStatus(status = biomarker?.displayRating ?: "")
             }
 
             if (!biomarker?.shortDescription.isNullOrBlank()) {

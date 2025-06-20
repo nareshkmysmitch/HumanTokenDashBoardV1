@@ -449,6 +449,8 @@ fun ProfileScreen(
                     modifier = Modifier,
                     title = "Log out",
                     message = "You will be logged out of your Deep Holistics account. However this doesn't affect your logged data. Do you want to still logout?",
+                    onPositiveTxt = "OK",
+                    onNegativeTxt = "Cancel",
                     onDismiss = { showAlertDialog = false },
                     onLogout = {
                         viewModel.logout()
