@@ -48,6 +48,7 @@ object AppColors {
     val Teal = Color(0xFF1F2937)
     val PurpleTitle = Color(0xFF82054e)
     val PurpleCardBackground = Color(0xFF565E71)
+    val Blue  = Color(0xFF2563EB)
 
     val Transparent = Color.Transparent
 

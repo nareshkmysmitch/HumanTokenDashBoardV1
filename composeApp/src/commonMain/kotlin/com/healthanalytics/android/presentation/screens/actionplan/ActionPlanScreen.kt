@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.data.models.MetricRecommendation
 import com.healthanalytics.android.data.models.Recommendation
 import com.healthanalytics.android.data.models.RecommendationCategoryes
@@ -84,8 +86,7 @@ fun ActionPlanScreen(
         // Content Section
         if (uiState.isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -283,8 +284,7 @@ fun ActionPlanCard(
     val metricRecommendation = recommendation.metric_recommendations
 
     val isSupplements = recommendation.category.equals(
-        AppConstants.SUPPLEMENTS,
-        ignoreCase = true
+        AppConstants.SUPPLEMENTS, ignoreCase = true
     )
 
     Card(
@@ -338,8 +338,7 @@ fun ActionPlanCard(
                     onClicked = {
                         accessToken?.let {
                             if (recommendation.category.equals(
-                                    AppConstants.SUPPLEMENTS,
-                                    ignoreCase = true
+                                    AppConstants.SUPPLEMENTS, ignoreCase = true
                                 )
                             ) {
                                 viewModel.removeSupplements(it, recommendation)
@@ -359,24 +358,37 @@ fun MetricsGrid(metricRecommendation: List<MetricRecommendation>?) {
         if (metrics?.isNotEmpty() == true) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+                verticalArrangement = Arrangement.spacedBy(Dimensions.size4dp)
             ) {
-                metrics.chunked(2).forEach { rowMetrics ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
-                    ) {
-                        rowMetrics.forEach { metricRecommendation ->
-                            MetricChip(
-                                metric = metricRecommendation.metric.metric,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        if (rowMetrics.size == 1) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
+
+                FlowRow(
+                    modifier = Modifier.padding(vertical = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    metrics.forEach { metricRecommendation ->
+                        MetricChip(
+                            metric = metricRecommendation.metric.metric
+                        )
                     }
                 }
+
+//                metrics.chunked(2).forEach { rowMetrics ->
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.spacedBy(Dimensions.size8dp)
+//                    ) {
+//                        rowMetrics.forEach { metricRecommendation ->
+//                            MetricChip(
+//                                metric = metricRecommendation.metric.metric,
+//                                modifier = Modifier.weight(1f)
+//                            )
+//                        }
+//                        if (rowMetrics.size == 1) {
+//                            Spacer(modifier = Modifier.weight(1f))
+//                        }
+//                    }
+//                }
             }
         }
     }
@@ -390,8 +402,7 @@ fun formatDate(isoString: String?): String {
         val localDateTime = instant.toLocalDateTime(systemTz)
 
         val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
-        val month =
-            localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+        val month = localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
         val year = localDateTime.year
         "$day/$month/$year"
     } ?: ""

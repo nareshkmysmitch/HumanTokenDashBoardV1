@@ -3,6 +3,7 @@ package com.healthanalytics.android.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
@@ -33,8 +35,7 @@ fun TransparentButton(
         onClick = onClicked,
         shape = RoundedCornerShape(Dimensions.size12dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.White,
-            containerColor = AppColors.Black
+            contentColor = AppColors.White, containerColor = AppColors.Black
         ),
         enabled = isEnabled,
         border = BorderStroke(
@@ -71,8 +72,7 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier.height(Dimensions.size50dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.White,
-            containerColor = buttonColor
+            contentColor = AppColors.White, containerColor = buttonColor
         ),
         shape = RoundedCornerShape(Dimensions.size12dp)
     ) {
@@ -88,7 +88,7 @@ fun PrimaryButton(
 
 @Composable
 fun CardPrimaryButton(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.height(Dimensions.size36dp),
     txt: String,
     enable: Boolean = true,
     onClick: () -> Unit,
@@ -97,10 +97,9 @@ fun CardPrimaryButton(
     Button(
         enabled = enable,
         onClick = onClick,
-        modifier = modifier.height(Dimensions.size50dp),
+        modifier = modifier.padding(6.dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.White,
-            containerColor = buttonColor
+            contentColor = AppColors.White, containerColor = buttonColor
         ),
         shape = RoundedCornerShape(Dimensions.size12dp)
     ) {
@@ -126,8 +125,7 @@ fun CardTransparentButton(
         onClick = onClicked,
         shape = RoundedCornerShape(Dimensions.size12dp),
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppColors.White,
-            containerColor = AppColors.Black
+            contentColor = AppColors.White, containerColor = AppColors.Black
         ),
         enabled = isEnabled,
         border = BorderStroke(

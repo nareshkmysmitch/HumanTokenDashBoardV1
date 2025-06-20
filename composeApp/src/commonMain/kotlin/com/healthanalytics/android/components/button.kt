@@ -9,24 +9,45 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.Dimensions
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
 
 @Composable
-fun PrimaryButton(
-    isEnable: Boolean,
-    onclick: () -> Unit,
-    buttonName: String,
-    modifier: Modifier= Modifier
+fun SecondaryButton(
+    isEnable: Boolean, onclick: () -> Unit, buttonName: String, modifier: Modifier = Modifier
 ) {
     Button(
         enabled = isEnable,
         onClick = onclick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(height = Dimensions.size56dp),
+        modifier = modifier.fillMaxWidth().height(height = Dimensions.size40dp),
+        colors = ButtonColors(
+            containerColor = AppColors.Blue,
+            contentColor = AppColors.Blue,
+            disabledContentColor = AppColors.textSecondary,
+            disabledContainerColor = Color(0xFF003D46),
+        ),
+        shape = RoundedCornerShape(Dimensions.size12dp)
+    ) {
+        Text(
+            text = buttonName,
+            fontSize = 14.sp,
+//            fontFamily = FontFamily.bold(),
+            color = if (isEnable) AppColors.White else AppColors.textSecondary
+        )
+    }
+}
+
+@Composable
+fun PrimaryButton(
+    isEnable: Boolean, onclick: () -> Unit, buttonName: String, modifier: Modifier = Modifier
+) {
+    Button(
+        enabled = isEnable,
+        onClick = onclick,
+        modifier = modifier.fillMaxWidth().height(height = Dimensions.size56dp),
         colors = ButtonColors(
             containerColor = Color(0xFF4A4A5C),
             contentColor = Color(0xFFFFFF),
