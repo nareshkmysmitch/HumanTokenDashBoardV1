@@ -95,7 +95,7 @@ fun SymptomsList(
 
         Spacer(modifier = Modifier.height(size16dp))
 
-        if (symptomsList.isNotEmpty()) {
+        if (uiState.symptomsData.isNotEmpty()) {
 
             OutlinedTextField(
                 value = uiState.searchQuery,
