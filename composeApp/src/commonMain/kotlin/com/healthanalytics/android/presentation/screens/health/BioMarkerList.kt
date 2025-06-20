@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -67,6 +68,10 @@ fun BioMarkerList(viewModel: HealthDataViewModel, onNavigateToDetail: (BloodData
     val uiState by viewModel.uiState.collectAsState()
 
     Spacer(modifier = Modifier.height(size16dp))
+
+    LaunchedEffect(Unit) {
+        viewModel.updateSearchQuery("")
+    }
 
     OutlinedTextField(
         value = uiState.searchQuery,
@@ -214,7 +219,7 @@ fun MetricCard(
                 )
             }
 
-            StatusChip(status = metric?.displayRating ?: "")
+            BiomarkerStatus(status = metric?.displayRating ?: "")
         }
 
         Spacer(modifier = Modifier.height(size8dp))
@@ -328,7 +333,7 @@ fun MetricCard(
 }
 
 @Composable
-fun StatusChip(status: String) {
+fun BiomarkerStatus(status: String) {
 
     val (backgroundColor, textColor) = when (status.lowercase()) {
         "normal" -> (AppColors.NormalColor to AppColors.White)

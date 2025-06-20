@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.HealthDataUiState
 import com.healthanalytics.android.data.models.home.BloodData
+import com.healthanalytics.android.data.models.home.SymptomsData
 import com.healthanalytics.android.utils.AppConstants
 import io.ktor.util.reflect.instanceOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,8 +42,10 @@ class HealthDataViewModel(
             val metrics = apiService.getHealthMetrics(accessToken)
             _uiState.update {
                 val bloodData = metrics?.blood?.bloodData
+                val symptomsData = metrics?.symptoms?.symptomsData
                 it.copy(
                     biomarker = bloodData ?: emptyList(),
+                    symptomsData = symptomsData ?: emptyList(),
                     isLoading = false,
                     selectedFilter = AppConstants.ALL,
                     lastUpdated = bloodData?.maxByOrNull { data ->
@@ -154,6 +157,17 @@ class HealthDataViewModel(
         }
     }
 
+    fun getSymptomsFilterList(): List<SymptomsData?> {
+        val uiState = _uiState.value
+        val searchQuery = uiState.searchQuery.trim()
+        return uiState.symptomsData.filter { symptoms ->
+            searchQuery.isBlank() || symptoms?.name?.startsWith(
+                searchQuery,
+                ignoreCase = true
+            ) == true
+        }
+    }
+
     private val _selectedMetrics = MutableStateFlow<String?>(AppConstants.healthMetrics.first())
     val selectedMetrics: StateFlow<String?> = _selectedMetrics.asStateFlow()
 
@@ -161,6 +175,7 @@ class HealthDataViewModel(
         viewModelScope.launch {
             _selectedMetrics.emit(metric)
         }
+
     }
 
 }

@@ -40,4 +40,11 @@
     <string name="error_height_out_of_range">Height must be between 60.96 and 302.26 cm</string>
     <string name="search_biomarkers">Search Biomarkers...</string>
 
+
+    <!--Symptoms-->
+    <string name="search_symptoms">Search Symptoms...</string>
+    <string name="symptom_count_single"> time reported</string>
+    <string name="symptom_count_plural"> times reported</string>
+
+
 </resources>

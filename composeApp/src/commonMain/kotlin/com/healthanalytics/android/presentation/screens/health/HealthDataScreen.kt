@@ -90,17 +90,20 @@ fun HealthDataScreen(
                                 color = AppColors.textPrimary,
                                 textAlign = TextAlign.Center
                             )
-                        }
-                    )
+                        })
                 }
             }
             when (selectedMetrics) {
                 "blood" -> {
+
                     BioMarkerList(viewModel, onNavigateToDetail = onNavigateToDetail)
                 }
 
                 "symptoms" -> {
-                    SymptomsList()
+
+                    SymptomsList(viewModel, onSymptomsClick = {
+
+                    })
                 }
             }
         }
