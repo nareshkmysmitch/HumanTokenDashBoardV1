@@ -219,7 +219,7 @@ fun SymptomsBioMarker(bioMarker: Biomarker?) {
 
             Surface(
                 color = AppColors.HighColor, shape = MaterialTheme.shapes.small
-            ) {
+            ) { //TODO @puvi need to discuss regarding the inference
                 Text(
                     text = inference ?: "",
                     modifier = Modifier.wrapContentWidth()

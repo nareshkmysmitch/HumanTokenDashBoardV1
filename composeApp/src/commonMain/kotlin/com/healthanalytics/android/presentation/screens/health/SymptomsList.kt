@@ -48,8 +48,10 @@ import com.healthanalytics.android.presentation.theme.Dimensions.size4dp
 import com.healthanalytics.android.presentation.theme.Dimensions.size8dp
 import com.healthanalytics.android.presentation.theme.FontFamily
 import com.healthanalytics.android.presentation.theme.FontSize
+import com.healthanalytics.android.ui.TransparentButton
 import com.healthanalytics.android.utils.AppConstants
 import humantokendashboardv1.composeapp.generated.resources.Res
+import humantokendashboardv1.composeapp.generated.resources.reset_all_symptoms
 import humantokendashboardv1.composeapp.generated.resources.search_symptoms
 import humantokendashboardv1.composeapp.generated.resources.symptom_count_plural
 import humantokendashboardv1.composeapp.generated.resources.symptom_count_single
@@ -110,6 +112,19 @@ fun SymptomsList(viewModel: HealthDataViewModel, onSymptomsClick: (SymptomsData?
         shape = RoundedCornerShape(size12dp),
         modifier = Modifier.fillMaxWidth().padding(horizontal = size12dp)
     )
+
+    Spacer(modifier = Modifier.height(size16dp))
+
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        TransparentButton(
+            modifier = Modifier.wrapContentWidth(),
+            icon = null,
+            txt = stringResource(Res.string.reset_all_symptoms),
+            onClicked = {
+
+            }, contextColor = AppColors.error, lineBorderColor = AppColors.error
+        )
+    }
 
     Spacer(modifier = Modifier.height(size16dp))
 
