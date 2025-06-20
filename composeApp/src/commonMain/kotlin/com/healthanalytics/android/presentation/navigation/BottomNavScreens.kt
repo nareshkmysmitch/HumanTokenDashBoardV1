@@ -3,18 +3,13 @@ package com.healthanalytics.android.presentation.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MedicalServices
-import androidx.compose.material.icons.filled.Recommend
-import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.example.humantoken.ui.screens.ProductDetailScreen
-import com.healthanalytics.android.data.api.BloodData
 import com.healthanalytics.android.presentation.screens.consultation.ConsultationListScreen
 import com.healthanalytics.android.presentation.screens.health.BiomarkerDetailNavWrapper
 import com.healthanalytics.android.presentation.screens.health.HealthDataScreen
-import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceScreen
 import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsTabScreen
 import com.healthanalytics.android.presentation.theme.AppStrings
 import org.koin.compose.koinInject
@@ -42,8 +37,11 @@ sealed class BottomNavScreen : Tab {
     object Services : BottomNavScreen() {
         @Composable
         override fun Content() {
-            ConsultationListScreen(
-                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = {})
+//            ConsultationListScreen(
+//                viewModel = koinInject(), prefs = koinInject(), onNavigateToDetail = {})
+
+            RecommendationsTabScreen(
+                viewModel = koinInject(), preferencesViewModel = koinInject(), navigateBack = {})
         }
 
         override val options: TabOptions

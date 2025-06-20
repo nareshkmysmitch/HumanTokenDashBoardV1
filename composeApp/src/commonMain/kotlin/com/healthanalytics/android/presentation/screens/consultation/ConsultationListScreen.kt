@@ -31,8 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthanalytics.android.components.SecondaryButton
-import com.healthanalytics.android.data.api.BloodData
-import com.healthanalytics.android.data.api.Product
+ import com.healthanalytics.android.data.api.Product
+import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.theme.AppColors
 import com.healthanalytics.android.presentation.theme.AppTextStyles
