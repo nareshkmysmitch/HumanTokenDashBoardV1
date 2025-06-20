@@ -10,6 +10,8 @@ actual fun ShowAlertDialog(
     modifier: Modifier,
     title: String,
     message: String,
+    onNegativeTxt: String,
+    onPositiveTxt: String,
     onDismiss: () -> Unit,
     onLogout: () -> Unit,
 ) {
@@ -20,7 +22,9 @@ actual fun ShowAlertDialog(
             primaryText = title,
             secondaryText = message,
             onDismiss = onDismiss,
-            onLogout = onLogout
+            onLogout = onLogout,
+            onNegativeTxt=onNegativeTxt,
+            onPositiveTxt=onPositiveTxt
         )
     }
 }

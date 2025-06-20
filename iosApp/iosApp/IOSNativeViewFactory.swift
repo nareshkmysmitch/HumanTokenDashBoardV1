@@ -8,7 +8,7 @@ import SwiftUI
 import ComposeApp
 
 class IOSNativeViewFactory:  NativeViewFactory {
-    func showAlertDialog(primaryText: String, secondaryText: String, onDismiss: @escaping () -> Void, onLogout: @escaping () -> Void) {
+    func showAlertDialog(primaryText: String, secondaryText: String, onDismiss: @escaping () -> Void, onLogout: @escaping () -> Void,positiveTxt: String, NegativeTxt: String) {
         
         let alert = UIAlertController(
             title: primaryText,
@@ -16,12 +16,12 @@ class IOSNativeViewFactory:  NativeViewFactory {
             preferredStyle: .alert
         )
 
-        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+        let okAction = UIAlertAction(title: positiveTxt, style: .default) { _ in
             print("OK tapped")
             onLogout()
         }
 
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+        let cancelAction = UIAlertAction(title: NegativeTxt, style: .cancel) { _ in
             print("Cancel tapped")
             onDismiss()
         }

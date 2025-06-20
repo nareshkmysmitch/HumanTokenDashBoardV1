@@ -17,8 +17,10 @@ actual fun ShowAlertDialog(
     modifier: Modifier,
     title: String,
     message: String,
+    onNegativeTxt: String,
+    onPositiveTxt: String,
     onDismiss: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
 ) {
 
     AlertDialog(
@@ -44,7 +46,7 @@ actual fun ShowAlertDialog(
         },
         confirmButton = {
             Text(
-                text = "OK",
+                text = onPositiveTxt,
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -64,7 +66,7 @@ actual fun ShowAlertDialog(
         },
         dismissButton = {
             Text(
-                text = "Cancel",
+                text = onNegativeTxt,
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,

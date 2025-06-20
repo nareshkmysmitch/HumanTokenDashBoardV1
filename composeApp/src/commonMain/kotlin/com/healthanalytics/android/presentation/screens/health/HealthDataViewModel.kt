@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthanalytics.android.data.api.ApiService
 import com.healthanalytics.android.data.api.HealthDataUiState
+import com.healthanalytics.android.data.models.LoadingState
 import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.data.models.home.SymptomsData
 import com.healthanalytics.android.utils.AppConstants
@@ -176,6 +177,38 @@ class HealthDataViewModel(
             _selectedMetrics.emit(metric)
         }
 
+    }
+
+    private val _resetAllSymptoms = MutableStateFlow(LoadingState())
+    val resetAllSymptoms: StateFlow<LoadingState> =
+        _resetAllSymptoms.asStateFlow()
+
+    fun resetAllSymptoms(accessToken: String) {
+        viewModelScope.launch {
+            try {
+                _resetAllSymptoms.update { it.copy(isLoading = true) }
+
+                val isSuccess = apiService.resetAllSymptoms(accessToken)
+
+                if (isSuccess) {
+                    loadHealthMetrics(accessToken)
+                }
+
+                _resetAllSymptoms.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = isSuccess
+                    )
+                }
+            } catch (e: Exception) {
+                _resetAllSymptoms.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Reset all symptoms failed"
+                    )
+                }
+            }
+        }
     }
 
 }

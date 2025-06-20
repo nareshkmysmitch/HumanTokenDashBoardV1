@@ -4,4 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-expect fun ShowAlertDialog(modifier: Modifier, title: String, message: String, onDismiss: () -> Unit, onLogout: () -> Unit)
+expect fun ShowAlertDialog(
+    modifier: Modifier,
+    title: String,
+    message: String,
+    onNegativeTxt: String,
+    onPositiveTxt: String,
+    onDismiss: () -> Unit,
+    onLogout: () -> Unit,
+)

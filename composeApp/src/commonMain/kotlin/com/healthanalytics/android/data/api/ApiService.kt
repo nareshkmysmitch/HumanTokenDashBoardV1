@@ -12,11 +12,11 @@ import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.data.models.RemoveRecommendationResponse
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
+import com.healthanalytics.android.data.models.ResetAllSymptomsResponse
 import com.healthanalytics.android.data.models.SubmitSymptomsResponse
 import com.healthanalytics.android.data.models.Symptom
 import com.healthanalytics.android.data.models.SymptomsWrapper
 import com.healthanalytics.android.data.models.UpdateProfileRequest
-import com.healthanalytics.android.data.models.home.BloodData
 import com.healthanalytics.android.data.models.home.HealthMetrics
 import com.healthanalytics.android.data.models.profile.CommunicationPreference
 import com.healthanalytics.android.data.models.profile.PersonalData
@@ -106,6 +106,10 @@ interface ApiService {
     suspend fun saveHealthMetrics(
         accessToken: String,
         personalData: PersonalData?,
+    ): Boolean
+
+    suspend fun resetAllSymptoms(
+        accessToken: String,
     ): Boolean
 }
 
@@ -484,4 +488,16 @@ class ApiServiceImpl(
         // return preferenceResponse?.is_updated == true
     }
 
+
+    override suspend fun resetAllSymptoms(accessToken: String): Boolean {
+        val requestBody = buildJsonObject {}
+        val response = httpClient.post("v4/human-token/symptom/reset") {
+            header("access_token", accessToken)
+            setBody(requestBody.toEncryptedRequestBody())
+        }
+        val responseBody = response.bodyAsText()
+        val result =
+            EncryptionUtils.handleDecryptionResponse<ResetAllSymptomsResponse>(responseBody)
+        return result?.isReset == true
+    }
 }

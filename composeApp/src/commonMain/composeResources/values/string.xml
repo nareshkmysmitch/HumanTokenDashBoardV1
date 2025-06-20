@@ -53,5 +53,11 @@
     <string name="associated_biomarkers">Associated Biomarkers</string>
     <string name="reset_all_symptoms">Reset All Symptoms</string>
 
+    <string name="reset_symptoms_title">Are you absolutely sure?</string>
+    <string name="reset_symptoms_message">This action will reset all your selected symptoms.</string>
+    <string name="continue_button">Continue</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="no_symptoms_reported">No symptoms reported</string>
+
 
 </resources>

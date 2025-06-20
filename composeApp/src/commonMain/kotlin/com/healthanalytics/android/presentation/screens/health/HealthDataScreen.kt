@@ -101,7 +101,14 @@ fun HealthDataScreen(
                 }
 
                 "symptoms" -> {
-                    SymptomsList(viewModel, onSymptomsClick = onSymptomsDetails)
+                    SymptomsList(
+                        viewModel,
+                        onSymptomsClick = onSymptomsDetails,
+                        onResetAllSymptoms = {
+                            preferencesState.data?.let { accessToken ->
+                                viewModel.resetAllSymptoms(accessToken)
+                            }
+                        })
                 }
             }
         }
