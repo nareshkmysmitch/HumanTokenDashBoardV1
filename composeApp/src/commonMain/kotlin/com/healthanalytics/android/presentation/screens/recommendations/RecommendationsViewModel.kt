@@ -179,7 +179,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         }
     }
 
-    fun removeSupplements(accessToken: String, recommendation: Recommendation) {
+    fun removeSupplements(accessToken: String, recommendation: Recommendation, profileId: String) {
         viewModelScope.launch {
             try {
                 _uiActionState.update { it.copy(isLoading = true) }
@@ -196,7 +196,8 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                         is_mock = false,
                         medicine_id = userAction.medicine_id,
                         event_selection = "all",
-                        module = "recommendation"
+                        module = "recommendation",
+                        profile_id = profileId
                     )
 
                     val success = apiService.removeSupplements(accessToken, request)
@@ -223,7 +224,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
         }
     }
 
-    fun addToPlan(accessToken: String, recommendation: Recommendation) {
+    fun addToPlan(accessToken: String, recommendation: Recommendation, profileId: String) {
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true) }
@@ -252,6 +253,7 @@ class RecommendationsViewModel(private val apiService: ApiService) : ViewModel()
                             shape = evenConfig.shape ?: "",
                             color = evenConfig.color ?: "",
                             time = listOf(evenConfig.scheduled_time),
+                            profile_id = profileId,
                             duration = evenConfig.duration ?: 0
                         )
                         apiService.addSupplementToPlan(accessToken, request)
