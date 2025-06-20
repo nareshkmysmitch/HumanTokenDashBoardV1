@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
+import kotlinx.coroutines.*
 
 actual suspend fun saveTextFile(filename: String, content: String): String? {
     return try {
@@ -33,7 +34,7 @@ actual suspend fun saveTextFile(filename: String, content: String): String? {
     }
 }
 
-fun openCsvFile(csvFile: File) {
+suspend fun openCsvFile(csvFile: File) {
     val context = appContext
     val uri: Uri = FileProvider.getUriForFile(
         context,
@@ -50,15 +51,13 @@ fun openCsvFile(csvFile: File) {
     val chooser = Intent.createChooser(intent, "Open CSV file")
     chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-    Handler(Looper.getMainLooper()).postDelayed({
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(chooser)
-        } else {
-            Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
-        }
-    }, 500)
+    delay(500) // 500ms delay
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(chooser)
+    } else {
+        Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
+    }
 }
-
 
 private fun openFileWithSystem(file: File) {
     try {
@@ -104,6 +103,6 @@ actual fun shareFile(filePath: String) {
     }
 }
 
-actual fun openCsvFile(path: String) {
+actual suspend fun openCsvFile(path: String) {
     openCsvFile(File(path))
 }

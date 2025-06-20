@@ -89,8 +89,10 @@ class MainScreen : Screen {
                 IconButton(onClick = {
                     exportMetricsToCsv(metrics, scope) { filePath ->
                         scope.launch {
+                            launch {
+                                com.healthanalytics.android.utils.openCsvFile(filePath)
+                            }
                             snackbarHostState.showSnackbar("Successfully saved CSV file in downloads")
-                            com.healthanalytics.android.utils.openCsvFile(filePath)
                         }
                     }
                 }) {

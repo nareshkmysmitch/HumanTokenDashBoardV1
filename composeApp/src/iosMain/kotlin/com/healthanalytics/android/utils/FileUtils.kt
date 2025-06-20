@@ -48,6 +48,6 @@ actual fun shareFile(filePath: String) {
     FileSharing.shareFile(path = filePath)
 }
 
-actual fun openCsvFile(path: String) {
+actual suspend fun openCsvFile(path: String) {
     openCsvFile(path)
 }
