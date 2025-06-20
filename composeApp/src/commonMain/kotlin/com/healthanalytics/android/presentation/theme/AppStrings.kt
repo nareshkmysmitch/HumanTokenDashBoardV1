@@ -62,6 +62,7 @@ object AppStrings {
     const val HEALTH_DATA = "Health Data"
     const val RECOMMENDATIONS = "Recommendations"
     const val SERVICES = "Services"
+    const val DIAGNOSTIC = "Diagnostic"
     const val MARKET_PLACE = "Market Place"
 
 

@@ -8,17 +8,18 @@ import com.healthanalytics.android.data.network.NetworkConfig
 import com.healthanalytics.android.data.repositories.PreferencesRepository
 import com.healthanalytics.android.data.repository.BiomarkerRepository
 import com.healthanalytics.android.data.repository.BiomarkerRepositoryImpl
-import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.preferences.PreferencesViewModel
 import com.healthanalytics.android.presentation.screens.chat.ChatViewModel
 import com.healthanalytics.android.presentation.screens.consultation.ConsultationViewModel
+import com.healthanalytics.android.presentation.screens.diagnostic.DiagnosticViewModel
 import com.healthanalytics.android.presentation.screens.health.BioMarkerReportViewModel
-import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.health.HealthDataViewModel
 import com.healthanalytics.android.presentation.screens.marketplace.MarketPlaceViewModel
-import com.healthanalytics.android.presentation.screens.symptoms.SymptomsViewModel
-import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiService
 import com.healthanalytics.android.presentation.screens.onboard.api.OnboardApiServiceImpl
+import com.healthanalytics.android.presentation.screens.onboard.viewmodel.OnboardViewModel
+import com.healthanalytics.android.presentation.screens.recommendations.RecommendationsViewModel
+import com.healthanalytics.android.presentation.screens.symptoms.SymptomsViewModel
 import com.healthanalytics.android.presentation.screens.testbooking.TestBookingViewModel
 import com.healthanalytics.android.utils.KermitLogger
 import org.koin.core.context.startKoin
@@ -52,6 +53,7 @@ val sharedModules = module {
     viewModelOf(::SymptomsViewModel)
     factoryOf(::BioMarkerReportViewModel)
     factoryOf(::ConsultationViewModel)
+    factoryOf(::DiagnosticViewModel)
 
 }
 

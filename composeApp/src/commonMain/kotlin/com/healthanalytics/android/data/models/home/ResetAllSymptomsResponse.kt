@@ -1,4 +1,4 @@
-package com.healthanalytics.android.data.models
+package com.healthanalytics.android.data.models.home
 
 import kotlinx.serialization.Serializable
 

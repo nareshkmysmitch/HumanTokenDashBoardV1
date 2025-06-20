@@ -12,12 +12,13 @@ import com.healthanalytics.android.data.models.Recommendations
 import com.healthanalytics.android.data.models.RemoveRecommendationRequest
 import com.healthanalytics.android.data.models.RemoveRecommendationResponse
 import com.healthanalytics.android.data.models.RemoveSupplementsRequest
-import com.healthanalytics.android.data.models.ResetAllSymptomsResponse
 import com.healthanalytics.android.data.models.SubmitSymptomsResponse
 import com.healthanalytics.android.data.models.Symptom
 import com.healthanalytics.android.data.models.SymptomsWrapper
 import com.healthanalytics.android.data.models.UpdateProfileRequest
+import com.healthanalytics.android.data.models.home.Diagnostic
 import com.healthanalytics.android.data.models.home.HealthMetrics
+import com.healthanalytics.android.data.models.home.ResetAllSymptomsResponse
 import com.healthanalytics.android.data.models.profile.CommunicationPreference
 import com.healthanalytics.android.data.models.profile.PersonalData
 import com.healthanalytics.android.data.models.profile.UpdatedPreferenceResponse
@@ -113,6 +114,8 @@ interface ApiService {
     ): Boolean
 
     suspend fun getConsultationServices(accessToken: String): List<Product?>?
+
+    suspend fun getDiagnosticList(accessToken: String): Diagnostic?
 }
 
 
@@ -511,5 +514,15 @@ class ApiServiceImpl(
         val result =
             EncryptionUtils.handleDecryptionResponse<ResetAllSymptomsResponse>(responseBody)
         return result?.isReset == true
+    }
+
+    override suspend fun getDiagnosticList(accessToken: String): Diagnostic? {
+        val response = httpClient.get("v4/human-token/lab-test") {
+            header("access_token", accessToken)
+        }
+        val responseBody = response.bodyAsText()
+        val result =
+            EncryptionUtils.handleDecryptionResponse<Diagnostic>(responseBody)
+        return result
     }
 }
