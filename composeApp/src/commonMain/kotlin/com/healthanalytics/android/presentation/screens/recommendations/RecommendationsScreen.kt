@@ -206,9 +206,7 @@ fun RecommendationCard(
                     buttonColor = buttonColor,
                     onClick = {
                         if (isEnabled) accessToken?.let {
-                            viewModel.addToPlan(
-                                it, recommendation
-                            )
+                            viewModel.addToPlan(it, recommendation)
                         }
                     })
             }
