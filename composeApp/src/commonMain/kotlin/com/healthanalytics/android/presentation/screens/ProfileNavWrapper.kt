@@ -1,6 +1,7 @@
 package com.healthanalytics.android.presentation.screens
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -26,11 +27,6 @@ class ProfileNavWrapper : Screen {
             },
             questionnaireViewModel = questionnaireViewModel,
             onQuestionnaireNavigate = {
-                questionnaireViewModel.saveQuestionnaireDetails(
-                    assessmentId = "105",
-                    nextQuestionId = 0,
-                    displayName = "LifeStyle"
-                )
                 navigator.push(QuestionnaireNavWrapper())
             }
         )
