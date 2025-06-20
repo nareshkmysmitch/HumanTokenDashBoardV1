@@ -81,7 +81,6 @@ fun SymptomsList(
     var showAlertDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.updateFilter(AppConstants.ALL)
         viewModel.updateSearchQuery("")
     }
 
